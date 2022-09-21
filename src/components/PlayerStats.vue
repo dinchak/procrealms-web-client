@@ -1,0 +1,109 @@
+<template>
+  <div class="player-stats">
+    <div class="name-row">
+      <div class="bold-yellow">{{ player().name }}</div>
+      <div class="bold-magenta">{{ player().class }}</div>
+      <div><span style="color: #aaa">Level</span> <span class="bold-cyan">{{ player().level }}</span></div>
+    </div>
+
+    <n-progress class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
+      {{ getTNL() }} TNL
+    </n-progress>
+
+    <n-collapse>
+      <CharacterCollapse></CharacterCollapse>
+      <EffectsCollapse></EffectsCollapse>
+      <QuestCollapse></QuestCollapse>
+      <SkillsCollapse></SkillsCollapse>
+      <OptionsCollapse></OptionsCollapse>
+    </n-collapse>
+  </div>
+</template>
+
+<script setup>
+import { NProgress, NCollapse } from 'naive-ui'
+import CharacterCollapse from '@/components/CharacterCollapse.vue'
+import OptionsCollapse from '@/components/OptionsCollapse.vue'
+import QuestCollapse from '@/components/QuestCollapse.vue'
+import SkillsCollapse from '@/components/SkillsCollapse.vue'
+import EffectsCollapse from '@/components/EffectsCollapse.vue'
+import { state } from '@/composables/state'
+
+function player () {
+  return state.gameState.player || {}
+}
+
+function getTNL () {
+  return player().xpForNextLevel - player().xp
+}
+
+function getExpPercentage () {
+  return (player().xp - player().xpForCurrentLevel) / (player().xpForNextLevel - player().xpForCurrentLevel) * 100
+}
+
+</script>
+
+<style lang="less">
+.spacer {
+  width: 100%;
+  height: 10px;
+}
+
+.player-stats {
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  .name-row {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .exp-row {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .stat-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .stat {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .label {
+        color: #aaa;
+        width: 70px;
+        text-align: right;
+      }
+      .value {
+        margin-left: 5px;
+        width: 45px;
+      }
+    }
+  }
+
+  .combat-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    .stat {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .label {
+        color: #aaa;
+        width: 45px;
+        text-align: right;
+      }
+      .value {
+        margin-left: 5px;
+        width: 75px;
+      }
+    }
+  }
+
+}
+</style>
