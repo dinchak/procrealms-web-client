@@ -131,6 +131,39 @@ onKeydown((ev) => {
     move('southeast')
     ev.preventDefault()
   }
+
+  if (state.mode == 'input') {
+    return
+  }
+
+  if (ev.key == 'Q' || ev.key == 'q') {
+    move('northwest')
+    ev.preventDefault()
+  } else if (ev.key == 'W' || ev.key == 'w') {
+    move('north')
+    ev.preventDefault()
+  } else if (ev.key == 'E' || ev.key == 'e') {
+    move('northeast')
+    ev.preventDefault()
+  } else if (ev.key == 'A' || ev.key == 'a') {
+    move('west')
+    ev.preventDefault()
+  } else if (ev.key == 'X' || ev.key == 'x') {
+    enter()
+    ev.preventDefault()
+  } else if (ev.key == 'D' || ev.key == 'd') {
+    move('east')
+    ev.preventDefault()
+  } else if (ev.key == 'Z' || ev.key == 'z') {
+    move('southwest')
+    ev.preventDefault()
+  } else if (ev.key == 'S' || ev.key == 's') {
+    move('south')
+    ev.preventDefault()
+  } else if (ev.key == 'C' || ev.key == 'c') {
+    move('southeast')
+    ev.preventDefault()
+  }
 })
 
 </script>
