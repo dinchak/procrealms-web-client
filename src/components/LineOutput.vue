@@ -16,7 +16,7 @@ import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
-import { SouthOutlined } from '@vicons/material'
+import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon } from 'naive-ui'
 
 const output = ref(null)

@@ -1,20 +1,35 @@
 <template>
   <div class="stats">
     <n-progress class="quick-stats" type="line" status="success" :percentage="player().hp / player().maxHp * 100">
-      <span class="bold-green">{{ player().hp }}</span> <span class="green">HP</span>
+      <div class="bar-label">
+        <span class="bold-green">{{ player().hp }}</span> <span class="green">HP</span>
+      </div>
     </n-progress>
     <n-progress class="quick-stats" type="line" status="default" :percentage="player().energy / player().maxEnergy * 100">
-      <span class="bold-cyan">{{ player().energy }}</span> <span class="cyan">EN</span>
+      <div class="bar-label">
+        <span class="bold-cyan">{{ player().energy }}</span> <span class="cyan">EN</span>
+      </div>
     </n-progress>
     <n-progress class="quick-stats" type="line" status="warning" :percentage="player().stamina / player().maxStamina * 100">
-      <span class="bold-yellow">{{ player().stamina }}</span> <span class="yellow">ST</span>
+      <div class="bar-label">
+        <span class="bold-yellow">{{ player().stamina }}</span> <span class="yellow">ST</span>
+      </div>
+    </n-progress>
+    <n-progress class="quick-stats" type="line" status="success" :percentage="player().food / player().maxFood * 100">
+      <div class="bar-label">
+        <span class="bold-green">{{ player().food }}</span> <span class="green">FD</span>
+      </div>
     </n-progress>
     <div class="flex">
       <n-progress class="quick-stats" type="line" status="warning" :percentage="player().combo / player().maxCombo * 100">
-        <span class="bold-yellow">{{ player().combo }}</span> <span class="yellow">Combo</span>
+        <div class="half-bar-label">
+          <span class="bold-yellow">{{ player().combo }}</span> <span class="yellow">CB</span>
+        </div>
       </n-progress>
       <n-progress class="quick-stats" type="line" status="danger" :percentage="player().rage / player().maxRage * 100">
-        <span class="bold-red">{{ player().rage }}</span> <span class="red">Rage</span>
+        <div class="half-bar-label">
+          <span class="bold-red">{{ player().rage }}</span> <span class="red">RG</span>
+        </div>
       </n-progress>
     </div>
   </div>
@@ -36,6 +51,7 @@ function player () {
   flex-direction: column;
   .quick-stats {
     // margin-right: 10px;
+    // width: 190px;
   }
   .flex {
     display: flex;
@@ -48,5 +64,17 @@ function player () {
       }
     }
   }
+}
+
+.bar-label {
+  width: 50px;
+  display: inherit;
+  text-align: right;
+}
+
+.half-bar-label {
+  width: 50px;
+  display: inherit;
+  text-align: right;
 }
 </style>

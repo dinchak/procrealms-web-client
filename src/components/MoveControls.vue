@@ -19,11 +19,15 @@
 </template>
 
 <script setup>
-import {
-  NorthOutlined, SouthOutlined, EastOutlined, WestOutlined,
-  MeetingRoomOutlined,
-  NorthEastOutlined, NorthWestOutlined, SouthEastOutlined, SouthWestOutlined
-} from '@vicons/material'
+import NorthOutlined from '@vicons/material/NorthOutlined'
+import SouthOutlined from '@vicons/material/SouthOutlined'
+import EastOutlined from '@vicons/material/EastOutlined'
+import WestOutlined from '@vicons/material/WestOutlined'
+import MeetingRoomOutlined from '@vicons/material/MeetingRoomOutlined'
+import NorthEastOutlined from '@vicons/material/NorthEastOutlined'
+import NorthWestOutlined from '@vicons/material/NorthWestOutlined'
+import SouthEastOutlined from '@vicons/material/SouthEastOutlined'
+import SouthWestOutlined from '@vicons/material/SouthWestOutlined'
 
 import { NIcon } from 'naive-ui'
 
@@ -95,6 +99,10 @@ function getEnterClass () {
 }
 
 onKeydown((ev) => {
+  if (!state.options.movementDuringInput && state.mode == 'input') {
+    return
+  }
+
   if (ev.key == 'Home') {
     move('northwest')
     ev.preventDefault()

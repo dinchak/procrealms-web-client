@@ -46,7 +46,7 @@ onKeydown((ev) => {
     return
   }
 
-  if (ev.key == 'ArrowUp' && state.mode == 'input') {
+  if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
     if (!commandHistory.length || historyIndex == commandHistory.length - 1) {
       return
     }
@@ -59,7 +59,7 @@ onKeydown((ev) => {
     text.value = commandHistory[historyIndex]
   }
 
-  if (ev.key == 'ArrowDown' && state.mode == 'input') {
+  if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
     if (historyIndex == -1) {
       return
     }

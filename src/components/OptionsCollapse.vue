@@ -1,13 +1,13 @@
 <template>
   <n-collapse-item title="Options">
-    <GameMenu></GameMenu>
+    <OptionsMenu></OptionsMenu>
   </n-collapse-item>
 </template>
 
 <script setup>
 import { NCollapseItem } from 'naive-ui'
 
-import GameMenu from '@/components/GameMenu.vue'
+import OptionsMenu from '@/components/OptionsMenu.vue'
 
 // import { state } from '@/composables/state'
 
