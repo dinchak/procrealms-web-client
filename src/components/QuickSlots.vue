@@ -76,7 +76,7 @@ function getSlotClass (slot) {
   user-select: none;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   height: 40px;
   margin-right: 5px;
   .quick-slot {
@@ -89,9 +89,6 @@ function getSlotClass (slot) {
     justify-content: space-around;
     transition: all 0.3s;
     color: #767676;
-    &:first-child {
-      margin-left: 10px;
-    }
     &.active {
       color: #fff;
       background-color: darken(#16c60c, 30%);
