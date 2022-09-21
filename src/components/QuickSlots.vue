@@ -1,0 +1,137 @@
+<template>
+  <div class="quick-slots">
+    <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
+      <div class="slot-number">[<span class="bold-yellow">{{ slot.slot }}</span>]</div>
+      <div class="slot-label">{{ slot.label }}</div>
+      <n-progress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success" :percentage="getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100" :show-indicator="false" />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { NProgress } from 'naive-ui'
+import { useKeyHandler } from '@/composables/key_handler'
+import { useWebSocket } from '@/composables/web_socket'
+
+import { state } from '@/composables/state'
+
+const { onKeydown } = useKeyHandler()
+
+const { cmd } = useWebSocket()
+
+function slots () {
+  let slots = state.gameState.slots || []
+  slots.sort((a, b) => a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1)
+  return slots
+}
+
+function runQuickSlot (slot) {
+  cmd(slot.slot)
+}
+
+onKeydown((ev) => {
+  if (state.mode == 'input') {
+    return
+  }
+
+  let slot = slots().find(s => s.slot == ev.key)
+  if (!slot) {
+    return
+  }
+
+  cmd(slot.slot)
+})
+
+function getSkill (slot) {
+  return (state.gameState.skills || []).find(sk => sk.name == slot.label)
+}
+
+function getSlotClass (slot) {
+  let skill = getSkill(slot)
+  if (skill) {
+    if (skill.timeLeft) {
+      return 'quick-slot'
+    }
+    if (!skill.type.includes('combat') && state.gameState.battle.active) {
+      return 'quick-slot'
+    }
+    if (!skill.type.includes('overworld') && !state.gameState.battle.active) {
+      return 'quick-slot'
+    }
+  }
+  return 'quick-slot active'
+}
+</script>
+
+<style scoped lang="less">
+.quick-slots {
+  user-select: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 40px;
+  margin-right: 5px;
+  .quick-slot {
+    background-color: #222;
+    display: flex;
+    padding: 2px;
+    margin-right: 2px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: all 0.3s;
+    color: #767676;
+    &:first-child {
+      margin-left: 10px;
+    }
+    &.active {
+      color: #fff;
+      background-color: darken(#16c60c, 30%);
+      border: 1px solid #16c60c;
+      border-radius: 4px;
+      &:hover {
+        cursor: pointer;
+        color: #f9f1a5;
+        background-color: darken(#16c60c, 33%);
+      }
+    }
+
+    .slot-number {
+      height: 12px;
+      font-size: 14px;
+      line-height: 12px;
+    }
+
+    .slot-label {
+      font-size: 10px;
+      width: 50px;
+      max-height: 16px;
+      overflow: hidden;
+      word-wrap: break-word;
+      line-height: 8px;
+      text-align: center;
+    }
+
+    .n-progress {
+      --n-rail-height: 4px !important;
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .quick-slots {
+    flex-wrap: wrap;
+    height: initial;
+    justify-content: space-between;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 0px;
+    .quick-slot {
+      margin: 2px;
+      &:first-child {
+        margin-left: initial;
+      }
+    }
+  }
+}
+</style>
