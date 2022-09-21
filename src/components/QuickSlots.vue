@@ -19,6 +19,8 @@ const { onKeydown } = useKeyHandler()
 
 const { cmd } = useWebSocket()
 
+let actionTimeout = null
+
 function slots () {
   let slots = state.gameState.slots || []
   slots.sort((a, b) => a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1)
@@ -26,7 +28,13 @@ function slots () {
 }
 
 function runQuickSlot (slot) {
+  if (actionTimeout) {
+    return
+  }
   cmd(slot.slot)
+  actionTimeout = setTimeout(() => {
+    actionTimeout = null
+  }, 100)
 }
 
 onKeydown((ev) => {

@@ -104,6 +104,7 @@ function target (entity) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   .vs {
     font-size: 14px;
@@ -189,6 +190,7 @@ function target (entity) {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   .vs {
     font-size: 24px;
