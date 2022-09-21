@@ -3,12 +3,19 @@
   <div class="input-wrapper">
     <div :class="getCaretClass()">></div>
     <input v-model="text" ref="input" @blur="state.mode = 'hotkey'" @focus="state.mode = 'input'" autofocus />
+    <div :class="getHistoryClass()">
+      <n-button size="small" @click="prevCommand">Prev</n-button>
+      <n-button size="small" @click="nextCommand">Next</n-button>
+      <n-button size="small" @click="sendCommand">Send</n-button>
+    </div>
     <QuickSlots class="show-desktop"></QuickSlots>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+
+import { NButton } from 'naive-ui'
 
 import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
@@ -35,6 +42,13 @@ function getCaretClass () {
   return cls
 }
 
+function getHistoryClass () {
+  if (state.options.commandHistoryButton) {
+    return 'history show-history'
+  }
+  return 'history'
+}
+
 onKeydown((ev) => {
   if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
@@ -47,43 +61,58 @@ onKeydown((ev) => {
   }
 
   if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
-    if (!commandHistory.length || historyIndex == commandHistory.length - 1) {
-      return
-    }
-
-    if (historyIndex == -1) {
-      commandBuffer = text.value
-    }
-
-    historyIndex++
-    text.value = commandHistory[historyIndex]
+    prevCommand()
+    return
   }
 
   if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
-    if (historyIndex == -1) {
-      return
-    }
-
-    historyIndex--
-
-    if (historyIndex == -1) {
-      text.value = commandBuffer
-    } else {
-      text.value = commandHistory[historyIndex]
-    }
+    nextCommand()
+    return
   }
 
   if (ev.key == 'Enter' && state.mode == 'input') {
-    if (!text.value) {
-      return
-    }
-
-    commandHistory.unshift(text.value)
-    cmd(text.value)
-    text.value = ''
+    sendCommand()
     return
   }
 })
+
+function prevCommand () {
+  if (!commandHistory.length || historyIndex == commandHistory.length - 1) {
+    return
+  }
+
+  if (historyIndex == -1) {
+    commandBuffer = text.value
+  }
+
+  historyIndex++
+  text.value = commandHistory[historyIndex]
+}
+
+function nextCommand () {
+  if (historyIndex == -1) {
+    return
+  }
+
+  historyIndex--
+
+  if (historyIndex == -1) {
+    text.value = commandBuffer
+  } else {
+    text.value = commandHistory[historyIndex]
+  }
+}
+
+function sendCommand () {
+  if (!text.value) {
+    return
+  }
+
+  commandHistory.unshift(text.value)
+  cmd(text.value)
+  text.value = ''
+  historyIndex = -1
+}
 
 </script>
 
@@ -112,12 +141,28 @@ onKeydown((ev) => {
     border-radius: 2px;
     padding: 0px 5px;
     height: 25px;
+    margin-right: 10px;
 
     &:focus-visible {
       border: 0;
       box-shadow: 0 0 5px #f8ff25;
       background-color: #222;
       outline: 1px solid #f8ff25;
+    }
+  }
+
+  .history {
+    display: none;
+    flex-direction: row;
+    margin-right: 10px;
+    .n-button {
+      margin-right: 5px;
+      &:last-child {
+        margin-right: 0px;
+      }
+    }
+    &.show-history {
+      display: flex;
     }
   }
 }
