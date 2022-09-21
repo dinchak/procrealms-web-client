@@ -53,6 +53,8 @@ function getExpPercentage () {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-right: 10px;
+  height: 70vh;
+  overflow-y: scroll;
   .name-row {
     margin-top: 10px;
     display: flex;
