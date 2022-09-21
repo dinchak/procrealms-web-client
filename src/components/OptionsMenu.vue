@@ -10,6 +10,24 @@
       </template>
     </n-switch>
 
+    <n-switch v-model:value="state.options.fixedMap">
+      <template #checked>
+        Fixed Minimap
+      </template>
+      <template #unchecked>
+        Scrolling Minimap
+      </template>
+    </n-switch>
+
+    <n-switch v-model:value="state.options.commandHistoryButton">
+      <template #checked>
+        Show Mobile Buttons
+      </template>
+      <template #unchecked>
+        Hide Mobile Buttons
+      </template>
+    </n-switch>
+
     <n-button type="default" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
   </div>

@@ -2,7 +2,9 @@ import { reactive } from "vue"
 
 export const state = reactive({
   options: {
-    movementDuringInput: false
+    movementDuringInput: false,
+    fixedMap: true,
+    commandHistoryButton: false
   },
 
   pendingRequests: {},
