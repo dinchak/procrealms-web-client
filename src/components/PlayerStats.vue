@@ -1,5 +1,5 @@
 <template>
-  <div class="player-stats">
+  <div :class="getPlayerStatsClass()">
     <div class="name-row">
       <div class="bold-yellow">{{ player().name }}</div>
       <div class="bold-magenta">{{ player().class }}</div>
@@ -41,6 +41,13 @@ function getExpPercentage () {
   return (player().xp - player().xpForCurrentLevel) / (player().xpForNextLevel - player().xpForCurrentLevel) * 100
 }
 
+function getPlayerStatsClass () {
+  if (state.options.fixedMap) {
+    return 'player-stats fixed-map'
+  }
+  return 'player-stats'
+}
+
 </script>
 
 <style lang="less">
@@ -53,6 +60,12 @@ function getExpPercentage () {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-right: 10px;
+
+  &.fixed-map {
+    height: 70vh;
+    overflow-y: scroll;
+  }
+
   .name-row {
     margin-top: 10px;
     display: flex;
