@@ -74,6 +74,10 @@ onKeydown((ev) => {
     sendCommand()
     return
   }
+
+  if (ev.key == '?' && state.mode == 'hotkey') {
+    state.showHelp = true
+  }
 })
 
 function prevCommand () {
