@@ -6,7 +6,7 @@
   <HelpOverlay></HelpOverlay>
 
   <n-layout has-sider v-if="state.token && state.connected" class="game">
-    <n-layout-sider show-trigger="arrow-circle" :collapsed-width="0" :on-update:collapsed="openCloseSider">
+    <n-layout-sider :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="!state.options.swapControls" :collapsed="state.options.hideSidebar">
       <div class="stats-area">
         <PlayerStats></PlayerStats>
         <div class="bottom-area">
@@ -24,6 +24,7 @@
         </div>
       </div>
     </n-layout-sider>
+
     <n-layout>
       <div class="content-area">
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
@@ -31,7 +32,27 @@
         <KeyboardInput></KeyboardInput>
       </div>
     </n-layout>
-  </n-layout>
+
+    <n-layout-sider class="right-side" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="state.options.swapControls" :collapsed="state.options.hideSidebar">
+      <div class="stats-area">
+        <PlayerStats></PlayerStats>
+        <div class="bottom-area">
+          <div class="battle-area" v-if="state.gameState.battle.active">
+            <BattleControls></BattleControls>
+          </div>
+          <div class="map-actions">
+            <MapActions v-if="!state.gameState.battle.active"></MapActions>
+          </div>
+          <div class="map-area" v-if="!state.gameState.battle.active">
+            <MoveControls></MoveControls>
+            <MiniMap></MiniMap>
+          </div>
+          <QuickStats></QuickStats>
+        </div>
+      </div>
+    </n-layout-sider>
+
+</n-layout>
 </template>
 
 <script setup>
@@ -88,16 +109,8 @@ function openCloseSider () {
   }
 }
 
-.n-layout-sider .n-layout-toggle-button {
-  top: initial !important;
-  bottom: 0px !important;
-  right: -20px !important;
-}
-
-@media screen and (max-width: 1000px) {
-  .n-layout-sider .n-layout-toggle-button {
-    bottom: -3px !important;
-  }
+.n-layout {
+  z-index: 2;
 }
 
 </style>

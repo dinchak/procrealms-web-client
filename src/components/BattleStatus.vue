@@ -95,8 +95,8 @@ function target (entity) {
 <style lang="less">
 .mobile-battle-status {
   display: none;
-  background-color: rgba(20, 0, 0, 0.95);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+  background-color: rgb(20, 0, 0, );
+  border-bottom: 1px solid rgb(30, 0, 0, );
   padding: 10px;
   position: absolute;
   top: 0;
@@ -118,7 +118,7 @@ function target (entity) {
     .entity {
       width: 100%;
       padding: 2px 2px 5px 2px;
-      border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+      border-bottom: 1px solid rgb(30, 0, 0);
       margin-bottom: 5px;
       align-items: center;
       &:last-child {
@@ -179,8 +179,8 @@ function target (entity) {
 }
 
 .battle-status {
-  background-color: rgba(20, 0, 0, 0.95);
-  border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+  background-color: rgb(20, 0, 0);
+  border-bottom: 1px solid rgb(30, 0, 0);
   padding: 10px;
   position: absolute;
   top: 0;
@@ -203,7 +203,7 @@ function target (entity) {
     .entity {
       width: 100%;
       padding: 2px 2px 5px 2px;
-      border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+      border-bottom: 1px solid rgb(30, 0, 0);
       margin-bottom: 5px;
       align-items: center;
       &:last-child {

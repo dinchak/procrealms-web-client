@@ -28,8 +28,17 @@
       </template>
     </n-switch>
 
-    <n-button type="default" @click="goFullscreen()" ghost>Full Screen</n-button>
-    <n-button type="default" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
+    <n-switch v-model:value="state.options.swapControls">
+      <template #checked>
+        Options On Right
+      </template>
+      <template #unchecked>
+        Options On Left
+      </template>
+    </n-switch>
+
+    <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
+    <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
   </div>
 </template>
