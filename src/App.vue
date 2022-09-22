@@ -38,9 +38,14 @@ function onConnect () {
     let json = readCookie()
     if (json) {
       let prefs = JSON.parse(json)
+      if (!prefs.name || !prefs.token) {
+        return
+      }
+
       state.token = prefs.token
       state.name = prefs.name
-      send('token', { name: state.name, token: state.token, width: state.terminalWidth, height: state.terminalHeight })
+
+      send('token', { name: state.name, token: state.token, width: 70, height: 24 })
     }
   } catch (err) {
     clearCookie()
@@ -108,4 +113,8 @@ body, html {
 .bold-magenta { color: #b4009e }
 .bold-cyan { color: #61d6d6 }
 .bold-white { color: #f2f2f2 }
+
+b {
+  font-weight: normal !important;
+}
 </style>
