@@ -92,6 +92,7 @@ function onScroll () {
     line-height: 22px;
     display: block;
     white-space: pre;
+    font-weight: normal !important;
 
     .player-cmd-caret {
       color: #f8ff25;
