@@ -53,7 +53,7 @@ const model = ref({
   name: '',
   password: '',
   repeatPassword: '',
-  tutorial: false
+  tutorial: true
 })
 
 function validatePasswordSame(rule, value) {
@@ -117,7 +117,13 @@ const rules = {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
-          send('create', { name: model.value.name, password: model.value.password, width: 100, height: 24 })
+          send('create', {
+            name: model.value.name,
+            password: model.value.password,
+            width: 100,
+            height: 24,
+            tutorial: model.value?.tutorial ? 'Y' : 'N'
+          })
         })
       }
     }
