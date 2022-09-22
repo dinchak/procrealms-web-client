@@ -3,9 +3,11 @@ import { reactive } from "vue"
 export const state = reactive({
   options: {
     movementDuringInput: false,
-    fixedMap: true,
+    fixedMap: false,
     commandHistoryButton: false
   },
+
+  showHelp: false,
 
   pendingRequests: {},
 
