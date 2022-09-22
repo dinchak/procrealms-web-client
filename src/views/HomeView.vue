@@ -3,6 +3,8 @@
 
   <LogoutModal></LogoutModal>
 
+  <HelpOverlay></HelpOverlay>
+
   <n-layout has-sider v-if="state.token && state.connected" class="game">
     <n-layout-sider show-trigger="arrow-circle" :collapsed-width="0" :on-update:collapsed="openCloseSider">
       <div class="stats-area">
@@ -48,6 +50,7 @@ import BattleControls from '@/components/BattleControls.vue'
 import MoveControls from '@/components/MoveControls.vue'
 import QuickStats from '@/components/QuickStats.vue'
 import MapActions from '@/components/MapActions.vue'
+import HelpOverlay from '@/components/HelpOverlay.vue'
 
 import { useWindowHandler } from '@/composables/window_handler'
 
