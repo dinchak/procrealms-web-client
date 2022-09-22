@@ -1,5 +1,5 @@
 <template>
-  <div class="output" ref="output" @scroll="onScroll">
+  <div id="output" class="output" ref="output" @scroll="onScroll">
     <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
     <div v-if="state.scrolledBack" class="scrollback-control" @click="scrollDown()">
       <n-icon><SouthOutlined></SouthOutlined></n-icon>

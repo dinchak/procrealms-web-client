@@ -78,17 +78,20 @@ function getSlotClass (slot) {
   flex-direction: row;
   justify-content: space-between;
   height: 40px;
-  margin-right: 5px;
+  margin: 0 5px;
   .quick-slot {
     background-color: #222;
     display: flex;
     padding: 2px;
-    margin-right: 2px;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
     transition: all 0.3s;
     color: #767676;
+    margin-right: 5px;
+    &:last-child {
+      margin-right: 0;
+    }
     &.active {
       color: #fff;
       background-color: darken(#16c60c, 30%);
@@ -128,15 +131,7 @@ function getSlotClass (slot) {
     flex-wrap: wrap;
     height: initial;
     justify-content: space-between;
-    margin-right: 10px;
-    margin-left: 10px;
-    margin-bottom: 0px;
-    .quick-slot {
-      margin: 2px;
-      &:first-child {
-        margin-left: initial;
-      }
-    }
+    margin-bottom: 5px;
   }
 }
 </style>

@@ -4,7 +4,9 @@ export const state = reactive({
   options: {
     movementDuringInput: false,
     fixedMap: false,
-    commandHistoryButton: false
+    commandHistoryButton: false,
+    swapControls: false,
+    hideSidebar: false,
   },
 
   showHelp: false,

@@ -1,7 +1,9 @@
 <template>
   <QuickSlots class="show-mobile"></QuickSlots>
   <div class="input-wrapper">
-    <div :class="getCaretClass()">></div>
+    <div :class="getCaretClass()" v-if="!state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
+      <n-icon><MenuOutlined></MenuOutlined></n-icon>
+    </div>
     <input v-model="text" ref="input" @blur="state.mode = 'hotkey'" @focus="state.mode = 'input'" autofocus />
     <div :class="getHistoryClass()">
       <n-button size="small" @click="prevCommand">Prev</n-button>
@@ -9,13 +11,18 @@
       <n-button size="small" @click="sendCommand">Send</n-button>
     </div>
     <QuickSlots class="show-desktop"></QuickSlots>
+    <div :class="getCaretClass()" v-if="state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
+      <n-icon><MenuOutlined></MenuOutlined></n-icon>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 
-import { NButton } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
+
+import MenuOutlined from '@vicons/material/MenuOutlined'
 
 import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
@@ -116,6 +123,11 @@ function sendCommand () {
   cmd(text.value)
   text.value = ''
   historyIndex = -1
+
+  setTimeout(() => {
+    let output = document.getElementById('output')
+    output.scrollTo(0, output.scrollHeight)
+  })
 }
 
 </script>
@@ -126,13 +138,29 @@ function sendCommand () {
   flex-direction: row;
   font-size: 20px;
   height: 40px;
-  padding-left: 15px;
   padding-bottom: 5px;
   align-items: center;
+  justify-content: space-between;
 
   .caret {
-    color: #444;
-    margin-right: 15px;
+    color: #fff;
+    width: 35px;
+    text-align: center;
+    background-color: #063603;
+    border: 1px solid #16c60c;
+    display: flex;
+    height: 25px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    border-radius: 4px;
+    flex-shrink: 0;
+
+    &:hover {
+      cursor: pointer;
+      background-color: darken(#16c60c, 33%);
+    }
+
     &.active {
       color: #f8ff25
     }
@@ -141,11 +169,11 @@ function sendCommand () {
   input {
     background-color: #222;
     border: 0;
-    width: 100%;
+    width: ~"calc(100% - 45px)";
     border-radius: 2px;
     padding: 0px 5px;
+    margin: 0 5px;
     height: 25px;
-    margin-right: 10px;
 
     &:focus-visible {
       border: 0;
@@ -158,7 +186,7 @@ function sendCommand () {
   .history {
     display: none;
     flex-direction: row;
-    margin-right: 10px;
+    margin: 0 5px;
     .n-button {
       margin-right: 5px;
       &:last-child {
@@ -181,11 +209,6 @@ function sendCommand () {
   }
   .show-mobile {
     display: flex;
-  }
-  .input-wrapper {
-    input {
-      width: ~"calc(100% - 45px)";
-    }
   }
 }
 </style>
