@@ -134,7 +134,6 @@ function target (entity) {
         flex-wrap: wrap;
         justify-content: space-around;
         align-items: center;
-        align-content: center;
       }
       .name {
         width: ~"calc(100% - 10px)";
@@ -182,8 +181,6 @@ function target (entity) {
   background-color: rgb(20, 0, 0);
   border-bottom: 1px solid rgb(30, 0, 0);
   padding: 10px;
-  position: absolute;
-  top: 0;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -219,7 +216,6 @@ function target (entity) {
         flex-wrap: wrap;
         justify-content: space-around;
         align-items: center;
-        align-content: center;
       }
       .name {
         width: ~"calc(100% - 10px)";

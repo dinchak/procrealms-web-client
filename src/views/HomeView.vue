@@ -27,8 +27,8 @@
 
     <n-layout>
       <div class="content-area">
-        <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
         <LineOutput></LineOutput>
+        <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
         <KeyboardInput></KeyboardInput>
       </div>
     </n-layout>
