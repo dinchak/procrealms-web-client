@@ -1,5 +1,27 @@
 import { ansiSpan } from 'ansi-to-span'
 
+const Convert = require('ansi-to-html')
+const convert = new Convert({
+  colors: {
+    0: '#333333',
+    1: '#c50f1f',
+    2: '#13a10e',
+    3: '#c19c00',
+    4: '#0037da',
+    5: '#881798',
+    6: '#3a96dd',
+    7: '#cccccc',
+    8: '#767676',
+    9: '#e74856',
+    10: '#16c60c',
+    11: '#f9f1a5',
+    12: '#3b78ff',
+    13: '#b4009e',
+    14: '#61d6d6',
+    15: '#f2f2f2',
+  }
+})
+
 import { state } from '@/composables/state'
 
 const handlers = {}
@@ -94,7 +116,8 @@ function strToLines (str) {
   let lines = str.trim().split('\n')
   // lines.unshift('')
   return lines.map((line) => {
-    return ansiSpan(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+    // return ansiSpan(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+    return convert.toHtml(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
   })
 }
 
