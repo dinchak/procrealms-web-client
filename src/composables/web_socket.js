@@ -13,7 +13,9 @@ export function useWebSocket () {
     const _onMessage = (json) => {
       try {
         let { cmd, msg } = JSON.parse(json)
-        // console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+        if (process.env.NODE_ENV != 'production') {
+          console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+        }
         onEvent(cmd, msg)
       } catch (err) {
         console.log('error parsing message: %s', json)
@@ -23,7 +25,9 @@ export function useWebSocket () {
   }
 
   function send (cmd, msg) {
-    // console.log(`-> ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+    if (process.env.NODE_ENV != 'production') {
+      console.log(`-> ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+    }
     ws.send(JSON.stringify({ cmd, msg }))
   }
 
