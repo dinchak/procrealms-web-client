@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="vs">VS</div>
+    <div class="vs">- VS -</div>
 
     <div class="side evil">
       <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
@@ -107,10 +107,9 @@ function target (entity) {
   z-index: 100;
 
   .vs {
-    font-size: 14px;
+    font-size: 12px;
     align-self: center;
     text-align: center;
-    margin: 2px 0px;
     color: darken(#c50f1f, 5%);
   }
 
@@ -141,7 +140,7 @@ function target (entity) {
         width: ~"calc(100% - 10px)";
         margin: 0 5px;
         font-size: 20px;
-        line-height: 32px;
+        line-height: 14px;
         cursor: pointer;
         &:hover {
           text-decoration: underline;
@@ -149,11 +148,11 @@ function target (entity) {
       }
       .caret {
         font-size: 12px;
-        line-height: 32px;
+        line-height: 24px;
         color: #f9f1a5;
       }
       .n-progress {
-        width: 24px;
+        width: 28px;
         height: 28px;
         margin: 0 2px;
       }
@@ -226,20 +225,20 @@ function target (entity) {
         width: ~"calc(100% - 10px)";
         margin: 0 5px;
         font-size: 20px;
-        line-height: 32px;
+        line-height: 20px;
         cursor: pointer;
         &:hover {
           text-decoration: underline;
         }
       }
       .caret {
-        font-size: 12px;
-        line-height: 32px;
+        font-size: 14px;
+        line-height: 14px;
         color: #f9f1a5;
       }
       .n-progress {
-        width: 24px;
-        height: 28px;
+        width: 28px;
+        height: 32px;
         margin: 0 2px;
       }
     }
@@ -313,6 +312,24 @@ function target (entity) {
       &.evil {
         .entity {
           grid-template-columns: 10px calc(100% - 100px) 75px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 500px) {
+  .mobile-battle-status {
+    padding: 5px;
+    .side {
+      .entity {
+        .name {
+          font-size: 16px;
+          line-height: 12px;
+        }
+        .n-progress {
+          width: 24px;
+          height: 24px;
         }
       }
     }
