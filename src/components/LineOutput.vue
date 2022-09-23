@@ -63,6 +63,8 @@ watch(() => state.output.length, () => {
   }
 })
 
+watch(() => state.gameState.battle.active, () => scrollDown())
+
 function scrollDown () {
   output.value.scrollTo(0, output.value.scrollHeight)
 }
