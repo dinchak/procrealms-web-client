@@ -1,6 +1,6 @@
 <template>
 
-  <n-tabs class="tabs" @before-leave="onChangeTab" :bar-width="20">
+  <n-tabs class="tabs" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" class="output" ref="output" @scroll="onScroll('output')">
         <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
@@ -156,12 +156,18 @@ function onScroll (id) {
   }
 }
 
-function onChangeTab (activeName) {
+function onBeforeChangeTab (activeName) {
   if (['gossip', 'trade', 'newbie'].includes(activeName)) {
     state[activeName].forEach(msg => msg.unread = false)
   }
   state.activeTab = activeName
   return true
+}
+
+function onAfterChangeTab (activeName) {
+  setTimeout(() => {
+    scrollDown(activeName)
+  })
 }
 
 function getTab (name) {
