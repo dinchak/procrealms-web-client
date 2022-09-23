@@ -77,7 +77,7 @@ const rules = {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
-          send('login', { name: model.value.name, password: model.value.password, width: 80, height: 24 })
+          send('login', { name: model.value.name, password: model.value.password, width: 80, height: 24, ttype: 'play.proceduralrealms.com' })
         })
       }
     }

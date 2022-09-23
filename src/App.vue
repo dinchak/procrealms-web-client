@@ -45,7 +45,7 @@ function onConnect () {
       state.token = prefs.token
       state.name = prefs.name
 
-      send('token', { name: state.name, token: state.token, width: 70, height: 24 })
+      send('token', { name: state.name, token: state.token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
     }
   } catch (err) {
     clearCookie()
