@@ -9,6 +9,8 @@ export const state = reactive({
     hideSidebar: false,
   },
 
+  activeTab: 'output',
+
   showHelp: false,
 
   pendingRequests: {},
@@ -33,11 +35,21 @@ export const state = reactive({
 
   picture: '',
 
-  scrolledBack: false,
+  scrolledBack: {
+    output: false,
+    gossip: false,
+    trade: false,
+    newbie: false
+  },
+
   output: [],
+  gossip: [],
+  trade: [],
+  newbie: [],
 
   name: '',
   token: '',
+
   gameState: {
     player: {},
     battle: {

@@ -30,10 +30,10 @@
 
     <n-switch v-model:value="state.options.swapControls">
       <template #checked>
-        Options On Right
+        Menu On Right
       </template>
       <template #unchecked>
-        Options On Left
+        Menu On Left
       </template>
     </n-switch>
 

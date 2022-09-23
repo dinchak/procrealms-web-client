@@ -30,6 +30,7 @@
           <div>Rank {{ skill.rank }}</div>
         </div>
       </div>
+      <div v-if="skills().filter(sk => sk.type.includes('learned')).length == 0">Read a skill book to learn a skill.</div>
     </div>
   </n-collapse-item>
 </template>
@@ -72,6 +73,5 @@ function skills () {
       cursor: pointer;
     }
   }
-  white-space: pre
 }
 </style>

@@ -4,7 +4,7 @@
     <div :class="getCaretClass()" v-if="!state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
       <n-icon><MenuOutlined></MenuOutlined></n-icon>
     </div>
-    <input v-model="text" ref="input" @blur="state.mode = 'hotkey'" @focus="state.mode = 'input'" autofocus />
+    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus />
     <div :class="getHistoryClass()">
       <n-button size="small" @click="prevCommand">Prev</n-button>
       <n-button size="small" @click="nextCommand">Next</n-button>
@@ -56,36 +56,13 @@ function getHistoryClass () {
   return 'history'
 }
 
-onKeydown((ev) => {
-  if (ev.key == 'Enter' && state.mode == 'hotkey') {
-    input.value.focus()
-    return
-  }
+function onFocus () {
+  state.mode = 'input'
+}
 
-  if (ev.key == 'Escape' && state.mode == 'input') {
-    input.value.blur()
-    return
-  }
-
-  if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
-    prevCommand()
-    return
-  }
-
-  if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
-    nextCommand()
-    return
-  }
-
-  if (ev.key == 'Enter' && state.mode == 'input') {
-    sendCommand()
-    return
-  }
-
-  if (ev.key == '?' && state.mode == 'hotkey') {
-    state.showHelp = true
-  }
-})
+function onBlur () {
+  state.mode = 'hotkey'  
+}
 
 function prevCommand () {
   if (!commandHistory.length || historyIndex == commandHistory.length - 1) {
@@ -119,16 +96,55 @@ function sendCommand () {
     return
   }
 
-  commandHistory.unshift(text.value)
-  cmd(text.value)
+  let command = text.value
+  if (state.activeTab != 'output') {
+    let firstWord = command.split(' ')[0]
+    if (state.activeTab.indexOf(firstWord.toLowerCase()) != 0) {
+      command = `${state.activeTab} ${command}`
+    }
+  }
+
+  commandHistory.unshift(command)
+  cmd(command)
   text.value = ''
   historyIndex = -1
 
   setTimeout(() => {
-    let output = document.getElementById('output')
+    let output = document.getElementById(state.activeTab)
     output.scrollTo(0, output.scrollHeight)
   })
 }
+
+onKeydown((ev) => {
+  if (ev.key == 'Enter' && state.mode == 'hotkey') {
+    input.value.focus()
+    return
+  }
+
+  if (ev.key == 'Escape' && state.mode == 'input') {
+    input.value.blur()
+    return
+  }
+
+  if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
+    prevCommand()
+    return
+  }
+
+  if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
+    nextCommand()
+    return
+  }
+
+  if (ev.key == 'Enter' && state.mode == 'input') {
+    sendCommand()
+    return
+  }
+
+  if (ev.key == '?' && state.mode == 'hotkey') {
+    state.showHelp = true
+  }
+})
 
 </script>
 

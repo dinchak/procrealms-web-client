@@ -11,6 +11,7 @@
     "ansi-to-html": "^0.7.2",
     "ansi-to-span": "^0.0.1",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.5",
     "strip-ansi": "^7.0.1",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
