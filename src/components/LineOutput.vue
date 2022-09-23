@@ -118,7 +118,7 @@ function calcTerminalSize () {
     let terminalWidth = Math.floor(output.value.offsetWidth  / charWidth)
     let terminalHeight = Math.floor(output.value.offsetHeight  / charHeight)
 
-    send('terminal', { width: terminalWidth, height: terminalHeight })
+    send('terminal', { width: terminalWidth, height: terminalHeight, ttype: 'play.proceduralrealms.com' })
 
     resizeTimeout = null
   }, 500)

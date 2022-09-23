@@ -122,7 +122,8 @@ const rules = {
             password: model.value.password,
             width: 100,
             height: 24,
-            tutorial: model.value?.tutorial ? 'Y' : 'N'
+            tutorial: model.value?.tutorial ? 'Y' : 'N',
+            ttype: 'play.proceduralrealms.com'
           })
         })
       }
