@@ -13,6 +13,9 @@
       </div>
 
       <div class="skill-type bold-magenta">Crafting Skills</div>
+      <div class="points" v-if="player().craftingPoints > 0">
+        You have <span class="bold-magenta">{{ player().craftingPoints }}</span> unspent crafting points. Find a crafting skill book to read.
+      </div>
       <div class="skill" v-for="skill in skills().filter(sk => sk.type.includes('crafting'))" :key="skill.name">
         <div class="skill-header">
           <div>{{ skill.name }}</div>
@@ -24,13 +27,15 @@
       </div>
 
       <div class="skill-type bold-cyan">Learned Skills</div>
+      <div class="points" v-if="player().craftingPoints > 0">
+        You have <span class="bold-cyan">{{ player().skillPoints }}</span> unspent skill points. Find a skill book to read.
+      </div>
       <div class="skill" v-for="skill in skills().filter(sk => sk.type.includes('learned'))" :key="skill.name">
         <div class="skill-header">
           <div>{{ skill.name }}</div>
           <div>Rank {{ skill.rank }}</div>
         </div>
       </div>
-      <div v-if="skills().filter(sk => sk.type.includes('learned')).length == 0">Read a skill book to learn a skill.</div>
     </div>
   </n-collapse-item>
 </template>
@@ -44,6 +49,10 @@ import { state } from '@/composables/state'
 
 function skills () {
   return state.gameState.skills || []
+}
+
+function player () {
+  return state.gameState.player
 }
 
 </script>
@@ -72,6 +81,11 @@ function skills () {
       text-decoration: underline;
       cursor: pointer;
     }
+  }
+
+  .points {
+    margin-bottom: 10px;
+    text-align: center;
   }
 }
 </style>

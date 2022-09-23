@@ -1,5 +1,10 @@
 <template>
   <n-collapse-item title="Statistics">
+
+    <div class="ability-points" v-if="player().abilityPoints > 0">
+      You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command to spend them.
+    </div>
+
     <div class="stat-row">
       <div class="stat">
         <div class="label">Strength</div>
@@ -194,5 +199,10 @@ function renderNumber (value, digits = 2) {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.ability-points {
+  text-align: center;
+  margin-bottom: 10px;
 }
 </style>
