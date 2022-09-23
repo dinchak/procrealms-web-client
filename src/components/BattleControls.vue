@@ -5,7 +5,7 @@
       <n-button type="success" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('defend')">[<span class="bold-yellow">D</span>]efend</n-button>
       <n-button type="warning" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('flee')">[<span class="bold-yellow">F</span>]lee</n-button>
     </div>
-    <div class="battle-skills">
+    <div class="battle-skills" v-show="getSkills().length">
       <n-button :disabled="!state.gameState.battle.myTurn" type="default" ghost v-for="{ skill, command } in getSkills()" :key="skill" @click="cmd(command)">{{ skill }}</n-button>
     </div>
   </div>
@@ -47,6 +47,10 @@ onKeydown((ev) => {
 
 function getSkills () {
   let skills = []
+
+  if (!state.gameState.battle.active) {
+    return []
+  }
 
   for (let skill of state.gameState.battle.actions.skills) {
     skills.push({ skill, command: skill })

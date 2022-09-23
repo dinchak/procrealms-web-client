@@ -1,9 +1,10 @@
 <template>
 
-  <n-tabs class="tabs" @update:value="onChangeTab">
+  <n-tabs class="tabs" @before-leave="onChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" class="output" ref="output" @scroll="onScroll('output')">
         <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
+        <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDown('output')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -12,14 +13,14 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane name="gossip" tab="Gossip" display-directive="show">
+    <n-tab-pane name="gossip" :tab="getTab('gossip')" display-directive="show">
       <div id="gossip" class="output" ref="gossip" @scroll="onScroll('gossip')">
         <div v-for="(line, i) in state.gossip" class="message" :key="`line-${i}`">
           <div class="from">
-            <div class="name">{{ line.name }}</div>
-            <div class="timestamp white">{{ getTimeSince(line.timestamp) }}</div>
+            <div class="name bold-yellow">{{ line.from }}</div>
+            <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
           </div>
-          <div class="body" v-html="line.message"></div>
+          <div class="body bold-white" v-html="line.message"></div>
         </div>
       </div>
       <div v-show="state.scrolledBack.gossip" class="scrollback-control" @click="scrollDown('gossip')">
@@ -29,9 +30,15 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane name="trade" tab="Trade" display-directive="show">
+    <n-tab-pane name="trade" :tab="getTab('trade')" display-directive="show">
       <div id="trade" class="output" ref="trade" @scroll="onScroll('trade')">
-        <div v-for="(line, i) in state.trade" class="line" v-html="line" :key="`line-${i}`"></div>
+        <div v-for="(line, i) in state.trade" class="message" :key="`line-${i}`">
+          <div class="from">
+            <div class="name bold-green">{{ line.from }}</div>
+            <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
+          </div>
+          <div class="body bold-white" v-html="line.message"></div>
+        </div>
       </div>
       <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDown('trade')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -40,9 +47,15 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane name="newbie" tab="Newbie" display-directive="show">
+    <n-tab-pane name="newbie" :tab="getTab('newbie')" display-directive="show">
       <div id="newbie" class="output" ref="newbie" @scroll="onScroll('newbie')">
-        <div v-for="(line, i) in state.newbie" class="line" v-html="line" :key="`line-${i}`"></div>
+        <div v-for="(line, i) in state.newbie" class="message" :key="`line-${i}`">
+          <div class="from">
+            <div class="name bold-magenta">{{ line.from }}</div>
+            <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
+          </div>
+          <div class="body bold-white" v-html="line.message"></div>
+        </div>
       </div>
       <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDown('newbie')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -57,14 +70,16 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { ref, watch, nextTick, onMounted } from 'vue'
+import { ref, watch, nextTick, onMounted, h } from 'vue'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
+import BattleStatus from '@/components/BattleStatus.vue'
+
 import SouthOutlined from '@vicons/material/SouthOutlined'
-import { NIcon, NTabs, NTabPane } from 'naive-ui'
+import { NIcon, NTabs, NTabPane, NBadge, NSpace } from 'naive-ui'
 
 dayjs.extend(relativeTime)
 
@@ -116,17 +131,13 @@ function onChanged (id) {
   }
 
   let { scrollTop, scrollHeight, offsetHeight } = el
-  console.log(scrollTop)
   let scrolledBack = Math.round(scrollTop + offsetHeight + 5) <= scrollHeight
   if (!scrolledBack) {
     nextTick(() => scrollDown(id))
   }
 }
 
-watch(() => state.gameState.battle.active, () => scrollDown())
-
 function scrollDown (id) {
-  console.log(`scrollDown(${id})`)
   let el = document.getElementById(id)
   if (el) {
     el.scrollTo(0, el.scrollHeight)
@@ -145,8 +156,21 @@ function onScroll (id) {
   }
 }
 
-function onChangeTab (name) {
-  state.activeTab = name
+function onChangeTab (activeName) {
+  if (['gossip', 'trade', 'newbie'].includes(activeName)) {
+    state[activeName].forEach(msg => msg.unread = false)
+  }
+  state.activeTab = activeName
+  return true
+}
+
+function getTab (name) {
+  let numUnread = state[name].filter(msg => msg.unread).length
+  let children = [name.charAt(0).toUpperCase() + name.slice(1)]
+  if (numUnread > 0) {
+    children.push(h(NBadge, { value: numUnread }))
+  }
+  return h(NSpace, {}, () => children)
 }
 
 onMounted(() => {
@@ -169,7 +193,6 @@ onMounted(() => {
 
 <style lang="less">
 .tabs {
-  height: 100%;
 
   .n-tabs-nav {
     margin: 0 10px;
@@ -197,10 +220,13 @@ onMounted(() => {
   }
 
   .output {
+    display: flex;
+    flex-direction: column;
+    flex-basis: fit-content;
     margin: 5px 10px;
-    overflow-y: scroll;
-    height: ~"calc(100vh - 140px)";
     position: relative;
+    height: ~"calc(100vh - 100px)";
+    overflow-y: scroll;
 
     .line {
       font-size: 20px;
@@ -254,7 +280,7 @@ onMounted(() => {
 @media screen and (max-height: 500px) {
   .tabs {
     .scrollback-control {
-      bottom: 70px;
+      bottom: 80px;
     }
     .output {
       .line {
@@ -269,7 +295,7 @@ onMounted(() => {
 @media screen and (max-width: 1000px) {
   .tabs {
     .output {
-      height: ~"calc(100vh - 130px)";
+      height: ~"calc(100vh - 131px)";
     }
   }
 }
