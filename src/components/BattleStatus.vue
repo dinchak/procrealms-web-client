@@ -1,5 +1,5 @@
 <template>
-  <div class="battle-status">
+  <div class="battle-status" ref="battleStatus">
     <div class="side good">
       <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
         <div class="vitals">
@@ -66,21 +66,18 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue'
 import { ansiSpan } from 'ansi-to-span'
 import stripAnsi from 'strip-ansi'
 
 import { state } from '@/composables/state'
-import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
 import { NProgress } from 'naive-ui'
 
 const { cmd } = useWebSocket()
-const { onKeydown } = useKeyHandler()
 
-onKeydown((ev) => {
-  console.log(`LineOutput onKeyDown=${ev.key}`)
-})
+const battleStatus = ref(null)
 
 function getSide (side) {
   return state.gameState.battle.participants.filter(p => p.side == side)
@@ -90,6 +87,13 @@ function target (entity) {
   cmd(`target ${stripAnsi(entity.tag)}`)
 }
 
+onMounted(() => {
+  let parent = battleStatus.value?.parentElement
+  if (parent) {
+    parent.scrollTo(0, parent.scrollHeight)
+  }
+})
+
 </script>
 
 <style lang="less">
@@ -97,14 +101,12 @@ function target (entity) {
   display: none;
   background-color: rgb(20, 0, 0, );
   border-bottom: 1px solid rgb(30, 0, 0, );
-  padding: 10px;
-  position: absolute;
   top: 0;
   width: 100%;
+  margin-top: 5px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 100;
 
   .vs {
     font-size: 12px;
@@ -119,7 +121,6 @@ function target (entity) {
       width: 100%;
       padding: 2px 2px 5px 2px;
       border-bottom: 1px solid rgb(30, 0, 0);
-      margin-bottom: 5px;
       align-items: center;
       &:last-child {
         border: 0;
@@ -180,13 +181,15 @@ function target (entity) {
 .battle-status {
   background-color: rgb(20, 0, 0);
   border-bottom: 1px solid rgb(30, 0, 0);
-  padding: 10px;
   width: 100%;
+  margin-top: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   z-index: 100;
+  position: relative;
+  bottom: 0;
 
   .vs {
     font-size: 24px;
@@ -316,7 +319,6 @@ function target (entity) {
 
 @media screen and (max-height: 500px) {
   .mobile-battle-status {
-    padding: 5px;
     .side {
       .entity {
         .name {

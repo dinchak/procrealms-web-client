@@ -89,20 +89,32 @@ handlers['room.describe'] = ({ desc }) => {
   }
 }
 
-handlers['channel.msg'] = ({ id, name, channel, timestamp, message }) => {
-  if (name == state.gameState.player.name) {
-    name = 'You'
+handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
+  if (from == state.gameState.player.name) {
+    from = 'You'
+  }
+
+  if (from == state.gameState.player.name) {
+    to = 'You'
   }
 
   if (['gossip', 'trade', 'newbie'].includes(channel)) {
     if (state[channel].find(msg => msg.id == id)) {
       return
     }
-    state[channel].push({ id, name, message, timestamp })
-  } else if (['info', 'announce', 'party', 'tell'].includes(channel)) {
+    state[channel].push({ id, from, to, timestamp, message, unread: true })
+  } else if (['party'].includes(channel)) {
+    state.output.push(`<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`)
+  } else if (['tell'].includes(channel)) {
+    if (from == 'You') {
+      state.output.push(`<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`)
+    } else {
+      state.output.push(`<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`)
+    }
+  } else if (['info', 'announce'].includes(channel)) {
     state.output.push(convert.toHtml(message))
   } else {
-    let output = `<span class="bold-yellow">${name}</span> <span class="bold-white">${channel}${name == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}`
+    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}`
     state.output.push(output)
   }
 }
@@ -132,9 +144,7 @@ function updateState (obj, update) {
 
 function strToLines (str) {
   let lines = str.trim().split('\n')
-  // lines.unshift('')
   return lines.map((line) => {
-    // return ansiSpan(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
     return convert.toHtml(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
   })
 }

@@ -7,6 +7,7 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 
 import { NButton } from 'naive-ui'
 
@@ -76,6 +77,21 @@ function roomHasChest () {
   return roomItems.find(en => en.type == 'resource' && en.subtype == 'chest')
 }
 
+onMounted(() => {
+  let ids = ['bottom-left', 'bottom-right']
+  for (let id of ids) {
+    let el = document.getElementById(id)
+    if (el) {
+      let containers = el.getElementsByClassName('n-layout-sider-scroll-container')
+      for (let container of containers) {
+        setTimeout(() => {
+          container.scrollTo(0, container.scrollHeight)
+        })
+      }
+    }
+  }
+})
+
 </script>
 
 <style lang="less">
@@ -84,7 +100,7 @@ function roomHasChest () {
   flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
-  margin-top: 15px;
+  margin-top: 5px;
   margin-bottom: 5px;
   width: 100%;
   .n-button {

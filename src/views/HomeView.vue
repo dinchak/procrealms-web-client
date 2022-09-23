@@ -6,17 +6,17 @@
   <HelpOverlay></HelpOverlay>
 
   <n-layout has-sider v-if="state.token && state.connected" class="game">
-    <n-layout-sider :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="!state.options.swapControls" :collapsed="state.options.hideSidebar">
+    <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="!state.options.swapControls" :collapsed="state.options.hideSidebar">
       <div class="stats-area">
         <PlayerStats></PlayerStats>
         <div class="bottom-area">
-          <div class="battle-area" v-if="state.gameState.battle.active">
+          <div class="battle-area" v-show="state.gameState.battle.active">
             <BattleControls></BattleControls>
           </div>
           <div class="map-actions">
             <MapActions v-if="!state.gameState.battle.active"></MapActions>
           </div>
-          <div class="map-area" v-if="!state.gameState.battle.active">
+          <div class="map-area" v-show="!state.gameState.battle.active">
             <MoveControls></MoveControls>
             <MiniMap></MiniMap>
           </div>
@@ -28,22 +28,21 @@
     <n-layout>
       <div class="content-area">
         <LineOutput></LineOutput>
-        <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
-        <KeyboardInput></KeyboardInput>
       </div>
+      <KeyboardInput></KeyboardInput>
     </n-layout>
 
-    <n-layout-sider class="right-side" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="state.options.swapControls" :collapsed="state.options.hideSidebar">
+    <n-layout-sider id="bottom-right" class="right-side" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="state.options.swapControls" :collapsed="state.options.hideSidebar">
       <div class="stats-area">
         <PlayerStats></PlayerStats>
-        <div class="bottom-area">
-          <div class="battle-area" v-if="state.gameState.battle.active">
+        <div class="bottom-area" >
+          <div class="battle-area" v-show="state.gameState.battle.active">
             <BattleControls></BattleControls>
           </div>
           <div class="map-actions">
             <MapActions v-if="!state.gameState.battle.active"></MapActions>
           </div>
-          <div class="map-area" v-if="!state.gameState.battle.active">
+          <div class="map-area" v-show="!state.gameState.battle.active">
             <MoveControls></MoveControls>
             <MiniMap></MiniMap>
           </div>
@@ -51,8 +50,7 @@
         </div>
       </div>
     </n-layout-sider>
-
-</n-layout>
+  </n-layout>
 </template>
 
 <script setup>
@@ -60,7 +58,6 @@ import { state } from '@/composables/state'
 
 import { NLayout, NLayoutSider } from 'naive-ui'
 
-import BattleStatus from '@/components/BattleStatus.vue'
 import LineOutput from '@/components/LineOutput.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
 import KeyboardInput from '@/components/KeyboardInput.vue'
@@ -102,10 +99,13 @@ function openCloseSider () {
   }
 
   .content-area {
-    height: 100%;
+    // height: ~"calc(100vh - 45px)";
+    flex-basis: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-grow: 1;
+    min-height: 0;
   }
 }
 

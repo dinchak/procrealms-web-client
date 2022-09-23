@@ -128,10 +128,10 @@ function getSlotClass (slot) {
 
 @media screen and (max-width: 1000px) {
   .quick-slots {
-    flex-wrap: wrap;
     height: initial;
     justify-content: space-between;
     margin-bottom: 5px;
+    overflow-x: scroll;
   }
 }
 </style>
