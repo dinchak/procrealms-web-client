@@ -89,6 +89,24 @@ handlers['room.describe'] = ({ desc }) => {
   }
 }
 
+handlers['channel.msg'] = ({ id, name, channel, timestamp, message }) => {
+  if (name == state.gameState.player.name) {
+    name = 'You'
+  }
+
+  if (['gossip', 'trade', 'newbie'].includes(channel)) {
+    if (state[channel].find(msg => msg.id == id)) {
+      return
+    }
+    state[channel].push({ id, name, message, timestamp })
+  } else if (['info', 'announce', 'party', 'tell'].includes(channel)) {
+    state.output.push(convert.toHtml(message))
+  } else {
+    let output = `<span class="bold-yellow">${name}</span> <span class="bold-white">${channel}${name == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}`
+    state.output.push(output)
+  }
+}
+
 handlers['state.update'] = ({ update }) => {
   state.gameState = updateState(state.gameState, update)
 }
