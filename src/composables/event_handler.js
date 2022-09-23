@@ -102,7 +102,11 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     if (state[channel].find(msg => msg.id == id)) {
       return
     }
-    state[channel].push({ id, from, to, timestamp, message, unread: true })
+    let unread = true
+    if (state.activeTab == channel) {
+      unread = false
+    }
+    state[channel].push({ id, from, to, timestamp, message, unread })
   } else if (['party'].includes(channel)) {
     state.output.push(`<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`)
   } else if (['tell'].includes(channel)) {
