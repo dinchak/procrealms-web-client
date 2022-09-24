@@ -161,16 +161,22 @@ export function useEventHandler () {
     }
 
     let matches = cmd.match(/^entity-(\d+)$/)
-    if (matches) {
+    if (matches && state.pendingRequests[cmd]) {
+      let { resolve, timeout } = state.pendingRequests[cmd]
       delete state.pendingRequests[cmd]
       state.entityCache[msg.eid] = msg
+      clearTimeout(timeout)
+      resolve(msg)
       return
     }
 
     matches = cmd.match(/^item-(\d+)$/)
-    if (matches) {
+    if (matches && state.pendingRequests[cmd]) {
+      let { resolve, timeout } = state.pendingRequests[cmd]
       delete state.pendingRequests[cmd]
       state.itemCache[msg.iid] = msg
+      clearTimeout(timeout)
+      resolve(msg)
       return
     }
   }

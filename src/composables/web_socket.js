@@ -39,21 +39,47 @@ export function useWebSocket () {
   }
 
   function fetchEntity (eid) {
-    let requestId = `entity-${eid}`
-    if (state.pendingRequests[requestId]) {
-      return
+    if (state.entityCache[eid]) {
+      return new Promise((resolve) => resolve(state.entityCache[eid]))
     }
-    state.pendingRequests[requestId] = true
+
+    const requestId = `entity-${eid}`
+    const pendingRequest = state.pendingRequests[requestId]
+    if (pendingRequest) {
+      return pendingRequest.promise
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`Request for entity-${eid} timed out after 5 seconds`)), 5000)
+      state.pendingRequests[requestId] = { resolve, timeout }
+    })
+
+    state.pendingRequests[requestId].promise = promise
+
     send('entity', { eid })
+    return promise
   }
 
   function fetchItem (iid)  {
-    let requestId = `item-${iid}`
-    if (state.pendingRequests[requestId]) {
-      return
+    if (state.itemCache[iid]) {
+      return new Promise((resolve) => resolve(state.itemCache[iid]))
     }
-    state.pendingRequests[requestId] = true
+
+    const requestId = `item-${iid}`
+    const pendingRequest = state.pendingRequests[requestId]
+    if (pendingRequest) {
+      return pendingRequest.promise
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`Request for item-${iid} timed out after 5 seconds`)), 5000)
+      state.pendingRequests[requestId] = { resolve, timeout }
+    })
+
+    state.pendingRequests[requestId].promise = promise
+
     send('item', { iid })
+    return promise
   }
 
   return {
