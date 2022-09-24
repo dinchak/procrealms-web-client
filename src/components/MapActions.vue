@@ -32,7 +32,7 @@ onKeydown((ev) => {
   }
 })
 
-async function roomHasEnemies () {
+async function getRoomEntities () {
   let roomEntities = []
 
   for (let eid of state.gameState.room.entities) {
@@ -45,12 +45,16 @@ async function roomHasEnemies () {
     }
   }
 
+  return roomEntities
+}
+
+async function roomHasEnemies () {
+  let roomEntities = await getRoomEntities()
   return roomEntities.find(en => en.traits.includes('evil'))
 }
 
-async function roomHasResources () {
+async function getRoomItems () {
   let roomItems = []
-
   for (let iid of state.gameState.room.items) {
     try {
       let item = await fetchItem(iid)
@@ -60,22 +64,16 @@ async function roomHasResources () {
       console.log(err.stack)
     }
   }
+  return roomItems
+}
 
+async function roomHasResources () {
+  let roomItems = await getRoomItems()
   return roomItems.find(en => en.type == 'resource' && en.subtype != 'chest')
 }
 
-function roomHasChest () {
-  let roomItems = []
-
-  for (let iid of state.gameState.room.items) {
-    let item = state.itemCache[iid]
-    if (!item) {
-      fetchItem(iid)
-      continue
-    }
-    roomItems.push(item)
-  }
-
+async function roomHasChest () {
+  let roomItems = await getRoomItems()
   return roomItems.find(en => en.type == 'resource' && en.subtype == 'chest')
 }
 
