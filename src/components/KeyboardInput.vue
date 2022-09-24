@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import { NButton, NIcon } from 'naive-ui'
 
@@ -145,6 +145,8 @@ onKeydown((ev) => {
     state.showHelp = true
   }
 })
+
+watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 </script>
 
