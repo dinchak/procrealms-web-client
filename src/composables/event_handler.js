@@ -118,7 +118,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   } else if (['info', 'announce'].includes(channel)) {
     state.output.push(convert.toHtml(message))
   } else {
-    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}`
+    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}'`
     state.output.push(output)
   }
 }
