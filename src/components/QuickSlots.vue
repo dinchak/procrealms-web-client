@@ -15,7 +15,7 @@ import { useWebSocket } from '@/composables/web_socket'
 
 import { state } from '@/composables/state'
 
-const { onKeydown } = useKeyHandler()
+const { onKeydown, keyState } = useKeyHandler()
 
 const { cmd } = useWebSocket()
 
@@ -38,16 +38,21 @@ function runQuickSlot (slot) {
 }
 
 onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
   if (state.mode == 'input') {
-    return
+    return false
   }
 
   let slot = slots().find(s => s.slot == ev.key)
   if (!slot) {
-    return
+    return false
   }
 
   cmd(slot.slot)
+  return true
 })
 
 function getSkill (slot) {
