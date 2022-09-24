@@ -261,7 +261,7 @@ onMounted(() => {
       }
       .from {
         .name {
-          font-size: 14px;
+          font-size: 16px;
           line-height: 10px;
           text-align: right;
         }
@@ -273,8 +273,7 @@ onMounted(() => {
       }
       .body {
         display: flex;
-        align-items: center;
-        font-size: 16px;
+        font-size: 20px;
         line-height: 16px;
         margin-left: 10px;
       }
