@@ -81,7 +81,7 @@ function openCloseSider () {
 try {
   const options = JSON.parse(localStorage.getItem('options'))
   if (options !== null) {
-    state.options = options
+    state.options = Object.assign(state.options, options)
   }
 } catch (err) {
   console.log(err)

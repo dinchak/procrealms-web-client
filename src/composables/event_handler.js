@@ -89,6 +89,7 @@ handlers['room.describe'] = ({ desc }) => {
   }
 }
 
+const channelColors = { gossip: 'bold-yellow', trade: 'bold-green', newbie: 'bold-magenta' }
 handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   if (from == state.gameState.player.name) {
     from = 'You'
@@ -110,6 +111,10 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
       unread = false
     }
     state[channel].push({ id, from, to, timestamp, message, unread })
+    if (state.options.chatInMain) {
+      let output = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+      state.output.push(output)  
+    }
   } else if (['party'].includes(channel)) {
     state.output.push(`<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`)
   } else if (['tell'].includes(channel)) {
