@@ -47,6 +47,9 @@
 import { NSwitch, NButton } from 'naive-ui'
 
 import { state } from '@/composables/state'
+import { watch } from 'vue';
+
+watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 function goFullscreen () {
   let app = document.getElementById('app')
