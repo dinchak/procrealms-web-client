@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 
 import { NButton } from 'naive-ui'
 
@@ -17,6 +17,9 @@ import { state } from '@/composables/state'
 
 const { onKeydown } = useKeyHandler()
 const { cmd, fetchEntity, fetchItem } = useWebSocket()
+
+const roomItems = ref([])
+const roomEntities = ref([])
 
 onKeydown((ev) => {
   if (state.mode == 'input') {
@@ -33,49 +36,58 @@ onKeydown((ev) => {
 })
 
 async function getRoomEntities () {
-  let roomEntities = []
+  let entities = []
 
   for (let eid of state.gameState.room.entities) {
     try {
       let entity = await fetchEntity(eid)
-      roomEntities.push(entity)
+      if (!entity.error) {
+        entities.push(entity)
+      }
     } catch (err) {
       console.log(`failed to fetch entity eid ${eid}`)
       console.log(err.stack)
     }
   }
 
-  return roomEntities
+  return entities
 }
 
-async function roomHasEnemies () {
-  let roomEntities = await getRoomEntities()
-  return roomEntities.find(en => en.traits.includes('evil'))
+function roomHasEnemies () {
+  return roomEntities.value.find(en => en.traits.includes('evil'))
 }
 
 async function getRoomItems () {
-  let roomItems = []
+  let items = []
   for (let iid of state.gameState.room.items) {
     try {
       let item = await fetchItem(iid)
-      roomItems.push(item)
+      if (!item.error) {
+        items.push(item)
+      }
     } catch (err) {
       console.log(`failed to fetch item iid ${iid}`)
       console.log(err.stack)
     }
   }
-  return roomItems
+  return items
 }
 
-async function roomHasResources () {
-  let roomItems = await getRoomItems()
-  return roomItems.find(en => en.type == 'resource' && en.subtype != 'chest')
+function roomHasResources () {
+  return roomItems.value.find(en => en.type == 'resource' && en.subtype != 'chest')
 }
 
-async function roomHasChest () {
-  let roomItems = await getRoomItems()
-  return roomItems.find(en => en.type == 'resource' && en.subtype == 'chest')
+function roomHasChest () {
+  return roomItems.value.find(en => en.type == 'resource' && en.subtype == 'chest')
 }
+
+watch(() => state.gameState.room.entities, async () => {
+  roomEntities.value = await getRoomEntities()
+})
+
+watch(() => state.gameState.room.items, async () => {
+  roomItems.value = await getRoomItems()
+})
 
 onMounted(() => {
   let ids = ['bottom-left', 'bottom-right']

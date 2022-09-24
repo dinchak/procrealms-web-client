@@ -162,9 +162,10 @@ export function useEventHandler () {
 
     let matches = cmd.match(/^entity-(\d+)$/)
     if (matches && state.pendingRequests[cmd]) {
+      let eid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
+      state.entityCache[eid] = msg
       delete state.pendingRequests[cmd]
-      state.entityCache[msg.eid] = msg
       clearTimeout(timeout)
       resolve(msg)
       return
@@ -172,9 +173,10 @@ export function useEventHandler () {
 
     matches = cmd.match(/^item-(\d+)$/)
     if (matches && state.pendingRequests[cmd]) {
+      let iid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
+      state.itemCache[iid] = msg
       delete state.pendingRequests[cmd]
-      state.itemCache[msg.iid] = msg
       clearTimeout(timeout)
       resolve(msg)
       return
