@@ -78,10 +78,14 @@ function openCloseSider () {
   triggerResize()
 }
 
-const options = JSON.parse(localStorage.getItem('options'))
-
-if (options !== null) {
-  state.options = options
+try {
+  const options = JSON.parse(localStorage.getItem('options'))
+  if (options !== null) {
+    state.options = options
+  }
+} catch (err) {
+  console.log(err)
+  localStorage.setItem('options', '')
 }
 
 </script>
