@@ -37,7 +37,7 @@ let commandBuffer = ''
 let historyIndex = -1
 let commandHistory = []
 
-const { onKeydown } = useKeyHandler()
+const { onKeydown, keyState } = useKeyHandler()
 
 const { cmd } = useWebSocket()
 
@@ -116,34 +116,41 @@ function sendCommand () {
 }
 
 onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
   if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
-    return
+    return true
   }
 
   if (ev.key == 'Escape' && state.mode == 'input') {
     input.value.blur()
-    return
+    return true
   }
 
   if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
     prevCommand()
-    return
+    return true
   }
 
   if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
     nextCommand()
-    return
+    return true
   }
 
   if (ev.key == 'Enter' && state.mode == 'input') {
     sendCommand()
-    return
+    return true
   }
 
   if (ev.key == '?' && state.mode == 'hotkey') {
     state.showHelp = true
+    return true
   }
+
+  return false
 })
 
 watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))

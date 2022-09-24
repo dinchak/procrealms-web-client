@@ -15,24 +15,33 @@ import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown } = useKeyHandler()
+const { onKeydown, keyState } = useKeyHandler()
 const { cmd, fetchEntity, fetchItem } = useWebSocket()
 
 const roomItems = ref([])
 const roomEntities = ref([])
 
 onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
   if (state.mode == 'input') {
-    return
+    return false
   }
 
   if (ev.key == 'B' || ev.key == 'b') {
     cmd('battle')
+    return true
   } else if (ev.key == 'H' || ev.key == 'h') {
     cmd('harvest')
+    return true
   } else if (ev.key == 'L' || ev.key == 'l') {
     cmd('loot')
+    return true
   }
+
+  return false
 })
 
 async function getRoomEntities () {

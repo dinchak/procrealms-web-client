@@ -98,6 +98,9 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     to = 'You'
   }
 
+  const stripTags = /<\/?([a-z][a-z0-9]*)\b[^>]*>?/gi
+  message = convert.toHtml(message.replace(stripTags, ''))
+
   if (['gossip', 'trade', 'newbie'].includes(channel)) {
     if (state[channel].find(msg => msg.id == id)) {
       return
@@ -116,9 +119,9 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
       state.output.push(`<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`)
     }
   } else if (['info', 'announce'].includes(channel)) {
-    state.output.push(convert.toHtml(message))
+    state.output.push(message)
   } else {
-    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${convert.toHtml(message)}'`
+    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
     state.output.push(output)
   }
 }

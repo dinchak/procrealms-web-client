@@ -35,7 +35,7 @@ import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown } = useKeyHandler()
+const { onKeydown, keyState } = useKeyHandler()
 const { cmd } = useWebSocket()
 
 let moveTimeout = null
@@ -99,71 +99,77 @@ function getEnterClass () {
 }
 
 onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
   if (!state.options.movementDuringInput && state.mode == 'input') {
-    return
+    return false
   }
 
   if (ev.key == 'Home') {
     move('northwest')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'ArrowUp') {
     move('north')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'PageUp') {
     move('northeast')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'ArrowLeft') {
     move('west')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'Clear') {
     enter()
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'ArrowRight') {
     move('east')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'End') {
     move('southwest')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'ArrowDown') {
     move('south')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'PageDown') {
     move('southeast')
-    ev.preventDefault()
+    return true
   }
 
   if (state.mode == 'input') {
-    return
+    return false
   }
 
   if (ev.key == 'Q' || ev.key == 'q') {
     move('northwest')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'W' || ev.key == 'w') {
     move('north')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'E' || ev.key == 'e') {
     move('northeast')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'A' || ev.key == 'a') {
     move('west')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'X' || ev.key == 'x') {
     enter()
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'D' || ev.key == 'd') {
     move('east')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'Z' || ev.key == 'z') {
     move('southwest')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'S' || ev.key == 's') {
     move('south')
-    ev.preventDefault()
+    return true
   } else if (ev.key == 'C' || ev.key == 'c') {
     move('southeast')
-    ev.preventDefault()
+    return true
   }
+
+  return false
 })
 
 </script>

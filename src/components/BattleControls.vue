@@ -19,30 +19,39 @@ import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown } = useKeyHandler()
+const { onKeydown, keyState } = useKeyHandler()
 const { cmd } = useWebSocket()
 
 onKeydown((ev) => {
-  if (state.mode == 'input') {
-    return
+  if (keyState.alt || keyState.ctrl) {
+    return false
   }
 
-  if (ev.key == '`') {
-    let json = JSON.stringify(state.gameState, null, 2)
-    let lines = json.split('\n')
-    for (let line of lines) {
-      state.output.push(line)
-    }
-    ev.preventDefault()
+  if (state.mode == 'input') {
+    return false
   }
+
+  // if (ev.key == '`') {
+  //   let json = JSON.stringify(state.gameState, null, 2)
+  //   let lines = json.split('\n')
+  //   for (let line of lines) {
+  //     state.output.push(line)
+  //   }
+  //   return true
+  // }
 
   if (ev.key == 'A' || ev.key == 'a') {
     cmd('attack')
+    return true
   } else if (ev.key == 'D' || ev.key == 'd') {
     cmd('defend')
+    return true
   } else if (ev.key == 'F' || ev.key == 'f') {
     cmd('flee')
+    return true
   }
+
+  return false
 })
 
 function getSkills () {
