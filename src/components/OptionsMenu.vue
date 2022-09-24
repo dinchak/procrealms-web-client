@@ -37,6 +37,15 @@
       </template>
     </n-switch>
 
+    <n-switch v-model:value="state.options.chatInMain">
+      <template #checked>
+        Chat In Main Output
+      </template>
+      <template #unchecked>
+        Chat Only In Tabs
+      </template>
+    </n-switch>
+
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>

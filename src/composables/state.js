@@ -7,6 +7,7 @@ export const state = reactive({
     commandHistoryButton: false,
     swapControls: false,
     hideSidebar: false,
+    chatInMain: true
   },
 
   activeTab: 'output',
