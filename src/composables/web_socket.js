@@ -51,7 +51,7 @@ export function useWebSocket () {
 
     const promise = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error(`Request for entity-${eid} timed out after 5 seconds`)), 5000)
-      state.pendingRequests[requestId] = { resolve, timeout }
+      state.pendingRequests[requestId] = { resolve, reject, timeout }
     })
 
     state.pendingRequests[requestId].promise = promise
@@ -73,7 +73,7 @@ export function useWebSocket () {
 
     const promise = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error(`Request for item-${iid} timed out after 5 seconds`)), 5000)
-      state.pendingRequests[requestId] = { resolve, timeout }
+      state.pendingRequests[requestId] = { resolve, reject, timeout }
     })
 
     state.pendingRequests[requestId].promise = promise
