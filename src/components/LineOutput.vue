@@ -233,6 +233,7 @@ onMounted(() => {
     position: relative;
     height: ~"calc(100vh - 100px)";
     overflow-y: scroll;
+    overflow-x: hidden;
 
     .line {
       font-size: 20px;
