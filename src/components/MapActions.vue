@@ -32,31 +32,33 @@ onKeydown((ev) => {
   }
 })
 
-function roomHasEnemies () {
+async function roomHasEnemies () {
   let roomEntities = []
 
   for (let eid of state.gameState.room.entities) {
-    let entity = state.entityCache[eid]
-    if (!entity) {
-      fetchEntity(eid)
-      continue
+    try {
+      let entity = await fetchEntity(eid)
+      roomEntities.push(entity)
+    } catch (err) {
+      console.log(`failed to fetch entity eid ${eid}`)
+      console.log(err.stack)
     }
-    roomEntities.push(entity)
   }
 
   return roomEntities.find(en => en.traits.includes('evil'))
 }
 
-function roomHasResources () {
+async function roomHasResources () {
   let roomItems = []
 
   for (let iid of state.gameState.room.items) {
-    let item = state.itemCache[iid]
-    if (!item) {
-      fetchItem(iid)
-      continue
+    try {
+      let item = await fetchItem(iid)
+      roomItems.push(item)
+    } catch (err) {
+      console.log(`failed to fetch item iid ${iid}`)
+      console.log(err.stack)
     }
-    roomItems.push(item)
   }
 
   return roomItems.find(en => en.type == 'resource' && en.subtype != 'chest')
