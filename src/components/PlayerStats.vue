@@ -13,6 +13,7 @@
     <n-collapse>
       <CharacterCollapse></CharacterCollapse>
       <EffectsCollapse></EffectsCollapse>
+      <InventoryCollapse></InventoryCollapse>
       <QuestCollapse></QuestCollapse>
       <SkillsCollapse></SkillsCollapse>
       <OptionsCollapse></OptionsCollapse>
@@ -27,6 +28,7 @@ import OptionsCollapse from '@/components/OptionsCollapse.vue'
 import QuestCollapse from '@/components/QuestCollapse.vue'
 import SkillsCollapse from '@/components/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/EffectsCollapse.vue'
+import InventoryCollapse from '@/components/InventoryCollapse.vue'
 import { state } from '@/composables/state'
 
 function player () {
