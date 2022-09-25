@@ -19,8 +19,12 @@ const { fetchItem } = useWebSocket()
 const { copperToMoneyString } = helpers()
 const items = reactive([])
 
-watch(() => [state.gameState.inventory], () => {
+watch(() => state.gameState.inventory, () => {
   const itemIIDs = state.gameState.inventory
+  setItems(itemIIDs)
+})
+
+function setItems(itemIIDs) {
   itemIIDs.forEach(async (iid, index) => {
     items[index] = await fetchItem(iid)
   })
@@ -28,19 +32,21 @@ watch(() => [state.gameState.inventory], () => {
     const diff = items.length - itemIIDs.length
     items.splice(itemIIDs.length, diff)
   }
-})
+}
 
 function getMoney() {
-  return state.gameState.player.money
+  return state.gameState.player.money || 0
 }
 
 function getNumItems() {
-  return state.gameState.player.numItems
+  return state.gameState.player.numItems || 0
 }
 
 function getMaxNumItems() {
-  return state.gameState.player.maxNumItems
+  return state.gameState.player.maxNumItems || 0
 }
+
+setItems(state.gameState.inventory)
 </script>
 
 <style>
