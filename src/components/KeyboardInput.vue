@@ -150,6 +150,17 @@ onKeydown((ev) => {
     return true
   }
 
+  if (process.env.NODE_ENV != 'production') {
+    if (ev.key == '`') {
+      let json = JSON.stringify(state.gameState, null, 2)
+      let lines = json.split('\n')
+      for (let line of lines) {
+        state.output.push(line)
+      }
+      return true
+    }
+  }
+
   return false
 })
 
