@@ -2,13 +2,14 @@
   <n-collapse-item title="Inventory">
     <div v-if="items.length !== 0">
       <div class="money" v-html=copperToMoneyString(getMoney())></div>
-      <div v-for="item in items" :key="item.iid">{{item.amount}}x {{item.name}} </div>
+      <InventoryRow v-for="item in items" :key="item.iid" v-bind="item"></InventoryRow>
       <div class="items">{{getNumItems()}} / {{getMaxNumItems()}} items</div>
     </div>
   </n-collapse-item>
 </template>
 
 <script setup>
+import InventoryRow from '@/components/InventoryRow.vue'
 import {NCollapseItem} from 'naive-ui'
 import {state} from "@/composables/state";
 import {useWebSocket} from "@/composables/web_socket";
