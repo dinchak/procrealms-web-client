@@ -174,7 +174,6 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
   flex-direction: row;
   font-size: 20px;
   height: 40px;
-  padding-bottom: 5px;
   align-items: center;
   justify-content: space-between;
 
