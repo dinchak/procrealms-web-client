@@ -99,6 +99,9 @@ try {
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    .bottom-area {
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
     .map-area {
       align-items: center;
       display: flex;
