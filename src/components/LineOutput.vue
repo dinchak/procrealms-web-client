@@ -291,7 +291,6 @@ onMounted(() => {
     .output {
       .line {
         font-size: 16px;
-        height: 16px;
         line-height: 16px;
       }
     }
