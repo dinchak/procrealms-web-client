@@ -31,6 +31,10 @@ onKeydown((ev) => {
     return false
   }
 
+  if (!state.gameState.battle.active) {
+    return false
+  }
+
   // if (ev.key == '`') {
   //   let json = JSON.stringify(state.gameState, null, 2)
   //   let lines = json.split('\n')
