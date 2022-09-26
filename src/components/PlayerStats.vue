@@ -64,7 +64,6 @@ function getPlayerStatsClass () {
   padding-right: 10px;
 
   &.fixed-map {
-    height: 70vh;
     overflow-y: scroll;
   }
 
