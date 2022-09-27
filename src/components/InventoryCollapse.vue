@@ -2,19 +2,19 @@
   <n-collapse-item title="Inventory">
     <div v-if="items.length !== 0">
       <div class="money" v-html=copperToMoneyString(getMoney())></div>
-      <InventoryRow v-for="item in items" :key="item.iid" v-bind="item"></InventoryRow>
+      <InventoryRow v-for="item in items" :key="item.iid" v-bind="item" @toggled="toggleExpand"></InventoryRow>
       <div class="items">{{getNumItems()}} / {{getMaxNumItems()}} items</div>
     </div>
   </n-collapse-item>
 </template>
 
 <script setup>
-import InventoryRow from '@/components/InventoryRow.vue'
-import {NCollapseItem} from 'naive-ui'
-import {state} from "@/composables/state";
-import {useWebSocket} from "@/composables/web_socket";
+import { state } from '@/composables/state';
+import { useWebSocket } from '@/composables/web_socket';
 import {reactive, watch} from "vue";
-import { helpers } from "@/composables/helpers";
+import { helpers } from '@/composables/helpers'
+import { NCollapseItem } from 'naive-ui'
+import InventoryRow from '@/components/InventoryRow.vue'
 
 const { fetchItem } = useWebSocket()
 const { copperToMoneyString } = helpers()
@@ -26,13 +26,31 @@ watch(() => state.gameState.inventory, () => {
 })
 
 function setItems(itemIIDs) {
+  let oldItems = [...items]
   itemIIDs.forEach(async (iid, index) => {
     items[index] = await fetchItem(iid)
+    if (oldItems.length === 0) {
+      items[index] = {...items[index], expanded: false}
+    } else if (oldItems.length !== items.length) {
+      oldItems = [...items]
+    } else {
+      if (oldItems[index] && oldItems[index].name === items[index].name) {
+        items[index].expanded = oldItems[index].expanded
+      }
+    }
   })
   if (itemIIDs.length < items.length) {
     const diff = items.length - itemIIDs.length
     items.splice(itemIIDs.length, diff)
   }
+}
+
+function toggleExpand(iid) {
+  items.map(item => {
+    if (item.iid === iid) {
+      item.expanded = !item.expanded
+    }
+  })
 }
 
 function getMoney() {
