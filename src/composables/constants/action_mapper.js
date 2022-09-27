@@ -30,6 +30,10 @@ export const action_mapper = [
         condition: (it) => it.type === 'consumable' && ['food', 'mote', 'fragment'].includes(it.subtype)
     },
     {
+        action: 'deploy',
+        condition: (it) => it.subtype ==='deployable'
+    },
+    {
         action: 'read',
         condition: (it) => it.type === 'book' || it.type === 'scroll'
     },
