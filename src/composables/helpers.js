@@ -1,3 +1,5 @@
+import { action_mapper } from '@/composables/constants/action_mapper';
+
 export function helpers() {
     function copperToMoneyString(amount) {
         let valueString = '';
@@ -22,5 +24,16 @@ export function helpers() {
         return valueString;
     }
 
-    return { copperToMoneyString }
+    function getActions(item) {
+        const actions = []
+        action_mapper.map(action => {
+            if (action.condition(item)) {
+                actions.push(action.action)
+            }
+        })
+
+        return actions;
+    }
+
+    return { copperToMoneyString, getActions }
 }
