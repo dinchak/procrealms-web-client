@@ -3,7 +3,10 @@
     <div v-if="items.length !== 0">
       <div class="money" v-html=copperToMoneyString(getMoney())></div>
       <InventoryRow v-for="item in items" :key="item.iid" v-bind="item" @toggled="toggleExpand"></InventoryRow>
-      <div class="items">{{getNumItems()}} / {{getMaxNumItems()}} items</div>
+      <div class="last-row">
+        <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
+        <div class="weight">{{getWeight()}}/{{getMaxWeight()}} lbs</div>
+      </div>
     </div>
   </n-collapse-item>
 </template>
@@ -65,15 +68,30 @@ function getMaxNumItems() {
   return state.gameState.player.maxNumItems || 0
 }
 
+function getWeight() {
+  const initialValue = state.gameState.player.weight || 0
+  return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
+}
+
+function getMaxWeight() {
+  const initialValue = state.gameState.player.maxWeight || 0
+  return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
+}
+
 setItems(state.gameState.inventory)
 </script>
 
-<style>
+<style scoped>
 .money {
   padding-bottom: 10px;
 }
 
-.items {
+.last-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.items, .weight {
   padding-top: 10px;
 }
 </style>
