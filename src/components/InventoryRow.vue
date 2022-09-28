@@ -16,12 +16,12 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch, reactive } from 'vue';
+import { defineProps, defineEmits, ref, watch, reactive } from 'vue'
 import { ansiSpan } from 'ansi-to-span'
 import { NButton } from 'naive-ui'
-import { useWebSocket } from '@/composables/web_socket';
+import { useWebSocket } from '@/composables/web_socket'
 import { helpers } from '@/composables/helpers'
-import {state} from "@/composables/state";
+import { state } from '@/composables/state'
 
 const props = defineProps(['iid', 'colorName', 'amount', 'name', 'type', 'subtype', 'expanded', 'toggleExpand'])
 const { getActions } = helpers()

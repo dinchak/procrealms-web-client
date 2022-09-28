@@ -1,6 +1,3 @@
-import { state } from '@/composables/state'
-console.log(state.gameState.room)
-console.log(state.gameState.affects);
 export const action_mapper = [
     // TODO
     // We need room.flags to be implemented
@@ -39,11 +36,15 @@ export const action_mapper = [
     },
     {
         action: 'wield',
-        condition: (it) => it.type === 'weapon'
+        condition: (it) => it.type === 'weapon' || it.type === 'tool'
     },
     {
         action: 'wear',
         condition: (it) => it.type === 'armor'
+    },
+    {
+        action: 'compare',
+        condition: (it) => it.type === 'armor' || it.type === 'weapon'
     },
     {
         action: 'filet',
