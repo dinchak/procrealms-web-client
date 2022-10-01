@@ -2,22 +2,23 @@
 
   <n-modal
     v-model:show="state.showLogin"
+    type="success"
     preset="dialog"
     title="Login"
   >
 
     <template #header>
-      <div>Login</div>
+      <div>Existing Player Login</div>
     </template>
 
     <n-form ref="formRef" :model="model" :rules="rules" size="large">
 
       <n-form-item path="name" label="Character Name">
-        <n-input v-model:value="model.name" @keydown.enter="handleValidation" />
+        <n-input v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?"/>
       </n-form-item>
 
       <n-form-item path="password" label="Password">
-        <n-input v-model:value="model.password" type="password" @keydown.enter="handleValidation"/>
+        <n-input v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?"/>
       </n-form-item>
 
     </n-form>
