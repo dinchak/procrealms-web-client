@@ -1,6 +1,4 @@
 <template>
-  <SplashScreen v-if="!state.token || !state.connected"></SplashScreen>
-
   <LogoutModal></LogoutModal>
 
   <HelpOverlay></HelpOverlay>
@@ -59,7 +57,6 @@ import { state } from '@/composables/state'
 import { NLayout, NLayoutSider } from 'naive-ui'
 
 import LineOutput from '@/components/LineOutput.vue'
-import SplashScreen from '@/components/SplashScreen.vue'
 import KeyboardInput from '@/components/KeyboardInput.vue'
 import LogoutModal from '@/components/LogoutModal.vue'
 import MiniMap from '@/components/MiniMap.vue'
