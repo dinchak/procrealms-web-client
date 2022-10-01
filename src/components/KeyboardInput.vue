@@ -4,7 +4,7 @@
     <div :class="getCaretClass()" v-if="!state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
       <n-icon><MenuOutlined></MenuOutlined></n-icon>
     </div>
-    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus />
+    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus :placeholder="getPlaceholder()" :class="state.activeTab" />
     <div :class="getHistoryClass()">
       <n-button size="small" @click="prevCommand">Prev</n-button>
       <n-button size="small" @click="nextCommand">Next</n-button>
@@ -115,6 +115,14 @@ function sendCommand () {
   })
 }
 
+function getPlaceholder () {
+  if (state.activeTab == 'output') {
+    return 'Enter command or help'
+  } else {
+    return `Send ${state.activeTab} message`
+  }
+}
+
 onKeydown((ev) => {
   if (keyState.alt || keyState.ctrl) {
     return false
@@ -187,7 +195,7 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
     height: 25px;
     justify-content: center;
     align-items: center;
-    margin: 0 5px;
+    margin-left: 5px;
     border-radius: 4px;
     flex-shrink: 0;
 
@@ -205,16 +213,41 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
     background-color: #222;
     border: 0;
     width: ~"calc(100% - 45px)";
-    border-radius: 2px;
-    padding: 0px 5px;
+    border-radius: 4px;
+    padding: 1px 10px 0 10px;
     margin: 0 5px;
-    height: 25px;
-
-    &:focus-visible {
-      border: 0;
-      box-shadow: 0 0 5px #f8ff25;
-      background-color: #222;
-      outline: 1px solid #f8ff25;
+    height: 27px;
+    &.output {
+      &:focus-visible {
+        border: 0;
+        box-shadow: 0 0 5px #57edff;
+        background-color: #222;
+        outline: 1px solid #57edff;
+      }
+    }
+    &.gossip {
+      &:focus-visible {
+        border: 0;
+        box-shadow: 0 0 5px #f8ff25;
+        background-color: #222;
+        outline: 1px solid #f8ff25;
+      }
+    }
+    &.trade {
+      &:focus-visible {
+        border: 0;
+        box-shadow: 0 0 5px #2eff00;
+        background-color: #222;
+        outline: 1px solid #2eff00;
+      }
+    }
+    &.newbie {
+      &:focus-visible {
+        border: 0;
+        box-shadow: 0 0 5px #ad00ff;
+        background-color: #222;
+        outline: 1px solid #ad00ff;
+      }
     }
   }
 
