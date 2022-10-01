@@ -5,6 +5,7 @@
          class="item-name"></div>
     <div v-if="!hidden" class="actions">
       <n-button v-for="action in actions"
+                size="medium"
                 :disabled="action === 'drink' && isDrinkDisabled"
                 @click="cmd(`${action} ${props.name}`) && toggle()"
                 :key="action"
@@ -61,12 +62,12 @@ watch(()=> state.gameState.affects, () => {
   }
 
   .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 10px 0;
     .action {
-      margin-right: 50px;
-      margin-bottom: 5px;
-      margin-top: 5px;
+      margin: 2px 2px;
       text-transform: capitalize;
     }
   }
