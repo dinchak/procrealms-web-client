@@ -121,8 +121,8 @@ onMounted(() => {
   flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
   width: 100%;
   .n-button {
     margin: 1px;
