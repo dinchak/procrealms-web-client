@@ -82,14 +82,14 @@ function getSkills () {
 .battle-controls {
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  margin-top: 5px;
   .battle-buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
   }
   .battle-skills {
-    margin-top: 15px;
+    margin-top: 5px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
