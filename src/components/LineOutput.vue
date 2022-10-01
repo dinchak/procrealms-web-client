@@ -2,7 +2,7 @@
 
   <n-tabs class="tabs" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
-      <div id="output" class="output" ref="output" @scroll="onScroll('output')">
+      <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
         <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
@@ -179,6 +179,30 @@ function getTab (name) {
   return h(NSpace, {}, () => children)
 }
 
+function getOutputClass () {
+  let cls = 'output'
+  if (state.gameState.slots.length > 0) {
+    cls += ' has-quickslots'
+  }
+  if (state.options.chatInMain) {
+    cls += ' tabs-hidden'
+  }
+  return cls
+}
+
+function onChangeChatInMain () {
+  let tabNav = document.getElementsByClassName('n-tabs-nav')
+  if (tabNav[0]) {
+    let classes = tabNav[0].className.split(' ')
+    if (state.options.chatInMain) {
+      classes.push('hide')
+    } else {
+      classes = classes.filter(cls => cls != 'hide')
+    }
+    tabNav[0].className = classes.join(' ')
+  }
+}
+
 onMounted(() => {
   for (let id in refs) {
     let el = document.getElementById(id)
@@ -188,11 +212,13 @@ onMounted(() => {
   }
 
   calcTerminalSize()
+  onChangeChatInMain()
 
   watch(() => state.output.length, () => onChanged('output'))
   watch(() => state.gossip.length, () => onChanged('gossip'))
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
+  watch(() => state.options.chatInMain, () => onChangeChatInMain())
 })
 
 </script>
@@ -202,6 +228,9 @@ onMounted(() => {
 
   .n-tabs-nav {
     margin: 0 10px;
+    &.hide {
+      display: none;
+    }
   }
 
   .scrollback-control {
@@ -234,6 +263,10 @@ onMounted(() => {
     height: ~"calc(100vh - 100px)";
     overflow-y: scroll;
     overflow-x: hidden;
+
+    &.tabs-hidden {
+      height: ~"calc(100vh - 65px)";
+    }
 
     .line {
       font-size: 20px;
@@ -300,7 +333,13 @@ onMounted(() => {
 @media screen and (max-width: 1000px) {
   .tabs {
     .output {
-      height: ~"calc(100vh - 131px)";
+      margin: 0 5px;
+      &.has-quickslots {
+        height: ~"calc(100vh - 116px)";
+        &.tabs-hidden {
+          height: ~"calc(100vh - 83px)";
+        }
+      }
     }
   }
 }
