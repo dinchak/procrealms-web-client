@@ -187,15 +187,17 @@ onKeydown((ev) => {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
       background-color: #333;
       border: 1px solid #222;
       transition: all 0.3s;
       border-collapse: collapse;
+      margin-bottom: -1px;
+      margin-left: -1px;
       &.active {
         background-color: darken(#16c60c, 30%);
-        border: 1px solid #16c60c;
+        border: 1px solid darken(#16c60c, 25%);
         &:hover {
           cursor: pointer;
           background-color: darken(#16c60c, 33%);
