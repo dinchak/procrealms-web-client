@@ -8,22 +8,22 @@
     <div class="stat-row">
       <div class="stat">
         <div class="label">Strength</div>
-        <div class="value bold-red">{{ player().strength }} <span class="white">(</span><span class="red">{{ player()._strength }}</span><span class="white">)</span></div>
+        <div class="value bold-red">{{ player().strength }}<span class="black">|</span><span class="red">{{ player()._strength }}</span></div>
       </div>
       <div class="stat">
         <div class="label">Magic</div>
-        <div class="value bold-cyan">{{ player().magic }} <span class="white">(</span><span class="cyan">{{ player()._magic }}</span><span class="white">)</span></div>
+        <div class="value bold-cyan">{{ player().magic }}<span class="black">|</span><span class="cyan">{{ player()._magic }}</span></div>
       </div>
     </div>
 
     <div class="stat-row">
       <div class="stat">
         <div class="label">Agility</div>
-        <div class="value bold-yellow">{{ player().agility }} <span class="white">(</span><span class="yellow">{{ player()._agility }}</span><span class="white">)</span></div>
+        <div class="value bold-yellow">{{ player().agility }}<span class="black">|</span><span class="yellow">{{ player()._agility }}</span></div>
       </div>
       <div class="stat">
         <div class="label">Spirit</div>
-        <div class="value bold-green">{{ player().spirit }} <span class="white">(</span><span class="green">{{ player()._spirit }}</span><span class="white">)</span></div>
+        <div class="value bold-green">{{ player().spirit }}<span class="black">|</span><span class="green">{{ player()._spirit }}</span></div>
       </div>
     </div>
 
