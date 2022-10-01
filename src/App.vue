@@ -1,8 +1,9 @@
 <template>
   <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
-    <router-view/>
+    <SplashScreen v-if="!state.token || !state.connected"></SplashScreen>
     <LoginModal></LoginModal>
     <NewPlayerModal></NewPlayerModal>
+    <router-view/>
   </n-config-provider>
 </template>
 
@@ -16,6 +17,7 @@ import { useEventHandler } from './composables/event_handler'
 import { useWebSocket } from './composables/web_socket'
 import { useWindowHandler } from './composables/window_handler'
 
+import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from './components/LoginModal.vue'
 import NewPlayerModal from './components/NewPlayerModal.vue'
 
@@ -58,12 +60,7 @@ function doConnect () {
     return
   }
 
-  let url = 'ws://localhost:8001'
-  if (process.env.NODE_ENV == 'production') {
-    url = 'ws://proceduralrealms.com:8000'
-  }
-
-  initConnection({ onConnect, onClose, onEvent, url })
+  initConnection({ onConnect, onClose, onEvent, url: process.env.VUE_APP_WEBSOCKET_URL })
 }
 
 function onClose () {
