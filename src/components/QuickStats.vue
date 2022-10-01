@@ -46,10 +46,12 @@ function player () {
 
 <style lang="less">
 .stats {
-  padding: 10px;
+  padding: 2px 5px;
   display: flex;
   flex-direction: column;
+  margin-bottom: 5px;
   .quick-stats {
+    height: 12px;
     // margin-right: 10px;
     // width: 190px;
   }
