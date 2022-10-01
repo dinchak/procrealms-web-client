@@ -6,7 +6,7 @@
         <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
-      <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDown('output')">
+      <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDown('output')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -23,7 +23,7 @@
           <div class="body bold-white" v-html="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.gossip" class="scrollback-control" @click="scrollDown('gossip')">
+      <div v-show="state.scrolledBack.gossip" :class="getScrollbackControlClass()" @click="scrollDown('gossip')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -40,7 +40,7 @@
           <div class="body bold-white" v-html="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDown('trade')">
+      <div v-show="state.scrolledBack.trade" :class="getScrollbackControlClass()" @click="scrollDown('trade')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -57,7 +57,7 @@
           <div class="body bold-white" v-html="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDown('newbie')">
+      <div v-show="state.scrolledBack.newbie" :class="getScrollbackControlClass()" @click="scrollDown('newbie')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -184,23 +184,31 @@ function getOutputClass () {
   if (state.gameState.slots.length > 0) {
     cls += ' has-quickslots'
   }
-  if (state.options.chatInMain) {
+  if (!state.options.showTabs) {
     cls += ' tabs-hidden'
   }
   return cls
 }
 
-function onChangeChatInMain () {
+function doHideShowTabs () {
   let tabNav = document.getElementsByClassName('n-tabs-nav')
   if (tabNav[0]) {
     let classes = tabNav[0].className.split(' ')
-    if (state.options.chatInMain) {
+    if (!state.options.showTabs) {
       classes.push('hide')
     } else {
       classes = classes.filter(cls => cls != 'hide')
     }
     tabNav[0].className = classes.join(' ')
   }
+}
+
+function getScrollbackControlClass () {
+  let cls = 'scrollback-control'
+  if (state.gameState.slots.length > 0) {
+    cls += ' has-quickslots'
+  }
+  return cls
 }
 
 onMounted(() => {
@@ -212,19 +220,23 @@ onMounted(() => {
   }
 
   calcTerminalSize()
-  onChangeChatInMain()
+  doHideShowTabs()
 
   watch(() => state.output.length, () => onChanged('output'))
   watch(() => state.gossip.length, () => onChanged('gossip'))
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
-  watch(() => state.options.chatInMain, () => onChangeChatInMain())
+  watch(() => state.options.showTabs, () => doHideShowTabs())
 })
 
 </script>
 
 <style lang="less">
 .tabs {
+
+  .n-tab-pane {
+    padding: 0;
+  }
 
   .n-tabs-nav {
     margin: 0 10px;
@@ -249,6 +261,11 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    &.has-quickslots {
+      &.show-mobile {
+        bottom: 80px;
+      }
+    }
     .n-icon {
       margin: 0 15px;
     }
@@ -260,12 +277,12 @@ onMounted(() => {
     flex-basis: fit-content;
     margin: 5px 10px;
     position: relative;
-    height: ~"calc(100vh - 100px)";
+    height: ~"calc(100vh - 85px)";
     overflow-y: scroll;
     overflow-x: hidden;
 
     &.tabs-hidden {
-      height: ~"calc(100vh - 65px)";
+      height: ~"calc(100vh - 52px)";
     }
 
     .line {
@@ -319,7 +336,7 @@ onMounted(() => {
 @media screen and (max-height: 500px) {
   .tabs {
     .scrollback-control {
-      bottom: 80px;
+      // bottom: 80px;
     }
     .output {
       .line {
@@ -332,12 +349,16 @@ onMounted(() => {
 
 @media screen and (max-width: 1000px) {
   .tabs {
-    .output {
-      margin: 0 5px;
+    .scrollback-control {
       &.has-quickslots {
-        height: ~"calc(100vh - 116px)";
+        bottom: 80px;
+      }
+    }
+    .output {
+      &.has-quickslots {
+        height: ~"calc(100vh - 118px)";
         &.tabs-hidden {
-          height: ~"calc(100vh - 83px)";
+          height: ~"calc(100vh - 85px)";
         }
       }
     }

@@ -96,7 +96,7 @@ function getPlayerStatsClass () {
       }
       .value {
         margin-left: 5px;
-        width: 45px;
+        width: 52px;
       }
     }
   }

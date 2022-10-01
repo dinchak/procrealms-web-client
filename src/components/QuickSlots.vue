@@ -1,5 +1,5 @@
 <template>
-  <div class="quick-slots">
+  <div class="quick-slots" v-show="slots().length && state.activeTab == 'output'">
     <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
       <div class="slot-number">[<span class="bold-yellow">{{ slot.slot }}</span>]</div>
       <div class="slot-label">{{ slot.label }}</div>
@@ -82,8 +82,11 @@ function getSlotClass (slot) {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 40px;
-  margin: 0 5px;
+  height: 33px;
+  margin: 0 8px 0 0px;
+  &.show-mobile {
+    margin: 0 5px;
+  }
   .quick-slot {
     background-color: #222;
     display: flex;
@@ -133,9 +136,7 @@ function getSlotClass (slot) {
 
 @media screen and (max-width: 1000px) {
   .quick-slots {
-    height: initial;
     justify-content: space-between;
-    margin-bottom: 5px;
     overflow-x: scroll;
   }
 }

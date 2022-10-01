@@ -195,7 +195,7 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
     height: 25px;
     justify-content: center;
     align-items: center;
-    margin-left: 5px;
+    margin: 0 0 0 5px;
     border-radius: 4px;
     flex-shrink: 0;
 
@@ -212,10 +212,10 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
   input {
     background-color: #222;
     border: 0;
-    width: ~"calc(100% - 45px)";
+    width: ~"calc(100% - 60px)";
     border-radius: 4px;
     padding: 1px 10px 0 10px;
-    margin: 0 5px;
+    margin: 0 8px 0 8px;
     height: 27px;
     &.output {
       &:focus-visible {
