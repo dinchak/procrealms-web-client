@@ -8,22 +8,22 @@
     <div class="stat-row">
       <div class="stat">
         <div class="label">Strength</div>
-        <div class="value bold-red">{{ player().strength }}</div>
+        <div class="value bold-red">{{ player().strength }} <span class="white">(</span><span class="red">{{ player()._strength }}</span><span class="white">)</span></div>
       </div>
       <div class="stat">
         <div class="label">Magic</div>
-        <div class="value bold-cyan">{{ player().magic }}</div>
+        <div class="value bold-cyan">{{ player().magic }} <span class="white">(</span><span class="cyan">{{ player()._magic }}</span><span class="white">)</span></div>
       </div>
     </div>
 
     <div class="stat-row">
       <div class="stat">
         <div class="label">Agility</div>
-        <div class="value bold-yellow">{{ player().agility }}</div>
+        <div class="value bold-yellow">{{ player().agility }} <span class="white">(</span><span class="yellow">{{ player()._agility }}</span><span class="white">)</span></div>
       </div>
       <div class="stat">
         <div class="label">Spirit</div>
-        <div class="value bold-green">{{ player().spirit }}</div>
+        <div class="value bold-green">{{ player().spirit }} <span class="white">(</span><span class="green">{{ player()._spirit }}</span><span class="white">)</span></div>
       </div>
     </div>
 
@@ -70,6 +70,17 @@
       <div class="stat">
         <div class="label">Interrupt</div>
         <div class="value bold-blue">{{ renderNumber(player().focusChance) }}%</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <div class="label">Cast Time</div>
+        <div class="value bold-cyan">{{ renderNumber(player().magicCastingTimeBonus) }}s</div>
+      </div>
+      <div class="stat">
+        <div class="label">Cooldown</div>
+        <div class="value bold-magenta">{{ renderNumber(player().cooldownTime) }}s</div>
       </div>
     </div>
 
