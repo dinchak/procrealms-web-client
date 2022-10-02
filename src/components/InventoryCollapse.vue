@@ -81,6 +81,7 @@ function toggleExpand(iid) {
 onKeydown((ev) => {
   if (ev.key === 'Escape' && state.mode ==='input') {
     searchInput.value.blur()
+    state.mode = 'hotkey'
     return true
   }
 })
