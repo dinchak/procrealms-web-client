@@ -356,9 +356,9 @@ onMounted(() => {
     }
     .output {
       &.has-quickslots {
-        height: ~"calc(100vh - 118px)";
+        height: ~"calc(100vh - 123px)";
         &.tabs-hidden {
-          height: ~"calc(100vh - 85px)";
+          height: ~"calc(100vh - 90px)";
         }
       }
     }

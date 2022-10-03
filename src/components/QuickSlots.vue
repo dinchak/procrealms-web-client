@@ -10,12 +10,9 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
-import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
 import { state } from '@/composables/state'
-
-const { onKeydown, keyState } = useKeyHandler()
 
 const { cmd } = useWebSocket()
 
@@ -36,24 +33,6 @@ function runQuickSlot (slot) {
     actionTimeout = null
   }, 100)
 }
-
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
-
-  if (state.mode == 'input') {
-    return false
-  }
-
-  let slot = slots().find(s => s.slot == ev.key)
-  if (!slot) {
-    return false
-  }
-
-  cmd(slot.slot)
-  return true
-})
 
 function getSkill (slot) {
   return (state.gameState.skills || []).find(sk => sk.name == slot.label)
@@ -82,7 +61,7 @@ function getSlotClass (slot) {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 33px;
+  height: 40px;
   margin: 0 8px 0 0px;
   &.show-mobile {
     margin: 0 5px;
