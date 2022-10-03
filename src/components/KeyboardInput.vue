@@ -158,6 +158,15 @@ onKeydown((ev) => {
     return true
   }
 
+  if (state.mode == 'hotkey') {
+    const { slots } = state.gameState
+    let slot = slots.find(s => s.slot == ev.key)
+    if (slot) {
+      cmd(slot.slot)
+      return true
+    }
+  }
+
   if (process.env.NODE_ENV != 'production') {
     if (ev.key == '`') {
       let json = JSON.stringify(state.gameState, null, 2)
