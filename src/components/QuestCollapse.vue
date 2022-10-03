@@ -7,13 +7,37 @@
         <div v-html="getGivenBy(quest)"></div>
         <div v-if="quest.location" v-html="getLocation(quest)"></div>
 
-        <div class="expand-link" v-if="quest.desc && !questsExpanded[quest.name]" @click="questsExpanded[quest.name] = true">More Info</div>
-        <div v-if="quest.desc && questsExpanded[quest.name]" v-html="ansiSpan(quest.desc).replace(/@NAME/g, player().name)"></div>
-        <div class="expand-link" v-if="quest.desc && questsExpanded[quest.name]" @click="questsExpanded[quest.name] = false">Less Info</div>
+        <div
+          class="expand-link"
+          v-if="quest.desc && !questsExpanded[quest.name]"
+          @click="questsExpanded[quest.name] = true"
+        >
+          More Info
+        </div>
+        <div
+          v-if="quest.desc && questsExpanded[quest.name]"
+          v-html="ansiSpan(quest.desc).replace(/@NAME/g, player().name)"
+        ></div>
+        <div
+          class="expand-link"
+          v-if="quest.desc && questsExpanded[quest.name]"
+          @click="questsExpanded[quest.name] = false"
+        >
+          Less Info
+        </div>
 
-        <!-- <div style="white-space: pre">{{quest}}</div> -->
-        <n-progress v-if="quest.amount" type="line" status="default" :percentage="quest.progress / quest.amount * 100">
-          {{ quest.progress }} of {{ quest.amount }}
+        <n-progress
+          v-if="quest.amount" 
+          :status="quest.progress < quest.amount ? 'default' : 'success'"
+          type="line"
+          :percentage="quest.progress / quest.amount * 100"
+        >
+          <span v-if="quest.progress < quest.amount">
+            {{ quest.progress }} of {{ quest.amount }}
+          </span>
+          <span class="bold-yellow" v-if="quest.progress >= quest.amount">
+            Complete
+          </span>
         </n-progress>
       </div>
     </div>
@@ -57,13 +81,11 @@ function getLocation (quest) {
 .quests {
   .quest {
     margin-bottom: 20px;
-
     .expand-link {
       color: #fff;
       text-decoration: underline;
       cursor: pointer;
     }
   }
-  // white-space: pre
 }
 </style>
