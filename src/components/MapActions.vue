@@ -1,8 +1,8 @@
 <template>
   <div class="map-actions">
-    <n-button type="error" ghost :disabled="!roomHasEnemies()" @click="cmd('battle')">[<span class="bold-yellow">B</span>]attle</n-button>
-    <n-button type="warning" ghost :disabled="!roomHasResources()" @click="cmd('harvest')">[<span class="bold-yellow">H</span>]arvest</n-button>
-    <n-button type="success" ghost :disabled="!roomHasChest()" @click="cmd('loot')">[<span class="bold-yellow">L</span>]oot</n-button>
+    <n-button type="error" ghost :disabled="!roomHasEnemies()" @click="cmd('battle')" aria-label="Battle">[<span class="bold-yellow">B</span>]attle</n-button>
+    <n-button type="warning" ghost :disabled="!roomHasResources()" @click="cmd('harvest')" aria-label="Harvest">[<span class="bold-yellow">H</span>]arvest</n-button>
+    <n-button type="success" ghost :disabled="!roomHasChest()" @click="cmd('loot')" aria-label="Loot">[<span class="bold-yellow">L</span>]oot</n-button>
   </div>
 </template>
 
