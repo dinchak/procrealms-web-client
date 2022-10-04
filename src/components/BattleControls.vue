@@ -1,12 +1,12 @@
 <template>
   <div class="battle-controls">
     <div class="battle-buttons">
-      <n-button type="error" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('attack')">[<span class="bold-yellow">A</span>]ttack</n-button>
-      <n-button type="success" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('defend')">[<span class="bold-yellow">D</span>]efend</n-button>
-      <n-button type="warning" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('flee')">[<span class="bold-yellow">F</span>]lee</n-button>
+      <n-button type="error" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('attack')" :aria-label="state.gameState.battle.myTurn ? 'Attack My Turn' : 'Attack Not My Turn'">[<span class="bold-yellow">A</span>]ttack</n-button>
+      <n-button type="success" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('defend')" :aria-label="state.gameState.battle.myTurn ? 'Defend My Turn' : 'Defend Not My Turn'">[<span class="bold-yellow">D</span>]efend</n-button>
+      <n-button type="warning" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('flee')" :aria-label="state.gameState.battle.myTurn ? 'Flee My Turn' : 'Flee Not My Turn'">[<span class="bold-yellow">F</span>]lee</n-button>
     </div>
     <div class="battle-skills" v-show="getSkills().length">
-      <n-button :disabled="!state.gameState.battle.myTurn" type="default" ghost v-for="{ skill, command } in getSkills()" :key="skill" @click="cmd(command)">{{ skill }}</n-button>
+      <n-button :disabled="!state.gameState.battle.myTurn" type="default" ghost v-for="{ skill, command } in getSkills()" :key="skill" @click="cmd(command)" :aria-label="state.gameState.battle.myTurn ? command + ' My Turn' : command + ' Not My Turn'">{{ skill }}</n-button>
     </div>
   </div>
 </template>
