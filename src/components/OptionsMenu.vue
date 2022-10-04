@@ -1,7 +1,6 @@
 <template>
   <div class="options-menu">
-
-    <n-switch v-model:value="state.options.movementDuringInput">
+    <n-switch v-model:value="state.options.movementDuringInput" aria-label="Enable Movement During Input">
       <template #checked>
         Enable Movement During Input
       </template>
@@ -10,7 +9,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.fixedMap">
+    <n-switch v-model:value="state.options.fixedMap" aria-label="Fixed Mini Map">
       <template #checked>
         Fixed Minimap
       </template>
@@ -19,7 +18,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.commandHistoryButton">
+    <n-switch v-model:value="state.options.commandHistoryButton" aria-label="Hide Mobile Buttons">
       <template #checked>
         Show Mobile Buttons
       </template>
@@ -28,7 +27,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.swapControls">
+    <n-switch v-model:value="state.options.swapControls" aria-label="Menu On Left">
       <template #checked>
         Menu On Right
       </template>
@@ -37,7 +36,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.chatInMain">
+    <n-switch v-model:value="state.options.chatInMain" aria-label="Chat In Main Output">
       <template #checked>
         Chat In Main Output
       </template>
@@ -46,7 +45,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.showTabs">
+    <n-switch v-model:value="state.options.showTabs" aria-label="Show Tabs">
       <template #checked>
         Show Tabs
       </template>
