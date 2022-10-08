@@ -23,7 +23,7 @@
         <n-tab-pane name="look" tab="Look">
           <div class="item-desc" v-html="ansiSpan(item.description.replaceAll('\n', '<br>'))"></div>
         </n-tab-pane>
-        <n-tab-pane name="examine" tab="Examine">
+        <n-tab-pane name="examine" tab="Examine" v-if="state.modal.menu === 'inventory'">
           <div class="examine" v-html="ansiSpan(rawExamine())"></div>
         </n-tab-pane>
       </n-tabs>
