@@ -7,7 +7,7 @@
       <n-button v-for="action in actions"
                 size="medium"
                 :disabled="action === 'drink' && isDrinkDisabled"
-                @click="cmd(`${action} ${props.name}`) && toggle()"
+                @click="cmd(`${action} ${props.name}`, '1234') && toggle()"
                 :key="action"
                 class="action">
         {{action}}

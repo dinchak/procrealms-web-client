@@ -22,7 +22,7 @@ const convert = new Convert({
   }
 })
 
-import { state } from '@/composables/state'
+import { state, addLine } from '@/composables/state'
 
 const handlers = {}
 
@@ -78,14 +78,14 @@ handlers['token.success'] = ({ name, token }) => {
 handlers['out'] = (line) => {
   let lines = strToLines(line)
   for (let line of lines) {
-    state.output.push(line)
+    addLine(line, 'output')
   }
 }
 
 handlers['room.describe'] = ({ desc }) => {
   let lines = strToLines(desc)
   for (let line of lines) {
-    state.output.push(line)
+    addLine(line, 'output')
   }
 }
 
@@ -106,28 +106,37 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     if (state[channel].find(msg => msg.id == id)) {
       return
     }
+
     let unread = true
     if (state.activeTab == channel) {
       unread = false
     }
-    state[channel].push({ id, from, to, timestamp, message, unread })
+
+    addLine({ id, from, to, timestamp, message, unread }, channel)
+
     if (state.options.chatInMain) {
-      let output = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
-      state.output.push(output)  
+      let out = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+      addLine(out, 'output')
     }
   } else if (['party'].includes(channel)) {
-    state.output.push(`<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`)
+    let out = `<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`
+    addLine(out, 'output')
+
   } else if (['tell'].includes(channel)) {
     if (from == 'You') {
-      state.output.push(`<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`)
+      let out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
+      addLine(out, 'output')
     } else {
-      state.output.push(`<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`)
+      let out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
+      addLine(out, 'output')
     }
+
   } else if (['info', 'announce'].includes(channel)) {
-    state.output.push(message)
+    addLine(message, 'output')
+
   } else {
-    let output = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
-    state.output.push(output)
+    let out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+    addLine(out, 'output')
   }
 }
 
