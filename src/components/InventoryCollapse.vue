@@ -1,15 +1,15 @@
 <template>
-  <n-collapse-item title="Inventory">
-    <div v-if="items.length !== 0">
-      <div class="money" v-html=copperToMoneyString(getMoney())></div>
-      <div class="limits">
-        <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
-        <div class="weight">{{getWeight()}}/{{getMaxWeight()}} lbs</div>
-      </div>
+  <n-collapse-item title="Inventory" class="inventory-dropdown">
+    <div class="money" v-html=copperToMoneyString(getMoney())></div>
+    <div class="limits">
+      <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
+      <div class="weight">{{getWeight()}}/{{getMaxWeight()}} lbs</div>
+    </div>
+    <div v-if="items.length !== 0" class="inventory-items">
       <div class="search">
         <n-input v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus" placeholder="Search"></n-input>
       </div>
-      <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" @toggled="toggleExpand"></InventoryRow>
+      <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)"></InventoryRow>
     </div>
   </n-collapse-item>
 </template>
@@ -17,13 +17,14 @@
 <script setup>
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
-import { onMounted, reactive, ref, watch, watchEffect } from 'vue'
+import { reactive, ref, watch, watchEffect } from 'vue'
 import {helpers} from '@/composables/helpers'
 import { NCollapseItem, NInput } from 'naive-ui'
 import InventoryRow from '@/components/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
+import { command_ids } from '@/composables/constants/command_ids'
 
-const { fetchItem } = useWebSocket()
+const { fetchItem, cmd } = useWebSocket()
 const { copperToMoneyString } = helpers()
 const { onKeydown } = useKeyHandler()
 
@@ -31,6 +32,7 @@ const items = reactive([])
 const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
+const clickedItem = ref({})
 
 // Watchers
 watchEffect(() => {
@@ -47,14 +49,11 @@ function setItems(itemIIDs) {
   let oldItems = [...items]
   itemIIDs.forEach(async (iid, index) => {
     items[index] = await fetchItem(iid)
-    if (oldItems.length === 0) {
-      items[index].expanded = false
-    } else if (oldItems.length !== items.length) {
+    if (items[index].name === clickedItem.value.name) {
+      clickedItem.value.amount = items[index].amount
+    }
+    if (oldItems.length !== items.length) {
       oldItems = [...items]
-    } else {
-      if (oldItems[index] && oldItems[index].name === items[index].name) {
-        items[index].expanded = oldItems[index].expanded
-      }
     }
   })
 
@@ -63,23 +62,34 @@ function setItems(itemIIDs) {
     items.splice(itemIIDs.length, diff)
   }
 
-  filteredItems.value = items.filter((item) => (item.name.toLowerCase().includes(searchTerm.value) ||
-      item.colorName.toLowerCase().includes(searchTerm.value) || item.type.toLowerCase().includes(searchTerm.value)) ||
-      (item.subtype ? item.subtype.toLowerCase().includes(searchTerm.value) : false))
+  const input = searchTerm.value.toLowerCase()
+
+  filteredItems.value = items.filter((item) => (item.name.toLowerCase().includes(input) ||
+      item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
+      (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a.name > b.name)
+
+  if (state.modal.visible) {
+    items.map(item => {
+      if (item.name === state.modal.item.name && item.iid !== state.modal.item.iid) {
+        state.modal.item = item
+      }
+    })
+  }
 }
 
-function toggleExpand(iid) {
-  items.map(item => {
-    if (item.iid === iid) {
-      item.expanded = !item.expanded
-    }
-  })
+function clickHandler(item) {
+  state.modal.visible = true
+  state.modal.item = item
+  state.modal.menu = 'inventory'
+
+  const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
+  cmd(`examine ${item.name}`, commandCacheKey)
 }
 
 // Setters
 onKeydown((ev) => {
-  if (ev.key === 'Escape' && state.mode ==='input') {
+  if (ev.key === 'Escape' && state.mode ==='input' && searchInput.value) {
     searchInput.value.blur()
   }
 })
@@ -91,10 +101,6 @@ function onFocus() {
 function onBlur() {
   state.mode = 'hotkey'
 }
-
-onMounted(() => {
-  setItems(state.gameState.inventory)
-})
 
 // Getters
 
@@ -138,5 +144,9 @@ function getMaxWeight() {
 
 .search {
   padding: 10px 15px 10px 0;
+}
+
+.inventory-items {
+  position: static;
 }
 </style>
