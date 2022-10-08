@@ -17,10 +17,14 @@ export function useWebSocket () {
     const _onMessage = (json) => {
       try {
         let { cmd, msg, id } = JSON.parse(json)
+        if (id) {
+          state.commandCache[id] = msg
+        }
         if (process.env.NODE_ENV != 'production') {
           console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
         }
-        onEvent(cmd, msg)
+
+        id ? onEvent(cmd, msg, id) : onEvent(cmd, msg)
       } catch (err) {
         console.log('error parsing message: %s', json)
         console.log(err.stack)
@@ -40,9 +44,11 @@ export function useWebSocket () {
   }
 
   function cmd (command, id) {
-    addLine('', 'output')
-    addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
-    addLine('', 'output')
+    if (!id) {
+      addLine('', 'output')
+      addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
+      addLine('', 'output')
+    }
     send('cmd', command, id)
   }
 

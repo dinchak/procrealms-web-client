@@ -171,9 +171,10 @@ function strToLines (str) {
 }
 
 export function useEventHandler () {
-  function onEvent (cmd, msg) {
+  function onEvent (cmd, msg, id) {
     if (handlers[cmd]) {
-      handlers[cmd](msg)
+      // Do not print in output if and ID has been passed to cmd
+      id ? null : handlers[cmd](msg)
       return
     }
 

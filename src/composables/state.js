@@ -1,4 +1,4 @@
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 
 export const state = reactive({
   options: {
@@ -19,6 +19,7 @@ export const state = reactive({
 
   entityCache: {},
   itemCache: {},
+  commandCache: {},
 
   connected: false,
 
@@ -75,6 +76,11 @@ export const state = reactive({
     },
     map: [],
     slots: []
+  },
+  modal: {
+    visible: false,
+    item: ref({}),
+    menu: ''
   }
 })
 

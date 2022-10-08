@@ -24,6 +24,7 @@
     </n-layout-sider>
 
     <n-layout>
+      <ModalCard></ModalCard>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -66,6 +67,7 @@ import MoveControls from '@/components/MoveControls.vue'
 import QuickStats from '@/components/QuickStats.vue'
 import MapActions from '@/components/MapActions.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
+import ModalCard from '@/components/ModalCard'
 
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -120,6 +122,10 @@ try {
 }
 
 .n-layout {
+  z-index: 1;
+}
+
+.n-layout-sider {
   z-index: 2;
 }
 
