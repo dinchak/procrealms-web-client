@@ -1,20 +1,24 @@
-import { state } from './state'
+import { state, addLine } from './state'
 
 let ws
 
 export function useWebSocket () {
   function initConnection ({ onConnect, onClose, onEvent, url }) {
-    ws = new window.WebSocket(url)
+    try {
+      ws = new window.WebSocket(url)
 
-    ws.onopen = onConnect
-    ws.onclose = onClose
-    ws.onmessage = ({ data }) => _onMessage(data, onEvent)
+      ws.onopen = onConnect
+      ws.onclose = onClose
+      ws.onmessage = ({ data }) => _onMessage(data, onEvent)  
+    } catch (err) {
+      console.log(err.stack)
+    }
 
     const _onMessage = (json) => {
       try {
-        let { cmd, msg } = JSON.parse(json)
+        let { cmd, msg, id } = JSON.parse(json)
         if (process.env.NODE_ENV != 'production') {
-          console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+          console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
         }
         onEvent(cmd, msg)
       } catch (err) {
@@ -24,18 +28,22 @@ export function useWebSocket () {
     }
   }
 
-  function send (cmd, msg) {
+  function send (cmd, msg, id = false) {
     if (process.env.NODE_ENV != 'production') {
-      console.log(`-> ${cmd} ${msg ? JSON.stringify(msg) : ''}`)
+      console.log(`-> ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
     }
-    ws.send(JSON.stringify({ cmd, msg }))
+    let out = { cmd, msg }
+    if (id) {
+      out.id = id
+    }
+    ws.send(JSON.stringify(out))
   }
 
-  function cmd (command) {
-    state.output.push('')
-    state.output.push(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`)
-    state.output.push('')
-    send('cmd', command)
+  function cmd (command, id) {
+    addLine('', 'output')
+    addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
+    addLine('', 'output')
+    send('cmd', command, id)
   }
 
   function fetchEntity (eid) {

@@ -29,7 +29,7 @@ import { useWebSocket } from '@/composables/web_socket'
 
 import QuickSlots from '@/components/QuickSlots.vue'
 
-import { state } from '@/composables/state'
+import { state, addLine } from '@/composables/state'
 
 let input = ref(null)
 let text = ref('')
@@ -172,7 +172,7 @@ onKeydown((ev) => {
       let json = JSON.stringify(state.gameState, null, 2)
       let lines = json.split('\n')
       for (let line of lines) {
-        state.output.push(line)
+        addLine(line, 'output')
       }
       return true
     }
