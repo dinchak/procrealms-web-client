@@ -6,9 +6,9 @@
           <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
         </div>
         <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" :percentage="entity.st" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="success" aria-label="Health" :percentage="entity.hp" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="default" aria-label="Energy" :percentage="entity.en" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="warning" aria-label="Stamina" :percentage="entity.st" :show-indicator="false"></n-progress>
         </div>
         <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
         <div class="name-container">
@@ -33,9 +33,9 @@
           <div v-if="!entity.target" class="targeting">No target</div>
         </div>
         <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" :percentage="entity.st" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="success" aria-label="Enemy Health" :percentage="entity.hp" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="default" aria-label="Enemy Energy" :percentage="entity.en" :show-indicator="false"></n-progress>
+          <n-progress type="line" status="warning" aria-label="Enemy Stamina" :percentage="entity.st" :show-indicator="false"></n-progress>
         </div>
         <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
         <div class="action">
