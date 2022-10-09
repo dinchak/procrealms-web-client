@@ -20,7 +20,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { reactive, ref, watch, watchEffect } from 'vue'
 import {helpers} from '@/composables/helpers'
 import { NCollapseItem, NInput } from 'naive-ui'
-import InventoryRow from '@/components/InventoryRow.vue'
+import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
 
