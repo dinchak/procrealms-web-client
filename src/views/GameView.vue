@@ -14,7 +14,7 @@
           <div class="map-actions">
             <MapActions v-if="!state.gameState.battle.active"></MapActions>
           </div>
-          <div class="map-area" v-show="!state.gameState.battle.active">
+          <div class="map-area" v-show="!state.gameState.battle.active" v-if="state.options.showMapArea">
             <MoveControls></MoveControls>
             <MiniMap></MiniMap>
           </div>
@@ -57,17 +57,17 @@ import { state } from '@/composables/state'
 
 import { NLayout, NLayoutSider } from 'naive-ui'
 
-import LineOutput from '@/components/LineOutput.vue'
-import KeyboardInput from '@/components/KeyboardInput.vue'
-import LogoutModal from '@/components/LogoutModal.vue'
-import MiniMap from '@/components/MiniMap.vue'
-import PlayerStats from '@/components/PlayerStats.vue'
-import BattleControls from '@/components/BattleControls.vue'
-import MoveControls from '@/components/MoveControls.vue'
-import QuickStats from '@/components/QuickStats.vue'
-import MapActions from '@/components/MapActions.vue'
+import LineOutput from '@/components/main-area/LineOutput.vue'
+import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
+import LogoutModal from '@/components/modals/LogoutModal.vue'
+import MiniMap from '@/components/side-menu/MiniMap.vue'
+import PlayerStats from '@/components/side-menu/PlayerStats.vue'
+import BattleControls from '@/components/side-menu/BattleControls.vue'
+import MoveControls from '@/components/side-menu/MoveControls.vue'
+import QuickStats from '@/components/side-menu/QuickStats.vue'
+import MapActions from '@/components/side-menu/MapActions.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
-import ModalCard from '@/components/ModalCard'
+import ModalCard from '@/components/modals/ModalCard'
 
 import { useWindowHandler } from '@/composables/window_handler'
 

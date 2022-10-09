@@ -18,8 +18,8 @@ import { useWebSocket } from './composables/web_socket'
 import { useWindowHandler } from './composables/window_handler'
 
 import SplashScreen from '@/components/SplashScreen.vue'
-import LoginModal from './components/LoginModal.vue'
-import NewPlayerModal from './components/NewPlayerModal.vue'
+import LoginModal from './components/modals/LoginModal.vue'
+import NewPlayerModal from './components/modals/NewPlayerModal.vue'
 
 import { state } from './composables/state'
 

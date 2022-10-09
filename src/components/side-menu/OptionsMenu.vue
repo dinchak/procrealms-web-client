@@ -54,6 +54,15 @@
       </template>
     </n-switch>
 
+    <n-switch v-model:value="state.options.showMapArea" aria-label="Show Map Area">
+      <template #checked>
+        Show Map Area
+      </template>
+      <template #unchecked>
+        Hide Map Area
+      </template>
+    </n-switch>
+
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
