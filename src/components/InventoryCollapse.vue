@@ -84,7 +84,7 @@ function clickHandler(item) {
   state.modal.menu = 'inventory'
 
   const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
-  cmd(`examine ${item.name}`, commandCacheKey)
+  cmd(`examine iid:${item.iid}`, commandCacheKey)
 }
 
 // Setters

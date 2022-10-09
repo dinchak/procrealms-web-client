@@ -23,7 +23,7 @@
         <n-tab-pane name="look" tab="Look">
           <div class="item-desc" v-html="ansiSpan(item.description.replaceAll('\n', '<br>'))"></div>
         </n-tab-pane>
-        <n-tab-pane name="examine" tab="Examine" v-if="state.modal.menu === 'inventory'">
+        <n-tab-pane name="examine" tab="Examine">
           <div class="examine" v-html="ansiSpan(rawExamine())"></div>
         </n-tab-pane>
       </n-tabs>
@@ -56,7 +56,7 @@ watch(() => state.modal.item, () => {
   if (state.modal.visible) {
     item.value = state.modal.item
     const commandCacheKey = command_ids.EXAMINE + item.value.iid.toString()
-    cmd(`examine ${item.value.name}`, commandCacheKey)
+    cmd(`examine iid:${item.value.iid}`, commandCacheKey)
     setActions()
   }
 })
@@ -82,7 +82,7 @@ function clickedAction(action) {
   if (!nonDestructiveActions.includes(action) && item.value.amount === 1) {
     closeModal()
   }
-  cmd(`${action} ${item.value.name}`)
+  cmd(`${action} iid:${item.value.iid}`)
 }
 
 // Setters

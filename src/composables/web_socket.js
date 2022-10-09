@@ -45,9 +45,15 @@ export function useWebSocket () {
 
   function cmd (command, id) {
     if (!id) {
-      addLine('', 'output')
-      addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
-      addLine('', 'output')
+      // Crude filter to avoid shouing the ugly 'look iid:123456' in the output
+      const lcCmd = command.toLowerCase()
+      const excludeIIDCommand = lcCmd.includes('iid:') && !lcCmd.includes('gossip ') && !lcCmd.includes('say ')
+          && !lcCmd.includes('trade ') && !lcCmd.includes('newbie ')
+      if (!excludeIIDCommand) {
+        addLine('', 'output')
+        addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
+        addLine('', 'output')
+      }
     }
     send('cmd', command, id)
   }
