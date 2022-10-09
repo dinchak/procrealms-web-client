@@ -24,13 +24,13 @@
 
 <script setup>
 import { NProgress, NCollapse } from 'naive-ui'
-import CharacterCollapse from '@/components/CharacterCollapse.vue'
-import OptionsCollapse from '@/components/OptionsCollapse.vue'
-import QuestCollapse from '@/components/QuestCollapse.vue'
-import SkillsCollapse from '@/components/SkillsCollapse.vue'
-import EffectsCollapse from '@/components/EffectsCollapse.vue'
-import InventoryCollapse from '@/components/InventoryCollapse.vue'
-import EquipmentCollapse from '@/components/EquipmentCollapse.vue'
+import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
+import OptionsCollapse from '@/components/side-menu/collapse-items/OptionsCollapse.vue'
+import QuestCollapse from '@/components/side-menu/collapse-items/QuestCollapse.vue'
+import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
+import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
+import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
+import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
 import { state } from '@/composables/state'
 
 function player () {

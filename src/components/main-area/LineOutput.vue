@@ -76,7 +76,7 @@ import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
-import BattleStatus from '@/components/BattleStatus.vue'
+import BattleStatus from '@/components/main-area/BattleStatus.vue'
 
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon, NTabs, NTabPane, NBadge, NSpace } from 'naive-ui'
