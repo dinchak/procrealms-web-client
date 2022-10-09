@@ -1,13 +1,13 @@
 <template>
   <n-collapse-item title="Equipment">
-    <EquipmentRow v-for="(item, index) in equipment" :key="index" v-bind="item"></EquipmentRow>
+    <EquipmentRow v-for="(item, index) in equipment" :key="index" v-bind="item" v-on:click="clickHandler(item)"></EquipmentRow>
   </n-collapse-item>
 </template>
 
 <script setup>
 import { state } from '@/composables/state';
 import { useWebSocket } from '@/composables/web_socket';
-import { watch, reactive } from "vue";
+import { watch, reactive } from 'vue';
 import { NCollapseItem } from 'naive-ui'
 import EquipmentRow from '@/components/EquipmentRow.vue'
 
@@ -33,5 +33,11 @@ function setEquipment(equipmentIIDs) {
       level: false
     }
   })
+}
+
+function clickHandler(item) {
+  state.modal.visible = true
+  state.modal.item = item
+  state.modal.menu = 'equipment'
 }
 </script>

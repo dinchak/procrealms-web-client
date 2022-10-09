@@ -10,14 +10,16 @@ export const action_mapper = [
         action: 'slot',
         condition: (it) => (it.type === 'consumable' && ['potion', 'food', 'fragment'].includes(it.subtype)) || it.type === 'scroll'
     },*/
-    {
-        action: 'look',
-        condition: () => true
-    },
-    {
-        action: 'examine',
-        condition: () => true
-    },
+
+    // Look and Examine are now included in the modal, so buttons not needed for now
+    // {
+    //     action: 'look',
+    //     condition: () => true
+    // },
+    // {
+    //     action: 'examine',
+    //     condition: () => true
+    // },
     {
         action: 'drink',
         condition: (it) => it.type === 'consumable' && it.subtype === 'potion'
@@ -61,6 +63,14 @@ export const action_mapper = [
     {
         action: 'wrap',
         condition: (it) => it.type === 'material' && it.subtype === 'bandage'
+    },
+    {
+        action: 'fish bait',
+        condition: (it) => it.subtype === 'bait'
+    },
+    {
+        action: 'fish hook',
+        condition: (it) => it.subtype === 'hook'
     },
     {
         action: 'drop',
