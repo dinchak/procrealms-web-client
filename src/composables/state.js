@@ -8,7 +8,8 @@ export const state = reactive({
     swapControls: false,
     hideSidebar: false,
     chatInMain: true,
-    showTabs: true
+    showTabs: true,
+    showMapArea: true
   },
 
   activeTab: 'output',

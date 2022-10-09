@@ -27,7 +27,7 @@ import MenuOutlined from '@vicons/material/MenuOutlined'
 import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
-import QuickSlots from '@/components/QuickSlots.vue'
+import QuickSlots from '@/components/main-area/QuickSlots.vue'
 
 import { state, addLine } from '@/composables/state'
 

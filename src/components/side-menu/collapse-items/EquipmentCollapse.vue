@@ -9,7 +9,7 @@ import { state } from '@/composables/state';
 import { useWebSocket } from '@/composables/web_socket';
 import { watch, reactive } from 'vue';
 import { NCollapseItem } from 'naive-ui'
-import EquipmentRow from '@/components/EquipmentRow.vue'
+import EquipmentRow from '@/components/side-menu/collapse-items/EquipmentRow.vue'
 
 const { fetchItem } = useWebSocket()
 const equipment = reactive([])
