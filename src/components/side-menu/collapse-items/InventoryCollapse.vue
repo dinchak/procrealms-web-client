@@ -9,6 +9,13 @@
       <div class="search">
         <n-input v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus" placeholder="Search"></n-input>
       </div>
+      <div class="sorting">
+        <span>Sort by </span>
+        <n-popselect v-model:value="value" :options="options">
+          <span class="dropdown">{{value}}</span>
+        </n-popselect>
+      </div>
+
       <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)"></InventoryRow>
     </div>
   </n-collapse-item>
@@ -18,8 +25,8 @@
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { reactive, ref, watch, watchEffect } from 'vue'
-import {helpers} from '@/composables/helpers'
-import { NCollapseItem, NInput } from 'naive-ui'
+import { helpers } from '@/composables/helpers'
+import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
@@ -33,6 +40,33 @@ const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
 const clickedItem = ref({})
+const options = [
+  {
+    label: 'Name',
+    value: 'name'
+  },
+  {
+    label: 'Level',
+    value: 'level'
+  },
+  {
+    label: 'Type',
+    value: 'type'
+  },
+  {
+    label: 'Subtype',
+    value: 'subtype'
+  },
+  {
+    label: 'Weight',
+    value: 'weight'
+  },
+  {
+    label: 'Value',
+    value: 'value'
+  }
+]
+const value = ref('name')
 
 // Watchers
 watchEffect(() => {
@@ -41,6 +75,10 @@ watchEffect(() => {
 
 watch(searchTerm, () => {
   setItems(state.gameState.inventory)
+})
+
+watch(value, () => {
+  filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value])
 })
 
 // Methods
@@ -67,7 +105,7 @@ function setItems(itemIIDs) {
   filteredItems.value = items.filter((item) => (item.name.toLowerCase().includes(input) ||
       item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
-      .sort((a, b) => a.name > b.name)
+      .sort((a, b) => a[value.value] > b[value.value])
 
   if (state.modal.visible) {
     items.map(item => {
@@ -153,5 +191,18 @@ function getMaxWeight() {
 
 .inventory-items {
   position: static;
+}
+
+.sorting {
+  margin-bottom: 15px;
+}
+
+.dropdown {
+  margin-bottom: 40px;
+  padding: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  text-transform: capitalize;
+  position: relative;
 }
 </style>
