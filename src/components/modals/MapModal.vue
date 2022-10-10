@@ -14,13 +14,22 @@ import { ansiSpan } from 'ansi-to-span'
 import { state } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
 import { useWebSocket } from '@/composables/web_socket'
+import { useKeyHandler } from '@/composables/key_handler'
 
 const { cmd } = useWebSocket()
+const { onKeydown, keyState } = useKeyHandler()
 const MAP_ID = command_ids.MAP
 const largeMap = ref([])
 
 watch(() => state.commandCache[MAP_ID], () => {
   if (state.modals.mapModal) {
+    largeMap.value = state.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
+  }
+})
+
+watch(() => state.modals.mapModal, () => {
+  if (state.modals.mapModal) {
+    cmd('map', MAP_ID)
     largeMap.value = state.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
   }
 })
@@ -36,6 +45,21 @@ function getSideClass() {
 function closeModal() {
   state.modals.mapModal = false
 }
+
+onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
+  if (!state.options.movementDuringInput && state.mode === 'input') {
+    return false
+  }
+
+  if (ev.key === 'm') {
+    state.modals.mapModal = !state.modals.mapModal
+    return true
+  }
+})
 
 cmd('map', MAP_ID)
 </script>
