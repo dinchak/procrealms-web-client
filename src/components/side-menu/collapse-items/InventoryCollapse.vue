@@ -83,6 +83,11 @@ function clickHandler(item) {
   state.modal.item = item
   state.modal.menu = 'inventory'
 
+  const itemCacheKeys = Object.keys(state.itemCache)
+  const commandCacheKeys = Object.keys(state.commandCache)
+  console.log(itemCacheKeys.length)
+  console.log(commandCacheKeys.length)
+
   const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
   cmd(`examine iid:${item.iid}`, commandCacheKey)
 }

@@ -16,6 +16,7 @@
           </div>
           <div class="map-area" v-show="!state.gameState.battle.active" v-if="state.options.showMapArea">
             <MoveControls></MoveControls>
+            <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
             <MiniMap></MiniMap>
           </div>
           <QuickStats></QuickStats>
@@ -25,6 +26,7 @@
 
     <n-layout>
       <ModalCard></ModalCard>
+      <MapModal></MapModal>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -43,6 +45,7 @@
           </div>
           <div class="map-area" v-show="!state.gameState.battle.active">
             <MoveControls></MoveControls>
+            <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
             <MiniMap></MiniMap>
           </div>
           <QuickStats></QuickStats>
@@ -55,7 +58,7 @@
 <script setup>
 import { state } from '@/composables/state'
 
-import { NLayout, NLayoutSider } from 'naive-ui'
+import { NLayout, NLayoutSider, NIcon } from 'naive-ui'
 
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
@@ -68,10 +71,14 @@ import QuickStats from '@/components/side-menu/QuickStats.vue'
 import MapActions from '@/components/side-menu/MapActions.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
 import ModalCard from '@/components/modals/ModalCard'
+import MapModal from '@/components/modals/MapModal'
+import MapOutlined from '@vicons/material/MapOutlined'
 
 import { useWindowHandler } from '@/composables/window_handler'
+import { useWebSocket } from '@/composables/web_socket'
 
 const { triggerResize } = useWindowHandler()
+const { cmd } = useWebSocket()
 
 function openCloseSider () {
   triggerResize()
@@ -85,6 +92,13 @@ try {
 } catch (err) {
   console.log(err)
   localStorage.setItem('options', '')
+}
+
+function toggleMap() {
+  if (!state.modals.mapModal) {
+    cmd('map', '1001')
+  }
+  state.modals.mapModal = !state.modals.mapModal
 }
 
 </script>
@@ -107,6 +121,12 @@ try {
       flex-direction: row;
       justify-content: space-around;
       width: 100%;
+
+      .map-icon {
+        font-size: 30px;
+        text-align: left;
+        cursor: pointer;
+      }
     }
   }
 
