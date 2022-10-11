@@ -82,7 +82,7 @@ export function useWebSocket () {
 
   function fetchItem (iid)  {
     if (state.itemCache[iid]) {
-      return new Promise((resolve) => resolve(state.itemCache[iid]))
+      return new Promise((resolve) => resolve(state.itemCache[iid].item))
     }
 
     const requestId = `item-${iid}`

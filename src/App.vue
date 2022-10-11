@@ -16,6 +16,7 @@ import { useCookieHandler } from './composables/cookie_handler'
 import { useEventHandler } from './composables/event_handler'
 import { useWebSocket } from './composables/web_socket'
 import { useWindowHandler } from './composables/window_handler'
+import { constants } from './composables/constants/constants'
 
 import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from './components/modals/LoginModal.vue'
@@ -70,6 +71,20 @@ function onClose () {
 }
 
 onMounted(doConnect)
+
+setInterval(() => {
+  const now = Date.now()
+  const keys = Object.keys(state.itemCache)
+
+  keys.map(key => {
+    const itemDate = state.itemCache[key].date
+    const difference = now - itemDate
+
+    if (difference > constants.CACHE_DELETE_TIME) {
+      delete state.itemCache[key]
+    }
+  })
+}, constants.CACHE_DELETE_INTERVAL)
 </script>
 
 <style lang="less">
