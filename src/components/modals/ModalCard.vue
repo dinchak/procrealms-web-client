@@ -129,7 +129,7 @@ const rawExamine = function() {
   position: absolute;
   margin-top: 200px;
   width: 400px;
-  z-index: 2;
+  z-index: 3;
 }
 
 .left {
