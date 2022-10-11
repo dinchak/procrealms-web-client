@@ -78,7 +78,7 @@ watch(searchTerm, () => {
 })
 
 watch(value, () => {
-  filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value])
+  filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 })
 
 // Methods
@@ -105,7 +105,7 @@ function setItems(itemIIDs) {
   filteredItems.value = items.filter((item) => (item.name.toLowerCase().includes(input) ||
       item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
-      .sort((a, b) => a[value.value] > b[value.value])
+      .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 
   if (state.modal.visible) {
     items.map(item => {
