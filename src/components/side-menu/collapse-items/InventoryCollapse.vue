@@ -107,22 +107,22 @@ function setItems(itemIIDs) {
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 
-  if (state.modal.visible) {
+  if (state.modals.inventoryModal.visible) {
     items.map(item => {
-      if (item.name === state.modal.item.name && item.iid !== state.modal.item.iid) {
-        state.modal.item = item
+      if (item.name === state.modals.inventoryModal.item.name && item.iid !== state.modals.inventoryModal.item.iid) {
+        state.modals.inventoryModal.item = item
       }
     })
   }
 }
 
 function clickHandler(item) {
-  state.modal.visible = true
-  state.modal.item = item
-  state.modal.menu = 'inventory'
+  state.modals.inventoryModal.visible = true
+  state.modals.inventoryModal.item = item
+  state.modals.inventoryModal.menu = 'inventory'
 
-  const itemCacheKeys = Object.keys(state.itemCache)
-  const commandCacheKeys = Object.keys(state.commandCache)
+  const itemCacheKeys = Object.keys(state.cache.itemCache)
+  const commandCacheKeys = Object.keys(state.cache.commandCache)
   console.log(itemCacheKeys.length)
   console.log(commandCacheKeys.length)
 

@@ -182,7 +182,7 @@ export function useEventHandler () {
     if (matches && state.pendingRequests[cmd]) {
       let eid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
-      state.entityCache[eid] = msg
+      state.cache.entityCache[eid] = { entity: msg, date: Date.now() }
       delete state.pendingRequests[cmd]
       clearTimeout(timeout)
       resolve(msg)
@@ -193,7 +193,7 @@ export function useEventHandler () {
     if (matches && state.pendingRequests[cmd]) {
       let iid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
-      state.itemCache[iid] = { item: msg, date: Date.now() }
+      state.cache.itemCache[iid] = { item: msg, date: Date.now() }
       delete state.pendingRequests[cmd]
       clearTimeout(timeout)
       resolve(msg)

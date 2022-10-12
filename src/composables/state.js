@@ -18,9 +18,11 @@ export const state = reactive({
 
   pendingRequests: {},
 
-  entityCache: {},
-  itemCache: {},
-  commandCache: {},
+  cache: {
+    entityCache: {},
+    itemCache: {},
+    commandCache: {},
+  },
 
   connected: false,
 
@@ -78,12 +80,12 @@ export const state = reactive({
     map: [],
     slots: []
   },
-  modal: {
-    visible: false,
-    item: ref({}),
-    menu: ''
-  },
   modals: {
+    inventoryModal: {
+      visible: false,
+      item: ref({}),
+      menu: ''
+    },
     mapModal: false
   }
 })
