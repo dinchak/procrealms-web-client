@@ -3,16 +3,16 @@
 
   <HelpOverlay></HelpOverlay>
 
-  <n-layout has-sider v-if="state.token && state.connected" class="game">
-    <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="!state.options.swapControls" :collapsed="state.options.hideSidebar">
+  <n-layout has-sider v-if="state.token && state.connected" :class="getDirection()">
+    <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" :collapsed="state.options.hideSidebar">
       <div class="stats-area">
         <PlayerStats></PlayerStats>
-        <div class="bottom-area">
+        <div class="bottom-area" >
           <div class="battle-area" v-show="state.gameState.battle.active">
             <BattleControls></BattleControls>
           </div>
           <div class="map-actions">
-            <MapActions v-if="!state.gameState.battle.active"></MapActions>
+            <MapActions v-show="!state.gameState.battle.active"></MapActions>
           </div>
           <div class="map-area" v-show="!state.gameState.battle.active" v-if="state.options.showMapArea">
             <MoveControls></MoveControls>
@@ -32,26 +32,6 @@
       </div>
       <KeyboardInput></KeyboardInput>
     </n-layout>
-
-    <n-layout-sider id="bottom-right" class="right-side" :collapsed-width="0" :on-update:collapsed="openCloseSider" v-if="state.options.swapControls" :collapsed="state.options.hideSidebar">
-      <div class="stats-area">
-        <PlayerStats></PlayerStats>
-        <div class="bottom-area" >
-          <div class="battle-area" v-show="state.gameState.battle.active">
-            <BattleControls></BattleControls>
-          </div>
-          <div class="map-actions">
-            <MapActions v-if="!state.gameState.battle.active"></MapActions>
-          </div>
-          <div class="map-area" v-show="!state.gameState.battle.active">
-            <MoveControls></MoveControls>
-            <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
-            <MiniMap></MiniMap>
-          </div>
-          <QuickStats></QuickStats>
-        </div>
-      </div>
-    </n-layout-sider>
   </n-layout>
 </template>
 
@@ -74,6 +54,7 @@ import ModalCard from '@/components/modals/ModalCard'
 import MapModal from '@/components/modals/MapModal'
 import MapOutlined from '@vicons/material/MapOutlined'
 
+import { command_ids } from '@/composables/constants/command_ids'
 import { useWindowHandler } from '@/composables/window_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -96,11 +77,17 @@ try {
 
 function toggleMap() {
   if (!state.modals.mapModal) {
-    cmd('map', '1001')
+    cmd('map', command_ids.MAP)
   }
   state.modals.mapModal = !state.modals.mapModal
 }
 
+function getDirection() {
+  if (state.options.swapControls) {
+    return 'game right-side'
+  }
+  return 'game left-side'
+}
 </script>
 
 <style lang="less">
@@ -139,6 +126,14 @@ function toggleMap() {
     flex-grow: 1;
     min-height: 0;
   }
+}
+
+.left-side > .n-layout-scroll-container {
+  flex-flow: row nowrap !important;
+}
+
+.right-side > .n-layout-scroll-container {
+  flex-flow: row-reverse nowrap !important;
 }
 
 .n-layout {

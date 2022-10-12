@@ -1,5 +1,5 @@
 <template>
-    <n-card id="item-modal" :class="getSideClass()" v-if="state.modal.visible">
+    <n-card id="item-modal" :class="getSideClass()" v-if="state.modals.inventoryModal.visible">
       <p class="close" v-on:click="closeModal()">x</p>
       <n-tabs type="line" animated size="large">
         <n-tab-pane name="actions" tab="Actions">
@@ -43,7 +43,7 @@ const { getActions } = helpers()
 const { cmd } = useWebSocket()
 
 const isDrinkDisabled = ref(false)
-const item = ref(state.modal.item)
+const item = ref(state.modals.inventoryModal.item)
 const actions = ref(getActions({
   name: item.value.name,
   type: item.value.type,
@@ -52,17 +52,17 @@ const actions = ref(getActions({
 
 // Watchers
 
-watch(() => state.modal.item, () => {
-  if (state.modal.visible) {
-    item.value = state.modal.item
+watch(() => state.modals.inventoryModal.item, () => {
+  if (state.modals.inventoryModal.visible) {
+    item.value = state.modals.inventoryModal.item
     const commandCacheKey = command_ids.EXAMINE + item.value.iid.toString()
     cmd(`examine iid:${item.value.iid}`, commandCacheKey)
     setActions()
   }
 })
 
-watch(() => state.modal.menu, () => {
-  state.modal.visible ? setActions() : null
+watch(() => state.modals.inventoryModal.menu, () => {
+  state.modals.inventoryModal.visible ? setActions() : null
 })
 
 watch(()=> state.gameState.affects, () => {
@@ -74,7 +74,8 @@ watch(()=> state.gameState.affects, () => {
 // Methods
 
 function closeModal() {
-  state.modal.visible = false
+  state.modals.zindex-=1
+  state.modals.inventoryModal.visible = false
 }
 
 function clickedAction(action) {
@@ -88,7 +89,7 @@ function clickedAction(action) {
 // Setters
 
 function setActions() {
-  if (state.modal.menu === 'inventory') {
+  if (state.modals.inventoryModal.menu === 'inventory') {
     actions.value = getActions({
       name: item.value.name,
       type: item.value.type,
@@ -96,8 +97,8 @@ function setActions() {
     })
   }
 
-  if (state.modal.menu === 'equipment') {
-    state.modal.visible ? actions.value = ['remove'] : null
+  if (state.modals.inventoryModal.menu === 'equipment') {
+    state.modals.inventoryModal.visible ? actions.value = ['remove'] : null
   }
 }
 
@@ -114,7 +115,7 @@ function getButtonType(action) {
 }
 
 const rawExamine = function() {
-  const string = state.commandCache[`${command_ids.EXAMINE}${item.value.iid}`]
+  const string = state.cache.commandCache[`${command_ids.EXAMINE}${item.value.iid}`]
   if (string) {
     return string.replaceAll('\n', '<br>')
   } else {

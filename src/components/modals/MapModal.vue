@@ -21,16 +21,16 @@ const { onKeydown, keyState } = useKeyHandler()
 const MAP_ID = command_ids.MAP
 const largeMap = ref([])
 
-watch(() => state.commandCache[MAP_ID], () => {
+watch(() => state.cache.commandCache[MAP_ID], () => {
   if (state.modals.mapModal) {
-    largeMap.value = state.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
+    largeMap.value = state.cache.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
   }
 })
 
 watch(() => state.modals.mapModal, () => {
   if (state.modals.mapModal) {
     cmd('map', MAP_ID)
-    largeMap.value = state.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
+    largeMap.value = state.cache.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
   }
 })
 
