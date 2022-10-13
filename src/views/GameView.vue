@@ -4,7 +4,7 @@
   <HelpOverlay></HelpOverlay>
 
   <n-layout has-sider v-if="state.token && state.connected" :class="getDirection()">
-    <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" :collapsed="state.options.hideSidebar">
+    <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" :collapsed="state.options.hideSidebar" v-if="!state.options.hideSidebar">
       <div class="stats-area">
         <PlayerStats></PlayerStats>
         <div class="bottom-area" >
