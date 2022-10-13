@@ -18,7 +18,7 @@ export function useWebSocket () {
       try {
         let { cmd, msg, id } = JSON.parse(json)
         if (id) {
-          state.commandCache[id] = msg
+          state.cache.commandCache[id] = msg
         }
         if (process.env.NODE_ENV != 'production') {
           console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
@@ -59,8 +59,8 @@ export function useWebSocket () {
   }
 
   function fetchEntity (eid) {
-    if (state.entityCache[eid]) {
-      return new Promise((resolve) => resolve(state.entityCache[eid]))
+    if (state.cache.entityCache[eid]) {
+      return new Promise((resolve) => resolve(state.cache.entityCache[eid].entity))
     }
 
     const requestId = `entity-${eid}`
@@ -81,8 +81,8 @@ export function useWebSocket () {
   }
 
   function fetchItem (iid)  {
-    if (state.itemCache[iid]) {
-      return new Promise((resolve) => resolve(state.itemCache[iid].item))
+    if (state.cache.itemCache[iid]) {
+      return new Promise((resolve) => resolve(state.cache.itemCache[iid].item))
     }
 
     const requestId = `item-${iid}`
