@@ -73,18 +73,23 @@ function onClose () {
 onMounted(doConnect)
 
 setInterval(() => {
-  const now = Date.now()
-  const keys = Object.keys(state.itemCache)
+  clearCache(state.cache.itemCache)
+  clearCache(state.cache.entityCache)
+}, constants.CACHE_DELETE_INTERVAL)
 
-  keys.map(key => {
-    const itemDate = state.itemCache[key].date
-    const difference = now - itemDate
+function clearCache(object) {
+  const now = Date.now()
+  const objectKeys = Object.keys(object)
+
+  objectKeys.map(key => {
+    const date = object[key].date
+    const difference = now - date
 
     if (difference > constants.CACHE_DELETE_TIME) {
-      delete state.itemCache[key]
+      delete object[key]
     }
   })
-}, constants.CACHE_DELETE_INTERVAL)
+}
 </script>
 
 <style lang="less">
