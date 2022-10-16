@@ -16,7 +16,7 @@
         </div>
         <div
           v-if="quest.desc && questsExpanded[quest.name]"
-          v-html="ansiSpan(quest.desc).replace(/@NAME/g, player().name)"
+          v-html="ansiToHtml(quest.desc).replace(/@NAME/g, player().name)"
         ></div>
         <div
           class="expand-link"
@@ -46,12 +46,11 @@
 
 <script setup>
 import { ref } from 'vue'
-
-import { ansiSpan } from 'ansi-to-span'
-
 import { NProgress, NCollapseItem } from 'naive-ui'
-
 import { state } from '@/composables/state'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 const questsExpanded = ref({})
 
@@ -64,15 +63,15 @@ function player () {
 }
 
 function getQuestName (quest) {
-  return ansiSpan(`L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${quest.name}</span>`)
+  return ansiToHtml(`L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${quest.name}</span>`)
 }
 
 function getGivenBy (quest) {
-  return ansiSpan(`Given by <span class="bold-yellow">${quest.giver}</span>`)
+  return ansiToHtml(`Given by <span class="bold-yellow">${quest.giver}</span>`)
 }
 
 function getLocation (quest) {
-  return ansiSpan(`Go to <span class="bold-white">${quest.location.areaName}</span> at <span class="bold-magenta">${quest.location.x}</span>, <span class="bold-magenta">${quest.location.y}</span>`)
+  return ansiToHtml(`Go to <span class="bold-white">${quest.location.areaName}</span> at <span class="bold-magenta">${quest.location.x}</span>, <span class="bold-magenta">${quest.location.y}</span>`)
 }
 
 </script>

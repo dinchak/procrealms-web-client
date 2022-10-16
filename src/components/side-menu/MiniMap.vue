@@ -5,14 +5,16 @@
 </template>
 
 <script setup>
-import { ansiSpan } from 'ansi-to-span'
 import { state } from '@/composables/state'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 function renderMap () {
   const map = []
   if (state.gameState.map) {
     for (let line of state.gameState.map) {
-      map.push(ansiSpan(line))
+      map.push(ansiToHtml(line))
     }
   }
   return map

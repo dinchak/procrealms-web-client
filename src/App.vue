@@ -115,21 +115,21 @@ body, html {
   background: transparent;
 }
 
-.red { color: #c50f1f }
-.green { color: #13a10e }
-.yellow { color: #c19c00 }
-.blue { color: #0037da }
-.magenta { color: #881798 }
-.cyan { color: #3a96dd }
-.white { color: #cccccc }
-.black { color: #767676 }
-.bold-red { color: #e74856 }
-.bold-green { color: #16c60c }
-.bold-yellow { color: #f9f1a5 }
-.bold-blue { color: #3b78ff }
-.bold-magenta { color: #b4009e }
-.bold-cyan { color: #61d6d6 }
-.bold-white { color: #f2f2f2 }
+.red, .ansi-red-fg { color: #c50f1f; }
+.green, .ansi-green-fg { color: #13a10e }
+.yellow, .ansi-yellow-fg { color: #c19c00 }
+.blue, .ansi-blue-fg { color: #0037da }
+.magenta, .ansi-magenta-fg { color: #881798 }
+.cyan, .ansi-cyan-fg { color: #3a96dd }
+.white, .ansi-white-fg { color: #cccccc }
+.black, .ansi-bright-black-fg { color: #767676 }
+.bold-red, .ansi-bright-red-fg { color: #e74856 }
+.bold-green, .ansi-bright-green-fg { color: #16c60c }
+.bold-yellow, .ansi-bright-yellow-fg { color: #f9f1a5 }
+.bold-blue, .ansi-bright-blue-fg { color: #3b78ff }
+.bold-magenta, .ansi-bright-magenta-fg { color: #b4009e }
+.bold-cyan, .ansi-bright-cyan-fg { color: #61d6d6 }
+.bold-white, .ansi-bright-white-fg { color: #f2f2f2 }
 
 b {
   font-weight: normal !important;

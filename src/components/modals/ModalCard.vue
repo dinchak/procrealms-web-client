@@ -3,7 +3,7 @@
       <p class="close" v-on:click="closeModal()">x</p>
       <n-tabs type="line" animated size="large">
         <n-tab-pane name="actions" tab="Actions">
-          <h3 v-html="item.amount + 'x ' + ansiSpan(item.colorName)"></h3>
+          <h3 v-html="item.amount + 'x ' + ansiToHtml(item.colorName)"></h3>
           <div class="actions">
             <n-button v-for="action in actions"
                       size="medium"
@@ -21,10 +21,10 @@
           </div>
         </n-tab-pane>
         <n-tab-pane name="look" tab="Look">
-          <div class="item-desc" v-html="ansiSpan(item.description.replaceAll('\n', '<br>'))"></div>
+          <div class="item-desc" v-html="ansiToHtml(item.description.replaceAll('\n', '<br>'))"></div>
         </n-tab-pane>
         <n-tab-pane name="examine" tab="Examine">
-          <div class="examine" v-html="ansiSpan(rawExamine())"></div>
+          <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
         </n-tab-pane>
       </n-tabs>
     </n-card>
@@ -33,13 +33,12 @@
 <script setup>
 import { NCard, NButton, NTabs, NTabPane } from 'naive-ui'
 import { ref, watch } from 'vue'
-import { ansiSpan } from 'ansi-to-span'
-import { helpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
+import { helpers } from '@/composables/helpers'
 
-const { getActions } = helpers()
+const { getActions, ansiToHtml } = helpers()
 const { cmd } = useWebSocket()
 
 const isDrinkDisabled = ref(false)

@@ -41,10 +41,7 @@
 </template>
 
 <script setup>
-// import { ansiSpan } from 'ansi-to-span'
-
 import { NCollapseItem, NProgress } from 'naive-ui'
-
 import { state } from '@/composables/state'
 
 function skills () {

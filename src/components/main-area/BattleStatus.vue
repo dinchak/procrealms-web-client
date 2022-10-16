@@ -12,8 +12,8 @@
         </div>
         <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
         <div class="name-container">
-          <div class="name" v-html="ansiSpan(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiSpan(entity.target)"></div>
+          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
+          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
           <div v-if="!entity.target" class="targeting">No target</div>
         </div>
         <div class="caret" v-if="entity.isActing">&lt;</div>
@@ -28,8 +28,8 @@
         <div class="caret" v-if="entity.isActing">&gt;</div>
         <div class="caret" v-if="!entity.isActing"></div>
         <div class="name-container">
-          <div class="name" v-html="ansiSpan(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiSpan(entity.target)"></div>
+          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
+          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
           <div v-if="!entity.target" class="targeting">No target</div>
         </div>
         <div class="vitals" v-if="entity.hp > 0">
@@ -58,8 +58,8 @@
         </div>
         <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
         <div class="name-container">
-          <div class="name" v-html="ansiSpan(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiSpan(entity.target)"></div>
+          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
+          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
           <div v-if="!entity.target" class="targeting">No target</div>
         </div>
         <div class="caret" v-if="entity.isActing">&lt;</div>
@@ -74,8 +74,8 @@
         <div class="caret" v-if="entity.isActing">&gt;</div>
         <div class="caret" v-if="!entity.isActing"></div>
         <div class="name-container">
-          <div class="name" v-html="ansiSpan(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiSpan(entity.target)"></div>
+          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
+          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
           <div v-if="!entity.target" class="targeting">No target</div>
         </div>
         <div class="vitals" v-if="entity.hp > 0">
@@ -95,15 +95,17 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { ansiSpan } from 'ansi-to-span'
 import stripAnsi from 'strip-ansi'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 
+import { helpers } from '@/composables/helpers'
+
 import { NProgress } from 'naive-ui'
 
 const { cmd } = useWebSocket()
+const { ansiToHtml } = helpers()
 
 const battleStatus = ref(null)
 

@@ -1,28 +1,7 @@
-import { ansiSpan } from 'ansi-to-span'
-
-const Convert = require('ansi-to-html')
-const convert = new Convert({
-  colors: {
-    0: '#333333',
-    1: '#c50f1f',
-    2: '#13a10e',
-    3: '#c19c00',
-    4: '#0037da',
-    5: '#881798',
-    6: '#3a96dd',
-    7: '#cccccc',
-    8: '#767676',
-    9: '#e74856',
-    10: '#16c60c',
-    11: '#f9f1a5',
-    12: '#3b78ff',
-    13: '#b4009e',
-    14: '#61d6d6',
-    15: '#f2f2f2',
-  }
-})
-
 import { state, addLine } from '@/composables/state'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 const handlers = {}
 
@@ -30,7 +9,7 @@ handlers['welcome'] = (msg) => {
   let lines = msg.picture.split('\n')
   lines.pop()
   lines.pop()
-  state.picture = ansiSpan(lines.join('\n'))
+  state.picture = ansiToHtml(lines.join('\n'))
 }
 
 handlers['login.nameAvailable'] = () => {
@@ -40,7 +19,6 @@ handlers['login.nameAvailable'] = () => {
 }
 
 handlers['login.nameExists'] = () => {
-  console.log('reject nameExists')
   state.nameExistsReject(new Error('login.nameExists'))
   state.nameExistsReject = null
   state.nameExistsResolve = null
@@ -100,7 +78,8 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   }
 
   const stripTags = /<\/?([a-z][a-z0-9]*)\b[^>]*>?/gi
-  message = convert.toHtml(message.replace(stripTags, ''))
+
+  message = ansiToHtml(`\u{1b}[0m${message.replace(stripTags, '')}`)
 
   if (['gossip', 'trade', 'newbie'].includes(channel)) {
     if (state[channel].find(msg => msg.id == id)) {
@@ -115,7 +94,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     addLine({ id, from, to, timestamp, message, unread }, channel)
 
     if (state.options.chatInMain) {
-      let out = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+      let out = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> <span class="bold-white">'${message}'</span>`
       addLine(out, 'output')
     }
   } else if (['party'].includes(channel)) {
@@ -165,9 +144,7 @@ function updateState (obj, update) {
 
 function strToLines (str) {
   let lines = str.trim().split('\n')
-  return lines.map((line) => {
-    return convert.toHtml(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
-  })
+  return lines.map((line) => ansiToHtml(line))
 }
 
 export function useEventHandler () {
