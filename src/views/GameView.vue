@@ -35,7 +35,7 @@ try {
     state.options = Object.assign(state.options, options)
   }
 } catch (err) {
-  console.log(err)
+  console.log(err.stack)
   localStorage.setItem('options', '')
 }
 

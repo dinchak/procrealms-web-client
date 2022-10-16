@@ -16,18 +16,18 @@
 </template>
 
 <script setup>
-import { ansiSpan } from 'ansi-to-span'
-
 import { NProgress, NCollapseItem } from 'naive-ui'
-
 import { state } from '@/composables/state'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 function effects () {
   return state.gameState.affects || []
 }
 
 function getEffectName (effect) {
-  return ansiSpan(effect.longFlag || effect.name)
+  return ansiToHtml(effect.longFlag || effect.name)
 }
 
 function getEffectPercentage (effect) {
@@ -77,9 +77,6 @@ function getEffectBonuses (effect) {
       flex-wrap: wrap;
       justify-content: space-between;
       width: 100%;
-      .effect-bonus {
-        // margin-left: 20px;
-      }
     }
   }
 }

@@ -1,12 +1,14 @@
 <template>
   <div class="inventory-item">
-    <div v-html="props.amount + 'x ' + ansiSpan(props.colorName)" class="item-name"></div>
+    <div v-html="props.amount + 'x ' + ansiToHtml(props.colorName)" class="item-name"></div>
   </div>
 </template>
 
 <script setup>
 import { defineProps } from 'vue'
-import { ansiSpan } from 'ansi-to-span'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 const props = defineProps(['colorName', 'amount'])
 </script>

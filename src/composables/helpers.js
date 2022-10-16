@@ -1,3 +1,7 @@
+const AU = require('ansi_up')
+const ansi_up = new AU.default
+ansi_up.use_classes = true
+
 import { action_mapper } from '@/composables/constants/action_mapper';
 
 export function helpers() {
@@ -39,5 +43,23 @@ export function helpers() {
         return actions;
     }
 
-    return { copperToMoneyString, getActions }
+    const replacements = [
+        { from: '1;30m', to: '90m' },
+        { from: '1;31m', to: '91m' },
+        { from: '1;32m', to: '92m' },
+        { from: '1;33m', to: '93m' },
+        { from: '1;34m', to: '94m' },
+        { from: '1;35m', to: '95m' },
+        { from: '1;36m', to: '96m' },
+        { from: '1;37m', to: '97m' },
+    ]
+
+    function ansiToHtml (str) {
+        for (let { from, to } of replacements) {
+            str = str.replace(new RegExp(from, 'g'), to)
+        }
+        return ansi_up.ansi_to_html(str)
+    }
+
+    return { copperToMoneyString, getActions, ansiToHtml }
 }

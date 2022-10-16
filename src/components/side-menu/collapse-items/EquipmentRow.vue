@@ -1,13 +1,15 @@
 <template>
   <div class="equipment-row" :class="{'border-top' : isHead}">
     <div class="slot"> {{props.slot ? props.slot : props.type}}: </div>
-    <div><span v-if="props.level">[{{props.level}}] </span><span class="equipment-item" v-html="ansiSpan(props.colorName)"></span></div>
+    <div><span v-if="props.level">[{{props.level}}] </span><span class="equipment-item" v-html="ansiToHtml(props.colorName)"></span></div>
   </div>
 </template>
 
 <script setup>
 import { defineProps } from 'vue'
-import { ansiSpan } from 'ansi-to-span'
+import { helpers } from '@/composables/helpers'
+
+const { ansiToHtml } = helpers()
 
 const props = defineProps(['name', 'colorName', 'slot', 'type', 'level'])
 const isHead =  props.slot !== 'head'

@@ -2,7 +2,7 @@
   <n-card :class="getSideClass()" v-if="state.modals.mapModal">
     <p class="close" v-on:click="closeModal()">x</p>
     <div v-for="(line, id) in largeMap" :key="id">
-      <div v-html="ansiSpan(line)"></div>
+      <div v-html="ansiToHtml(line)"></div>
     </div>
   </n-card>
 </template>
@@ -10,7 +10,7 @@
 <script setup>
 import { NCard } from 'naive-ui'
 import { ref, watch } from 'vue'
-import { ansiSpan } from 'ansi-to-span'
+import { helpers } from '@/composables/helpers'
 import { state } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
 import { useWebSocket } from '@/composables/web_socket'
@@ -18,6 +18,8 @@ import { useKeyHandler } from '@/composables/key_handler'
 
 const { cmd } = useWebSocket()
 const { onKeydown, keyState } = useKeyHandler()
+const { ansiToHtml } = helpers()
+
 const MAP_ID = command_ids.MAP
 const largeMap = ref([])
 
