@@ -1,9 +1,7 @@
 <template>
   <n-card :class="getSideClass()" v-if="state.modals.mapModal">
     <p class="close" v-on:click="closeModal()">x</p>
-    <div v-for="(line, id) in largeMap" :key="id">
-      <div v-html="ansiToHtml(line)"></div>
-    </div>
+    <div class="ansi" v-for="(line, id) in largeMap" :key="id" v-html="ansiToHtml(line)"></div>
   </n-card>
 </template>
 
@@ -25,14 +23,14 @@ const largeMap = ref([])
 
 watch(() => state.cache.commandCache[MAP_ID], () => {
   if (state.modals.mapModal) {
-    largeMap.value = state.cache.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
+    largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
   }
 })
 
 watch(() => state.modals.mapModal, () => {
   if (state.modals.mapModal) {
     cmd('map', MAP_ID)
-    largeMap.value = state.cache.commandCache[MAP_ID].replaceAll(' ',  '&nbsp;').split(' ')
+    largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
   }
 })
 
@@ -67,6 +65,10 @@ cmd('map', MAP_ID)
 </script>
 
 <style scoped lang="less">
+.ansi {
+  white-space: pre;
+}
+
 .left {
   left: 5px;
 }
