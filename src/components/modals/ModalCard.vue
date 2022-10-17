@@ -21,7 +21,7 @@
           </div>
         </n-tab-pane>
         <n-tab-pane name="look" tab="Look">
-          <div class="item-desc" v-html="ansiToHtml(item.description.replaceAll('\n', '<br>'))"></div>
+          <div class="item-desc" v-html="ansiToHtml(item.description)"></div>
         </n-tab-pane>
         <n-tab-pane name="examine" tab="Examine">
           <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
@@ -114,9 +114,9 @@ function getButtonType(action) {
 }
 
 const rawExamine = function() {
-  const string = state.cache.commandCache[`${command_ids.EXAMINE}${item.value.iid}`]
-  if (string) {
-    return string.replaceAll('\n', '<br>')
+  const str = state.cache.commandCache[`${command_ids.EXAMINE}${item.value.iid}`]
+  if (str) {
+    return str
   } else {
     return "Getting data..."
   }
@@ -141,6 +141,7 @@ const rawExamine = function() {
 }
 
 .item-desc {
+  white-space: pre-wrap;
   font-size: 1.2em;
 }
 
@@ -158,6 +159,7 @@ h3 {
 }
 
 .examine {
+  white-space: pre-wrap;
   font-size: 1.2em;
 }
 

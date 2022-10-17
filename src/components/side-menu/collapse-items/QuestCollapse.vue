@@ -63,15 +63,15 @@ function player () {
 }
 
 function getQuestName (quest) {
-  return ansiToHtml(`L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${quest.name}</span>`)
+  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${quest.name}</span>`
 }
 
 function getGivenBy (quest) {
-  return ansiToHtml(`Given by <span class="bold-yellow">${quest.giver}</span>`)
+  return `Given by <span class="bold-yellow">${quest.giver}</span>`
 }
 
 function getLocation (quest) {
-  return ansiToHtml(`Go to <span class="bold-white">${quest.location.areaName}</span> at <span class="bold-magenta">${quest.location.x}</span>, <span class="bold-magenta">${quest.location.y}</span>`)
+  return `Go to <span class="bold-white">${quest.location.areaName}</span> at <span class="bold-magenta">${quest.location.x}</span>, <span class="bold-magenta">${quest.location.y}</span>`
 }
 
 </script>
