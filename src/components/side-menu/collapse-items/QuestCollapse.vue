@@ -63,7 +63,7 @@ function player () {
 }
 
 function getQuestName (quest) {
-  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${quest.name}</span>`
+  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(quest.name)}</span>`
 }
 
 function getGivenBy (quest) {
