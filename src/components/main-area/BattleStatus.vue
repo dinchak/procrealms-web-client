@@ -2,22 +2,10 @@
   <div class="battle-status" ref="battleStatus">
     <div class="side good">
       <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
-        <div class="action">
-          <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" aria-label="Health" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" aria-label="Energy" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" aria-label="Stamina" :percentage="entity.st" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
-        <div class="name-container">
-          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
-          <div v-if="!entity.target" class="targeting">No target</div>
-        </div>
-        <div class="caret" v-if="entity.isActing">&lt;</div>
-        <div class="caret" v-if="!entity.isActing"></div>
+        <BattleAction :entity="entity"></BattleAction>
+        <BattleVitals :entity="entity"></BattleVitals>
+        <BattleName :entity="entity"></BattleName>
+        <BattleCaret :entity="entity" caret="&lt;"></BattleCaret>
       </div>
     </div>
 
@@ -25,22 +13,10 @@
 
     <div class="side evil">
       <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
-        <div class="caret" v-if="entity.isActing">&gt;</div>
-        <div class="caret" v-if="!entity.isActing"></div>
-        <div class="name-container">
-          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
-          <div v-if="!entity.target" class="targeting">No target</div>
-        </div>
-        <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" aria-label="Enemy Health" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" aria-label="Enemy Energy" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" aria-label="Enemy Stamina" :percentage="entity.st" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
-        <div class="action">
-          <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
-        </div>
+        <BattleCaret :entity="entity" caret="&gt;"></BattleCaret>
+        <BattleName :entity="entity"></BattleName>
+        <BattleVitals :entity="entity"></BattleVitals>
+        <BattleAction :entity="entity"></BattleAction>
       </div>
     </div>
   </div>
@@ -48,22 +24,10 @@
   <div class="mobile-battle-status">
     <div class="side good">
       <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
-        <div class="action">
-          <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" :percentage="entity.st" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
-        <div class="name-container">
-          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
-          <div v-if="!entity.target" class="targeting">No target</div>
-        </div>
-        <div class="caret" v-if="entity.isActing">&lt;</div>
-        <div class="caret" v-if="!entity.isActing"></div>
+        <BattleAction :entity="entity"></BattleAction>
+        <BattleVitals :entity="entity"></BattleVitals>
+        <BattleName :entity="entity"></BattleName>
+        <BattleCaret :entity="entity" caret="&lt;"></BattleCaret>
       </div>
     </div>
 
@@ -71,22 +35,10 @@
 
     <div class="side evil">
       <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
-        <div class="caret" v-if="entity.isActing">&gt;</div>
-        <div class="caret" v-if="!entity.isActing"></div>
-        <div class="name-container">
-          <div class="name" v-html="ansiToHtml(entity.name)" @click="target(entity)"></div>
-          <div v-if="entity.target" class="targeting" v-html="'Target: ' + ansiToHtml(entity.target)"></div>
-          <div v-if="!entity.target" class="targeting">No target</div>
-        </div>
-        <div class="vitals" v-if="entity.hp > 0">
-          <n-progress type="line" status="success" :percentage="entity.hp" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="default" :percentage="entity.en" :show-indicator="false"></n-progress>
-          <n-progress type="line" status="warning" :percentage="entity.st" :show-indicator="false"></n-progress>
-        </div>
-        <div class="vitals bold-red" v-if="entity.hp == 0">DEAD</div>
-        <div class="action">
-          <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
-        </div>
+        <BattleCaret :entity="entity" caret="&gt;"></BattleCaret>
+        <BattleName :entity="entity"></BattleName>
+        <BattleVitals :entity="entity"></BattleVitals>
+        <BattleAction :entity="entity"></BattleAction>
       </div>
     </div>
   </div>
@@ -95,26 +47,18 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import stripAnsi from 'strip-ansi'
 
 import { state } from '@/composables/state'
-import { useWebSocket } from '@/composables/web_socket'
 
-import { helpers } from '@/composables/helpers'
-
-import { NProgress } from 'naive-ui'
-
-const { cmd } = useWebSocket()
-const { ansiToHtml } = helpers()
+import BattleAction from '@/components/main-area/battle-items/BattleAction.vue'
+import BattleCaret from '@/components/main-area/battle-items/BattleCaret.vue'
+import BattleName from '@/components/main-area/battle-items/BattleName.vue'
+import BattleVitals from '@/components/main-area/battle-items/BattleVitals.vue'
 
 const battleStatus = ref(null)
 
 function getSide (side) {
   return state.gameState.battle.participants.filter(p => p.side == side)
-}
-
-function target (entity) {
-  cmd(`target ${stripAnsi(entity.tag)}`)
 }
 
 onMounted(() => {
@@ -123,7 +67,6 @@ onMounted(() => {
     parent.scrollTo(0, parent.scrollHeight)
   }
 })
-
 </script>
 
 <style lang="less">
@@ -174,6 +117,11 @@ onMounted(() => {
         justify-content: space-around;
         align-items: center;
         font-size: 16px;
+        .status {
+          height: 16px;
+          width: 100%;
+          text-align: center;
+        }
       }
       .name-container {
         width: ~"calc(100% - 10px)";
@@ -286,6 +234,11 @@ onMounted(() => {
         justify-content: space-around;
         align-items: center;
         font-size: 16px;
+        .status {
+          height: 16px;
+          width: 100%;
+          text-align: center;
+        }
       }
       .name-container {
         width: ~"calc(100% - 10px)";
