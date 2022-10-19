@@ -18,7 +18,7 @@ function closeModal() {
 }
 </script>
 
-<style>
+<style scoped>
 
 .n-card {
   position: absolute;
