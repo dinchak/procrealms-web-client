@@ -19,21 +19,21 @@
               {{action.split(" ").length > 1 ? action.split(" ")[1] : action}}
             </n-button>
           </div>
-					<n-collapse>
-						<n-collapse-item title="Additional actions">
-							<div class="additional-actions">
-							<n-button ghost type="error" @click="dropAll()">
-								Drop all
-							</n-button>
-							<div class="input-button">
-								<n-button ghost type="error" @click="dropItems()">
-									Drop
-								</n-button>
-								<n-input-number class="input-field" button-placement="both" v-model:value="dropValue" min=1 :max="item.amount" />
-							</div>
-							</div>
-						</n-collapse-item>
-					</n-collapse>
+          <n-collapse>
+            <n-collapse-item title="Additional actions">
+              <div class="additional-actions">
+                <n-button ghost type="error" @click="dropAll()">
+                  Drop all
+                </n-button>
+                <div class="input-button">
+                  <n-button ghost type="error" @click="dropItems()">
+                    Drop
+                  </n-button>
+                  <n-input-number class="input-field" button-placement="both" v-model:value="dropValue" min=1 :max="item.amount" />
+                </div>
+              </div>
+            </n-collapse-item>
+          </n-collapse>
         </n-tab-pane>
         <n-tab-pane name="look" tab="Look">
           <div class="item-desc" v-html="ansiToHtml(item.description)"></div>
@@ -74,7 +74,7 @@ watch(() => state.modals.inventoryModal.item, () => {
     cmd(`examine iid:${item.value.iid}`, commandCacheKey)
     setActions()
   }
-	dropValue.value = 1
+  dropValue.value = 1
 })
 
 watch(() => state.modals.inventoryModal.menu, () => {
@@ -103,11 +103,11 @@ function clickedAction(action) {
 }
 
 function dropAll() {
-	cmd(`drop all iid:${item.value.iid}`)
+  cmd(`drop all iid:${item.value.iid}`)
 }
 
 function dropItems() {
-	cmd(`drop ${dropValue.value}x iid:${item.value.iid}`)
+  cmd(`drop ${dropValue.value}x iid:${item.value.iid}`)
 }
 
 // Setters
@@ -214,18 +214,18 @@ h3 {
 }
 
 .input-button {
-	display: flex;
+  display: flex;
 }
 
 .additional-actions {
-	display: grid;
-	grid-template-columns: 1fr 2fr;
-	gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 15px;
 }
 
 .input-field {
-	margin-left: 5px;
-	width: 100px;
+  margin-left: 5px;
+  width: 100px;
 }
 
 @media screen and (max-width: 1000px) {

@@ -87,7 +87,7 @@ export const state = reactive({
       menu: ''
     },
     mapModal: false,
-		mercModal: false
+    mercModal: false
   }
 })
 

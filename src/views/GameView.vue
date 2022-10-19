@@ -8,7 +8,6 @@
     <n-layout>
       <ModalCard></ModalCard>
       <MapModal></MapModal>
-			<MercModal></MercModal>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
