@@ -1,10 +1,11 @@
 <template>
-	<n-card>
-		<p class="close" v-on:click="closeModal()">x</p>
-	</n-card>
+  <n-card>
+    <p class="close" v-on:click="closeModal()">x</p>
+  </n-card>
 </template>
 
 <script setup>
+// TODO This modal needs to be added to src/views/GameView.vue once it is completed
 import { watch } from 'vue'
 import { NCard } from 'naive-ui'
 import { state } from '@/composables/state'
