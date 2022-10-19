@@ -8,6 +8,7 @@
     <n-layout>
       <ModalCard></ModalCard>
       <MapModal></MapModal>
+			<MercModal></MercModal>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -28,6 +29,7 @@ import HelpOverlay from '@/components/HelpOverlay.vue'
 import ModalCard from '@/components/modals/ModalCard'
 import MapModal from '@/components/modals/MapModal'
 import SideMenu from '@/components/side-menu/SideMenu'
+import MercModal from '@/components/modals/MercModal'
 
 try {
   const options = JSON.parse(localStorage.getItem('options'))
