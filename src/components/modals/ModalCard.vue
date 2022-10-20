@@ -104,9 +104,13 @@ function clickedAction(action) {
 
 function dropAll() {
   cmd(`drop all iid:${item.value.iid}`)
+  closeModal()
 }
 
 function dropItems() {
+  if (dropValue.value === item.value.amount) {
+    closeModal()
+  }
   cmd(`drop ${dropValue.value}x iid:${item.value.iid}`)
 }
 

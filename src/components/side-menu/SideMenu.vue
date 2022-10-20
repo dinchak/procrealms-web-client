@@ -14,7 +14,7 @@
           <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
           <MiniMap></MiniMap>
         </div>
-        <QuickStats></QuickStats>
+        <QuickStats :entity="state.gameState.player"></QuickStats>
       </div>
     </div>
   </n-layout-sider>

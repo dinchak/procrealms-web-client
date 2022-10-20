@@ -10,6 +10,7 @@
     <n-layout>
       <ModalCard></ModalCard>
       <MapModal></MapModal>
+      <MercModal></MercModal>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -29,6 +30,7 @@ import LogoutModal from '@/components/modals/LogoutModal.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
 import ModalCard from '@/components/modals/ModalCard'
 import MapModal from '@/components/modals/MapModal'
+import MercModal from '@/components/modals/MercModal'
 import SideMenu from '@/components/side-menu/SideMenu'
 
 try {
