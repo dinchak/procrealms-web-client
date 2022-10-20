@@ -1,34 +1,34 @@
 <template>
   <div class="stats">
-    <n-progress class="quick-stats" type="line" status="success" :percentage="player().hp / player().maxHp * 100">
+    <n-progress class="quick-stats" type="line" status="success" :percentage="entity().hp / entity().maxHp * 100">
       <div class="bar-label">
-        <span class="bold-green">{{ player().hp }}</span> <span class="green">HP</span>
+        <span class="bold-green">{{ entity().hp }}</span> <span class="green">HP</span>
       </div>
     </n-progress>
-    <n-progress class="quick-stats" type="line" status="default" :percentage="player().energy / player().maxEnergy * 100">
+    <n-progress class="quick-stats" type="line" status="default" :percentage="entity().energy / entity().maxEnergy * 100">
       <div class="bar-label">
-        <span class="bold-cyan">{{ player().energy }}</span> <span class="cyan">EN</span>
+        <span class="bold-cyan">{{ entity().energy }}</span> <span class="cyan">EN</span>
       </div>
     </n-progress>
-    <n-progress class="quick-stats" type="line" status="warning" :percentage="player().stamina / player().maxStamina * 100">
+    <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().stamina / entity().maxStamina * 100">
       <div class="bar-label">
-        <span class="bold-yellow">{{ player().stamina }}</span> <span class="yellow">ST</span>
+        <span class="bold-yellow">{{ entity().stamina }}</span> <span class="yellow">ST</span>
       </div>
     </n-progress>
-    <n-progress class="quick-stats" type="line" status="success" :percentage="player().food / player().maxFood * 100">
+    <n-progress class="quick-stats" type="line" status="success" :percentage="entity().food / entity().maxFood * 100">
       <div class="bar-label">
-        <span class="bold-green">{{ player().food }}</span> <span class="green">FD</span>
+        <span class="bold-green">{{ entity().food }}</span> <span class="green">FD</span>
       </div>
     </n-progress>
     <div class="flex">
-      <n-progress class="quick-stats" type="line" status="warning" :percentage="player().combo / player().maxCombo * 100">
+      <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().combo / entity().maxCombo * 100">
         <div class="half-bar-label">
-          <span class="bold-yellow">{{ player().combo }}</span> <span class="yellow">CB</span>
+          <span class="bold-yellow">{{ entity().combo }}</span> <span class="yellow">CB</span>
         </div>
       </n-progress>
-      <n-progress class="quick-stats" type="line" status="danger" :percentage="player().rage / player().maxRage * 100">
+      <n-progress class="quick-stats" type="line" status="danger" :percentage="entity().rage / entity().maxRage * 100">
         <div class="half-bar-label">
-          <span class="bold-red">{{ player().rage }}</span> <span class="red">RG</span>
+          <span class="bold-red">{{ entity().rage }}</span> <span class="red">RG</span>
         </div>
       </n-progress>
     </div>
@@ -37,10 +37,12 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
-import { state } from '@/composables/state'
+import { defineProps } from '@/composables/state'
 
-function player () {
-  return state.gameState.player || {}
+const props = defineProps(['entity'])
+
+function entity () {
+  return props.entity || {}
 }
 </script>
 
@@ -58,7 +60,6 @@ function player () {
   .flex {
     display: flex;
     flex-direction: row;
-    line-height: 1.1;
     .quick-stats {
       margin-right: 10px;
       &:last-child {
