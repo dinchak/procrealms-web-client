@@ -19,7 +19,7 @@
               {{action.split(" ").length > 1 ? action.split(" ")[1] : action}}
             </n-button>
           </div>
-          <n-collapse>
+          <n-collapse v-if="state.modals.inventoryModal.menu === 'inventory'" class="additional-collapse">
             <n-collapse-item title="Additional actions">
               <div class="additional-actions">
                 <n-button ghost type="error" @click="dropAll()">
@@ -211,6 +211,10 @@ h3 {
   .action {
     text-transform: capitalize;
   }
+}
+
+.additional-collapse {
+  margin-top: 15px;
 }
 
 .input-button {

@@ -3,7 +3,9 @@
 
   <HelpOverlay></HelpOverlay>
 
-  <n-layout has-sider v-if="state.token && state.connected" :class="getDirection()" :sider-placement="state.options.swapControls ? 'right' : 'left'">
+  <n-layout has-sider 
+    v-if="state.token && state.connected" class="game" 
+    :sider-placement="state.options.swapControls ? 'right' : 'left'">
     <SideMenu v-if="!state.options.swapControls"></SideMenu>
     <n-layout>
       <ModalCard></ModalCard>
@@ -28,7 +30,6 @@ import HelpOverlay from '@/components/HelpOverlay.vue'
 import ModalCard from '@/components/modals/ModalCard'
 import MapModal from '@/components/modals/MapModal'
 import SideMenu from '@/components/side-menu/SideMenu'
-import MercModal from '@/components/modals/MercModal'
 
 try {
   const options = JSON.parse(localStorage.getItem('options'))
@@ -40,12 +41,6 @@ try {
   localStorage.setItem('options', '')
 }
 
-function getDirection() {
-  if (state.options.swapControls) {
-    return 'game right-side'
-  }
-  return 'game left-side'
-}
 </script>
 
 <style lang="less">
