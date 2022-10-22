@@ -17,11 +17,16 @@ import { watch, ref, onMounted } from 'vue'
 import { NCard } from 'naive-ui'
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
+import { constants } from '@/composables/constants/constants'
+import { useWebSocket } from '@/composables/web_socket'
 
 import QuickStats from '@/components/side-menu/QuickStats.vue'
 
 const { ansiToHtml } = helpers() 
+const { fetchEntity } = useWebSocket()
+
 const merc = ref({})
+const mercEntity = ref({})
 const affects = ref([])
 
 watch(() => state.gameState.party, function() {
@@ -37,10 +42,14 @@ function closeModal() {
 }
 
 function findAndSetMerc() {
+  console.log(state.gameState.party)
   if (state.gameState.party) {
-    state.gameState.party.map(entity => {
-      if (entity.name.includes(" the ")) {
-        merc.value = entity
+    state.gameState.party.map(async entity => {
+      if (entity.traits.includes(constants.TRAITS_MERCENARY)) {
+        mercEntity.value = await fetchEntity(entity.eid)
+        if (mercEntity.value.target !== {}) {
+          merc.value = entity
+        }
       }
     })
   }
