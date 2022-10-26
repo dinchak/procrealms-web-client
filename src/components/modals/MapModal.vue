@@ -35,7 +35,9 @@ watch(() => state.modals.mapModal, () => {
 })
 
 watch(() => state.gameState.map, () => {
-  cmd('map', MAP_ID)
+  if (state.modals.mapModal) {
+    cmd('map', MAP_ID)
+  }
 })
 
 function getSideClass() {
