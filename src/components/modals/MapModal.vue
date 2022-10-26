@@ -7,7 +7,7 @@
 
 <script setup>
 import { NCard } from 'naive-ui'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { helpers } from '@/composables/helpers'
 import { state } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
@@ -30,8 +30,11 @@ watch(() => state.cache.commandCache[MAP_ID], () => {
 watch(() => state.modals.mapModal, () => {
   if (state.modals.mapModal) {
     cmd('map', MAP_ID)
-    largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
   }
+})
+
+watch(() => state.cache.commandCache[MAP_ID], () => {
+  largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
 })
 
 watch(() => state.gameState.map, () => {
@@ -63,7 +66,11 @@ onKeydown((ev) => {
   }
 })
 
-cmd('map', MAP_ID)
+onMounted(() => {
+  if (state.modals.mapModal) {
+    cmd('map', MAP_ID)
+  }
+})
 </script>
 
 <style scoped lang="less">
