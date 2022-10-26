@@ -37,7 +37,7 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
-import { defineProps } from '@/composables/state'
+import { defineProps } from 'vue'
 
 const props = defineProps(['entity'])
 
