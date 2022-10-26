@@ -44,12 +44,10 @@ function closeModal() {
 function findAndSetMerc() {
   console.log(state.gameState.party)
   if (state.gameState.party) {
-    state.gameState.party.map(async entity => {
+    state.gameState.party.map(async partyMember => {
+      let entity = await fetchEntity(partyMember.eid)
       if (entity.traits.includes(constants.TRAITS_MERCENARY)) {
-        mercEntity.value = await fetchEntity(entity.eid)
-        if (mercEntity.value.target !== {}) {
-          merc.value = entity
-        }
+        mercEntity.value = entity
       }
     })
   }
