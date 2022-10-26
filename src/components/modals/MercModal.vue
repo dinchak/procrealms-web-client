@@ -42,7 +42,6 @@ function closeModal() {
 }
 
 function findAndSetMerc() {
-  console.log(state.gameState.party)
   if (state.gameState.party) {
     state.gameState.party.map(async partyMember => {
       let entity = await fetchEntity(partyMember.eid)
