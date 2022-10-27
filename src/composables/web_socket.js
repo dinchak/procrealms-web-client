@@ -58,8 +58,8 @@ export function useWebSocket () {
     send('cmd', command, id)
   }
 
-  function fetchEntity (eid) {
-    if (state.cache.entityCache[eid]) {
+  function fetchEntity (eid, skipCache) {
+    if (state.cache.entityCache[eid] && !skipCache) {
       return new Promise((resolve) => resolve(state.cache.entityCache[eid].entity))
     }
 
