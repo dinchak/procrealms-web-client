@@ -58,6 +58,7 @@ export const state = reactive({
 
   gameState: {
     player: {},
+    mercEid: -1,
     battle: {
       actions: {
         skills: [],
