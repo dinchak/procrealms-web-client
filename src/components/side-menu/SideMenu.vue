@@ -11,7 +11,10 @@
         </div>
         <div class="map-area" v-show="!state.gameState.battle.active" v-if="state.options.showMapArea">
           <MoveControls></MoveControls>
-          <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
+          <div class="mid-buttons">
+            <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
+            <n-button v-if="state.gameState.mercEid !== -1" ghost @click="toggleMercModal">Merc</n-button>
+          </div>
           <MiniMap></MiniMap>
         </div>
         <QuickStats :entity="state.gameState.player"></QuickStats>
@@ -22,7 +25,7 @@
 
 <script setup>
 import { state } from '@/composables/state'
-import { NLayoutSider, NIcon } from 'naive-ui'
+import { NLayoutSider, NIcon, NButton } from 'naive-ui'
 
 import MiniMap from '@/components/side-menu/MiniMap.vue'
 import PlayerStats from '@/components/side-menu/PlayerStats.vue'
@@ -49,4 +52,21 @@ function toggleMap() {
   }
   state.modals.mapModal = !state.modals.mapModal
 }
+
+function toggleMercModal() {
+  state.modals.mercModal = !state.modals.mercModal
+}
 </script>
+
+<style scoped>
+.mid-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90%;
+}
+
+.n-button {
+  margin-top: 10px;
+}
+</style>

@@ -1,31 +1,35 @@
 <template>
-  <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal">
+  <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal && state.gameState.mercEid !== -1">
     <p class="close" v-on:click="closeModal()">x</p>
-    <h3 class="bold-green"> {{merc.name}} </h3>
+    <h3 class="bold-green"> {{mercEntity.name}} </h3>
     <div class="affects">
-      <span v-for="(affect, index) in affects" 
-            v-html="ansiToHtml(affect) + ' '" 
-            v-bind:key='index'></span>
+      <n-tooltip trigger="hover" v-for="(affect, index) in affects" v-bind:key='index'>
+        <template #trigger>
+          <span v-html="ansiToHtml(affect.shortFlag) + ' '"></span>
+        </template>
+        <span v-html="ansiToHtml(affect.longFlag)" class="longflag"></span>
+        <span v-if="affect.desc">:&nbsp;{{affect.desc}}</span>
+      </n-tooltip>
     </div>
-    <QuickStats :entity="merc"></QuickStats>
+    <QuickStats :entity="mercVitals"></QuickStats>
   </n-card>
 </template>
 
 <script setup>
 // TODO This modal is not completed yet so the player does not have a way to show it yet
 import { watch, ref, onMounted } from 'vue'
-import { NCard } from 'naive-ui'
+import { NCard, NTooltip } from 'naive-ui'
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 import { constants } from '@/composables/constants/constants'
 import { useWebSocket } from '@/composables/web_socket'
 
-import QuickStats from '@/components/side-menu/QuickStats.vue'
+import QuickStats from '@/components/side-menu/QuickStats'
 
 const { ansiToHtml } = helpers() 
 const { fetchEntity } = useWebSocket()
 
-const merc = ref({})
+const mercVitals = ref({})
 const mercEntity = ref({})
 const affects = ref([])
 
@@ -41,22 +45,38 @@ function closeModal() {
   state.modals.mercModal = false
 }
 
-function findAndSetMerc() {
+async function findAndSetMerc() {
+  console.log(state.gameState.party)
+  let foundAMerc = false
   if (state.gameState.party) {
-    state.gameState.party.map(async partyMember => {
-      let entity = await fetchEntity(partyMember.eid)
-      if (entity.traits.includes(constants.TRAITS_MERCENARY)) {
+    await Promise.all(state.gameState.party.map(async partyMember => {
+      let entity = await fetchEntity(partyMember.eid, true)
+      if (entity.traits.includes(constants.TRAITS_MERCENARY) 
+        && state.gameState.player.charmies.includes(partyMember.eid)) {
         mercEntity.value = entity
+        mercVitals.value = partyMember
+        state.gameState.mercEid = entity.eid
+        setAffects()
+        foundAMerc = true
       }
-    })
+    }))
   }
-  // Some of the affects will just be null, filtering those out
+  if (!foundAMerc) {
+    state.gameState.mercEid = -1
+  }
+}
+
+function setAffects() {  
   const newAffects = []
-  if (merc.value.affects) {
-    merc.value.affects.map(affect => {
-      if (affect !== null) {
-        newAffects.push(affect)
+  if (mercEntity.value.affects) {
+    mercEntity.value.affects.map(affect => {
+      if (!affect.shortFlag) {
+        affect.shortFlag = "\u001b[1;37m" + affect.name.substring(0,2).toUpperCase()
       }
+      if (!affect.longFlag) {
+        affect.longFlag = "\u001b[1;37m" + affect.name
+      }
+      newAffects.push(affect)
     })
   }
   affects.value = newAffects
@@ -88,6 +108,10 @@ function findAndSetMerc() {
   right: 10px;
   cursor: pointer;
   font-size: 1.4em;
+}
+
+.longflag {
+  text-transform: capitalize;
 }
 
 @media screen and (max-width: 1000px) {
