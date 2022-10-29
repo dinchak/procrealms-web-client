@@ -187,8 +187,8 @@ onKeydown((ev) => {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 35px;
-      height: 35px;
+      width: 45px;
+      height: 45px;
       background-color: #333;
       border: 1px solid #222;
       transition: all 0.3s;
