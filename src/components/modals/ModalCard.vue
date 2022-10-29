@@ -22,6 +22,15 @@
           <n-collapse v-if="state.modals.inventoryModal.menu === 'inventory'" class="additional-collapse">
             <n-collapse-item title="Additional actions">
               <div class="additional-actions">
+                <n-button ghost type="warning" @click="giveAll()" v-if="state.gameState.mercEid !== -1">
+                  Give all
+                </n-button>
+                <div class="input-button" v-if="state.gameState.mercEid !== -1">
+                  <n-button ghost type="warning" @click="giveItems()">
+                    Give
+                  </n-button>
+                  <n-input-number class="input-field" button-placement="both" v-model:value="giveValue" min=1 :max="item.amount" />
+                </div>
                 <n-button ghost type="error" @click="dropAll()">
                   Drop all
                 </n-button>
@@ -64,6 +73,7 @@ const actions = ref(getActions({
   subtype: item.value.subtype
 }))
 const dropValue = ref(1)
+const giveValue = ref(1)
 
 // Watchers
 
@@ -112,6 +122,22 @@ function dropItems() {
     closeModal()
   }
   cmd(`drop ${dropValue.value}x iid:${item.value.iid}`)
+}
+
+function giveAll() {
+  if (state.gameState.mercEid !== -1) {
+    cmd(`give all iid:${item.value.iid} eid:${state.gameState.mercEid}`)
+    closeModal()
+  }
+}
+
+function giveItems() {
+  if (state.gameState.mercEid !== -1) {
+    if (giveValue.value === item.value.amount) {
+      closeModal()
+    }
+    cmd(`give ${giveValue.value}x iid:${item.value.iid} eid:${state.gameState.mercEid}`)
+  }
 }
 
 // Setters
