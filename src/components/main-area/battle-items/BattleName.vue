@@ -1,6 +1,6 @@
 <template>
   <div class="name-container" @click="target(entity)">
-    <div class="name" v-html="ansiToHtml(entity.name)"></div>
+    <div class="name" v-html="ansiToHtml(`L${entity.level} ${entity.name}`)"></div>
     <div class="affects" v-html="getAffects(entity)"></div>
     <div v-if="entity.targetName" class="targeting" v-html="'Target: ' + ansiToHtml(entity.targetName)"></div>
     <div v-if="!entity.targetName" class="targeting">No target</div>
