@@ -56,11 +56,11 @@ onKeydown((ev) => {
     return false
   }
 
-  if (!state.options.movementDuringInput && state.mode === 'input') {
+  if (!state.options.movementDuringInput || state.mode === 'input') {
     return false
   }
 
-  if (ev.key === 'm') {
+  if (ev.key === 'M' || ev.key === 'm') {
     state.modals.mapModal = !state.modals.mapModal
     return true
   }
