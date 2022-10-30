@@ -1,6 +1,6 @@
 <template>
   <div class="inventory-item">
-    <div v-html="props.amount + 'x ' + ansiToHtml(props.colorName)" class="item-name"></div>
+    <div v-html="`L${props.level} ${props.amount}x ${ansiToHtml(props.colorName)}`" class="item-name"></div>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import { helpers } from '@/composables/helpers'
 
 const { ansiToHtml } = helpers()
 
-const props = defineProps(['colorName', 'amount'])
+const props = defineProps(['colorName', 'amount', 'level'])
 </script>
 
 <style scoped lang="less">

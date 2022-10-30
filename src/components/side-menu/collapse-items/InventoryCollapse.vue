@@ -24,22 +24,21 @@
 <script setup>
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
-import { reactive, ref, watch, watchEffect } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { helpers } from '@/composables/helpers'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
 
-const { fetchItem, cmd } = useWebSocket()
+const { fetchItems, cmd } = useWebSocket()
 const { copperToMoneyString } = helpers()
 const { onKeydown } = useKeyHandler()
 
-const items = reactive([])
+const items = ref([])
 const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
-const clickedItem = ref({})
 const options = [
   {
     label: 'Name',
@@ -69,7 +68,11 @@ const options = [
 const value = ref('name')
 
 // Watchers
-watchEffect(() => {
+onMounted(() => {
+  setItems(state.gameState.inventory)
+})
+
+watch(() => state.gameState.inventory, () => {
   setItems(state.gameState.inventory)
 })
 
@@ -83,32 +86,18 @@ watch(value, () => {
 
 // Methods
 
-function setItems(itemIIDs) {
-  let oldItems = [...items]
-  itemIIDs.forEach(async (iid, index) => {
-    items[index] = await fetchItem(iid)
-    if (items[index].name === clickedItem.value.name) {
-      clickedItem.value.amount = items[index].amount
-    }
-    if (oldItems.length !== items.length) {
-      oldItems = [...items]
-    }
-  })
-
-  if (itemIIDs.length < items.length) {
-    const diff = items.length - itemIIDs.length
-    items.splice(itemIIDs.length, diff)
-  }
+async function setItems (itemIIDs) {
+  items.value = await fetchItems(itemIIDs)
 
   const input = searchTerm.value.toLowerCase()
 
-  filteredItems.value = items.filter((item) => (item.name.toLowerCase().includes(input) ||
+  filteredItems.value = items.value.filter((item) => (item.name.toLowerCase().includes(input) ||
       item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 
   if (state.modals.inventoryModal.visible) {
-    items.map(item => {
+    items.value.map(item => {
       if (item.name === state.modals.inventoryModal.item.name && item.iid !== state.modals.inventoryModal.item.iid) {
         state.modals.inventoryModal.item = item
       }

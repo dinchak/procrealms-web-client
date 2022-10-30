@@ -21,7 +21,7 @@ export function useWebSocket () {
           state.cache.commandCache[id] = msg
         }
         if (process.env.NODE_ENV != 'production') {
-          console.log(`<- ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
+          console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
         id ? onEvent(cmd, msg, id) : onEvent(cmd, msg)
@@ -34,7 +34,7 @@ export function useWebSocket () {
 
   function send (cmd, msg, id = false) {
     if (process.env.NODE_ENV != 'production') {
-      console.log(`-> ${cmd} ${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`)
+      console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
     }
     let out = { cmd, msg }
     if (id) {
@@ -102,7 +102,36 @@ export function useWebSocket () {
     return promise
   }
 
+  function fetchItems (iids) {
+    let fetchIids = iids.filter(iid => !state.cache.itemCache[iid])
+    if (!fetchIids.length) {
+      return new Promise((resolve) => {
+        let items = []
+        for (let iid of iids) {
+          items.push(state.cache.itemCache[iid].item)
+        }
+        resolve(items)
+      })
+    }
+
+    let id = Math.round(Math.random() * 1000000)
+    while (state.pendingRequests[`items-${id}`]) {
+      id = Math.round(Math.random() * 1000000)
+    }
+    let requestId = `items-${id}`
+
+    const promise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`Request for ${requestId} timed out after 5 seconds`)), 5000)
+      state.pendingRequests[requestId] = { resolve, reject, timeout, iids }
+    })
+
+    state.pendingRequests[requestId].promise = promise
+
+    send('items', { iids: fetchIids, id })
+    return promise
+  }
+
   return {
-    initConnection, send, cmd, fetchEntity, fetchItem
+    initConnection, send, cmd, fetchEntity, fetchItem, fetchItems
   }
 }

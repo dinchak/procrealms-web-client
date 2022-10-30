@@ -16,7 +16,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
 const { onKeydown, keyState } = useKeyHandler()
-const { cmd, fetchEntity, fetchItem } = useWebSocket()
+const { cmd, fetchEntity, fetchItems } = useWebSocket()
 
 const roomItems = ref([])
 const roomEntities = ref([])
@@ -67,19 +67,7 @@ function roomHasEnemies () {
 }
 
 async function getRoomItems () {
-  let items = []
-  for (let iid of state.gameState.room.items) {
-    try {
-      let item = await fetchItem(iid)
-      if (!item.error) {
-        items.push(item)
-      }
-    } catch (err) {
-      console.log(`failed to fetch item iid ${iid}`)
-      console.log(err.stack)
-    }
-  }
-  return items
+  return await fetchItems(state.gameState.room.items)
 }
 
 function roomHasResources () {

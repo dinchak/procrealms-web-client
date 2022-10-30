@@ -176,6 +176,24 @@ export function useEventHandler () {
       resolve(msg)
       return
     }
+
+    matches = cmd.match(/^items-(\d+)$/)
+    if (matches && state.pendingRequests[cmd]) {
+      for (let item of msg) {
+        state.cache.itemCache[item.iid] = { item, date: Date.now() }
+      }
+
+      let { resolve, timeout, iids } = state.pendingRequests[cmd]
+      delete state.pendingRequests[cmd]
+      clearTimeout(timeout)
+
+      let items = []
+      for (let iid of iids) {
+        items.push(state.cache.itemCache[iid].item)
+      }
+      resolve(items)
+      return
+    }
   }
 
   return {
