@@ -93,17 +93,9 @@ export const state = reactive({
 })
 
 export function addLine (line, bufferName) {
-  // let maxLength = 500
-  // if (bufferName == 'output') {
-  //   maxLength = 2500
-  // }
-
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
 
   state[bufferName].push(line)
-  // if (state[bufferName].length > maxLength) {
-  //   state[bufferName].shift()
-  // }
 }

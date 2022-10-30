@@ -46,7 +46,6 @@ function closeModal() {
 }
 
 async function findAndSetMerc() {
-  console.log(state.gameState.party)
   let foundAMerc = false
   if (state.gameState.party) {
     await Promise.all(state.gameState.party.map(async partyMember => {
