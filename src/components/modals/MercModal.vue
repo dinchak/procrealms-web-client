@@ -19,6 +19,7 @@
 // TODO This modal is not completed yet so the player does not have a way to show it yet
 import { watch, ref, onMounted } from 'vue'
 import { NCard, NTooltip } from 'naive-ui'
+
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 import { constants } from '@/composables/constants/constants'
@@ -27,7 +28,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import QuickStats from '@/components/side-menu/QuickStats'
 
 const { ansiToHtml } = helpers() 
-const { fetchEntity } = useWebSocket()
+const { fetchEntities } = useWebSocket()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
@@ -48,18 +49,20 @@ function closeModal() {
 async function findAndSetMerc() {
   let foundAMerc = false
   if (state.gameState.party) {
-    await Promise.all(state.gameState.party.map(async partyMember => {
-      let entity = await fetchEntity(partyMember.eid, true)
-      if (entity.traits.includes(constants.TRAITS_MERCENARY) 
-        && state.gameState.player.charmies.includes(partyMember.eid)) {
-        mercEntity.value = entity
-        mercVitals.value = partyMember
-        state.gameState.mercEid = entity.eid
-        setAffects()
-        foundAMerc = true
-      }
-    }))
+    let mercenary = (await fetchEntities(state.gameState.player.charmies))
+      .filter(en => en.traits.includes(constants.TRAITS_MERCENARY))
+      .shift()
+
+    mercEntity.value = mercenary
+    state.gameState.mercEid = mercenary.eid
+
+    let partyMember = state.gameState.party.find(pm => pm.eid == mercenary.eid)
+    mercVitals.value = partyMember
+
+    setAffects()
+    foundAMerc = true
   }
+
   if (!foundAMerc) {
     state.gameState.mercEid = -1
   }
