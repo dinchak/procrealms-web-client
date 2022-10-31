@@ -288,7 +288,6 @@ onMounted(() => {
     .line {
       font-size: 20px;
       line-height: 22px;
-      min-height: 22x;
       display: block;
       white-space: pre-wrap;
       font-weight: normal !important;
@@ -343,7 +342,6 @@ onMounted(() => {
       .line {
         font-size: 16px;
         line-height: 16px;
-        min-height: 16px;
       }
     }
   }
