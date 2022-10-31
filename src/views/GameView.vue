@@ -3,8 +3,8 @@
 
   <HelpOverlay></HelpOverlay>
 
-  <n-layout has-sider 
-    v-if="state.token && state.connected" class="game" 
+  <n-layout has-sider
+    v-if="state.token && state.connected && !state.disconnected" class="game" 
     :sider-placement="state.options.swapControls ? 'right' : 'left'">
     <SideMenu v-if="!state.options.swapControls"></SideMenu>
     <n-layout>

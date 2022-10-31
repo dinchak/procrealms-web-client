@@ -1,31 +1,20 @@
 import { reactive, ref } from "vue"
 
 export const state = reactive({
-  options: {
-    movementDuringInput: false,
-    fixedMap: false,
-    commandHistoryButton: false,
-    swapControls: false,
-    hideSidebar: false,
-    chatInMain: true,
-    showTabs: true,
-    showMapArea: true
-  },
-
-  activeTab: 'output',
-
-  showHelp: false,
+  connected: false,
+  disconnected: false,
 
   pendingRequests: {},
 
-  cache: {
-    entityCache: {},
-    itemCache: {},
-    commandCache: {},
-  },
+  gameState: resetGameState(),
+  options: resetOptions(),
+  cache: resetCache(),
 
-  connected: false,
+  activeTab: 'output',
+  // hotkey or input
+  mode: 'hotkey',
 
+  showHelp: false,
   showLogin: false,
   loginResolve: null,
   loginReject: null,
@@ -36,9 +25,7 @@ export const state = reactive({
 
   showLogout: false,
 
-  // hotkey or input
-  mode: 'hotkey',
-
+  // splash screen
   picture: '',
 
   scrolledBack: {
@@ -56,7 +43,40 @@ export const state = reactive({
   name: '',
   token: '',
 
-  gameState: {
+  modals: {
+    inventoryModal: {
+      visible: false,
+      item: ref({}),
+      menu: ''
+    },
+    mapModal: false,
+    mercModal: false
+  }
+})
+
+export function resetState () {
+  state.activeTab = 'output'
+  state.showHelp = false
+  state.pendingRequests = []
+  state.cache = resetCache()
+  state.gameState = resetGameState()
+  state.options = resetOptions()
+  state.output = []
+  state.gossip = []
+  state.trade = []
+  state.newbie = []
+}
+
+function resetCache () {
+  return {
+    entityCache: {},
+    itemCache: {},
+    commandCache: {}
+  }
+}
+
+function resetGameState () {
+  return {
     player: {},
     mercEid: -1,
     battle: {
@@ -80,17 +100,21 @@ export const state = reactive({
     },
     map: [],
     slots: []
-  },
-  modals: {
-    inventoryModal: {
-      visible: false,
-      item: ref({}),
-      menu: ''
-    },
-    mapModal: false,
-    mercModal: false
   }
-})
+}
+
+function resetOptions () {
+  return {
+    movementDuringInput: false,
+    fixedMap: false,
+    commandHistoryButton: false,
+    swapControls: false,
+    hideSidebar: false,
+    chatInMain: true,
+    showTabs: true,
+    showMapArea: true
+  }
+}
 
 export function addLine (line, bufferName) {
   if (!state[bufferName]) {

@@ -1,6 +1,6 @@
 <template>
   <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
-    <SplashScreen v-if="!state.token || !state.connected"></SplashScreen>
+    <SplashScreen v-if="state.disconnected || !state.token"></SplashScreen>
     <LoginModal></LoginModal>
     <NewPlayerModal></NewPlayerModal>
     <router-view/>
@@ -22,7 +22,7 @@ import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from './components/modals/LoginModal.vue'
 import NewPlayerModal from './components/modals/NewPlayerModal.vue'
 
-import { state } from './composables/state'
+import { state, resetState } from './composables/state'
 
 const themeOverrides = {
   Button: {
@@ -32,12 +32,16 @@ const themeOverrides = {
 
 const { readCookie, clearCookie } = useCookieHandler()
 const { onEvent } = useEventHandler()
-const { initConnection, send } = useWebSocket()
+const { initConnection, doTokenAuth } = useWebSocket()
 useWindowHandler()
 
 function onConnect () {
   try {
     state.connected = true
+    if (state.disconnected) {
+      return
+    }
+
     let json = readCookie()
     if (json) {
       let prefs = JSON.parse(json)
@@ -48,7 +52,7 @@ function onConnect () {
       state.token = prefs.token
       state.name = prefs.name
 
-      send('token', { name: state.name, token: state.token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
+      doTokenAuth()
     }
   } catch (err) {
     clearCookie()
@@ -65,9 +69,13 @@ function doConnect () {
 }
 
 function onClose () {
+  if (state.token) {
+    resetState()
+    state.disconnected = true
+  }
+
   state.connected = false
-  console.log('connection closed')
-  setTimeout(doConnect, 2000)
+  setTimeout(() => doConnect(), 1000)
 }
 
 onMounted(doConnect)

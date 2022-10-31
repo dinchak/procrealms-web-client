@@ -32,6 +32,10 @@ export function useWebSocket () {
     }
   }
 
+  function doTokenAuth () {
+    send('token', { name: state.name, token: state.token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
+  }
+
   function send (cmd, msg, id = false) {
     if (process.env.NODE_ENV != 'production') {
       console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
@@ -77,6 +81,35 @@ export function useWebSocket () {
     state.pendingRequests[requestId].promise = promise
 
     send('entity', { eid })
+    return promise
+  }
+
+  function fetchEntities (eids) {
+    let fetchEids = eids.filter(eid => !state.cache.entityCache[eid])
+    if (!fetchEids.length) {
+      return new Promise((resolve) => {
+        let entities = []
+        for (let eid of eids) {
+          entities.push(state.cache.entityCache[eid].entity)
+        }
+        resolve(entities)
+      })
+    }
+
+    let id = Math.round(Math.random() * 1000000)
+    while (state.pendingRequests[`entities-${id}`]) {
+      id = Math.round(Math.random() * 1000000)
+    }
+    let requestId = `entities-${id}`
+
+    const promise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`Request for ${requestId} timed out after 5 seconds`)), 5000)
+      state.pendingRequests[requestId] = { resolve, reject, timeout, eids }
+    })
+
+    state.pendingRequests[requestId].promise = promise
+
+    send('entities', { eids: fetchEids, id })
     return promise
   }
 
@@ -132,6 +165,6 @@ export function useWebSocket () {
   }
 
   return {
-    initConnection, send, cmd, fetchEntity, fetchItem, fetchItems
+    initConnection, doTokenAuth, send, cmd, fetchEntity, fetchEntities, fetchItem, fetchItems
   }
 }

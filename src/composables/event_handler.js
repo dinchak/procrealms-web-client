@@ -39,6 +39,7 @@ handlers['token.fail'] = () => {
 handlers['token.success'] = ({ name, token }) => {
   state.name = name
   state.token = token
+  state.disconnected = false
 
   let prefs = { name, token }
   document.cookie = `prefs=${JSON.stringify(prefs)}; path=/; max-age=${60*60*24*14};`
@@ -191,7 +192,27 @@ export function useEventHandler () {
       for (let iid of iids) {
         items.push(state.cache.itemCache[iid].item)
       }
+
       resolve(items)
+      return
+    }
+
+    matches = cmd.match(/^entities-(\d+)$/)
+    if (matches && state.pendingRequests[cmd]) {
+      for (let entity of msg) {
+        state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
+      }
+
+      let { resolve, timeout, eids } = state.pendingRequests[cmd]
+      delete state.pendingRequests[cmd]
+      clearTimeout(timeout)
+
+      let entities = []
+      for (let eid of eids) {
+        entities.push(state.cache.entityCache[eid].entity)
+      }
+
+      resolve(entities)
       return
     }
   }
