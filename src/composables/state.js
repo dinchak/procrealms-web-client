@@ -97,5 +97,5 @@ export function addLine (line, bufferName) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
 
-  state[bufferName].push(line)
+  state[bufferName].push(line || ' ')
 }
