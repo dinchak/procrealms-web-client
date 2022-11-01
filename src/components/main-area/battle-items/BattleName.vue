@@ -1,6 +1,6 @@
 <template>
   <div class="name-container" @click="target(entity)">
-    <div class="name" v-html="ansiToHtml(`L${entity.level} ${entity.name}`)"></div>
+    <div class="name" v-html="ansiToHtml(`${ansi.boldBlack}L${ansi.boldWhite}${entity.level}${ansi.reset} ${entity.name}`)"></div>
     <div class="affects" v-html="getAffects(entity)"></div>
     <div v-if="entity.targetName" class="targeting" v-html="'Target: ' + ansiToHtml(entity.targetName)"></div>
     <div v-if="!entity.targetName" class="targeting">No target</div>
@@ -13,7 +13,7 @@ import stripAnsi from 'strip-ansi'
 import { helpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml, ansi } = helpers()
 const { cmd } = useWebSocket()
 
 const props = defineProps({

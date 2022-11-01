@@ -43,6 +43,12 @@ export function helpers() {
         return actions;
     }
 
+    const ansi = {
+        boldBlack: String.fromCharCode(27) + '[90m',
+        boldWhite: String.fromCharCode(27) + '[97m',
+        reset: String.fromCharCode(27) + '[0m'
+    }
+
     const replacements = [
         { from: '1;30m', to: '90m' },
         { from: '1;31m', to: '91m' },
@@ -61,5 +67,5 @@ export function helpers() {
         return ansi_up.ansi_to_html(str)
     }
 
-    return { copperToMoneyString, getActions, ansiToHtml }
+    return { copperToMoneyString, getActions, ansiToHtml, ansi }
 }
