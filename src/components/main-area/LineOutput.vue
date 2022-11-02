@@ -271,6 +271,33 @@ onMounted(() => {
     }
   }
 
+  #gossip {
+    .message {
+      border-top: 1px solid #433f17;
+      &:first-child {
+        border: 0;
+      }
+    }
+  }
+
+  #trade {
+    .message {
+      border-top: 1px solid #193e17;
+      &:first-child {
+        border: 0;
+      }
+    }
+  }
+
+  #newbie {
+    .message {
+      border-top: 1px solid #33163f;
+      &:first-child {
+        border: 0;
+      }
+    }
+  }
+
   .output {
     display: flex;
     flex-direction: column;
@@ -303,29 +330,31 @@ onMounted(() => {
 
     .message {
       display: grid;
-      grid-template-columns: 100px  calc(100% - 100px);
-      border-top: 1px solid #333;
-      margin-top: 10px;
-      padding-top: 10px;
+      grid-template-columns: 110px calc(100% - 200px) 90px;
+      border-top: 1px solid #181818;
+      margin-top: 5px;
+      padding-top: 5px;
+      align-items: center;
       &:first-child {
         border: 0;
       }
       .from {
         .name {
-          font-size: 16px;
-          line-height: 10px;
+          font-size: 14px;
+          line-height: 12px;
           text-align: right;
+          word-break: break-all;
         }
         .timestamp {
           font-size: 10px;
-          line-height: 10px;
+          line-height: 8px;
           text-align: right;
         }
       }
       .body {
         display: flex;
         font-size: 20px;
-        line-height: 16px;
+        line-height: 20px;
         margin-left: 10px;
       }
     }
@@ -342,6 +371,19 @@ onMounted(() => {
       .line {
         font-size: 16px;
         line-height: 16px;
+      }
+      .message {
+        grid-template-columns: 90px calc(100% - 90px);
+        .from {
+          .name {
+            font-size: 16px;
+            line-height: 16px;
+          }
+        }
+        .body {
+          font-size: 16px;
+          line-height: 16px;
+        }
       }
     }
   }
