@@ -1,3 +1,5 @@
+const { ansiSpan } = require('ansi-to-span')
+
 import { state, addLine } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 
@@ -9,7 +11,7 @@ handlers['welcome'] = (msg) => {
   let lines = msg.picture.split('\n')
   lines.pop()
   lines.pop()
-  state.picture = ansiToHtml(lines.join('\n'))
+  state.picture = ansiSpan(lines.join('\n'))
 }
 
 handlers['login.nameAvailable'] = () => {
