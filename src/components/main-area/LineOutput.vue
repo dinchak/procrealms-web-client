@@ -374,12 +374,6 @@ onMounted(() => {
       }
       .message {
         grid-template-columns: 90px calc(100% - 90px);
-        .from {
-          .name {
-            font-size: 16px;
-            line-height: 16px;
-          }
-        }
         .body {
           font-size: 16px;
           line-height: 16px;
