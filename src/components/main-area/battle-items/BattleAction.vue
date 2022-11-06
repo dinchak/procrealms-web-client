@@ -1,6 +1,6 @@
 <template>
   <div class="action">
-    <n-progress type="circle" status="error" :percentage="entity.nextAction / 20 * 100" :show-indicator="false"></n-progress>
+    <n-progress type="circle" status="error" :percentage="entity.nextAction / 40 * 100" :show-indicator="false"></n-progress>
   </div>
 </template>
 <script setup>
