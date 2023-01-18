@@ -85,7 +85,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   message = ansiToHtml(`\u{1b}[0m${message.replace(stripTags, '')}`)
 
   if (['gossip', 'trade', 'newbie'].includes(channel)) {
-    if (state[channel].find(msg => msg.id == id)) {
+    if (state[channel].find(msg => msg.id == id)) {P
       return
     }
 
@@ -192,7 +192,9 @@ export function useEventHandler () {
 
       let items = []
       for (let iid of iids) {
-        items.push(state.cache.itemCache[iid].item)
+        if (state.cache.itemCache[iid]) {
+          items.push(state.cache.itemCache[iid].item)
+        }
       }
 
       resolve(items)
@@ -211,7 +213,9 @@ export function useEventHandler () {
 
       let entities = []
       for (let eid of eids) {
-        entities.push(state.cache.entityCache[eid].entity)
+        if (state.cache.entityCache[eid]) {
+          entities.push(state.cache.entityCache[eid].entity)
+        }
       }
 
       resolve(entities)

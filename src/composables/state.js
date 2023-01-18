@@ -93,6 +93,8 @@ function resetGameState () {
     inventory: [],
     aliases: {},
     quests: [],
+    party: [],
+    charmies: [],
     room: {
       exits: [],
       entities: [],

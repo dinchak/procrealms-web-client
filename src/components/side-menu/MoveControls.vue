@@ -78,7 +78,7 @@ function getMovementClass (dir) {
     return 'direction'
   }
 
-  if (room.exits.includes(dir)) {
+  if (room.exits && room.exits.includes(dir)) {
     return 'direction active'
   } else {
     return 'direction'
