@@ -22,7 +22,6 @@ import { NCard, NTooltip } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
-import { constants } from '@/composables/constants/constants'
 import { useWebSocket } from '@/composables/web_socket'
 
 import QuickStats from '@/components/side-menu/QuickStats'
@@ -47,28 +46,22 @@ function closeModal() {
 }
 
 async function findAndSetMerc() {
-  let foundAMerc = false
-  if (state.gameState.party) {
-    let mercenary = (await fetchEntities(state.gameState.player.charmies))
-      .filter(en => en.traits.includes(constants.TRAITS_MERCENARY))
-      .shift()
-
-    mercEntity.value = mercenary
-    state.gameState.mercEid = mercenary.eid
-
-    let partyMember = state.gameState.party.find(pm => pm.eid == mercenary.eid)
-    mercVitals.value = partyMember
-
-    setAffects()
-    foundAMerc = true
-  }
-
-  if (!foundAMerc) {
+  let merc = state.gameState.charmies.find(charmie => charmie.traits.includes('mercenary'))
+  if (!merc) {
     state.gameState.mercEid = -1
+    return
   }
+
+  // let results = await fetchEntities([merc.eid])
+  // mercEntity.value = mercenary
+  // state.gameState.mercEid = mercenary.eid
+  // mercVitals.value = merc
+
+  setAffects()
+  return
 }
 
-function setAffects() {  
+function setAffects() {
   const newAffects = []
   if (mercEntity.value.affects) {
     mercEntity.value.affects.map(affect => {
