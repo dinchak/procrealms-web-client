@@ -22,12 +22,10 @@ import { NCard, NTooltip } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
-import { useWebSocket } from '@/composables/web_socket'
 
 import QuickStats from '@/components/side-menu/QuickStats'
 
 const { ansiToHtml } = helpers() 
-const { fetchEntities } = useWebSocket()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
@@ -52,10 +50,9 @@ async function findAndSetMerc() {
     return
   }
 
-  // let results = await fetchEntities([merc.eid])
-  // mercEntity.value = mercenary
-  // state.gameState.mercEid = mercenary.eid
-  // mercVitals.value = merc
+  mercEntity.value = merc
+  state.gameState.mercEid = merc.eid
+  mercVitals.value = merc
 
   setAffects()
   return
