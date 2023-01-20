@@ -234,7 +234,7 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
         outline: 1px solid #57edff;
       }
     }
-    &.gossip {
+    &.chat {
       &:focus-visible {
         border: 0;
         box-shadow: 0 0 5px #f8ff25;

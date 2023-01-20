@@ -13,9 +13,9 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane name="gossip" :tab="getTab('gossip')" display-directive="show">
-      <div id="gossip" class="output" ref="gossip" @scroll="onScroll('gossip')">
-        <div v-for="(line, i) in state.gossip" class="message" :key="`line-${i}`">
+    <n-tab-pane name="chat" :tab="getTab('chat')" display-directive="show">
+      <div id="chat" class="output" ref="chat" @scroll="onScroll('chat')">
+        <div v-for="(line, i) in state.chat" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-yellow">{{ line.from }}</div>
             <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
@@ -23,7 +23,7 @@
           <div class="body bold-white" v-html="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.gossip" :class="getScrollbackControlClass()" @click="scrollDown('gossip')">
+      <div v-show="state.scrolledBack.chat" :class="getScrollbackControlClass()" @click="scrollDown('chat')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -84,11 +84,11 @@ import { NIcon, NTabs, NTabPane, NBadge, NSpace } from 'naive-ui'
 dayjs.extend(relativeTime)
 
 const output = ref(null)
-const gossip = ref(null)
+const chat = ref(null)
 const trade = ref(null)
 const newbie = ref(null)
 
-const refs = { output, gossip, trade, newbie }
+const refs = { output, chat, trade, newbie }
 
 const { send } = useWebSocket()
 const { onResize } = useWindowHandler()
@@ -157,7 +157,7 @@ function onScroll (id) {
 }
 
 function onBeforeChangeTab (activeName) {
-  if (['gossip', 'trade', 'newbie'].includes(activeName)) {
+  if (['chat', 'trade', 'newbie'].includes(activeName)) {
     state[activeName].forEach(msg => msg.unread = false)
   }
   state.activeTab = activeName
@@ -223,7 +223,7 @@ onMounted(() => {
   doHideShowTabs()
 
   watch(() => state.output.length, () => onChanged('output'))
-  watch(() => state.gossip.length, () => onChanged('gossip'))
+  watch(() => state.chat.length, () => onChanged('chat'))
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
   watch(() => state.options.showTabs, () => doHideShowTabs())
@@ -271,7 +271,7 @@ onMounted(() => {
     }
   }
 
-  #gossip {
+  #chat {
     .message {
       border-top: 1px solid #433f17;
       &:first-child {
