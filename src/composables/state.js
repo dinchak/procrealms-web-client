@@ -30,13 +30,13 @@ export const state = reactive({
 
   scrolledBack: {
     output: false,
-    gossip: false,
+    chat: false,
     trade: false,
     newbie: false
   },
 
   output: [],
-  gossip: [],
+  chat: [],
   trade: [],
   newbie: [],
 
@@ -62,7 +62,7 @@ export function resetState () {
   state.gameState = resetGameState()
   state.options = resetOptions()
   state.output = []
-  state.gossip = []
+  state.chat = []
   state.trade = []
   state.newbie = []
 }

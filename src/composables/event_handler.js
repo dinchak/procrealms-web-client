@@ -70,7 +70,7 @@ handlers['room.describe'] = ({ desc }) => {
   }
 }
 
-const channelColors = { gossip: 'bold-yellow', trade: 'bold-green', newbie: 'bold-magenta' }
+const channelColors = { chat: 'bold-yellow', trade: 'bold-green', newbie: 'bold-magenta' }
 handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   if (from == state.gameState.player.name) {
     from = 'You'
@@ -84,7 +84,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
 
   message = ansiToHtml(`\u{1b}[0m${message.replace(stripTags, '')}`)
 
-  if (['gossip', 'trade', 'newbie'].includes(channel)) {
+  if (['chat', 'trade', 'newbie'].includes(channel)) {
     if (state[channel].find(msg => msg.id == id)) {
       return
     }
@@ -113,7 +113,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
       addLine(out, 'output')
     }
 
-  } else if (['info', 'announce'].includes(channel)) {
+  } else if (['info', 'announce', 'events'].includes(channel)) {
     addLine(message, 'output')
 
   } else {
