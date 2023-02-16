@@ -2,16 +2,21 @@
   <n-collapse-item title="Statistics">
 
     <div class="ability-points" v-if="player().abilityPoints > 0">
-      You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command to spend them.
+      You have <span class="bold-yellow">1</span> unspent ability points. Use the point command or the <n-icon class="inline"><AddBoxOutlined></AddBoxOutlined></n-icon> symbol below to spend them.
     </div>
 
     <div class="stat-row">
       <div class="stat">
         <div class="label">Strength</div>
+        <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('strength')"><AddBoxOutlined></AddBoxOutlined></n-icon>
         <div class="value bold-red">{{ player().strength }}<span class="black">|</span><span class="red">{{ player()._strength }}</span></div>
       </div>
+    </div>
+
+    <div class="stat-row">
       <div class="stat">
         <div class="label">Magic</div>
+        <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('magic')"><AddBoxOutlined></AddBoxOutlined></n-icon>
         <div class="value bold-cyan">{{ player().magic }}<span class="black">|</span><span class="cyan">{{ player()._magic }}</span></div>
       </div>
     </div>
@@ -19,10 +24,15 @@
     <div class="stat-row">
       <div class="stat">
         <div class="label">Agility</div>
+        <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('agility')"><AddBoxOutlined></AddBoxOutlined></n-icon>
         <div class="value bold-yellow">{{ player().agility }}<span class="black">|</span><span class="yellow">{{ player()._agility }}</span></div>
       </div>
+    </div>
+
+    <div class="stat-row">
       <div class="stat">
         <div class="label">Spirit</div>
+        <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('spirit')"><AddBoxOutlined></AddBoxOutlined></n-icon>
         <div class="value bold-green">{{ player().spirit }}<span class="black">|</span><span class="green">{{ player()._spirit }}</span></div>
       </div>
     </div>
@@ -167,9 +177,14 @@
 </template>
 
 <script setup>
-import { NCollapseItem } from 'naive-ui'
+import { NCollapseItem, NIcon } from 'naive-ui'
+
+import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
 import { state } from '@/composables/state'
+import { useWebSocket } from '@/composables/web_socket'
+
+const { cmd } = useWebSocket()
 
 function player () {
   return state.gameState.player || {}
@@ -182,17 +197,20 @@ function renderNumber (value, digits = 2) {
   if (value == Math.floor(value)) return Math.round(value) + ''
   return value.toFixed(digits)
 }
+
+function addStatPoint (stat) {
+  cmd("point " + stat)
+}
 </script>
 
 <style lang="less">
 .stat-row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   .stat {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    width: 65%;
     .label {
       color: #aaa;
       width: 70px;
@@ -215,5 +233,16 @@ function renderNumber (value, digits = 2) {
 .ability-points {
   text-align: center;
   margin-bottom: 10px;
+}
+
+.add-point {
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.inline {
+  font-size: 16px;
+  display: inline-flex;
+  vertical-align: middle;
 }
 </style>

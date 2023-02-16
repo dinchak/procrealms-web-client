@@ -84,7 +84,7 @@ function getPlayerStatsClass () {
   .stat-row {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     .stat {
       display: flex;
       flex-direction: row;
