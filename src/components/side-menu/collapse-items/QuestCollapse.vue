@@ -67,11 +67,11 @@ function getQuestName (quest) {
 }
 
 function getGivenBy (quest) {
-  return `Given by <span class="bold-yellow">${quest.giver}</span>`
+  return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
 }
 
 function getLocation (quest) {
-  return `Go to <span class="bold-white">${quest.location.areaName}</span> at <span class="bold-magenta">${quest.location.x}</span>, <span class="bold-magenta">${quest.location.y}</span>`
+  return `Go to <span class="bold-white">${quest.location.name}</span> at <span class="bold-magenta">${quest.location.coords.x}</span>, <span class="bold-magenta">${quest.location.coords.y}</span>`
 }
 
 </script>

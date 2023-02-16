@@ -44,7 +44,8 @@ function closeModal() {
 }
 
 async function findAndSetMerc() {
-  let merc = state.gameState.charmies.find(charmie => charmie.traits.includes('mercenary'))
+  let merc = Object.values(state.gameState.charmies)
+    .find(charmie => charmie && charmie.traits && charmie.traits.includes('mercenary'))
   if (!merc) {
     state.gameState.mercEid = -1
     return

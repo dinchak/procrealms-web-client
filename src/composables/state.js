@@ -94,7 +94,7 @@ function resetGameState () {
     aliases: {},
     quests: [],
     party: [],
-    charmies: [],
+    charmies: {},
     room: {
       exits: [],
       entities: [],
