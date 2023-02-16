@@ -51,18 +51,17 @@ async function findAndSetMerc() {
     return
   }
 
-  mercEntity.value = merc
-  state.gameState.mercEid = merc.eid
-  mercVitals.value = merc
+  mercEntity.value = merc.stats
+  state.gameState.mercEid = merc.stats.eid
+  mercVitals.value = merc.stats
 
-  setAffects()
-  return
+  setAffects(merc.affects)
 }
 
-function setAffects() {
+function setAffects(affectList) {
   const newAffects = []
-  if (mercEntity.value.affects) {
-    mercEntity.value.affects.map(affect => {
+  if (affectList) {
+    affectList.map(affect => {
       if (!affect.shortFlag) {
         affect.shortFlag = "\u001b[1;37m" + affect.name.substring(0,2).toUpperCase()
       }
