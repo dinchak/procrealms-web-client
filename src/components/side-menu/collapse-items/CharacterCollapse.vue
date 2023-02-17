@@ -2,7 +2,7 @@
   <n-collapse-item title="Statistics">
 
     <div class="ability-points" v-if="player().abilityPoints > 0">
-      You have <span class="bold-yellow">1</span> unspent ability points. Use the point command or the <n-icon class="inline"><AddBoxOutlined></AddBoxOutlined></n-icon> symbol below to spend them.
+      You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command or the <n-icon class="inline"><AddBoxOutlined></AddBoxOutlined></n-icon> symbol below to spend them.
     </div>
 
     <div class="stat-row">
@@ -178,16 +178,17 @@
 
 <script setup>
 import { NCollapseItem, NIcon } from 'naive-ui'
+import { defineProps } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
-import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 
 const { cmd } = useWebSocket()
+const props = defineProps(['character', 'isPlayer'])
 
 function player () {
-  return state.gameState.player || {}
+  return props.character || {}
 }
 
 function renderNumber (value, digits = 2) {
@@ -199,7 +200,8 @@ function renderNumber (value, digits = 2) {
 }
 
 function addStatPoint (stat) {
-  cmd("point " + stat)
+  const command = props.isPlayer ? `point ${stat}` : `order eid:${props.character.eid} point ${stat}`
+  cmd(command)
 }
 </script>
 
@@ -207,10 +209,13 @@ function addStatPoint (stat) {
 .stat-row {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  width: 100%;
   .stat {
     display: flex;
     flex-direction: row;
     width: 65%;
+    justify-content: space-around;
     .label {
       color: #aaa;
       width: 70px;

@@ -12,13 +12,30 @@
       </n-tooltip>
     </div>
     <QuickStats :entity="mercVitals"></QuickStats>
+    <n-collapse>
+      <CharacterCollapse
+          :character="mercEntity"
+          :is-player="false"
+      ></CharacterCollapse>
+      <EffectsCollapse
+          :affects="affects"
+      ></EffectsCollapse>
+      <SkillsCollapse
+          :character="mercEntity"
+          :skills="mercSkills"
+          :isPlayer="false"
+      ></SkillsCollapse>
+    </n-collapse>
   </n-card>
 </template>
 
 <script setup>
 // TODO This modal is not completed yet so the player does not have a way to show it yet
 import { watch, ref, onMounted } from 'vue'
-import { NCard, NTooltip } from 'naive-ui'
+import { NCard, NTooltip, NCollapse } from 'naive-ui'
+import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
+import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
+import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
@@ -30,6 +47,7 @@ const { ansiToHtml } = helpers()
 const mercVitals = ref({})
 const mercEntity = ref({})
 const affects = ref([])
+const mercSkills = ref([])
 
 watch(() => state.gameState.party, function() {
   findAndSetMerc()
@@ -54,6 +72,7 @@ async function findAndSetMerc() {
   mercEntity.value = merc.stats
   state.gameState.mercEid = merc.stats.eid
   mercVitals.value = merc.stats
+  mercSkills.value = merc.skills
 
   setAffects(merc.affects)
 }
@@ -84,6 +103,7 @@ function setAffects(affectList) {
   margin-top: 35px;
   z-index: 2;
   max-height: 80vh;
+  overflow-y: scroll;
 }
 
 .right {
@@ -104,6 +124,10 @@ function setAffects(affectList) {
 
 .longflag {
   text-transform: capitalize;
+}
+
+.n-collapse {
+  margin-top: 20px;
 }
 
 @media screen and (max-width: 1000px) {
