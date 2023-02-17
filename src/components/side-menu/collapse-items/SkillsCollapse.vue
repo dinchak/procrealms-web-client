@@ -12,7 +12,7 @@
         <!-- <div>{{ skill }}</div> -->
       </div>
 
-      <div class="skill-type bold-magenta">Crafting Skills</div>
+      <div class="skill-type bold-magenta" v-if="props.isPlayer">Crafting Skills</div>
       <div class="points" v-if="player().craftingPoints > 0">
         You have <span class="bold-magenta">{{ player().craftingPoints }}</span> unspent crafting points. Find a crafting skill book to read.
       </div>
@@ -42,14 +42,16 @@
 
 <script setup>
 import { NCollapseItem, NProgress } from 'naive-ui'
-import { state } from '@/composables/state'
+import { defineProps } from 'vue'
+
+const props = defineProps(['character', 'skills', 'isPlayer'])
 
 function skills () {
-  return state.gameState.skills || []
+  return props.skills || []
 }
 
 function player () {
-  return state.gameState.player
+  return props.character
 }
 
 </script>
