@@ -17,6 +17,7 @@
       ></CharacterCollapse>
       <EffectsCollapse
           :affects="state.gameState.affects"
+          :isPlayer="true"
       ></EffectsCollapse>
       <InventoryCollapse></InventoryCollapse>
       <EquipmentCollapse></EquipmentCollapse>
