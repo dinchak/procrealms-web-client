@@ -11,12 +11,21 @@
     </n-progress>
 
     <n-collapse>
-      <CharacterCollapse></CharacterCollapse>
-      <EffectsCollapse></EffectsCollapse>
+      <CharacterCollapse
+          :character="state.gameState.player"
+          :is-player="true"
+      ></CharacterCollapse>
+      <EffectsCollapse
+          :affects="state.gameState.affects"
+      ></EffectsCollapse>
       <InventoryCollapse></InventoryCollapse>
       <EquipmentCollapse></EquipmentCollapse>
       <QuestCollapse></QuestCollapse>
-      <SkillsCollapse></SkillsCollapse>
+      <SkillsCollapse
+          :character="state.gameState.player"
+          :skills="state.gameState.skills"
+          :isPlayer="true"
+      ></SkillsCollapse>
       <OptionsCollapse></OptionsCollapse>
     </n-collapse>
   </div>

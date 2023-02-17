@@ -51,7 +51,7 @@ export function useWebSocket () {
     if (!id) {
       // Crude filter to avoid shouing the ugly 'look iid:123456' in the output
       const lcCmd = command.toLowerCase()
-      const excludeIIDCommand = lcCmd.includes('iid:') && !lcCmd.includes('chat ') && !lcCmd.includes('say ')
+      const excludeIIDCommand = (lcCmd.includes('iid:') || lcCmd.includes('eid:')) && !lcCmd.includes('chat ') && !lcCmd.includes('say ')
           && !lcCmd.includes('trade ') && !lcCmd.includes('newbie ')
       if (!excludeIIDCommand) {
         addLine('', 'output')
