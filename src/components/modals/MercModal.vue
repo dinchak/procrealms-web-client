@@ -19,6 +19,7 @@
       ></CharacterCollapse>
       <EffectsCollapse
           :affects="affects"
+          :isPlayer="false"
       ></EffectsCollapse>
       <SkillsCollapse
           :character="mercEntity"
