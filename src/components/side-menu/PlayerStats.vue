@@ -19,7 +19,11 @@
           :affects="state.gameState.affects"
           :isPlayer="true"
       ></EffectsCollapse>
-      <InventoryCollapse></InventoryCollapse>
+      <InventoryCollapse
+          :character="state.gameState.player"
+          :inventory="state.gameState.inventory"
+          :isPlayer="true"
+      ></InventoryCollapse>
       <EquipmentCollapse></EquipmentCollapse>
       <QuestCollapse></QuestCollapse>
       <SkillsCollapse
