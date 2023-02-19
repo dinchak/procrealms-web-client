@@ -16,7 +16,15 @@
         </n-popselect>
       </div>
 
-      <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)"></InventoryRow>
+      <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)" :isPlayer="props.isPlayer"></InventoryRow>
+      <InventoryModal
+          :visible="isModalOpen"
+          :isPlayer="props.isPlayer"
+          :item="clickedItem"
+          :charEId="character.eid"
+          :name="character.name"
+          menu="inventory"
+      ></InventoryModal>
     </div>
   </n-collapse-item>
 </template>
@@ -24,21 +32,25 @@
 <script setup>
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, defineProps } from 'vue'
 import { helpers } from '@/composables/helpers'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
+import InventoryModal from "@/components/modals/InventoryModal.vue";
 
 const { fetchItems, cmd } = useWebSocket()
 const { copperToMoneyString } = helpers()
 const { onKeydown } = useKeyHandler()
+const props = defineProps(['inventory', 'isPlayer', 'character'])
 
 const items = ref([])
 const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
+const clickedItem = ref({})
+const isModalOpen = ref(0)
 const options = [
   {
     label: 'Name',
@@ -69,15 +81,15 @@ const value = ref('name')
 
 // Watchers
 onMounted(() => {
-  setItems(state.gameState.inventory)
+  setItems(props.inventory)
 })
 
-watch(() => state.gameState.inventory, () => {
-  setItems(state.gameState.inventory)
+watch(() => props.inventory, () => {
+  setItems(props.inventory)
 })
 
 watch(searchTerm, () => {
-  setItems(state.gameState.inventory)
+  setItems(props.inventory)
 })
 
 watch(value, () => {
@@ -96,10 +108,18 @@ async function setItems (itemIIDs) {
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 
-  if (state.modals.inventoryModal.visible) {
+  if (state.modals.inventoryModal.visible) { // TODO Remove This statement as part of inventory modal
     items.value.map(item => {
       if (item.name === state.modals.inventoryModal.item.name && item.iid !== state.modals.inventoryModal.item.iid) {
         state.modals.inventoryModal.item = item
+      }
+    })
+  }
+
+  if (isModalOpen.value) {
+    items.value.map(item => {
+      if (item.name === clickedItem.value.name && item.iid !== clickedItem.value.iid) {
+        clickedItem.value = item
       }
     })
   }
@@ -109,6 +129,8 @@ function clickHandler(item) {
   state.modals.inventoryModal.visible = true
   state.modals.inventoryModal.item = item
   state.modals.inventoryModal.menu = 'inventory'
+  clickedItem.value = item
+  isModalOpen.value++
 
   const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
 
@@ -133,24 +155,24 @@ function onBlur() {
 // Getters
 
 function getMoney() {
-  return state.gameState.player.money || 0
+  return props.character.money || 0
 }
 
 function getNumItems() {
-  return state.gameState.player.numItems || 0
+  return props.character.numItems || 0
 }
 
 function getMaxNumItems() {
-  return state.gameState.player.maxNumItems || 0
+  return props.character.maxNumItems || 0
 }
 
 function getWeight() {
-  const initialValue = state.gameState.player.weight || 0
+  const initialValue = props.character.weight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
 function getMaxWeight() {
-  const initialValue = state.gameState.player.maxWeight || 0
+  const initialValue = props.character.maxWeight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 

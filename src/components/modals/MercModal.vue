@@ -21,6 +21,11 @@
           :affects="affects"
           :isPlayer="false"
       ></EffectsCollapse>
+      <InventoryCollapse
+          :character="mercEntity"
+          :inventory="mercInventory"
+          :isPlayer="false"
+      ></InventoryCollapse>
       <SkillsCollapse
           :character="mercEntity"
           :skills="mercSkills"
@@ -37,20 +42,26 @@ import { NCard, NTooltip, NCollapse } from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
 import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
+import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 
 import QuickStats from '@/components/side-menu/QuickStats'
 
-const { ansiToHtml } = helpers() 
+const { ansiToHtml } = helpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
 const affects = ref([])
 const mercSkills = ref([])
+const mercInventory = ref([])
 
 watch(() => state.gameState.party, function() {
+  findAndSetMerc()
+})
+
+watch(state.gameState.charmies, function () {
   findAndSetMerc()
 })
 
@@ -74,6 +85,7 @@ async function findAndSetMerc() {
   state.gameState.mercEid = merc.stats.eid
   mercVitals.value = merc.stats
   mercSkills.value = merc.skills
+  mercInventory.value = merc.items
 
   setAffects(merc.affects)
 }
