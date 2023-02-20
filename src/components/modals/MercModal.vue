@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-// TODO This modal is not completed yet so the player does not have a way to show it yet
+
 import { watch, ref, onMounted } from 'vue'
 import { NCard, NTooltip, NCollapse } from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
