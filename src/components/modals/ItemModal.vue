@@ -1,8 +1,8 @@
 <template>
-  <Teleport to=".output">
+  <Teleport to="body">
     <n-card v-if="isVisible" :class="getClass()">
       <p class="close" v-on:click="closeModal()">x</p>
-      <n-tabs type="line" animated size="large">
+      <n-tabs type="line" animated size="large" :class="props.isPlayer + '-modal'" @update:value="handleUpdateValue">
         <n-tab-pane name="actions" tab="Actions">
           <h3 v-html="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
 
@@ -53,6 +53,9 @@
         <n-tab-pane name="examine" tab="Examine">
           <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
         </n-tab-pane>
+        <n-tab-pane name="compare" tab="Compare" v-if="props.menu === 'inventory' && (props.item.type === 'weapon' || props.item.type === 'armor')">
+          <div class="examine" v-html="ansiToHtml(rawCompare())"></div>
+        </n-tab-pane>
       </n-tabs>
     </n-card>
   </Teleport>
@@ -72,10 +75,11 @@ const props = defineProps(['isPlayer', 'item', 'visible', 'menu', 'charEId', 'na
 
 const isVisible = ref(false)
 const isDrinkDisabled = ref(false)
-
-const actions = ref(getActions(props.item))
+const actions = ref(getActions(props.item, props.isPlayer))
 const dropValue = ref(1)
 const giveValue = ref(1)
+const activeTab = ref('')
+
 const otherChar = props.isPlayer ? state.gameState.mercEid : state.gameState.player.eid
 const mercOrder = props.isPlayer ? "" : `order eid:${props.charEId.toString()} `
 
@@ -83,16 +87,32 @@ const mercOrder = props.isPlayer ? "" : `order eid:${props.charEId.toString()} `
 
 watch(() => props.item, () => {
   if (isVisible.value) {
-    const commandCacheKey = command_ids.EXAMINE + props.item.iid.toString()
-    cmd(`${mercOrder}examine iid:${props.item.iid}`, commandCacheKey)
+    const examineCommandCacheKey = command_ids.EXAMINE + props.item.iid.toString()
+    cmd(`${mercOrder}examine iid:${props.item.iid}`, examineCommandCacheKey)
+
+    const compareCommandCacheKey = command_ids.COMPARE + props.item.iid.toString()
+    cmd(`${mercOrder}compare iid:${props.item.iid}`, compareCommandCacheKey)
+
     setActions()
+
+    // Checks below are to switch the tab from Compare to active when switching to an item with no Compare tab.
+    // NaiveUI doesn't have protection for that, so you just end up with an empty tab otherwise
+    if (activeTab.value === 'compare') {
+      if (props.item.type === 'weapon' || props.item.type === 'armor') {
+        return
+      }
+
+      // There is a VueJS way of doing this, but it implies writing more code, and it makes it overcomplicated.
+      // A doc selector will be good enough if it's just one per file :)
+      document.getElementsByClassName(`${props.isPlayer}-modal`)[0].querySelector('[data-name="actions"]').click()
+    }
   }
   dropValue.value = 1
 })
 
 watch(() => props.visible, () => {
-    isVisible.value = true;
-    setActions()
+  isVisible.value = true;
+  setActions()
 })
 
 watch(() => props.menu, () => {
@@ -117,7 +137,14 @@ watch(() => state.modals.inventoryModals.mercItemModal, () => {
   }
 })
 
-// setters
+watch(() => state.cache.commandCache[command_ids.MERC_ACTION], () => {
+  if (state.cache.commandCache[command_ids.MERC_ACTION] && !state.cache.commandCache[command_ids.MERC_ACTION].includes("iid:")) {
+    addLine(ansiToHtml(state.cache.commandCache[command_ids.MERC_ACTION]), 'output')
+  }
+  state.cache.commandCache[command_ids.MERC_ACTION] = null
+})
+
+// Setters
 
 function setActions() {
   if (props.menu === 'inventory') {
@@ -125,7 +152,7 @@ function setActions() {
       name: props.item.name,
       type: props.item.type,
       subtype: props.item.subtype
-    })
+    }, props.isPlayer)
   }
 
   if (props.menu === 'equipment') {
@@ -133,10 +160,8 @@ function setActions() {
   }
 }
 
-// methods
-function closeModal() {
-  isVisible.value = false
-}
+// Getters
+
 function getClass() {
   let sideClass = ""
   const swapControls = state.options.swapControls
@@ -164,20 +189,15 @@ function getLook() {
   return props.item.description ? props.item.description : "Cannot find any info on this item"
 }
 
-function clickedAction(action) {
-  const nonDestructiveActions = ['look', 'examine', 'compare']
-  if (!nonDestructiveActions.includes(action) && props.item.amount === 1) {
-    closeModal()
-  }
+// Actions
 
-  props.isPlayer ? null : addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">You order ${props.name} to ${action} ${props.item.name}.</span>`, 'output')
-  cmd(`${mercOrder}${action} iid:${props.item.iid}`, 12345)
+function closeModal() {
+  isVisible.value = false
 }
 
 function dropAll() {
-  cmd(`${mercOrder}drop all iid:${props.item.iid}`, 12435)
-  const charText = props.isPlayer ? 'You drop' : `${props.name} drops`
-  addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${charText} ${props.item.amount}x ${props.item.name}</span>`, 'output')
+  props.isPlayer ? cmd(`drop all iid:${props.item.iid}`)
+      : cmd(`${mercOrder}drop all iid:${props.item.iid}`, command_ids.MERC_ACTION)
   closeModal()
 }
 
@@ -185,12 +205,14 @@ function dropItems() {
   if (dropValue.value === props.item.amount) {
     closeModal()
   }
-  cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`, 12345)
+  props.isPlayer ? cmd(`drop ${dropValue.value}x iid:${props.item.iid}`)
+      : cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`, command_ids.MERC_ACTION)
 }
 
 function giveAll() {
   if (state.gameState.mercEid !== -1) {
-    cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, 12345)
+    props.isPlayer ? cmd(`give all iid:${props.item.iid} eid:${otherChar}`)
+        : cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, command_ids.MERC_ACTION)
     closeModal()
   }
 }
@@ -200,7 +222,8 @@ function giveItems() {
     if (giveValue.value === props.item.amount) {
       closeModal()
     }
-    cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`, 12345)
+    props.isPlayer ? cmd(`give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`)
+        : cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`, command_ids.MERC_ACTION)
   }
 }
 
@@ -212,6 +235,31 @@ function rawExamine () {
     return "Getting data..."
   }
 }
+
+function rawCompare () {
+  const str = state.cache.commandCache[`${command_ids.COMPARE}${props.item.iid}`]
+  if (str) {
+    return str
+  } else {
+    return "Getting data..."
+  }
+}
+
+// Methods
+function handleUpdateValue(tab) {
+  activeTab.value = tab
+}
+
+function clickedAction(action) {
+  const nonDestructiveActions = ['look', 'examine', 'compare']
+  if (!nonDestructiveActions.includes(action) && props.item.amount === 1) {
+    closeModal()
+  }
+
+  props.isPlayer ? cmd(`${action} iid:${props.item.iid}`)
+      : cmd(`${mercOrder}${action} iid:${props.item.iid}`, command_ids.MERC_ACTION)
+}
+
 </script>
 
 <style scoped lang="less">
@@ -221,6 +269,7 @@ function rawExamine () {
   margin-top: 200px;
   width: 400px;
   z-index: 3;
+  top: 0;
 }
 
 .player-inventory-modal-left {
