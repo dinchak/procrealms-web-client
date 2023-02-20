@@ -48,7 +48,7 @@
           </n-collapse>
         </n-tab-pane>
         <n-tab-pane name="look" tab="Look">
-          <div class="item-desc" v-html="ansiToHtml(props.item.description)"></div>
+          <div class="item-desc" v-html="ansiToHtml(getLook())"></div>
         </n-tab-pane>
         <n-tab-pane name="examine" tab="Examine">
           <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
@@ -68,7 +68,7 @@ import { command_ids } from '@/composables/constants/command_ids'
 
 const { ansiToHtml, getActions } = helpers()
 const { cmd } = useWebSocket()
-const props = defineProps(['isPlayer', 'item', 'visible', 'menu', 'charEId', 'name'])
+const props = defineProps(['isPlayer', 'item', 'visible', 'menu', 'charEId', 'name', 'affects'])
 
 const isVisible = ref(false)
 const isDrinkDisabled = ref(false)
@@ -91,12 +91,30 @@ watch(() => props.item, () => {
 })
 
 watch(() => props.visible, () => {
-  isVisible.value = true;
-  setActions()
+    isVisible.value = true;
+    setActions()
 })
 
 watch(() => props.menu, () => {
   isVisible.value ? setActions() : null
+})
+
+watch(() => props.affects, () => {
+  isDrinkDisabled.value = !!(props.item.type === 'consumable' &&
+      props.item.subtype === 'potion' &&
+      props.affects.find(af => af.name === props.item.name));
+})
+
+watch(() => state.modals.inventoryModals.playerItemModal, () => {
+  if (props.isPlayer && props.menu !== state.modals.inventoryModals.playerItemModal) {
+    closeModal()
+  }
+})
+
+watch(() => state.modals.inventoryModals.mercItemModal, () => {
+  if (!props.isPlayer && props.menu !== state.modals.inventoryModals.mercItemModal) {
+    closeModal()
+  }
 })
 
 // setters
@@ -111,7 +129,7 @@ function setActions() {
   }
 
   if (props.menu === 'equipment') {
-    state.modals.inventoryModal.visible ? actions.value = ['remove'] : null
+    props.visible ? actions.value = ['remove'] : null
   }
 }
 
@@ -142,6 +160,10 @@ function getButtonType(action) {
   }
 }
 
+function getLook() {
+  return props.item.description ? props.item.description : "Cannot find any info on this item"
+}
+
 function clickedAction(action) {
   const nonDestructiveActions = ['look', 'examine', 'compare']
   if (!nonDestructiveActions.includes(action) && props.item.amount === 1) {
@@ -149,11 +171,13 @@ function clickedAction(action) {
   }
 
   props.isPlayer ? null : addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">You order ${props.name} to ${action} ${props.item.name}.</span>`, 'output')
-  cmd(`${mercOrder}${action} iid:${props.item.iid}`)
+  cmd(`${mercOrder}${action} iid:${props.item.iid}`, 12345)
 }
 
 function dropAll() {
-  cmd(`${mercOrder}drop all iid:${props.item.iid}`)
+  cmd(`${mercOrder}drop all iid:${props.item.iid}`, 12435)
+  const charText = props.isPlayer ? 'You drop' : `${props.name} drops`
+  addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${charText} ${props.item.amount}x ${props.item.name}</span>`, 'output')
   closeModal()
 }
 
@@ -161,12 +185,12 @@ function dropItems() {
   if (dropValue.value === props.item.amount) {
     closeModal()
   }
-  cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`)
+  cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`, 12345)
 }
 
 function giveAll() {
   if (state.gameState.mercEid !== -1) {
-    cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`)
+    cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, 12345)
     closeModal()
   }
 }
@@ -176,7 +200,7 @@ function giveItems() {
     if (giveValue.value === props.item.amount) {
       closeModal()
     }
-    cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`)
+    cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`, 12345)
   }
 }
 
