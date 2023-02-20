@@ -44,10 +44,9 @@ export const state = reactive({
   token: '',
 
   modals: {
-    inventoryModal: {
-      visible: false,
-      item: ref({}),
-      menu: ''
+    inventoryModals: {
+      playerItemModal: ref(''),
+      mercItemModal: ref('')
     },
     mapModal: false,
     mercModal: false

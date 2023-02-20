@@ -17,14 +17,15 @@
       </div>
 
       <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)" :isPlayer="props.isPlayer"></InventoryRow>
-      <InventoryModal
+      <ItemModal
           :visible="isModalOpen"
           :isPlayer="props.isPlayer"
           :item="clickedItem"
-          :charEId="character.eid"
-          :name="character.name"
+          :charEId="props.character.eid"
+          :name="props.character.name"
+          :affects="props.affects"
           menu="inventory"
-      ></InventoryModal>
+      ></ItemModal>
     </div>
   </n-collapse-item>
 </template>
@@ -38,12 +39,12 @@ import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
 import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
-import InventoryModal from "@/components/modals/InventoryModal.vue";
+import ItemModal from '@/components/modals/ItemModal.vue';
 
 const { fetchItems, cmd } = useWebSocket()
 const { copperToMoneyString } = helpers()
 const { onKeydown } = useKeyHandler()
-const props = defineProps(['inventory', 'isPlayer', 'character'])
+const props = defineProps(['inventory', 'isPlayer', 'character', 'affects', 'menu'])
 
 const items = ref([])
 const searchTerm = ref('')
@@ -108,14 +109,6 @@ async function setItems (itemIIDs) {
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
 
-  if (state.modals.inventoryModal.visible) { // TODO Remove This statement as part of inventory modal
-    items.value.map(item => {
-      if (item.name === state.modals.inventoryModal.item.name && item.iid !== state.modals.inventoryModal.item.iid) {
-        state.modals.inventoryModal.item = item
-      }
-    })
-  }
-
   if (isModalOpen.value) {
     items.value.map(item => {
       if (item.name === clickedItem.value.name && item.iid !== clickedItem.value.iid) {
@@ -126,15 +119,14 @@ async function setItems (itemIIDs) {
 }
 
 function clickHandler(item) {
-  state.modals.inventoryModal.visible = true
-  state.modals.inventoryModal.item = item
-  state.modals.inventoryModal.menu = 'inventory'
   clickedItem.value = item
   isModalOpen.value++
+  props.isPlayer ? state.modals.inventoryModals.playerItemModal = "inventory" : state.modals.inventoryModals.mercItemModal = "inventory"
 
   const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
 
-  cmd(`examine iid:${item.iid}`, commandCacheKey)
+  const mercOrder = props.isPlayer ? '' : `order eid:${props.character.eid} `
+  cmd(`${mercOrder}examine iid:${item.iid}`, commandCacheKey)
 }
 
 // Setters

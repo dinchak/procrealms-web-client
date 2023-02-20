@@ -24,8 +24,15 @@
       <InventoryCollapse
           :character="mercEntity"
           :inventory="mercInventory"
+          :affects="affects"
           :isPlayer="false"
       ></InventoryCollapse>
+      <EquipmentCollapse
+          :equipment="mercEquipment"
+          :character="mercEntity"
+          :isPlayer="false"
+          :affects="affects"
+      ></EquipmentCollapse>
       <SkillsCollapse
           :character="mercEntity"
           :skills="mercSkills"
@@ -43,6 +50,7 @@ import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCo
 import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
 import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
+import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
@@ -56,6 +64,7 @@ const mercEntity = ref({})
 const affects = ref([])
 const mercSkills = ref([])
 const mercInventory = ref([])
+const mercEquipment = ref({})
 
 watch(() => state.gameState.party, function() {
   findAndSetMerc()
@@ -86,6 +95,7 @@ async function findAndSetMerc() {
   mercVitals.value = merc.stats
   mercSkills.value = merc.skills
   mercInventory.value = merc.items
+  mercEquipment.value = merc.equipment
 
   setAffects(merc.affects)
 }
