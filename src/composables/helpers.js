@@ -32,15 +32,22 @@ export function helpers() {
         return valueString;
     }
 
-    function getActions(item) {
-        const actions = []
+    function getActions(item, isPlayer) {
+        const playerActions = []
+        const mercActions = []
         action_mapper.map(action => {
             if (action.condition(item)) {
-                actions.push(action.action)
+                playerActions.push(action.action)
             }
         })
 
-        return actions;
+        action_mapper.map(action => {
+            if (action.condition(item) && !action.crafting) {
+                mercActions.push(action.action)
+            }
+        })
+
+        return isPlayer ? playerActions : mercActions;
     }
 
     const ansi = {
