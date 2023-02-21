@@ -21,6 +21,18 @@
           :affects="affects"
           :isPlayer="false"
       ></EffectsCollapse>
+      <InventoryCollapse
+          :character="mercEntity"
+          :inventory="mercInventory"
+          :affects="affects"
+          :isPlayer="false"
+      ></InventoryCollapse>
+      <EquipmentCollapse
+          :equipment="mercEquipment"
+          :character="mercEntity"
+          :isPlayer="false"
+          :affects="affects"
+      ></EquipmentCollapse>
       <SkillsCollapse
           :character="mercEntity"
           :skills="mercSkills"
@@ -31,26 +43,34 @@
 </template>
 
 <script setup>
-// TODO This modal is not completed yet so the player does not have a way to show it yet
+
 import { watch, ref, onMounted } from 'vue'
 import { NCard, NTooltip, NCollapse } from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
 import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
+import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
+import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
 
 import { state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 
 import QuickStats from '@/components/side-menu/QuickStats'
 
-const { ansiToHtml } = helpers() 
+const { ansiToHtml } = helpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
 const affects = ref([])
 const mercSkills = ref([])
+const mercInventory = ref([])
+const mercEquipment = ref({})
 
 watch(() => state.gameState.party, function() {
+  findAndSetMerc()
+})
+
+watch(state.gameState.charmies, function () {
   findAndSetMerc()
 })
 
@@ -74,6 +94,8 @@ async function findAndSetMerc() {
   state.gameState.mercEid = merc.stats.eid
   mercVitals.value = merc.stats
   mercSkills.value = merc.skills
+  mercInventory.value = merc.items
+  mercEquipment.value = merc.equipment
 
   setAffects(merc.affects)
 }
