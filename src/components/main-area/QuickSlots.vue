@@ -89,7 +89,7 @@ function getSlotClass (slot) {
   justify-content: space-between;
 
   .quick-actions {
-    margin-left: 4px;
+    margin-left: 1px;
     margin-right: 8px;
   }
 
@@ -126,10 +126,12 @@ function getSlotClass (slot) {
         color: #fff;
         background-color: #111511;
         border: 1px solid #16c60c;
-        &:hover {
-          cursor: pointer;
-          color: #f9f1a5;
-          background-color: darken(#16c60c, 33%);
+        @media (hover: hover) {
+          &:hover {
+            cursor: pointer;
+            color: #f9f1a5;
+            background-color: darken(#16c60c, 33%);
+          }
         }
       }
 
@@ -158,7 +160,6 @@ function getSlotClass (slot) {
         font-size: 10px;
         width: 50px;
         max-height: 16px;
-        overflow: hidden;
         word-wrap: break-word;
         line-height: 8px;
         text-align: center;

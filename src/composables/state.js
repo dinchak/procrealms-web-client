@@ -117,7 +117,8 @@ function resetOptions () {
     chatInMain: true,
     showTabs: true,
     showMapArea: true,
-    showQuickSlots: true
+    showQuickSlots: true,
+    showMobileMovement: false
   }
 }
 

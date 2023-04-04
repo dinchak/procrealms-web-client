@@ -26,10 +26,11 @@ const { doTokenAuth } = useWebSocket()
 .picture {
   user-select: none;
   min-height: 300px;
-  font-size: 18px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 16px;
   white-space: pre;
   text-align: center;
+  font-family: 'Inconsolata', monospace;
 }
 
 .login-controls {
@@ -45,13 +46,6 @@ const { doTokenAuth } = useWebSocket()
   text-shadow: 0px 0px 6px #ff0000;
   button {
     margin: 0 5px;
-  }
-}
-
-@media screen and (max-width: 1000px) {
-  .picture {
-    font-size: 16px;
-    line-height: 16px;
   }
 }
 

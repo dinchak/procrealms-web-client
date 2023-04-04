@@ -1,5 +1,5 @@
 <template>
-  <div class="movement">
+  <div class="mobile-movement">
     <div class="row">
       <n-icon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></n-icon>
       <n-icon :class="getMovementClass('north')" @click="move('north')"><NorthOutlined></NorthOutlined></n-icon>
@@ -31,11 +31,9 @@ import SouthWestOutlined from '@vicons/material/SouthWestOutlined'
 
 import { NIcon } from 'naive-ui'
 
-import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown, keyState } = useKeyHandler()
 const { cmd } = useWebSocket()
 
 let moveTimeout = null
@@ -98,84 +96,13 @@ function getEnterClass () {
   }
 }
 
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
-
-  if (!state.options.movementDuringInput && state.mode == 'input') {
-    return false
-  }
-
-  if (ev.key == 'Home') {
-    move('northwest')
-    return true
-  } else if (ev.key == 'ArrowUp') {
-    move('north')
-    return true
-  } else if (ev.key == 'PageUp') {
-    move('northeast')
-    return true
-  } else if (ev.key == 'ArrowLeft') {
-    move('west')
-    return true
-  } else if (ev.key == 'Clear') {
-    enter()
-    return true
-  } else if (ev.key == 'ArrowRight') {
-    move('east')
-    return true
-  } else if (ev.key == 'End') {
-    move('southwest')
-    return true
-  } else if (ev.key == 'ArrowDown') {
-    move('south')
-    return true
-  } else if (ev.key == 'PageDown') {
-    move('southeast')
-    return true
-  }
-
-  if (state.mode == 'input') {
-    return false
-  }
-
-  if (ev.key == 'Q' || ev.key == 'q') {
-    move('northwest')
-    return true
-  } else if (ev.key == 'W' || ev.key == 'w') {
-    move('north')
-    return true
-  } else if (ev.key == 'E' || ev.key == 'e') {
-    move('northeast')
-    return true
-  } else if (ev.key == 'A' || ev.key == 'a') {
-    move('west')
-    return true
-  } else if (ev.key == 'X' || ev.key == 'x') {
-    enter()
-    return true
-  } else if (ev.key == 'D' || ev.key == 'd') {
-    move('east')
-    return true
-  } else if (ev.key == 'Z' || ev.key == 'z') {
-    move('southwest')
-    return true
-  } else if (ev.key == 'S' || ev.key == 's') {
-    move('south')
-    return true
-  } else if (ev.key == 'C' || ev.key == 'c') {
-    move('southeast')
-    return true
-  }
-
-  return false
-})
-
 </script>
 
 <style lang="less">
-.movement {
+.mobile-movement {
+  position: absolute;
+  right: 7px;
+  bottom: 87px;
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -183,21 +110,20 @@ onKeydown((ev) => {
     display: flex;
     flex-direction: row;
     .direction {
+      opacity: 0;
       font-size: 24px;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       background-color: #333;
-      border: 1px solid #222;
       transition: all 0.3s;
-      border-collapse: collapse;
-      margin-bottom: -1px;
-      margin-left: -1px;
+      margin-bottom: 2px;
+      margin-right: 2px;
       &.active {
-        background-color: darken(#16c60c, 30%);
-        border: 1px solid darken(#16c60c, 25%);
+        opacity: 0.2;
+        background-color: #444;
         @media (hover: hover) {
           &:hover {
             cursor: pointer;

@@ -1,6 +1,32 @@
 <template>
   <div class="stats">
-    <n-progress class="quick-stats" type="line" status="success" :percentage="entity().hp / entity().maxHp * 100">
+    <span class="left">
+      <span class="stat">
+        <span class="value bold-green">{{ entity().hp }}</span>
+        <span class="label green">HP</span>
+        <n-progress class="quick-stats" type="line" status="success" :percentage="entity().hp / entity().maxHp * 100" :show-indicator="false"></n-progress>
+      </span>
+
+      <span class="stat">
+        <span class="value bold-cyan">{{ entity().energy }}</span>
+        <span class="label cyan">EN</span>
+        <n-progress class="quick-stats" type="line" status="default" :percentage="entity().energy / entity().maxEnergy * 100" :show-indicator="false"></n-progress>
+      </span>
+
+      <span class="stat">
+        <span class="value bold-yellow">{{ entity().stamina }}</span>
+        <span class="label yellow">ST</span>
+        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().stamina / entity().maxStamina * 100" :show-indicator="false"></n-progress>
+      </span>
+    </span>
+
+    <span class="right">
+      <n-progress class="circle-stat" type="circle" status="success" :percentage="entity().food / entity().maxFood * 100">Food</n-progress>
+      <n-progress v-if="entity().rage > 0" class="circle-stat" type="circle" status="danger" :percentage="entity().rage / entity().maxRage * 100">Rage</n-progress>
+      <n-progress v-if="entity().combo > 0" class="circle-stat" type="circle" status="warning" :percentage="entity().combo / entity().maxCombo * 100">Combo</n-progress>
+    </span>
+
+    <!-- <n-progress class="quick-stats" type="line" status="success" :percentage="entity().hp / entity().maxHp * 100">
       <div class="bar-label">
         <span class="bold-green">{{ entity().hp }}</span> <span class="green">HP</span>
       </div>
@@ -31,7 +57,7 @@
           <span class="bold-red">{{ entity().rage }}</span> <span class="red">RG</span>
         </div>
       </n-progress>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -50,34 +76,65 @@ function entity () {
 .stats {
   padding: 2px 5px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin-bottom: 5px;
-  .quick-stats {
-    height: 12px;
-    // margin-right: 10px;
-    // width: 190px;
-  }
-  .flex {
+  align-items: center;
+  justify-content: space-between;
+
+  .left {
     display: flex;
     flex-direction: row;
-    .quick-stats {
+    .stat {
       margin-right: 10px;
       &:last-child {
         margin-right: 0px;
       }
+      .value {
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .label {
+        font-size: 10px;
+      }
     }
   }
+
+  .right {
+    display: flex;
+    flex-direction: row;
+    .circle-stat {
+      font-family: 'Inconsolata', monospace;
+      width: 35px;
+      height: 35px;
+      font-size: 10px;
+    }
+  }
+  // .quick-stats {
+  //   height: 12px;
+  //   // margin-right: 10px;
+  //   // width: 190px;
+  // }
+  // .flex {
+  //   display: flex;
+  //   flex-direction: row;
+  //   .quick-stats {
+  //     margin-right: 10px;
+  //     &:last-child {
+  //       margin-right: 0px;
+  //     }
+  //   }
+  // }
 }
 
-.bar-label {
-  width: 50px;
-  display: inherit;
-  text-align: right;
-}
+// .bar-label {
+//   width: 50px;
+//   display: inherit;
+//   text-align: right;
+// }
 
-.half-bar-label {
-  width: 50px;
-  display: inherit;
-  text-align: right;
-}
+// .half-bar-label {
+//   width: 50px;
+//   display: inherit;
+//   text-align: right;
+// }
 </style>

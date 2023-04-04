@@ -191,7 +191,7 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
 .input-wrapper {
   display: flex;
   flex-direction: row;
-  font-size: 20px;
+  font-size: 14px;
   margin-top: 7px;
   // height: 40px;
   align-items: center;

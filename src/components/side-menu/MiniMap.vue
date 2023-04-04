@@ -27,5 +27,6 @@ function renderMap () {
   white-space: pre;
   font-size: 20px;
   line-height: 20px;
+  font-family: 'Inconsolata', monospace;
 }
 </style>

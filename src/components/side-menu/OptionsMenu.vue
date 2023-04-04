@@ -72,6 +72,15 @@
       </template>
     </n-switch>
 
+    <n-switch v-model:value="state.options.showMobileMovement" aria-label="Show Mobile Movement">
+      <template #checked>
+        Show Mobile Movement
+      </template>
+      <template #unchecked>
+        Hide Mobile Movement
+      </template>
+    </n-switch>
+
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
