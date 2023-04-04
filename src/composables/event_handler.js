@@ -63,11 +63,55 @@ handlers['out'] = (line) => {
   }
 }
 
-handlers['room.describe'] = ({ desc }) => {
+handlers['room.describe'] = ({ desc, map }) => {
   let lines = strToLines(desc)
+
+  if (state.options.hideSidebar) {
+    let linesWithMap = []
+    let numLines = Math.max(lines.length, map.length)
+
+    for (let i = 0; i < numLines; i++) {
+      let line = ansiToHtml(map[i] || '') + ' ' + (lines[i] || '')
+      linesWithMap.push(line)
+    }
+
+    lines = linesWithMap
+  }
+
   for (let line of lines) {
     addLine(line, 'output')
   }
+}
+
+let nextAnimationDelay = 0
+
+handlers['entity.attack'] = ({ target, amount, crit }) => {
+  crit = Math.random() > 0.5 ? true : false
+  let animation = { key: Math.random(), type: 'damage', eid: target, amount, crit }
+
+  setTimeout(() => {
+    state.animations.push(animation)
+    nextAnimationDelay += 200
+  }, nextAnimationDelay)
+
+  setTimeout(() => {
+    state.animations = state.animations.filter(a => a.key != animation.key)
+    nextAnimationDelay -= 200
+  }, 1000)
+}
+
+handlers['affect.cure'] = ({ target, amount }) => {
+  let animation = { key: Math.random(), type: 'healing', eid: target, amount }
+
+  setTimeout(() => {
+    state.animations.push(animation)
+    nextAnimationDelay += 200
+  }, nextAnimationDelay)
+
+  setTimeout(() => {
+    state.animations = state.animations.filter(a => a.key != animation.key)
+    nextAnimationDelay -= 200
+  }, 1000)
 }
 
 const channelColors = { chat: 'bold-yellow', trade: 'bold-green', newbie: 'bold-magenta' }

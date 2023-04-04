@@ -1,17 +1,18 @@
 <template>
-  <QuickSlots class="show-mobile"></QuickSlots>
   <div class="input-wrapper">
-    <div :class="getCaretClass()" v-if="!state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
+    <div :class="getMenuButtonClass()" v-if="!state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
       <n-icon><MenuOutlined></MenuOutlined></n-icon>
     </div>
+
     <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus :placeholder="getPlaceholder()" :class="state.activeTab" />
+
     <div :class="getHistoryClass()">
       <n-button size="small" @click="prevCommand">Prev</n-button>
       <n-button size="small" @click="nextCommand">Next</n-button>
       <n-button size="small" @click="sendCommand">Send</n-button>
     </div>
-    <QuickSlots class="show-desktop"></QuickSlots>
-    <div :class="getCaretClass()" v-if="state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
+
+    <div :class="getMenuButtonClass()" v-if="state.options.swapControls" @click="state.options.hideSidebar = !state.options.hideSidebar">
       <n-icon><MenuOutlined></MenuOutlined></n-icon>
     </div>
   </div>
@@ -27,8 +28,6 @@ import MenuOutlined from '@vicons/material/MenuOutlined'
 import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
-import QuickSlots from '@/components/main-area/QuickSlots.vue'
-
 import { state, addLine } from '@/composables/state'
 
 let input = ref(null)
@@ -41,10 +40,13 @@ const { onKeydown, keyState } = useKeyHandler()
 
 const { cmd } = useWebSocket()
 
-function getCaretClass () {
-  let cls = 'caret'
-  if (state.mode == 'input') {
+function getMenuButtonClass () {
+  let cls = 'menu-button'
+  if (!state.options.hideSidebar) {
     cls += ' active'
+  }
+  if (state.options.swapControls) {
+    cls += ' right'
   }
   return cls
 }
@@ -190,31 +192,42 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
   display: flex;
   flex-direction: row;
   font-size: 20px;
-  height: 40px;
+  margin-top: 7px;
+  // height: 40px;
   align-items: center;
   justify-content: space-between;
 
-  .caret {
+  .menu-button {
     color: #fff;
+    background-color: #222;
+    border: 1px solid #333;
     width: 35px;
     text-align: center;
-    background-color: #063603;
-    border: 1px solid #16c60c;
     display: flex;
     height: 25px;
     justify-content: center;
     align-items: center;
-    margin: 0 0 0 5px;
+    margin: 0 0 0 8px;
     border-radius: 4px;
     flex-shrink: 0;
+    transition: all 0.3s;
 
-    &:hover {
-      cursor: pointer;
-      background-color: darken(#16c60c, 33%);
+    @media (hover: hover) {
+      &:hover {
+        cursor: pointer;
+        background-color: #063603;
+        border: 1px solid #16c60c;
+      }
     }
 
     &.active {
+      background-color: #063603;
+      border: 1px solid #16c60c;
       color: #f8ff25
+    }
+
+    &.right {
+      margin: 0 8px 0 0;
     }
   }
 
@@ -263,7 +276,7 @@ watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.
   .history {
     display: none;
     flex-direction: row;
-    margin: 0 5px;
+    margin-right: 7px;
     .n-button {
       margin-right: 5px;
       &:last-child {
