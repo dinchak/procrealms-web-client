@@ -105,20 +105,24 @@ function clearCache(object) {
 </script>
 
 <style lang="less">
-@font-face {
-  font-family: 'DOS';
-  src: url('@/assets/WebPlus_IBM_VGA_8x16.woff') format('woff');
-}
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&display=swap');
+
+// @font-face {
+//   font-family: 'DOS';
+//   src: url('@/assets/WebPlus_IBM_VGA_8x16.woff') format('woff');
+// }
 
 body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
-  font-family: 'DOS';
+  font-family: 'Open Sans', sans-serif;
   color: #fff;
   overflow-x: hidden;
   color-scheme: dark;
   line-height: 1.1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {

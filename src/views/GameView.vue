@@ -13,6 +13,7 @@
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
+      <MobileMovement v-if="state.options.showMobileMovement"></MobileMovement>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
       <KeyboardInput></KeyboardInput>
     </n-layout>
@@ -30,6 +31,7 @@ import LogoutModal from '@/components/modals/LogoutModal.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
 import MapModal from '@/components/modals/MapModal'
 import MercModal from '@/components/modals/MercModal'
+import MobileMovement from '@/components/main-area/MobileMovement.vue'
 import QuickSlots from '@/components/main-area/QuickSlots.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
 

@@ -116,10 +116,10 @@ function getAffects (entity) {
     flex-direction: column;
     min-height: 30px;
     .name {
-      font-size: 18px;
+      font-size: 16px;
     }
     .affects {
-      font-size: 16px;
+      font-size: 14px;
     }
     .sten {
       display: flex;
@@ -183,13 +183,11 @@ function getAffects (entity) {
   .battle-entity {
     width: 150px;
     .status {
-      .left-status {
-        .name {
-          font-size: 16px;
-        }
-        .affects {
-          font-size: 12px;
-        }
+      .name {
+        font-size: 14px;
+      }
+      .affects {
+        font-size: 12px;
       }
     }
     .targeting {
@@ -223,13 +221,11 @@ function getAffects (entity) {
   .battle-entity {
     width: 125px;
     .status {
-      .left-status {
-        .name {
-          font-size: 14px;
-        }
-        .affects {
-          font-size: 10px;
-        }
+      .name {
+        font-size: 12px;
+      }
+      .affects {
+        font-size: 10px;
       }
     }
     .targeting {

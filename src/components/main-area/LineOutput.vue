@@ -299,6 +299,7 @@ onMounted(() => {
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
+    font-family: 'Inconsolata', monospace;
 
     height: ~"calc(100vh - 85px)";
 
@@ -314,8 +315,8 @@ onMounted(() => {
     }
 
     .line {
-      font-size: 20px;
-      line-height: 22px;
+      font-size: 16px;
+      line-height: 20px;
       display: block;
       white-space: pre-wrap;
       font-weight: normal !important;
@@ -384,7 +385,7 @@ onMounted(() => {
 @media screen and (max-width: 750px) {
   .tabs {
     .output {
-      margin: 2px 4px;
+      margin: 2px 8px;
       height: ~"calc(100vh - 79px)";
 
       &.tabs-hidden {
