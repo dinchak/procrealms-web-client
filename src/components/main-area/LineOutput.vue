@@ -91,13 +91,13 @@ const newbie = ref(null)
 const refs = { output, chat, trade, newbie }
 
 const { send } = useWebSocket()
-const { onResize } = useWindowHandler()
+const { onResize, calcTerminalSize } = useWindowHandler()
 
-onResize(calcTerminalSize)
+onResize(doResize)
 
 let resizeTimeout = null
 
-function calcTerminalSize () {
+function doResize () {
   if (resizeTimeout) {
     return
   }
@@ -107,18 +107,9 @@ function calcTerminalSize () {
       return
     }
 
-    let charWidth = 10
-    let charHeight = 21
+    let { width, height } = calcTerminalSize(output.value.offsetWidth, output.value.offsetHeight)
 
-    if (window.innerHeight < 500) {
-      charWidth = 8
-      charHeight = 16
-    }
-
-    let terminalWidth = Math.floor(output.value.offsetWidth  / charWidth)
-    let terminalHeight = Math.floor(output.value.offsetHeight  / charHeight)
-
-    send('terminal', { width: terminalWidth, height: terminalHeight, ttype: 'play.proceduralrealms.com' })
+    send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 
     resizeTimeout = null
   }, 500)
@@ -131,7 +122,10 @@ function onChanged (id) {
   }
 
   let { scrollTop, scrollHeight, offsetHeight } = el
-  let scrolledBack = Math.round(scrollTop + offsetHeight + 5) <= scrollHeight
+
+  let scrollPosition = Math.round(scrollTop + offsetHeight + 5)
+  let scrolledBack = scrollPosition <= scrollHeight
+
   if (!scrolledBack) {
     nextTick(() => scrollDown(id))
   }
@@ -181,8 +175,8 @@ function getTab (name) {
 
 function getOutputClass () {
   let cls = 'output'
-  if (state.gameState.slots.length > 0) {
-    cls += ' has-quickslots'
+  if (state.options.showQuickSlots && state.gameState.slots.length > 0) {
+    cls += ' show-quickslots'
   }
   if (!state.options.showTabs) {
     cls += ' tabs-hidden'
@@ -205,8 +199,8 @@ function doHideShowTabs () {
 
 function getScrollbackControlClass () {
   let cls = 'scrollback-control'
-  if (state.gameState.slots.length > 0) {
-    cls += ' has-quickslots'
+  if (state.options.showQuickSlots && state.gameState.slots.length > 0) {
+    cls += ' show-quickslots'
   }
   return cls
 }
@@ -219,10 +213,11 @@ onMounted(() => {
     }
   }
 
-  calcTerminalSize()
+  doResize()
   doHideShowTabs()
 
   watch(() => state.output.length, () => onChanged('output'))
+  watch(() => state.gameState.battle.active, () => onChanged('output'))
   watch(() => state.chat.length, () => onChanged('chat'))
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
@@ -247,7 +242,7 @@ onMounted(() => {
 
   .scrollback-control {
     position: absolute;
-    bottom: 45px;
+    bottom: 40px;
     left: 0;
     right: 0;
     height: 40px;
@@ -261,10 +256,8 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    &.has-quickslots {
-      &.show-mobile {
-        bottom: 80px;
-      }
+    &.show-quickslots {
+      bottom: 87px;
     }
     .n-icon {
       margin: 0 15px;
@@ -304,12 +297,20 @@ onMounted(() => {
     flex-basis: fit-content;
     margin: 5px 10px;
     position: relative;
-    height: ~"calc(100vh - 85px)";
     overflow-y: scroll;
     overflow-x: hidden;
 
+    height: ~"calc(100vh - 85px)";
+
     &.tabs-hidden {
       height: ~"calc(100vh - 52px)";
+    }
+
+    &.show-quickslots {
+      height: ~"calc(100vh - 125px)";
+      &.tabs-hidden {
+        height: ~"calc(100vh - 92px)";
+      }
     }
 
     .line {
@@ -364,9 +365,6 @@ onMounted(() => {
 
 @media screen and (max-height: 500px) {
   .tabs {
-    .scrollback-control {
-      // bottom: 80px;
-    }
     .output {
       .line {
         font-size: 16px;
@@ -383,22 +381,24 @@ onMounted(() => {
   }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 750px) {
   .tabs {
-    .scrollback-control {
-      &.has-quickslots {
-        bottom: 80px;
-      }
-    }
     .output {
-      &.has-quickslots {
-        height: ~"calc(100vh - 123px)";
+      margin: 2px 4px;
+      height: ~"calc(100vh - 79px)";
+
+      &.tabs-hidden {
+        height: ~"calc(100vh - 46px)";
+      }
+
+      &.show-quickslots {
+        height: ~"calc(100vh - 119px)";
         &.tabs-hidden {
-          height: ~"calc(100vh - 90px)";
+          height: ~"calc(100vh - 86px)";
         }
       }
+
     }
   }
 }
-
 </style>

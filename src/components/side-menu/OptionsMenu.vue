@@ -63,6 +63,15 @@
       </template>
     </n-switch>
 
+    <n-switch v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots">
+      <template #checked>
+        Show Quick Slots
+      </template>
+      <template #unchecked>
+        Hide Quick Slots
+      </template>
+    </n-switch>
+
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
@@ -90,7 +99,10 @@ function goFullscreen () {
   display: flex;
   flex-direction: column;
   .n-switch, .n-button {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    .n-switch__rail {
+      width: 100%;
+    }
   }
 }
 

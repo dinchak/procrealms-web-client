@@ -3,7 +3,7 @@
     <n-card v-if="isVisible" :class="getClass()">
       <p class="close" v-on:click="closeModal()">x</p>
       <n-tabs type="line" animated size="large" :class="props.isPlayer + '-modal'" @update:value="handleUpdateValue">
-        <n-tab-pane name="actions" tab="Actions">
+        <n-tab-pane name="actions" tab="Actions" class="actions-pane">
           <h3 v-html="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
 
           <div class="actions">
@@ -266,10 +266,14 @@ function clickedAction(action) {
 
 .n-card {
   position: fixed;
-  margin-top: 200px;
-  width: 400px;
+  margin-top: 3px;
+  width: calc(100vw - 280px);
+  min-width: 300px;
+  max-width: 700px;
   z-index: 3;
   top: 0;
+  height: calc(100vh - 6px);
+  max-height: 600px;
 }
 
 .player-inventory-modal-left {
@@ -299,6 +303,8 @@ function clickedAction(action) {
 .item-desc {
   white-space: pre-wrap;
   font-size: 1.2em;
+  overflow: scroll;
+  height: calc(100vh - 95px);
 }
 
 h3 {
@@ -314,9 +320,17 @@ h3 {
   font-size: 1.4em;
 }
 
+.actions-pane {
+  overflow: scroll;
+  height: calc(100vh - 95px);
+  margin-bottom: 20px;
+}
+
 .examine {
   white-space: pre-wrap;
   font-size: 1.2em;
+  overflow: scroll;
+  height: calc(100vh - 95px);
 }
 
 .stats {
@@ -346,6 +360,7 @@ h3 {
 
 .additional-collapse {
   margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .input-button {

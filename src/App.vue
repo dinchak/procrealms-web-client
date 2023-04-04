@@ -32,8 +32,8 @@ const themeOverrides = {
 
 const { readCookie, clearCookie } = useCookieHandler()
 const { onEvent } = useEventHandler()
-const { initConnection, doTokenAuth } = useWebSocket()
-useWindowHandler()
+const { initConnection, doTokenAuth, send } = useWebSocket()
+const { calcTerminalSize } = useWindowHandler()
 
 function onConnect () {
   try {
@@ -41,6 +41,10 @@ function onConnect () {
     if (state.disconnected) {
       return
     }
+
+    let { width, height } = calcTerminalSize(window.innerWidth, window.innerHeight)
+
+    send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 
     let json = readCookie()
     if (json) {
@@ -121,6 +125,10 @@ body, html {
   width: 0 !important;
   height: 0 !important;
   background: transparent;
+}
+
+#app {
+  height: 100vh;
 }
 
 .red, .ansi-red-fg { color: #c50f1f; }

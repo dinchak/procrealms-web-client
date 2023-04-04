@@ -26,15 +26,15 @@ const { doTokenAuth } = useWebSocket()
 .picture {
   user-select: none;
   min-height: 300px;
-  font-size: 20px;
-  line-height: 20px;
+  font-size: 18px;
+  line-height: 18px;
   white-space: pre;
   text-align: center;
 }
 
 .login-controls {
   position: relative;
-  top: -225px;
+  top: -300px;
   padding: 10px;
   margin: 0 auto;
   display: flex;
@@ -53,18 +53,12 @@ const { doTokenAuth } = useWebSocket()
     font-size: 16px;
     line-height: 16px;
   }
-  .login-controls {
-    top: -175px;
-  }
 }
 
 @media screen and (max-width: 800px) {
   .picture {
-    font-size: 12px;
-    line-height: 12px;
-  }
-  .login-controls {
-    top: -125px;
+    font-size: 14px;
+    line-height: 14px;
   }
 }
 

@@ -52,6 +52,7 @@ export function helpers() {
 
     const ansi = {
         boldBlack: String.fromCharCode(27) + '[90m',
+        boldRed: String.fromCharCode(27) + '[91m',
         boldWhite: String.fromCharCode(27) + '[97m',
         reset: String.fromCharCode(27) + '[0m'
     }

@@ -13,6 +13,7 @@
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
+      <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
       <KeyboardInput></KeyboardInput>
     </n-layout>
     <SideMenu v-if="state.options.swapControls"></SideMenu>
@@ -29,6 +30,7 @@ import LogoutModal from '@/components/modals/LogoutModal.vue'
 import HelpOverlay from '@/components/HelpOverlay.vue'
 import MapModal from '@/components/modals/MapModal'
 import MercModal from '@/components/modals/MercModal'
+import QuickSlots from '@/components/main-area/QuickSlots.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
 
 try {
@@ -71,7 +73,6 @@ try {
   }
 
   .content-area {
-    // height: ~"calc(100vh - 45px)";
     flex-basis: fit-content;
     display: flex;
     flex-direction: column;

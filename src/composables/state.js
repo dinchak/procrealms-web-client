@@ -40,6 +40,8 @@ export const state = reactive({
   trade: [],
   newbie: [],
 
+  animations: [],
+
   name: '',
   token: '',
 
@@ -64,6 +66,7 @@ export function resetState () {
   state.chat = []
   state.trade = []
   state.newbie = []
+  state.animations = []
 }
 
 function resetCache () {
@@ -113,14 +116,44 @@ function resetOptions () {
     hideSidebar: false,
     chatInMain: true,
     showTabs: true,
-    showMapArea: true
+    showMapArea: true,
+    showQuickSlots: true
   }
 }
 
+let preloadBuffers = {}
+let addLinesTimeout = null
+const maxLines = 4000
+const removeLines = 1000
 export function addLine (line, bufferName) {
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
 
-  state[bufferName].push(line || ' ')
+  if (!preloadBuffers[bufferName]) {
+    preloadBuffers[bufferName] = []
+  }
+
+  let preloadBuffer = preloadBuffers[bufferName]
+
+  Object.freeze(line)
+  if (!line) {
+    line = '<br/>'
+  }
+  preloadBuffer.push(line)
+
+  if (addLinesTimeout) {
+    clearTimeout(addLinesTimeout)
+  }
+
+  addLinesTimeout = setTimeout(() => {
+    state[bufferName].push(...preloadBuffer)
+    preloadBuffers[bufferName] = []
+    addLinesTimeout = null
+
+    if (state[bufferName].length > maxLines) {
+      state[bufferName].splice(0, removeLines)
+    }
+  }, 10)
+
 }
