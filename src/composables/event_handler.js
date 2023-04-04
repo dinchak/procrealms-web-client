@@ -86,7 +86,6 @@ handlers['room.describe'] = ({ desc, map }) => {
 let nextAnimationDelay = 0
 
 handlers['entity.attack'] = ({ target, amount, crit }) => {
-  crit = Math.random() > 0.5 ? true : false
   let animation = { key: Math.random(), type: 'damage', eid: target, amount, crit }
 
   setTimeout(() => {
