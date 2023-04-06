@@ -94,11 +94,11 @@ function nextCommand () {
 }
 
 function sendCommand () {
-  if (!text.value) {
+  let command = input.value.value
+  if (!command) {
     return
   }
 
-  let command = text.value
   if (state.activeTab != 'output') {
     let firstWord = command.split(' ')[0]
     if (state.activeTab.indexOf(firstWord.toLowerCase()) != 0) {
@@ -109,6 +109,7 @@ function sendCommand () {
   commandHistory.unshift(command)
   cmd(command)
   text.value = ''
+  input.value.value = ''
   historyIndex = -1
 
   setTimeout(() => {
