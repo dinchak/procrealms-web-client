@@ -109,7 +109,6 @@ function resetGameState () {
 
 function resetOptions () {
   return {
-    movementDuringInput: false,
     fixedMap: false,
     commandHistoryButton: false,
     swapControls: false,
@@ -118,7 +117,9 @@ function resetOptions () {
     showTabs: true,
     showMapArea: true,
     showQuickSlots: true,
-    showMobileMovement: false
+    showMobileMovement: false,
+    numPadMovement: true,
+    wasdMovement: true
   }
 }
 
