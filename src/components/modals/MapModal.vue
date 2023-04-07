@@ -44,7 +44,7 @@ watch(() => state.gameState.map, () => {
 })
 
 function getSideClass() {
-  return state.options.swapControls ? 'right' : 'left'
+  return state.options.swapControls ? 'map-modal right' : 'map-modal left'
 }
 
 function closeModal() {
@@ -56,7 +56,7 @@ onKeydown((ev) => {
     return false
   }
 
-  if (!state.options.movementDuringInput || state.mode === 'input') {
+  if (state.mode === 'input') {
     return false
   }
 
@@ -77,6 +77,8 @@ onMounted(() => {
 .ansi {
   font-family: 'Inconsolata', monospace;
   white-space: pre;
+  font-size: 13px;
+  line-height: 13px;
 }
 
 .left {
@@ -89,10 +91,9 @@ onMounted(() => {
 
 .n-card {
   position: absolute;
-  max-width: 62vw;
   margin-top: 35px;
+  max-width: calc(100vw - 310px);
   z-index: 2;
-  line-height: 10px;
 }
 
 .close {
@@ -101,12 +102,5 @@ onMounted(() => {
   right: 10px;
   cursor: pointer;
   font-size: 1.4em;
-}
-
-@media screen and (max-width: 600px) {
-  .n-card {
-    font-size: 15px;
-    line-height: 14px;
-  }
 }
 </style>
