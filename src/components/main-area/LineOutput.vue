@@ -222,6 +222,7 @@ onMounted(() => {
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
   watch(() => state.options.showTabs, () => doHideShowTabs())
+  watch(() => state.options.hideSidebar, () => doResize())
 })
 
 </script>
