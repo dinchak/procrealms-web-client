@@ -1,11 +1,20 @@
 <template>
   <div class="options-menu">
-    <n-switch v-model:value="state.options.movementDuringInput" aria-label="Enable Movement During Input">
+    <n-switch v-model:value="state.options.numPadMovement" aria-label="Enable Numpad Movement">
       <template #checked>
-        Enable Movement During Input
+        Enable Numpad Movement
       </template>
       <template #unchecked>
-        Enable Command History
+        Disable Numpad Movement
+      </template>
+    </n-switch>
+
+    <n-switch v-model:value="state.options.wasdMovement" aria-label="Enable WASD Movement">
+      <template #checked>
+        Enable WASD Movement
+      </template>
+      <template #unchecked>
+        Disable WASD Movement
       </template>
     </n-switch>
 
