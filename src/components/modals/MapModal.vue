@@ -75,6 +75,7 @@ onMounted(() => {
 
 <style scoped lang="less">
 .ansi {
+  font-family: 'Inconsolata', monospace;
   white-space: pre;
 }
 
