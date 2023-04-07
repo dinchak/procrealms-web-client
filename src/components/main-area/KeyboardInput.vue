@@ -131,27 +131,31 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.key == 'Enter' && state.mode == 'hotkey') {
+  if (ev.code == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
     return true
   }
 
-  if (ev.key == 'Escape' && state.mode == 'input') {
+  if (ev.code == 'Escape' && state.mode == 'input') {
     input.value.blur()
     return true
   }
 
-  if (ev.key == 'ArrowUp' && state.mode == 'input' && !state.options.movementDuringInput) {
+  if (ev.code == 'ArrowUp') {
     prevCommand()
     return true
   }
 
-  if (ev.key == 'ArrowDown' && state.mode == 'input' && !state.options.movementDuringInput) {
+  if (ev.code == 'ArrowDown') {
     nextCommand()
     return true
   }
 
-  if (ev.key == 'Enter' && state.mode == 'input') {
+  if (ev.code == 'Enter' && state.mode == 'input') {
+    if (!input.value.value) {
+      input.value.blur()
+      return true
+    }
     sendCommand()
     return true
   }

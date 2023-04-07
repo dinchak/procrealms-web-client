@@ -103,70 +103,70 @@ onKeydown((ev) => {
     return false
   }
 
-  if (!state.options.movementDuringInput && state.mode == 'input') {
-    return false
-  }
-
-  if (ev.key == 'Home') {
-    move('northwest')
-    return true
-  } else if (ev.key == 'ArrowUp') {
-    move('north')
-    return true
-  } else if (ev.key == 'PageUp') {
-    move('northeast')
-    return true
-  } else if (ev.key == 'ArrowLeft') {
-    move('west')
-    return true
-  } else if (ev.key == 'Clear') {
-    enter()
-    return true
-  } else if (ev.key == 'ArrowRight') {
-    move('east')
-    return true
-  } else if (ev.key == 'End') {
-    move('southwest')
-    return true
-  } else if (ev.key == 'ArrowDown') {
-    move('south')
-    return true
-  } else if (ev.key == 'PageDown') {
-    move('southeast')
-    return true
+  if (state.options.numPadMovement) {
+    if (ev.code == 'Numpad7') {
+      move('northwest')
+      return true
+    } else if (ev.code == 'Numpad8') {
+      move('north')
+      return true
+    } else if (ev.code == 'Numpad9') {
+      move('northeast')
+      return true
+    } else if (ev.code == 'Numpad4') {
+      move('west')
+      return true
+    } else if (ev.code == 'Numpad5') {
+      enter()
+      return true
+    } else if (ev.code == 'Numpad6') {
+      move('east')
+      return true
+    } else if (ev.code == 'Numpad1') {
+      move('southwest')
+      return true
+    } else if (ev.code == 'Numpad2') {
+      move('south')
+      return true
+    } else if (ev.code == 'Numpad3') {
+      move('southeast')
+      return true
+    }
   }
 
   if (state.mode == 'input') {
     return false
   }
 
-  if (ev.key == 'Q' || ev.key == 'q') {
-    move('northwest')
-    return true
-  } else if (ev.key == 'W' || ev.key == 'w') {
-    move('north')
-    return true
-  } else if (ev.key == 'E' || ev.key == 'e') {
-    move('northeast')
-    return true
-  } else if (ev.key == 'A' || ev.key == 'a') {
-    move('west')
-    return true
-  } else if (ev.key == 'X' || ev.key == 'x') {
-    enter()
-    return true
-  } else if (ev.key == 'D' || ev.key == 'd') {
-    move('east')
-    return true
-  } else if (ev.key == 'Z' || ev.key == 'z') {
-    move('southwest')
-    return true
-  } else if (ev.key == 'S' || ev.key == 's') {
-    move('south')
-    return true
-  } else if (ev.key == 'C' || ev.key == 'c') {
-    move('southeast')
-    return true
+  if (state.options.wasdMovement) {
+    if (ev.key == 'Q' || ev.key == 'q') {
+      move('northwest')
+      return true
+    } else if (ev.key == 'W' || ev.key == 'w') {
+      move('north')
+      return true
+    } else if (ev.key == 'E' || ev.key == 'e') {
+      move('northeast')
+      return true
+    } else if (ev.key == 'A' || ev.key == 'a') {
+      move('west')
+      return true
+    } else if (ev.key == 'X' || ev.key == 'x') {
+      enter()
+      return true
+    } else if (ev.key == 'D' || ev.key == 'd') {
+      move('east')
+      return true
+    } else if (ev.key == 'Z' || ev.key == 'z') {
+      move('southwest')
+      return true
+    } else if (ev.key == 'S' || ev.key == 's') {
+      move('south')
+      return true
+    } else if (ev.key == 'C' || ev.key == 'c') {
+      move('southeast')
+      return true
+    }
   }
 
   return false
