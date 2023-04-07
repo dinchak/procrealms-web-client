@@ -16,13 +16,8 @@ export function useWindowHandler () {
   }
 
   function calcTerminalSize (outputWidth, outputHeight) {
-    let charWidth = 10
+    let charWidth = 7
     let charHeight = 21
-
-    if (window.innerHeight < 500) {
-      charWidth = 8
-      charHeight = 16
-    }
 
     let width = Math.floor(outputWidth  / charWidth)
     let height = Math.floor(outputHeight  / charHeight)
