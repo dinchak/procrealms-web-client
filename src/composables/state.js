@@ -127,6 +127,7 @@ let preloadBuffers = {}
 let addLinesTimeout = null
 const maxLines = 4000
 const removeLines = 1000
+
 export function addLine (line, bufferName) {
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
@@ -136,26 +137,26 @@ export function addLine (line, bufferName) {
     preloadBuffers[bufferName] = []
   }
 
-  let preloadBuffer = preloadBuffers[bufferName]
-
-  Object.freeze(line)
+  if (bufferName == 'output') {
+    Object.freeze(line)
+  }
   if (!line) {
     line = '<br/>'
   }
-  preloadBuffer.push(line)
+  preloadBuffers[bufferName].push(line)
 
   if (addLinesTimeout) {
     clearTimeout(addLinesTimeout)
   }
 
   addLinesTimeout = setTimeout(() => {
-    state[bufferName].push(...preloadBuffer)
-    preloadBuffers[bufferName] = []
-    addLinesTimeout = null
-
-    if (state[bufferName].length > maxLines) {
-      state[bufferName].splice(0, removeLines)
+    for (let bufferName in preloadBuffers) {
+      state[bufferName].push(...preloadBuffers[bufferName])
+      preloadBuffers[bufferName] = []
+      if (state[bufferName].length > maxLines) {
+        state[bufferName].splice(0, removeLines)
+      }
     }
+    addLinesTimeout = null
   }, 10)
-
 }

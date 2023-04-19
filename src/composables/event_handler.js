@@ -2,8 +2,10 @@ const { ansiSpan } = require('ansi-to-span')
 
 import { state, addLine } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
 
 const { ansiToHtml } = helpers()
+const { cmd } = useWebSocket()
 
 const handlers = {}
 
@@ -54,6 +56,10 @@ handlers['token.success'] = ({ name, token }) => {
 
   state.showLogin = false
   state.showNewPlayer = false
+
+  cmd('chat')
+  cmd('newbie')
+  cmd('trade')
 }
 
 handlers['out'] = (line) => {

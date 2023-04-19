@@ -9,12 +9,12 @@ export function useWebSocket () {
 
       ws.onopen = onConnect
       ws.onclose = onClose
-      ws.onmessage = ({ data }) => _onMessage(data, onEvent)  
+      ws.onmessage = ({ data }) => _onMessage(data, onEvent)
     } catch (err) {
       console.log(err.stack)
     }
 
-    const _onMessage = (json) => {
+    const _onMessage = (json, onEvent) => {
       try {
         let { cmd, msg, id } = JSON.parse(json)
         if (id) {
