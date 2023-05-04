@@ -18,11 +18,19 @@
         <span class="label yellow">ST</span>
         <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().stamina / entity().maxStamina * 100" :show-indicator="false"></n-progress>
       </span>
+
+      <span class="stat" v-if="entity().rage > 0">
+        <span class="value bold-red">{{ entity().rage }}</span>
+        <span class="label red">RG</span>
+        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().rage / entity().maxRage * 100" :show-indicator="false"></n-progress>
+      </span>
     </span>
 
     <span class="right">
       <n-progress class="circle-stat" type="circle" status="success" :percentage="entity().food / entity().maxFood * 100">Food</n-progress>
+<!--
       <n-progress v-if="entity().rage > 0" class="circle-stat" type="circle" status="danger" :percentage="entity().rage / entity().maxRage * 100">Rage</n-progress>
+-->
       <n-progress v-if="entity().combo > 0" class="circle-stat" type="circle" status="warning" :percentage="entity().combo / entity().maxCombo * 100">Combo</n-progress>
     </span>
 
@@ -80,6 +88,7 @@ function entity () {
   margin-bottom: 5px;
   align-items: center;
   justify-content: space-between;
+  word-break: normal;
 
   .left {
     display: flex;
@@ -109,11 +118,12 @@ function entity () {
       font-size: 10px;
     }
   }
-  // .quick-stats {
-  //   height: 12px;
-  //   // margin-right: 10px;
-  //   // width: 190px;
-  // }
+   .quick-stats {
+    height: 12px;
+    margin-right: 5px;
+    width: 30px;
+   }
+
   // .flex {
   //   display: flex;
   //   flex-direction: row;
