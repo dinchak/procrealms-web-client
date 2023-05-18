@@ -1,8 +1,25 @@
+import { state } from "@/composables/state";
+import { action_mapper } from '@/composables/constants/action_mapper';
+
 const AU = require('ansi_up')
 const ansi_up = new AU.default
 ansi_up.use_classes = true
-
-import { action_mapper } from '@/composables/constants/action_mapper';
+const ansi = {
+    boldBlack: String.fromCharCode(27) + '[90m',
+    boldRed: String.fromCharCode(27) + '[91m',
+    boldWhite: String.fromCharCode(27) + '[97m',
+    reset: String.fromCharCode(27) + '[0m'
+}
+const replacements = [
+    { from: '1;30m', to: '90m' },
+    { from: '1;31m', to: '91m' },
+    { from: '1;32m', to: '92m' },
+    { from: '1;33m', to: '93m' },
+    { from: '1;34m', to: '94m' },
+    { from: '1;35m', to: '95m' },
+    { from: '1;36m', to: '96m' },
+    { from: '1;37m', to: '97m' },
+]
 
 export function helpers() {
     function copperToMoneyString(amount, short) {
@@ -50,24 +67,6 @@ export function helpers() {
         return isPlayer ? playerActions : mercActions;
     }
 
-    const ansi = {
-        boldBlack: String.fromCharCode(27) + '[90m',
-        boldRed: String.fromCharCode(27) + '[91m',
-        boldWhite: String.fromCharCode(27) + '[97m',
-        reset: String.fromCharCode(27) + '[0m'
-    }
-
-    const replacements = [
-        { from: '1;30m', to: '90m' },
-        { from: '1;31m', to: '91m' },
-        { from: '1;32m', to: '92m' },
-        { from: '1;33m', to: '93m' },
-        { from: '1;34m', to: '94m' },
-        { from: '1;35m', to: '95m' },
-        { from: '1;36m', to: '96m' },
-        { from: '1;37m', to: '97m' },
-    ]
-
     function ansiToHtml (str) {
         for (let { from, to } of replacements) {
             str = str.replace(new RegExp(from, 'g'), to)
@@ -75,5 +74,16 @@ export function helpers() {
         return ansi_up.ansi_to_html(str)
     }
 
-    return { copperToMoneyString, getActions, ansiToHtml, ansi }
+    function getMerc() {
+        const merc = Object.values(state.gameState.charmies)
+            .find(charmie => charmie && charmie.traits && charmie.traits.includes('mercenary'))
+        if (!merc) {
+            state.gameState.mercEid = -1
+            return false
+        }
+        state.gameState.mercEid = merc.stats.eid
+        return merc
+    }
+
+    return { copperToMoneyString, getActions, ansiToHtml, getMerc, ansi }
 }

@@ -1,44 +1,47 @@
 <template>
-  <div class="battle-status">
-    <div class="side good">
-      <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
-        <TransitionGroup appear name="damage">
-          <div
-            v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
-            :key="anim.key"
-            :class="getAnimationClass(anim)"
-          >{{ anim.amount }}</div>
-        </TransitionGroup>
-        <TransitionGroup appear name="healing">
-          <div
-            v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
-            :key="anim.key"
-            :class="getAnimationClass(anim)"
-          >{{ anim.amount }}</div>
-        </TransitionGroup>
-        <BattleEntity :entity="entity"></BattleEntity>
+  <div class="battle-area">
+    <MercOrders></MercOrders>
+    <div class="battle-status">
+      <div class="side good">
+        <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
+          <TransitionGroup appear name="damage">
+            <div
+              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              :key="anim.key"
+              :class="getAnimationClass(anim)"
+            >{{ anim.amount }}</div>
+          </TransitionGroup>
+          <TransitionGroup appear name="healing">
+            <div
+              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              :key="anim.key"
+              :class="getAnimationClass(anim)"
+            >{{ anim.amount }}</div>
+          </TransitionGroup>
+          <BattleEntity :entity="entity"></BattleEntity>
+        </div>
       </div>
-    </div>
 
-    <div class="vs">VS</div>
+      <div class="vs">VS</div>
 
-    <div class="side evil">
-      <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
-        <TransitionGroup appear name="damage">
-          <div
-            v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
-            :key="anim.key"
-            :class="getAnimationClass(anim)"
-          >{{ anim.amount }}</div>
-        </TransitionGroup>
-        <TransitionGroup appear name="healing">
-          <div
-            v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
-            :key="anim.key"
-            :class="getAnimationClass(anim)"
-          >{{ anim.amount }}</div>
-        </TransitionGroup>
-        <BattleEntity :entity="entity"></BattleEntity>
+      <div class="side evil">
+        <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
+          <TransitionGroup appear name="damage">
+            <div
+              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              :key="anim.key"
+              :class="getAnimationClass(anim)"
+            >{{ anim.amount }}</div>
+          </TransitionGroup>
+          <TransitionGroup appear name="healing">
+            <div
+              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              :key="anim.key"
+              :class="getAnimationClass(anim)"
+            >{{ anim.amount }}</div>
+          </TransitionGroup>
+          <BattleEntity :entity="entity"></BattleEntity>
+        </div>
       </div>
     </div>
   </div>
@@ -51,6 +54,7 @@ import { onMounted, ref } from 'vue'
 import { state } from '@/composables/state'
 
 import BattleEntity from '@/components/main-area/battle-items/BattleEntity.vue'
+import MercOrders from '@/components/main-area/battle-items/MercOrders.vue'
 
 const battleStatus = ref(null)
 
@@ -76,9 +80,14 @@ onMounted(() => {
 </script>
 
 <style lang="less">
+
+.battle-area {
+  margin-top: 5px;
+  border-top: 2px solid #333;
+}
+
 .battle-status {
   display: flex;
-  border-top: 2px solid #333;
   top: 0;
   width: 100%;
   margin-top: 5px;
