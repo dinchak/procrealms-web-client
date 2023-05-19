@@ -1,14 +1,13 @@
 <template>
     <div class="order-dropdown">
       <n-dropdown
-        :show="showDropdownRef"
         placement="bottom-start"
         trigger="click"
         size="large"
         :options="options"
         @select="handleSelect"
       >
-        <n-button @click="handleClick">Queue Order</n-button>
+        <n-button>Queue Order</n-button>
       </n-dropdown>
     </div>
 </template>
@@ -16,35 +15,34 @@
 <script setup>
 import { NDropdown, NButton } from 'naive-ui'
 import { helpers } from '@/composables/helpers'
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, onMounted, watch } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
+import { state } from '@/composables/state'
 
 const { getMerc } = helpers()
 const { fetchItems, cmd } = useWebSocket()
 
 const options = reactive([])
-const showDropdownRef = ref(false)
 
 const combatPotions = ["healing potion", "energy potion", "stamina potion"]
 
 /*
     TODO
 - Have a way to select a target on which the action / skill is performed
+- Add more potions
  */
 
 onMounted(async () => {
     await setOptions()
 })
 
-function handleClick () {
-    setOptions()
-    showDropdownRef.value = !showDropdownRef.value
-}
-
 function handleSelect(order) {
     cmd(`queue ${order}`)
-    showDropdownRef.value = false
 }
+
+watch(() => state.gameState.party, () => {
+    setOptions()
+})
 
 async function setOptions() {
     const merc = getMerc()
