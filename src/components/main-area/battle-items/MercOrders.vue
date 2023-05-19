@@ -1,31 +1,29 @@
 <template>
-    <div class="order-dropdown" v-if="showOrdersRef">
-        <n-dropdown
-          :show="showDropdownRef"
-          placement="bottom-start"
-          trigger="click"
-          size="large"
-          :options="options"
-          @select="handleSelect"
-        >
-            <n-button @click="handleClick">Queue Order</n-button>
-        </n-dropdown>
+    <div class="order-dropdown">
+      <n-dropdown
+        :show="showDropdownRef"
+        placement="bottom-start"
+        trigger="click"
+        size="large"
+        :options="options"
+        @select="handleSelect"
+      >
+        <n-button @click="handleClick">Queue Order</n-button>
+      </n-dropdown>
     </div>
 </template>
 
 <script setup>
-import { NDropdown } from 'naive-ui'
+import { NDropdown, NButton } from 'naive-ui'
 import { helpers } from '@/composables/helpers'
-import {reactive, ref, onMounted, watch} from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/composables/state'
 
 const { getMerc } = helpers()
 const { fetchItems, cmd } = useWebSocket()
 
 const options = reactive([])
 const showDropdownRef = ref(false)
-const showOrdersRef = ref(false)
 
 const combatPotions = ["healing potion", "energy potion", "stamina potion"]
 
@@ -36,32 +34,16 @@ const combatPotions = ["healing potion", "energy potion", "stamina potion"]
 
 onMounted(async () => {
     await setOptions()
-    showOrdersRef.value = isMercHere()
-})
-
-watch(state.gameState.battle.participants, function () {
-    setOptions()
-    showOrdersRef.value = isMercHere()
 })
 
 function handleClick () {
-    showDropdownRef.value = !showDropdownRef.value
     setOptions()
+    showDropdownRef.value = !showDropdownRef.value
 }
 
 function handleSelect(order) {
     cmd(`queue ${order}`)
-    showDropdownRef.value = !showDropdownRef.value
-}
-
-function isMercHere() {
-    let isMercHere = false
-    state.gameState.battle.participants.map(participant => {
-        if (participant.eid === state.gameState.mercEid) {
-            isMercHere = true
-        }
-    })
-    return isMercHere
+    showDropdownRef.value = false
 }
 
 async function setOptions() {
@@ -107,9 +89,6 @@ async function setOptions() {
 
 <style lang="less" scoped>
 .order-dropdown {
-    font-size: 16px;
-    margin-top: 5px;
-    cursor: pointer;
-    text-decoration: underline;
+  margin-top: 5px;
 }
 </style>

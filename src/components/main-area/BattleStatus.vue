@@ -1,6 +1,6 @@
 <template>
   <div class="battle-area">
-    <MercOrders></MercOrders>
+    <MercOrders v-if="showOrdersRef"></MercOrders>
     <div class="battle-status">
       <div class="side good">
         <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import {onMounted, ref, watch} from 'vue'
 
 import { state } from '@/composables/state'
 
@@ -57,6 +57,7 @@ import BattleEntity from '@/components/main-area/battle-items/BattleEntity.vue'
 import MercOrders from '@/components/main-area/battle-items/MercOrders.vue'
 
 const battleStatus = ref(null)
+const showOrdersRef = ref(false)
 
 function getSide (side) {
   return state.gameState.battle.participants.filter(p => p.side == side)
@@ -71,12 +72,28 @@ function getAnimationClass (anim) {
   return classes.join(' ')
 }
 
+function isMercHere() {
+  let isMercHere = false
+  state.gameState.battle.participants.map(participant => {
+    if (participant.eid === state.gameState.mercEid) {
+      isMercHere = true
+    }
+  })
+  return isMercHere
+}
+
 onMounted(() => {
   let parent = battleStatus.value?.parentElement
+  showOrdersRef.value = isMercHere()
   if (parent) {
     parent.scrollTo(0, parent.scrollHeight)
   }
 })
+
+watch(state.gameState.battle.participants, function () {
+  showOrdersRef.value = isMercHere()
+})
+
 </script>
 
 <style lang="less">
