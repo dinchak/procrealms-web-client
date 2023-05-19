@@ -57,7 +57,7 @@ import { helpers } from '@/composables/helpers'
 
 import QuickStats from '@/components/side-menu/QuickStats'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml, getMerc } = helpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
@@ -83,15 +83,13 @@ function closeModal() {
 }
 
 async function findAndSetMerc() {
-  let merc = Object.values(state.gameState.charmies)
-    .find(charmie => charmie && charmie.traits && charmie.traits.includes('mercenary'))
-  if (!merc) {
-    state.gameState.mercEid = -1
-    return
-  }
+  const merc = getMerc()
 
-  mercEntity.value = merc.stats
+  if (!merc) {
+      return
+  }
   state.gameState.mercEid = merc.stats.eid
+  mercEntity.value = merc.stats
   mercVitals.value = merc.stats
   mercSkills.value = merc.skills
   mercInventory.value = merc.items
