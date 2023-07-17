@@ -73,6 +73,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { ref, watch, nextTick, onMounted, h } from 'vue'
 
 import { state } from '@/composables/state'
+import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -90,6 +91,7 @@ const newbie = ref(null)
 
 const refs = { output, chat, trade, newbie }
 
+const { onKeydown, keyState } = useKeyHandler()
 const { send } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
 
@@ -203,6 +205,30 @@ function getScrollbackControlClass () {
     cls += ' show-quickslots'
   }
   return cls
+}
+
+onKeydown((ev) => {
+  if (keyState.alt || keyState.ctrl) {
+    return false
+  }
+
+  if (ev.key == 'PageUp') {
+    scrollPage((a, b) => a - b)
+    return true
+  } else if (ev.key == 'PageDown') {
+    scrollPage((a, b) => a + b)
+    return true
+  }
+
+  return false
+})
+
+function scrollPage(op) {
+  let activeTab = document.getElementsByClassName('n-tabs-tab--active')[0].attributes['data-name'].value;
+  let el = document.getElementById(activeTab)
+  if (el) {
+    el.scrollTop = op(el.scrollTop, el.clientHeight / 2)
+  }
 }
 
 onMounted(() => {
