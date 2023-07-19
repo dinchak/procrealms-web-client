@@ -1,7 +1,12 @@
 <template>
   <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal && state.gameState.mercEid !== -1">
     <p class="close" v-on:click="closeModal()">x</p>
-    <h3 class="bold-green"> {{mercEntity.name}} </h3>
+    <h3 class="bold-green" style="display: inline;margin-right: 10px"> {{mercEntity.name}} </h3>
+    <span style="color: #aaa">Level</span> <span class="bold-cyan">{{ mercEntity.level }}</span>
+    <n-progress v-if="!isNaN(getMercTNL())" class="exp-row" type="line" status="default" :percentage="getMercExpPercentage()">
+      {{ getMercTNL() }} TNL
+    </n-progress>
+
     <div class="affects">
       <n-tooltip trigger="hover" v-for="(affect, index) in affects" v-bind:key='index'>
         <template #trigger>
@@ -45,7 +50,7 @@
 <script setup>
 
 import { watch, ref, onMounted } from 'vue'
-import { NCard, NTooltip, NCollapse } from 'naive-ui'
+import {NCard, NTooltip, NCollapse, NProgress} from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
 import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
@@ -96,6 +101,14 @@ async function findAndSetMerc() {
   mercEquipment.value = merc.equipment
 
   setAffects(merc.affects)
+}
+
+function getMercTNL () {
+  return mercEntity.value.xpForNextLevel - mercEntity.value.xp
+}
+
+function getMercExpPercentage () {
+  return (mercEntity.value.xp - mercEntity.value.xpForCurrentLevel) / (mercEntity.value.xpForNextLevel - mercEntity.value.xpForCurrentLevel) * 100
 }
 
 function setAffects(affectList) {
