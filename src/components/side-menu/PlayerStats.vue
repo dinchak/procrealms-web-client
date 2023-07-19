@@ -6,7 +6,8 @@
       <div><span style="color: #aaa">Level</span> <span class="bold-cyan">{{ player().level }}</span></div>
     </div>
 
-    <n-progress class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
+    <hr v-if="isNaN(getTNL())" class="exp-row">
+    <n-progress v-else class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
       {{ getTNL() }} TNL
     </n-progress>
 
@@ -98,6 +99,7 @@ function getPlayerStatsClass () {
 
   .exp-row {
     width: 100%;
+    margin-top: 5px;
     margin-bottom: 10px;
   }
 
