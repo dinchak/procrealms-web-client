@@ -165,6 +165,18 @@ onKeydown((ev) => {
     return true
   }
 
+  if (ev.code == 'PageUp') {
+    let output = document.getElementById(state.activeTab)
+    output.scrollTo(0, output.scrollTop - output.clientHeight * 9 / 10)
+    return true
+  }
+
+  if (ev.code == 'PageDown') {
+    let output = document.getElementById(state.activeTab)
+    output.scrollTo(0, output.scrollTop + output.clientHeight * 9 / 10)
+    return true
+  }
+
   if (state.mode == 'hotkey') {
     const { slots } = state.gameState
     let slot = slots.find(s => s.slot == ev.key)
