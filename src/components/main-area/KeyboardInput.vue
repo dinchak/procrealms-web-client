@@ -131,7 +131,7 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.code == 'Enter' && state.mode == 'hotkey') {
+  if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
     return true
   }
@@ -151,7 +151,7 @@ onKeydown((ev) => {
     return true
   }
 
-  if (ev.code == 'Enter' && state.mode == 'input') {
+  if (ev.key == 'Enter' && state.mode == 'input') {
     if (!input.value.value) {
       input.value.blur()
       return true
@@ -165,15 +165,23 @@ onKeydown((ev) => {
     return true
   }
 
-  if (ev.code == 'PageUp') {
-    let output = document.getElementById(state.activeTab)
-    output.scrollTo(0, output.scrollTop - output.clientHeight * 9 / 10)
+  if (ev.key == 'PageUp') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
     return true
   }
 
-  if (ev.code == 'PageDown') {
-    let output = document.getElementById(state.activeTab)
-    output.scrollTo(0, output.scrollTop + output.clientHeight * 9 / 10)
+  if (ev.key == 'PageDown') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
+    return true
+  }
+
+  if (ev.key == 'End') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    if (activeTabElement) {
+      activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
+    }
     return true
   }
 
