@@ -34,10 +34,10 @@
 </template>
 
 <script setup>
-import { NProgress } from 'naive-ui'
-import { useWebSocket } from '@/composables/web_socket'
+import {NProgress} from 'naive-ui'
+import {useWebSocket} from '@/composables/web_socket'
 
-import { state } from '@/composables/state'
+import {state} from '@/composables/state'
 
 const { cmd } = useWebSocket()
 
@@ -45,8 +45,19 @@ let actionTimeout = null
 
 function slots () {
   let slots = state.gameState.slots || []
-  slots.sort((a, b) => a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1)
-  return slots
+  let isNumberSlot = s => s.slot >= '1' && s.slot <= '9';
+  let numberSlots = slots.filter(isNumberSlot)
+  numberSlots.sort((a, b) => a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1)
+
+  let nonNumberSlotsMap = new Map(slots
+      .filter(s => !isNumberSlot(s))
+      .map((s) => [s.slot, s]))
+
+  let addNonNumberSlot = slotChar => nonNumberSlotsMap.has(slotChar) && numberSlots.push(nonNumberSlotsMap.get(slotChar))
+  addNonNumberSlot('0')
+  addNonNumberSlot('-')
+  addNonNumberSlot('=')
+  return numberSlots
 }
 
 function runQuickSlot (slot) {
