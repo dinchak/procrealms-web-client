@@ -108,9 +108,16 @@ function sendCommand () {
 
   commandHistory.unshift(command)
   cmd(command)
-  text.value = ''
-  input.value.value = ''
-  historyIndex = -1
+
+  if (state.options.keepSentCommands) {
+    commandBuffer = ''
+    input.value.select()
+    historyIndex = 0
+  } else {
+    text.value = ''
+    input.value.value = ''
+    historyIndex = -1
+  }
 
   setTimeout(() => {
     let output = document.getElementById(state.activeTab)
