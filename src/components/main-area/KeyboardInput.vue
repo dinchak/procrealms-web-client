@@ -107,7 +107,7 @@ function sendCommand () {
   }
 
   commandHistory.unshift(command)
-  cmd(command)
+  command.split(';').forEach(c => cmd(c))
   text.value = ''
   input.value.value = ''
   historyIndex = -1
