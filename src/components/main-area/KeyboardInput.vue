@@ -107,7 +107,7 @@ function sendCommand () {
   }
 
   commandHistory.unshift(command)
-  cmd(command)
+  command.split(';').forEach(c => cmd(c))
 
   if (state.options.keepSentCommands) {
     commandBuffer = ''
@@ -138,7 +138,7 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.code == 'Enter' && state.mode == 'hotkey') {
+  if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
     return true
   }
@@ -158,7 +158,7 @@ onKeydown((ev) => {
     return true
   }
 
-  if (ev.code == 'Enter' && state.mode == 'input') {
+  if (ev.key == 'Enter' && state.mode == 'input') {
     if (!input.value.value) {
       input.value.blur()
       return true
@@ -169,6 +169,26 @@ onKeydown((ev) => {
 
   if (ev.key == '?' && state.mode == 'hotkey') {
     state.showHelp = true
+    return true
+  }
+
+  if (ev.key == 'PageUp') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
+    return true
+  }
+
+  if (ev.key == 'PageDown') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
+    return true
+  }
+
+  if (ev.key == 'End') {
+    let activeTabElement = document.getElementById(state.activeTab)
+    if (activeTabElement) {
+      activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
+    }
     return true
   }
 

@@ -30,13 +30,17 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.key == 'B' || ev.key == 'b') {
+  if (state.gameState.battle.active) {
+    return false
+  }
+
+  if (ev.code == 'KeyB') {
     cmd('battle')
     return true
-  } else if (ev.key == 'H' || ev.key == 'h') {
+  } else if (ev.code == 'KeyH') {
     cmd('harvest')
     return true
-  } else if (ev.key == 'L' || ev.key == 'l') {
+  } else if (ev.code == 'KeyL') {
     cmd('loot')
     return true
   }
