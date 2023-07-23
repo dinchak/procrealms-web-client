@@ -90,7 +90,7 @@
       </template>
     </n-switch>
 
-    <n-switch v-model:value="state.options.keepSentCommands" aria-label="Show Mobile Movement">
+    <n-switch v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands">
       <template #checked>
         Keep Sent Commands
       </template>
