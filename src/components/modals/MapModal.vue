@@ -56,11 +56,15 @@ onKeydown((ev) => {
     return false
   }
 
+  if (state.modals.triggersModal) {
+    return false
+  }
+
   if (state.mode === 'input') {
     return false
   }
 
-  if (ev.key === 'M' || ev.key === 'm') {
+  if (ev.code === 'KeyM') {
     state.modals.mapModal = !state.modals.mapModal
     return true
   }
