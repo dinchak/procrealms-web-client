@@ -90,6 +90,7 @@
       </template>
     </n-switch>
 
+    <n-button type="info" @click="state.modals.triggersModal = !state.modals.triggersModal" ghost>Triggers</n-button>
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>

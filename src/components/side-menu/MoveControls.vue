@@ -138,6 +138,10 @@ onKeydown((ev) => {
     return false
   }
 
+  if (state.modals.triggersModal) {
+    return false
+  }
+
   if (state.options.wasdMovement) {
     if (ev.key == 'Q' || ev.key == 'q') {
       move('northwest')

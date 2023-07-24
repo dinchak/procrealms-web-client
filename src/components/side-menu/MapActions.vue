@@ -30,6 +30,10 @@ onKeydown((ev) => {
     return false
   }
 
+  if (state.modals.triggersModal) {
+    return false
+  }
+
   if (state.gameState.battle.active) {
     return false
   }

@@ -131,6 +131,10 @@ onKeydown((ev) => {
     return false
   }
 
+  if (state.modals.triggersModal) {
+    return false
+  }
+
   if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
     return true

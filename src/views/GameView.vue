@@ -10,6 +10,7 @@
     <n-layout>
       <MapModal></MapModal>
       <MercModal></MercModal>
+      <TriggersModal></TriggersModal>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -34,6 +35,7 @@ import MercModal from '@/components/modals/MercModal'
 import MobileMovement from '@/components/main-area/MobileMovement.vue'
 import QuickSlots from '@/components/main-area/QuickSlots.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
+import TriggersModal from "@/components/modals/TriggersModal.vue";
 
 try {
   const options = JSON.parse(localStorage.getItem('options'))
