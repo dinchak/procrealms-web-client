@@ -8,28 +8,27 @@
             block-line
             checkable
             virtual-scroll
-            style="height: 300px"
             :data="data"
             :default-checked-keys="defaultCheckedKeys"
+            :selected-keys="selectedKeys"
             @update:checked-keys="updateCheckedKeys"
             @update:selected-keys="updateSelectedKeys"
         />
       </n-grid-item>
 
       <n-grid-item :span="2">
-        <n-form ref="formRef" :model="model" :rules="rules" size="large">
-          <n-form-item path="name" label="Trigger name">
-            <n-input v-model:value="model.name" placeholder="Trigger name"/>
-          </n-form-item>
-          <n-form-item path="pattern" label="Pattern">
-            <n-input v-model:value="model.pattern" placeholder="RegEx pattern"/>
-          </n-form-item>
-          <n-form-item path="commands" label="Commands">
-            <n-scrollbar>
-              <n-input v-model:value="model.commands" type="textarea" placeholder="Commands to send to the server"/>
-            </n-scrollbar>
-          </n-form-item>
-        </n-form>
+        <n-form-item path="name" label="Trigger name">
+          <n-input v-model:value="model.name" :allow-input="onlyAlphaNumericMax50" placeholder="Trigger name"/>
+        </n-form-item>
+        <n-form-item path="pattern" label="Pattern">
+          <n-input v-model:value="model.pattern" placeholder="RegEx pattern (JavaScript)"/>
+        </n-form-item>
+        <n-form-item path="commands" label="Commands">
+          <n-scrollbar>
+            <n-input v-model:value="model.commands" type="textarea"
+                     placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values."/>
+          </n-scrollbar>
+        </n-form-item>
       </n-grid-item>
 
       <n-grid-item>
@@ -38,7 +37,7 @@
 
       <n-grid-item :span="2">
         <n-button type="success" ghost @click="saveTrigger" style="margin-right: 8px;">Save</n-button>
-        <n-button type="error" ghost @click="deleteTrigger(model.name)">Delete</n-button>
+        <n-button type="error" ghost @click="deleteTrigger(model.id)">Delete</n-button>
       </n-grid-item>
     </n-grid>
 
@@ -46,59 +45,46 @@
 </template>
 
 <script setup>
-import {NButton, NCard, NForm, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NTree} from 'naive-ui'
-import { state} from '@/composables/state'
-import { useKeyHandler} from '@/composables/key_handler'
-import { onMounted, ref} from "vue";
+import {NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NTree} from 'naive-ui'
+import {state} from '@/composables/state'
+import {useKeyHandler} from '@/composables/key_handler'
+import {onMounted, ref} from "vue";
 
 const { onKeydown, keyState } = useKeyHandler()
 
-const formRef = ref(null)
-
-const model = ref({
-  name: null,
-  pattern: null,
-  commands: null
-})
-
+const model = ref({ id: '0', name: "", pattern: "", commands: "", active: false })
 const data = ref([])
 const defaultCheckedKeys = ref([])
+const selectedKeys = ref([])
+
+function getSideClass() {
+  return state.options.swapControls ? 'triggers-modal-right' : 'triggers-modal-left'
+}
 
 const updateCheckedKeys = (keys) => {
-  Array.from(state.triggers.values()).forEach(t => t.active = false)
-  keys.forEach(key => state.triggers.get(key).active = true)
+  Array.from(state.triggers.value.values()).forEach(t => t.active = false)
+  keys.forEach(key => state.triggers.value.get(key).active = true)
+  storeTriggers()
 }
 
 const updateSelectedKeys = (keys) => {
-
   if (keys.length === 1) {
-    let trigger = state.triggers.get(keys[0]);
+    let id = keys[0];
+    selectedKeys.value = [id]
+    let trigger = state.triggers.value.get(id);
+    model.value.id = id
     model.value.name = trigger.name
     model.value.pattern = trigger.pattern
     model.value.commands = trigger.commands
   }
 }
 
-const rules = {
-  name: [
-    {
-      required: true,
-      trigger: ['blur'],
-      validator (rule, value) {
-        if (!value) {
-          return new Error('Name is required')
-        } else if (!/^[a-zA-Z0-9]+$/.test(value)) {
-          return new Error('Name can only contain letters and numbers')
-        }
-      }
-    }
-  ]}
-
-function getSideClass() {
-  return state.options.swapControls ? 'triggers-modal-right' : 'triggers-modal-left'
+function onlyAlphaNumericMax50(value) {
+  return /^[a-zA-Z0-9]{0,50}$/.test(value)
 }
 
 onKeydown((ev) => {
+  // TODO: proper handling of keyboard focus between modal and main input field
   if (keyState.alt || keyState.ctrl) {
     return false
   }
@@ -107,45 +93,57 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.code === 'KeyT') {
-    state.modals.triggersModal = !state.modals.triggersModal
+  if (ev.code === 'KeyT' && !state.modals.triggersModal) {
+    state.modals.triggersModal = true
+    return true
+  }
+
+  if (ev.code === 'Escape' && state.modals.triggersModal) {
+    state.modals.triggersModal = false
     return true
   }
 })
 
 function newTrigger() {
-  model.value = { name: null, pattern: null, commands: null, active: false }
+  let idsAsNumbers = [...state.triggers.value.keys()].map(k => Number(k));
+  let id = 1 + (state.triggers.value.size ? Math.max(...idsAsNumbers) : 0);
+  model.value = { id: '' + id, name: 'NewTrigger', pattern: null, commands: null, active: false }
+  saveTrigger(null)
 }
 
 function saveTrigger(e) {
-  e.preventDefault()
-  if (model.value.name) {
-    let trigger = {name: model.value.name, pattern: model.value.pattern, commands: model.value.commands, active: false}
-
-    state.triggers.set(trigger.name, trigger)
+  e?.preventDefault()
+  if (onlyAlphaNumericMax50(model.value.name)) {
+    let trigger = { name: model.value.name, pattern: model.value.pattern, commands: model.value.commands, active: false }
+    state.triggers.value.set(model.value.id, trigger)
     updateTriggerList()
     storeTriggers();
   }
 }
 
-function deleteTrigger(name) {
-  state.triggers.delete(name)
-  model.value = { name: null, pattern: null, commands: null }
+function deleteTrigger(id) {
+  state.triggers.value.delete(id)
+  model.value = { id: null, name: "", pattern: "", commands: "", active: false }
   updateTriggerList()
   storeTriggers();
 }
 
 function updateTriggerList() {
-  let triggers = Array.from(state.triggers.values());
-  data.value = triggers.map(t => {
-    return { label: t.name, key: t.name }
+  data.value = []
+  defaultCheckedKeys.value = []
+
+  state.triggers.value.forEach((trigger, id) => {
+    data.value.push({ key: "" + id, label: `(${id}) ${trigger.name}`})
+    if (trigger.active) {
+      defaultCheckedKeys.value.push("" + id)
+    }
   })
-  defaultCheckedKeys.value = triggers.filter(t => t.active).map(t => t.name)
+
+  selectedKeys.value = [model.value.id]
 }
 
 function storeTriggers() {
-  console.log('SAVING ' + JSON.stringify(Array.from(state.triggers.entries())))
-  localStorage.setItem('triggers', JSON.stringify(Array.from(state.triggers.entries())))
+  localStorage.setItem('triggers', JSON.stringify(Array.from(state.triggers.value.entries())))
 }
 
 onMounted(() => {
@@ -153,14 +151,14 @@ onMounted(() => {
   try {
     const triggers = new Map(JSON.parse(localStorage.getItem('triggers')))
     if (triggers !== null) {
-      state.triggers = triggers
+      state.triggers.value = triggers
     }
   } catch (err) {
-    console.log(err.stack)
     localStorage.setItem('triggers', '[]')
   }
 
   updateTriggerList()
+  selectedKeys.value = []
 })
 
 </script>
@@ -172,6 +170,12 @@ onMounted(() => {
   margin-top: 125px;
   max-width: calc(100vw - 710px);
   z-index: 3;
+}
+
+.n-tree {
+  height: 275px;
+  border-radius: 3px;
+  background-color: #303033
 }
 
 .triggers-modal-left {
