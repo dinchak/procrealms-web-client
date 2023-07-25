@@ -131,6 +131,15 @@ onKeydown((ev) => {
     return false
   }
 
+  if (ev.key == 'Enter' && state.mode == 'input') {
+    if (!input.value.value) {
+      input.value.blur()
+      return true
+    }
+    sendCommand()
+    return true
+  }
+
   if (state.modals.triggersModal) {
     return false
   }
@@ -152,15 +161,6 @@ onKeydown((ev) => {
 
   if (ev.code == 'ArrowDown') {
     nextCommand()
-    return true
-  }
-
-  if (ev.key == 'Enter' && state.mode == 'input') {
-    if (!input.value.value) {
-      input.value.blur()
-      return true
-    }
-    sendCommand()
     return true
   }
 

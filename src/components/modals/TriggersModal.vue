@@ -84,7 +84,6 @@ function onlyAlphaNumericMax50(value) {
 }
 
 onKeydown((ev) => {
-  // TODO: proper handling of keyboard focus between modal and main input field
   if (keyState.alt || keyState.ctrl) {
     return false
   }
@@ -133,7 +132,7 @@ function updateTriggerList() {
   defaultCheckedKeys.value = []
 
   state.triggers.value.forEach((trigger, id) => {
-    data.value.push({ key: "" + id, label: `(${id}) ${trigger.name}`})
+    data.value.push({ key: "" + id, label: trigger.name})
     if (trigger.active) {
       defaultCheckedKeys.value.push("" + id)
     }
