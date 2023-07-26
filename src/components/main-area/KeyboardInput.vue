@@ -144,6 +144,7 @@ onKeydown((ev) => {
     return false
   }
 
+  // TODO: handle keyboard focus
   if (ev.key == 'Enter' && state.mode == 'hotkey') {
     input.value.focus()
     return true

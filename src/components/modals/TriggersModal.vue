@@ -9,7 +9,7 @@
             checkable
             virtual-scroll
             :data="data"
-            :default-checked-keys="defaultCheckedKeys"
+            :checked-keys="checkedKeys"
             :selected-keys="selectedKeys"
             @update:checked-keys="updateCheckedKeys"
             @update:selected-keys="updateSelectedKeys"
@@ -17,15 +17,15 @@
       </n-grid-item>
 
       <n-grid-item :span="2">
-        <n-form-item path="name" label="Trigger name">
-          <n-input v-model:value="model.name" :allow-input="onlyAlphaNumericMax50" placeholder="Trigger name"/>
+        <n-form-item path="name" label="Name">
+          <n-input v-model:value="model.name" :disabled="model.id < 1" :allow-input="onlyAlphaNumericMax50" placeholder="Trigger name"/>
         </n-form-item>
         <n-form-item path="pattern" label="Pattern">
-          <n-input v-model:value="model.pattern" placeholder="RegEx pattern (JavaScript)"/>
+          <n-input v-model:value="model.pattern" :disabled="model.id < 1" placeholder="RegEx pattern (JavaScript)"/>
         </n-form-item>
         <n-form-item path="commands" label="Commands">
           <n-scrollbar>
-            <n-input v-model:value="model.commands" type="textarea"
+            <n-input v-model:value="model.commands" :disabled="model.id < 1" type="textarea"
                      placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values."/>
           </n-scrollbar>
         </n-form-item>
@@ -52,9 +52,9 @@ import {onMounted, ref} from "vue";
 
 const { onKeydown, keyState } = useKeyHandler()
 
-const model = ref({ id: '0', name: "", pattern: "", commands: "", active: false })
+const model = ref({ id: '-1', name: "", pattern: "", commands: "", active: false })
 const data = ref([])
-const defaultCheckedKeys = ref([])
+const checkedKeys = ref([])
 const selectedKeys = ref([])
 
 function getSideClass() {
@@ -63,7 +63,10 @@ function getSideClass() {
 
 const updateCheckedKeys = (keys) => {
   Array.from(state.triggers.value.values()).forEach(t => t.active = false)
-  keys.forEach(key => state.triggers.value.get(key).active = true)
+  keys.forEach(key => {
+    state.triggers.value.get(key).active = true
+  })
+  checkedKeys.value = keys
   storeTriggers()
 }
 
@@ -105,36 +108,40 @@ onKeydown((ev) => {
 
 function newTrigger() {
   let idsAsNumbers = [...state.triggers.value.keys()].map(k => Number(k));
-  let id = 1 + (state.triggers.value.size ? Math.max(...idsAsNumbers) : 0);
-  model.value = { id: '' + id, name: 'NewTrigger', pattern: null, commands: null, active: false }
-  saveTrigger(null)
+  let id = 1 + (state.triggers.value.size ? Math.max(...idsAsNumbers) : 0) + '';
+  model.value = { id: id, name: 'NewTrigger', pattern: null, commands: null, active: false }
+  state.triggers.value.set(id, { name: 'NewTrigger', pattern: null, commands: null, active: false })
+  updateTriggerList()
+  storeTriggers()
 }
 
 function saveTrigger(e) {
   e?.preventDefault()
-  if (onlyAlphaNumericMax50(model.value.name)) {
-    let trigger = { name: model.value.name, pattern: model.value.pattern, commands: model.value.commands, active: false }
-    state.triggers.value.set(model.value.id, trigger)
+  if (model.value.name && onlyAlphaNumericMax50(model.value.name)) {
+    let trigger = state.triggers.value.get(model.value.id)
+    trigger.name = model.value.name
+    trigger.pattern = model.value.pattern
+    trigger.commands = model.value.commands
     updateTriggerList()
-    storeTriggers();
+    storeTriggers()
   }
 }
 
 function deleteTrigger(id) {
   state.triggers.value.delete(id)
-  model.value = { id: null, name: "", pattern: "", commands: "", active: false }
+  model.value = { id: '-1', name: "", pattern: "", commands: "", active: false }
   updateTriggerList()
-  storeTriggers();
+  storeTriggers()
 }
 
 function updateTriggerList() {
   data.value = []
-  defaultCheckedKeys.value = []
+  checkedKeys.value = []
 
   state.triggers.value.forEach((trigger, id) => {
-    data.value.push({ key: "" + id, label: trigger.name})
+    data.value.push({ key: '' + id, label: trigger.name })
     if (trigger.active) {
-      defaultCheckedKeys.value.push("" + id)
+      checkedKeys.value.push('' + id)
     }
   })
 
