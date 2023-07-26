@@ -47,16 +47,20 @@ export function useWebSocket () {
     ws.send(JSON.stringify(out))
   }
 
-  function cmd (command, id) {
+  function cmd (command, id, fromTrigger) {
     if (!id) {
       // Crude filter to avoid shouting the ugly 'look iid:123456' in the output
       const lcCmd = command.toLowerCase()
       const excludeIIDCommand = (lcCmd.includes('iid:') || lcCmd.includes('eid:')) && !lcCmd.includes('chat ') && !lcCmd.includes('say ')
           && !lcCmd.includes('trade ') && !lcCmd.includes('newbie ')
       if (!excludeIIDCommand) {
-        addLine('', 'output')
-        addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
-        addLine('', 'output')
+        if (fromTrigger) {
+          addLine(`<span class="player-cmd-caret">> ${command}</span>`, 'output')
+        } else {
+          addLine('', 'output')
+          addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
+          addLine('', 'output')
+        }
       }
     }
     send('cmd', command, id)
