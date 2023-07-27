@@ -165,19 +165,19 @@ onKeydown((ev) => {
     return true
   }
 
-  if (ev.key == 'PageUp') {
+  if (ev.code == 'PageUp') {
     let activeTabElement = document.getElementById(state.activeTab)
     activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
     return true
   }
 
-  if (ev.key == 'PageDown') {
+  if (ev.code == 'PageDown') {
     let activeTabElement = document.getElementById(state.activeTab)
     activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
     return true
   }
 
-  if (ev.key == 'End') {
+  if (ev.code == 'End') {
     let activeTabElement = document.getElementById(state.activeTab)
     if (activeTabElement) {
       activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
