@@ -12,7 +12,6 @@ import { onMounted } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
 
-import { useCookieHandler } from './composables/cookie_handler'
 import { useEventHandler } from './composables/event_handler'
 import { useWebSocket } from './composables/web_socket'
 import { useWindowHandler } from './composables/window_handler'
@@ -30,7 +29,6 @@ const themeOverrides = {
   }
 }
 
-const { readCookie, clearCookie } = useCookieHandler()
 const { onEvent } = useEventHandler()
 const { initConnection, doTokenAuth, send } = useWebSocket()
 const { calcTerminalSize } = useWindowHandler()
@@ -46,20 +44,16 @@ function onConnect () {
 
     send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 
-    let json = readCookie()
-    if (json) {
-      let prefs = JSON.parse(json)
-      if (!prefs.name || !prefs.token) {
-        return
-      }
-
-      state.token = prefs.token
-      state.name = prefs.name
-
+    let name = sessionStorage.getItem("name");
+    let token = sessionStorage.getItem("token");
+    if (name && token) {
+      state.token = token
+      state.name = name
       doTokenAuth()
     }
   } catch (err) {
-    clearCookie()
+    sessionStorage.removeItem("name");
+    sessionStorage.removeItem("token");
     console.log(err.stack)
   }
 }
