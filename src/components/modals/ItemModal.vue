@@ -1,9 +1,10 @@
 <template>
   <Teleport to="body">
-    <n-card v-if="isVisible" :class="getClass()">
+    <n-card v-if="isVisible" :class="getClass()" style="max-height: 600px">
       <p class="close" v-on:click="closeModal()">x</p>
-      <n-tabs type="line" animated size="large" :class="props.isPlayer + '-modal'" @update:value="handleUpdateValue">
-        <n-tab-pane name="actions" tab="Actions" class="actions-pane">
+      <n-tabs type="line" animated size="large" :class="props.isPlayer + '-modal'" @update:value="handleUpdateValue"
+              style="max-height: 600px">
+        <n-tab-pane name="actions" tab="Actions" class="actions-pane" style="max-height: 600px">
           <h3 v-html="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
 
           <div class="actions">
@@ -47,13 +48,15 @@
             </n-collapse-item>
           </n-collapse>
         </n-tab-pane>
-        <n-tab-pane name="look" tab="Look">
+        <n-tab-pane name="look" tab="Look" style="max-height: 600px">
           <div class="item-desc" v-html="ansiToHtml(getLook())"></div>
         </n-tab-pane>
-        <n-tab-pane name="examine" tab="Examine">
+        <n-tab-pane name="examine" tab="Examine" style="max-height: 600px">
           <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
         </n-tab-pane>
-        <n-tab-pane name="compare" tab="Compare" v-if="props.menu === 'inventory' && (props.item.type === 'weapon' || props.item.type === 'armor')">
+        <n-tab-pane name="compare" tab="Compare"
+                    v-if="props.menu === 'inventory' && (props.item.type === 'weapon' || props.item.type === 'armor')"
+                    style="max-height: 600px">
           <div class="examine" v-html="ansiToHtml(rawCompare())"></div>
         </n-tab-pane>
       </n-tabs>

@@ -92,7 +92,7 @@ export const action_mapper = [
     },
     {
         action: 'salvage',
-        condition: (it) => ['armor', 'tool', 'weapon'].includes(it.type),
+        condition: (it) => ['armor', 'tool', 'weapon'].includes(it.type) && !it.name.includes('artifact'),
         crafting: true
     }
 ]
