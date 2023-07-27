@@ -2,7 +2,7 @@
   <n-card title="Triggers" :class="getSideClass()" v-if="state.modals.triggersModal">
     <p class="close" v-on:click="state.modals.triggersModal = false ">x</p>
 
-    <n-grid :cols="3" :x-gap="16">
+    <n-grid :cols="3" :x-gap="12">
       <n-grid-item>
         <n-tree
             block-line
@@ -17,14 +17,29 @@
       </n-grid-item>
 
       <n-grid-item :span="2">
-        <n-form-item path="name" label="Name">
-          <n-input v-model:value="model.name" :disabled="model.id < 1" :allow-input="onlyAlphaNumericMax50" placeholder="Trigger name"/>
-        </n-form-item>
+        <n-grid :cols="3" :x-gap="12">
+          <n-grid-item :span="2">
+            <n-form-item path="name" label="Name">
+              <n-input v-model:value="model.name" :disabled="model.id < 1" :allow-input="onlyAlphaNumericMax50"
+                       placeholder="Trigger name"/>
+            </n-form-item>
+          </n-grid-item>
+          <n-grid-item>
+            <n-switch v-model:value="model.shared" :disabled="model.id < 1" aria-label="Shared" @update:value="changeShared">
+              <template #checked>
+                Shared across characters
+              </template>
+              <template #unchecked>
+                {{ state.name }}'s trigger
+              </template>
+            </n-switch>
+          </n-grid-item>
+        </n-grid>
         <n-form-item path="pattern" label="Pattern">
           <n-input v-model:value="model.pattern" :disabled="model.id < 1" placeholder="RegEx pattern (JavaScript)"/>
         </n-form-item>
         <n-form-item path="commands" label="Commands">
-          <n-scrollbar>
+        <n-scrollbar>
             <n-input v-model:value="model.commands" :disabled="model.id < 1" type="textarea"
                      placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values."/>
           </n-scrollbar>
@@ -32,11 +47,11 @@
       </n-grid-item>
 
       <n-grid-item>
-        <n-button type="info" ghost @click="newTrigger" style="margin-right: 8px;">New</n-button>
+        <n-button type="success" ghost @click="newTrigger" style="margin-right: 8px;">New</n-button>
       </n-grid-item>
 
       <n-grid-item :span="2">
-        <n-button type="success" ghost @click="saveTrigger" style="margin-right: 8px;">Save</n-button>
+        <n-button type="warning" ghost @click="saveTrigger" style="margin-right: 8px;">Save</n-button>
         <n-button type="error" ghost @click="deleteTrigger(model.id)">Delete</n-button>
       </n-grid-item>
     </n-grid>
@@ -45,14 +60,15 @@
 </template>
 
 <script setup>
-import {NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NTree} from 'naive-ui'
+import {NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NSwitch, NTree} from 'naive-ui'
 import {state} from '@/composables/state'
 import {useKeyHandler} from '@/composables/key_handler'
-import {onMounted, ref} from "vue";
+import {onMounted, ref} from "vue"
+import {storeTriggers} from "@/composables/triggers"
 
 const { onKeydown, keyState } = useKeyHandler()
 
-const model = ref({ id: '-1', name: "", pattern: "", commands: "", active: false })
+const model = ref({ id: '-1', name: "", pattern: "", commands: "", active: false, shared: false })
 const data = ref([])
 const checkedKeys = ref([])
 const selectedKeys = ref([])
@@ -79,11 +95,17 @@ const updateSelectedKeys = (keys) => {
     model.value.name = trigger.name
     model.value.pattern = trigger.pattern
     model.value.commands = trigger.commands
+    model.value.shared = trigger.shared
   }
 }
 
 function onlyAlphaNumericMax50(value) {
   return /^[a-zA-Z0-9]{0,50}$/.test(value)
+}
+
+function changeShared(shared) {
+  model.value.shared = shared
+  storeTriggers()
 }
 
 onKeydown((ev) => {
@@ -109,8 +131,8 @@ onKeydown((ev) => {
 function newTrigger() {
   let idsAsNumbers = [...state.triggers.value.keys()].map(k => Number(k));
   let id = 1 + (state.triggers.value.size ? Math.max(...idsAsNumbers) : 0) + '';
-  model.value = { id: id, name: 'NewTrigger', pattern: null, commands: null, active: false }
-  state.triggers.value.set(id, { name: 'NewTrigger', pattern: null, commands: null, active: false })
+  model.value = { id: id, name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false }
+  state.triggers.value.set(id, { name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false })
   updateTriggerList()
   storeTriggers()
 }
@@ -122,6 +144,7 @@ function saveTrigger(e) {
     trigger.name = model.value.name
     trigger.pattern = model.value.pattern
     trigger.commands = model.value.commands
+    trigger.shared = model.value.shared
     updateTriggerList()
     storeTriggers()
   }
@@ -129,7 +152,7 @@ function saveTrigger(e) {
 
 function deleteTrigger(id) {
   state.triggers.value.delete(id)
-  model.value = { id: '-1', name: "", pattern: "", commands: "", active: false }
+  model.value = { id: '-1', name: "", pattern: "", commands: "", active: false, shared: false }
   updateTriggerList()
   storeTriggers()
 }
@@ -139,7 +162,7 @@ function updateTriggerList() {
   checkedKeys.value = []
 
   state.triggers.value.forEach((trigger, id) => {
-    data.value.push({ key: '' + id, label: trigger.name })
+    data.value.push({ key: '' + id, label: (trigger.shared ? '• ' : '') + trigger.name })
     if (trigger.active) {
       checkedKeys.value.push('' + id)
     }
@@ -148,21 +171,7 @@ function updateTriggerList() {
   selectedKeys.value = [model.value.id]
 }
 
-function storeTriggers() {
-  localStorage.setItem('triggers', JSON.stringify(Array.from(state.triggers.value.entries())))
-}
-
 onMounted(() => {
-
-  try {
-    const triggers = new Map(JSON.parse(localStorage.getItem('triggers')))
-    if (triggers !== null) {
-      state.triggers.value = triggers
-    }
-  } catch (err) {
-    localStorage.setItem('triggers', '[]')
-  }
-
   updateTriggerList()
   selectedKeys.value = []
 })
@@ -179,9 +188,14 @@ onMounted(() => {
 }
 
 .n-tree {
-  height: 275px;
+  height: 274px;
   border-radius: 3px;
   background-color: #303033
+}
+
+.n-switch {
+  margin-left: 16px;
+  margin-top: 32px;
 }
 
 .triggers-modal-left {

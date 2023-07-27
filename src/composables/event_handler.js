@@ -1,8 +1,8 @@
-import {processTriggers} from "@/composables/triggers";
 
 const { ansiSpan } = require('ansi-to-span')
 
-import { state, addLine } from '@/composables/state'
+import { processTriggers } from "@/composables/triggers"
+import { addLine, state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 
 const { ansiToHtml } = helpers()
