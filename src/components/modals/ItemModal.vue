@@ -180,7 +180,7 @@ function getClass() {
 }
 
 function getButtonType(action) {
-  if (action === 'drop' || action === 'remove') {
+  if (['drop', 'remove', 'salvage'].includes(action)) {
     return 'error'
   }
 }
