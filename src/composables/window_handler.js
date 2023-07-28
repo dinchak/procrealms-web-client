@@ -16,8 +16,15 @@ export function useWindowHandler () {
   }
 
   function calcTerminalSize (outputWidth, outputHeight) {
-    let charWidth = 7
-    let charHeight = 21
+
+    let outputStyle = getComputedStyle(document.getElementById('output').querySelector('.line'))
+
+    let canvas = calcTerminalSize.canvas || (calcTerminalSize.canvas = document.createElement("canvas"))
+    let context = canvas.getContext("2d")
+    context.font = outputStyle.fontSize + ' ' + outputStyle.fontFamily
+
+    let charWidth = context.measureText('-').width
+    let charHeight = Number(outputStyle.lineHeight.replace('px', ''))
 
     let width = Math.floor(outputWidth  / charWidth)
     let height = Math.floor(outputHeight  / charHeight)
