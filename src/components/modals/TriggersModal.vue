@@ -60,11 +60,11 @@
 </template>
 
 <script setup>
-import {NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NSwitch, NTree} from 'naive-ui'
-import {state} from '@/composables/state'
-import {useKeyHandler} from '@/composables/key_handler'
-import {onMounted, ref} from "vue"
-import {storeTriggers} from "@/composables/triggers"
+import { NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NSwitch, NTree } from 'naive-ui'
+import { state } from '@/composables/state'
+import { useKeyHandler } from '@/composables/key_handler'
+import { onMounted, ref } from "vue"
+import { getNextId, storeTriggers } from "@/composables/triggers"
 
 const { onKeydown, keyState } = useKeyHandler()
 
@@ -129,11 +129,10 @@ onKeydown((ev) => {
 })
 
 function newTrigger() {
-  let idsAsNumbers = [...state.triggers.value.keys()].map(k => Number(k));
-  let id = 1 + (state.triggers.value.size ? Math.max(...idsAsNumbers) : 0) + '';
+  let id = getNextId()
   model.value = { id: id, name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false }
   state.triggers.value.set(id, { name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false })
-  updateTriggerList()
+  updateTriggerTree()
   storeTriggers()
 }
 
@@ -145,7 +144,7 @@ function saveTrigger(e) {
     trigger.pattern = model.value.pattern
     trigger.commands = model.value.commands
     trigger.shared = model.value.shared
-    updateTriggerList()
+    updateTriggerTree()
     storeTriggers()
   }
 }
@@ -153,11 +152,11 @@ function saveTrigger(e) {
 function deleteTrigger(id) {
   state.triggers.value.delete(id)
   model.value = { id: '-1', name: "", pattern: "", commands: "", active: false, shared: false }
-  updateTriggerList()
+  updateTriggerTree()
   storeTriggers()
 }
 
-function updateTriggerList() {
+function updateTriggerTree() {
   data.value = []
   checkedKeys.value = []
 
@@ -172,7 +171,7 @@ function updateTriggerList() {
 }
 
 onMounted(() => {
-  updateTriggerList()
+  updateTriggerTree()
   selectedKeys.value = []
 })
 
