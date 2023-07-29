@@ -1,4 +1,7 @@
 import { state, addLine } from './state'
+import { useCookieHandler } from "@/composables/cookie_handler"
+
+const { readTokensFromCookie } = useCookieHandler()
 
 let ws
 
@@ -32,8 +35,9 @@ export function useWebSocket () {
     }
   }
 
-  function doTokenAuth () {
-    send('token', { name: state.name, token: state.token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
+  function doTokenAuth (name) {
+    let token = readTokensFromCookie()[name]
+    send('token', { name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
   }
 
   function send (cmd, msg, id = false) {

@@ -7,19 +7,40 @@
     Connecting to server...
   </div>
   <div class="login-controls" v-if="state.connected">
-    <n-button v-if="state.disconnected" type="info" size="large" @click="doTokenAuth">Reconnect</n-button>
+    <n-dropdown
+        placement="bottom"
+        v-if="state.disconnected"
+        trigger="click"
+        size="large"
+        type="info"
+        :options="options"
+        @select="doTokenAuth"
+    >
+      <n-button type="info" size="large">Reconnect</n-button>
+    </n-dropdown>
     <n-button type="success" size="large" @click="state.showLogin = true">Login</n-button>
     <n-button type="warning" size="large" @click="state.showNewPlayer = true">New Player</n-button>
   </div>
 </template>
 
 <script setup>
-import { NButton } from 'naive-ui'
-
+import { NButton, NDropdown } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
+import { useCookieHandler } from "@/composables/cookie_handler"
+import { reactive, watch } from "vue"
 
 const { doTokenAuth } = useWebSocket()
+const { readTokensFromCookie } = useCookieHandler()
+
+const options = reactive([])
+
+watch(() => state.connected, () => {
+  options.length = 0
+  Object.keys(readTokensFromCookie())
+      .forEach(name => options.push({label: name, key: name}))
+})
+
 </script>
 
 <style scoped lang="less">
