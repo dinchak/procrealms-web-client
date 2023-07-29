@@ -24,16 +24,17 @@
 import { NModal, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
 
+import { useCookieHandler } from '@/composables/cookie_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
+const { clearCookie } = useCookieHandler()
 const { cmd } = useWebSocket()
 
 function logout () {
   cmd('quit')
   state.showLogout = false
   state.token = ''
-  sessionStorage.removeItem("name");
-  sessionStorage.removeItem("token");
+  clearCookie()
 }
 
 </script>
