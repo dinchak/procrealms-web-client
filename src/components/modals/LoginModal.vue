@@ -38,7 +38,7 @@ import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
 
 import { useWebSocket } from '@/composables/web_socket'
-import { loadTriggers } from "@/composables/triggers";
+import { loadTriggers } from "@/composables/triggers"
 const { send } = useWebSocket()
 
 const formRef = ref(null)

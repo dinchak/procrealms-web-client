@@ -6,7 +6,23 @@ const { cmd } = useWebSocket()
 export function loadTriggers(name) {
   let privateTriggers = loadTriggersByStorageKey('triggers-' + name.toLowerCase())
   let sharedTriggers = loadTriggersByStorageKey('triggers')
+
+  let privateKeys = [...privateTriggers.keys()]
+  let sharedKeys = [...sharedTriggers.keys()]
+  let clashingKeys = privateKeys.filter(key => sharedKeys.includes(key))
+  clashingKeys.forEach(key => {
+    let triggerToGiveNewKey = privateTriggers.get(key)
+    let newKey = Math.max(getNextId(privateTriggers), getNextId(sharedTriggers))
+    privateTriggers.set(newKey, triggerToGiveNewKey)
+  })
+
   state.triggers.value = new Map([...privateTriggers, ...sharedTriggers])
+}
+
+export function getNextId(triggers = state.triggers.value) {
+  let idsAsNumbers = [...triggers.keys()].map(k => Number(k))
+  let id = 1 + (triggers.size ? Math.max(...idsAsNumbers) : 0) + ''
+  return id
 }
 
 function loadTriggersByStorageKey(key) {
@@ -45,12 +61,12 @@ function processTrigger(trigger, line) {
 }
 
 function processCommand(matches, command) {
-  let commandWithMatches = matches.reduce((accu, match, index) => accu.replace('$' + index, match), command);
+  let commandWithMatches = matches.reduce((accu, match, index) => accu.replace('$' + index, match), command)
   cmd(commandWithMatches, null, true)
 }
 
 function stripHtml(line) {
-  let tempDivElement = document.createElement("div");
-  tempDivElement.innerHTML = line;
+  let tempDivElement = document.createElement("div")
+  tempDivElement.innerHTML = line
   return tempDivElement.textContent || tempDivElement.innerText
 }
