@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import { NButton, NIcon } from 'naive-ui'
 
@@ -63,7 +63,7 @@ function onFocus () {
 }
 
 function onBlur () {
-  state.mode = 'hotkey'  
+  state.mode = 'hotkey'
 }
 
 function prevCommand () {
@@ -214,8 +214,6 @@ onKeydown((ev) => {
 
   return false
 })
-
-watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 </script>
 
