@@ -43,7 +43,8 @@ function onConnect () {
 
   send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 
-  doTokenAuth(state.name)
+  doTokenAuth(sessionStorage.getItem('name')
+  )
 }
 
 function doConnect () {
