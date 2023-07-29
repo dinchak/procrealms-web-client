@@ -54,6 +54,8 @@ handlers['token.success'] = ({ name, token }) => {
 
   state.showLogin = false
   state.showNewPlayer = false
+
+  loadOptions()
 }
 
 handlers['out'] = (line) => {
@@ -185,6 +187,18 @@ function updateState (obj, update) {
     return obj
   } catch (err) {
     console.log(err.stack)
+  }
+}
+
+function loadOptions() {
+  try {
+    const options = JSON.parse(localStorage.getItem('options'))
+    if (options !== null) {
+      state.options = Object.assign(state.options, options)
+    }
+  } catch (err) {
+    console.log(err.stack)
+    localStorage.setItem('options', '')
   }
 }
 
