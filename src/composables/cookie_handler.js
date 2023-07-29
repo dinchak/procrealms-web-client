@@ -5,6 +5,7 @@ export function useCookieHandler() {
       let json = document.cookie.replace(/^tokens=/, '')
       if (json.startsWith('prefs=')) {
         json = '{}'
+        clearCookie()
       }
       return json ? JSON.parse(json) : {}
     } catch (err) {

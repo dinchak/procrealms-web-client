@@ -21,7 +21,7 @@ import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from './components/modals/LoginModal.vue'
 import NewPlayerModal from './components/modals/NewPlayerModal.vue'
 
-import { state, resetState } from './composables/state'
+import { resetState, state } from './composables/state'
 
 const themeOverrides = {
   Button: {
@@ -30,7 +30,7 @@ const themeOverrides = {
 }
 
 const { onEvent } = useEventHandler()
-const { initConnection, doTokenAuth, send } = useWebSocket()
+const { initConnection, send } = useWebSocket()
 const { calcTerminalSize } = useWindowHandler()
 
 function onConnect () {
@@ -42,9 +42,6 @@ function onConnect () {
   let { width, height } = calcTerminalSize(window.innerWidth, window.innerHeight)
 
   send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
-
-  doTokenAuth(sessionStorage.getItem('name')
-  )
 }
 
 function doConnect () {

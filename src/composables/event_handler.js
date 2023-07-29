@@ -47,7 +47,6 @@ handlers['token.success'] = ({ name, token }) => {
   state.disconnected = false
 
   addTokenToCookie(name, token)
-  sessionStorage.setItem('name', name)
 
   if (state.loginResolve) {
     state.loginResolve()

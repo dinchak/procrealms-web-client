@@ -9,7 +9,7 @@
   <div class="login-controls" v-if="state.connected">
     <n-dropdown
         placement="bottom"
-        v-if="state.disconnected"
+        v-if="options.length > 0"
         trigger="click"
         size="large"
         type="info"
