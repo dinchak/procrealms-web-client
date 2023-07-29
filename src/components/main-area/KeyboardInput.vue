@@ -108,9 +108,16 @@ function sendCommand () {
 
   commandHistory.unshift(command)
   command.split(';').forEach(c => cmd(c))
-  text.value = ''
-  input.value.value = ''
-  historyIndex = -1
+
+  if (state.options.keepSentCommands) {
+    commandBuffer = ''
+    input.value.select()
+    historyIndex = 0
+  } else {
+    text.value = ''
+    input.value.value = ''
+    historyIndex = -1
+  }
 
   setTimeout(() => {
     let output = document.getElementById(state.activeTab)
@@ -165,19 +172,19 @@ onKeydown((ev) => {
     return true
   }
 
-  if (ev.key == 'PageUp') {
+  if (ev.code == 'PageUp') {
     let activeTabElement = document.getElementById(state.activeTab)
     activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
     return true
   }
 
-  if (ev.key == 'PageDown') {
+  if (ev.code == 'PageDown') {
     let activeTabElement = document.getElementById(state.activeTab)
     activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
     return true
   }
 
-  if (ev.key == 'End') {
+  if (ev.code == 'End') {
     let activeTabElement = document.getElementById(state.activeTab)
     if (activeTabElement) {
       activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
