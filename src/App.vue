@@ -12,7 +12,6 @@ import { onMounted } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
 
-import { useCookieHandler } from './composables/cookie_handler'
 import { useEventHandler } from './composables/event_handler'
 import { useWebSocket } from './composables/web_socket'
 import { useWindowHandler } from './composables/window_handler'
@@ -22,7 +21,7 @@ import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from './components/modals/LoginModal.vue'
 import NewPlayerModal from './components/modals/NewPlayerModal.vue'
 
-import { state, resetState } from './composables/state'
+import { resetState, state } from './composables/state'
 
 const themeOverrides = {
   Button: {
@@ -30,38 +29,19 @@ const themeOverrides = {
   }
 }
 
-const { readCookie, clearCookie } = useCookieHandler()
 const { onEvent } = useEventHandler()
-const { initConnection, doTokenAuth, send } = useWebSocket()
+const { initConnection, send } = useWebSocket()
 const { calcTerminalSize } = useWindowHandler()
 
 function onConnect () {
-  try {
-    state.connected = true
-    if (state.disconnected) {
-      return
-    }
-
-    let { width, height } = calcTerminalSize(window.innerWidth, window.innerHeight)
-
-    send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
-
-    let json = readCookie()
-    if (json) {
-      let prefs = JSON.parse(json)
-      if (!prefs.name || !prefs.token) {
-        return
-      }
-
-      state.token = prefs.token
-      state.name = prefs.name
-
-      doTokenAuth()
-    }
-  } catch (err) {
-    clearCookie()
-    console.log(err.stack)
+  state.connected = true
+  if (state.disconnected) {
+    return
   }
+
+  let { width, height } = calcTerminalSize(window.innerWidth, window.innerHeight)
+
+  send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 }
 
 function doConnect () {

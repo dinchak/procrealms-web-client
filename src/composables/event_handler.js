@@ -1,9 +1,12 @@
+import {useCookieHandler} from "@/composables/cookie_handler";
+
 const { ansiSpan } = require('ansi-to-span')
 
 import { state, addLine } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
 
 const { ansiToHtml } = helpers()
+const { addTokenToCookie } = useCookieHandler()
 
 const handlers = {}
 
@@ -43,8 +46,7 @@ handlers['token.success'] = ({ name, token }) => {
   state.token = token
   state.disconnected = false
 
-  let prefs = { name, token }
-  document.cookie = `prefs=${JSON.stringify(prefs)}; path=/; max-age=${60*60*24*14};`
+  addTokenToCookie(name, token)
 
   if (state.loginResolve) {
     state.loginResolve()
