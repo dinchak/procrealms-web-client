@@ -52,8 +52,8 @@ export function processTriggers(line) {
 }
 
 function processTrigger(trigger, line) {
-  if (trigger.active && trigger.pattern && trigger.commands) {
-    let matches = line.match(trigger.pattern)
+  if (trigger.active && trigger.patterns[0] && trigger.commands) {
+    let matches = line.match(trigger.patterns[0])
     if (matches) {
       trigger.commands
           .split('\n')
