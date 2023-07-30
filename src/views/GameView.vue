@@ -37,16 +37,6 @@ import QuickSlots from '@/components/main-area/QuickSlots.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
 import TriggersModal from "@/components/modals/TriggersModal.vue";
 
-try {
-  const options = JSON.parse(localStorage.getItem('options'))
-  if (options !== null) {
-    state.options = Object.assign(state.options, options)
-  }
-} catch (err) {
-  console.log(err.stack)
-  localStorage.setItem('options', '')
-}
-
 </script>
 
 <style lang="less">

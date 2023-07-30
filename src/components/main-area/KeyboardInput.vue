@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import { NButton, NIcon } from 'naive-ui'
 
@@ -63,7 +63,7 @@ function onFocus () {
 }
 
 function onBlur () {
-  state.mode = 'hotkey'  
+  state.mode = 'hotkey'
 }
 
 function prevCommand () {
@@ -108,9 +108,16 @@ function sendCommand () {
 
   commandHistory.unshift(command)
   command.split(';').forEach(c => cmd(c))
-  text.value = ''
-  input.value.value = ''
-  historyIndex = -1
+
+  if (state.options.keepSentCommands) {
+    commandBuffer = ''
+    input.value.select()
+    historyIndex = 0
+  } else {
+    text.value = ''
+    input.value.value = ''
+    historyIndex = -1
+  }
 
   setTimeout(() => {
     let output = document.getElementById(state.activeTab)
@@ -160,19 +167,19 @@ onKeydown((ev) => {
 
   if(state.mode == 'input' || !state.modals.triggersModal) {
 
-    if (ev.key == 'PageUp') {
+    if (ev.code == 'PageUp') {
       let activeTabElement = document.getElementById(state.activeTab)
       activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
       return true
     }
 
-    if (ev.key == 'PageDown') {
+    if (ev.code == 'PageDown') {
       let activeTabElement = document.getElementById(state.activeTab)
       activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
       return true
     }
 
-    if (ev.key == 'End') {
+    if (ev.code == 'End') {
       let activeTabElement = document.getElementById(state.activeTab)
       if (activeTabElement) {
         activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
@@ -218,8 +225,6 @@ onKeydown((ev) => {
 
   return false
 })
-
-watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 </script>
 

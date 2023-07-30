@@ -122,7 +122,8 @@ function resetOptions () {
     showQuickSlots: true,
     showMobileMovement: false,
     numPadMovement: true,
-    wasdMovement: true
+    wasdMovement: true,
+    keepSentCommands: false
   }
 }
 

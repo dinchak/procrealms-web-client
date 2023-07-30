@@ -89,5 +89,10 @@ export const action_mapper = [
         action: 'drop',
         condition: () => true,
         crafting: false
+    },
+    {
+        action: 'salvage',
+        condition: (it) => ['armor', 'tool', 'weapon'].includes(it.type) && !it.name.includes('artifact'),
+        crafting: true
     }
 ]
