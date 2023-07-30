@@ -4,8 +4,10 @@ const { ansiSpan } = require('ansi-to-span')
 import { processTriggers } from "@/composables/triggers"
 import { addLine, state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
+import { useCookieHandler} from "@/composables/cookie_handler";
 
 const { ansiToHtml } = helpers()
+const { addTokenToCookie } = useCookieHandler()
 
 const handlers = {}
 
@@ -45,8 +47,7 @@ handlers['token.success'] = ({ name, token }) => {
   state.token = token
   state.disconnected = false
 
-  let prefs = { name, token }
-  document.cookie = `prefs=${JSON.stringify(prefs)}; path=/; max-age=${60*60*24*14};`
+  addTokenToCookie(name, token)
 
   if (state.loginResolve) {
     state.loginResolve()
@@ -56,6 +57,8 @@ handlers['token.success'] = ({ name, token }) => {
 
   state.showLogin = false
   state.showNewPlayer = false
+
+  loadOptions()
 }
 
 handlers['out'] = (line) => {
@@ -189,6 +192,18 @@ function updateState (obj, update) {
     return obj
   } catch (err) {
     console.log(err.stack)
+  }
+}
+
+function loadOptions() {
+  try {
+    const options = JSON.parse(localStorage.getItem('options'))
+    if (options !== null) {
+      state.options = Object.assign(state.options, options)
+    }
+  } catch (err) {
+    console.log(err.stack)
+    localStorage.setItem('options', '')
   }
 }
 
