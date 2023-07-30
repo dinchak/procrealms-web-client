@@ -1,5 +1,5 @@
-import {state} from '@/composables/state'
-import {useWebSocket} from '@/composables/web_socket'
+import { state } from '@/composables/state'
+import { useWebSocket } from '@/composables/web_socket'
 
 const { cmd } = useWebSocket()
 
@@ -12,17 +12,20 @@ export function loadTriggers(name) {
   let clashingKeys = privateKeys.filter(key => sharedKeys.includes(key))
   clashingKeys.forEach(key => {
     let triggerToGiveNewKey = privateTriggers.get(key)
-    let newKey = Math.max(getNextId(privateTriggers), getNextId(sharedTriggers))
+    let newKey = Math.max(getNextKey(privateTriggers), getNextKey(sharedTriggers))
     privateTriggers.set(newKey, triggerToGiveNewKey)
   })
+
+  if (clashingKeys.length) {
+    storeTriggers()
+  }
 
   state.triggers.value = new Map([...privateTriggers, ...sharedTriggers])
 }
 
-export function getNextId(triggers = state.triggers.value) {
+export function getNextKey(triggers = state.triggers.value) {
   let idsAsNumbers = [...triggers.keys()].map(k => Number(k))
-  let id = 1 + (triggers.size ? Math.max(...idsAsNumbers) : 0) + ''
-  return id
+  return 1 + (triggers.size ? Math.max(...idsAsNumbers) : 0) + ''
 }
 
 function loadTriggersByStorageKey(key) {
