@@ -159,13 +159,13 @@ const updateSelectedVariableKeys = (keys) => {
     let variable = state.variables.value.get(key)
     variableModel.value.key = key
     variableModel.value.name = variable.name
-    variableModel.value.values = variable.values
+    variableModel.value.values = variable.values.join('\n')
     variableModel.value.shared = variable.shared
   }
 }
 
 function onlyAlphaNumericMax50(value) {
-  return /^[a-zA-Z0-9]{0,50}$/.test(value)
+  return /^[a-zA-Z][a-zA-Z0-9]{1,50}$/.test(value)
 }
 
 function changeTriggerShared(shared) {

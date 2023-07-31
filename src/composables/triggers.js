@@ -3,6 +3,9 @@ import { useWebSocket } from '@/composables/web_socket'
 
 const { cmd } = useWebSocket()
 
+const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{1,50}) = (.+)$';
+const listValuePattern = '^{(.*)}$';
+
 export function loadSettingsByNameAndType(settings, name, settingsType) {
   let privateSettings = loadSettingsByStorageKey(settingsType + '-' + name.toLowerCase())
   let sharedSettings = loadSettingsByStorageKey(settingsType)
@@ -58,10 +61,44 @@ function processTrigger(trigger, line) {
     trigger.commands
         .split('\n')
         .filter(command => command)
-        .map(command => substitutePatternMatches(matches, command))
-        .map(command => substituteVariables(command))
-        .forEach(command => executeCommand(matches, command))
+        .forEach(command => processCommand(command, matches, trigger.shared))
   }
+}
+
+function processCommand(command, matches, isTriggerShared) {
+  let assignmentParts = command.match(assignmentPattern)
+  if (assignmentParts) {
+    assignValueToVariable(assignmentParts, isTriggerShared)
+  } else {
+    executeCommand(matches, command);
+  }
+}
+
+function assignValueToVariable(assignmentParts, isTriggerShared) {
+
+  let valueParts = assignmentParts[2].match(listValuePattern)
+  let values = valueParts ? valueParts[1].split(',') : assignmentParts[2]
+
+  let existingVariableKey = [...state.variables.value.entries()]
+      .filter(variableEntry => variableEntry[1].name === assignmentParts[1])
+      .map(variableEntry => variableEntry[0])
+      .find(() => true)
+
+  if (existingVariableKey) {
+    state.variables.value.get(existingVariableKey).values = values
+  } else {
+    let key = getNextKey(state.variables.value) + ''
+    state.variables.value.set(key, { name: assignmentParts[1], values, shared: isTriggerShared })
+  }
+
+  storeSettingsOfType(state.variables, 'variables')
+  window.onstorage({ key: 'variables' })
+}
+
+function executeCommand(matches, command) {
+  let commandWithMatches = substitutePatternMatches(matches, command)
+  let commandWithMatchesAndVariables = substituteVariables(commandWithMatches)
+  cmd(commandWithMatchesAndVariables, null, true)
 }
 
 function substitutePatternMatches(matches, command) {
@@ -80,10 +117,6 @@ function substituteValuesByIndex(variable, command) {
   return variable.values
       .split('\n')
       .reduce((accu, value, index) => accu.replaceAll(`$${variable.name}[${index}]`, value), command)
-}
-
-function executeCommand(matches, command) {
-  cmd(command, null, true)
 }
 
 function stripHtml(line) {
