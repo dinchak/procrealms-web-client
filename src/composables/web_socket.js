@@ -1,5 +1,5 @@
 import { addLine, state } from './state'
-import { loadTriggers } from "@/composables/triggers"
+import { loadSettingsByNameAndType } from "@/composables/triggers"
 import { useCookieHandler } from "@/composables/cookie_handler"
 
 const { readTokensFromCookie } = useCookieHandler()
@@ -37,7 +37,8 @@ export function useWebSocket () {
   }
 
   function doTokenAuth (name) {
-    loadTriggers(name)
+    loadSettingsByNameAndType(state.triggers, name, 'triggers')
+    loadSettingsByNameAndType(state.variables, name, 'variables')
     let token = readTokensFromCookie()[name]
     send('token', { name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
   }

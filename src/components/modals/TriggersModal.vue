@@ -34,7 +34,7 @@
             </n-form-item>
           </n-grid-item>
           <n-grid-item>
-            <n-switch class="triggerSharedSwitch" v-model:value="triggerModel.shared" :disabled="triggerModel.key < 1" aria-label="Shared" @update:value="changeShared">
+            <n-switch class="triggerSharedSwitch" v-model:value="triggerModel.shared" :disabled="triggerModel.key < 1" aria-label="Shared" @update:value="changeTriggerShared">
               <template #checked>
                 Shared across characters
               </template>
@@ -60,13 +60,13 @@
             block-line
             virtual-scroll
             :data="variableTreeData"
-            :selected-keys="selectedVariablesKeys"
-            @update:selected-keys="updateSelectedVariablesKeys"
+            :selected-keys="selectedVariableKeys"
+            @update:selected-keys="updateSelectedVariableKeys"
         />
       </n-grid-item>
 
       <n-grid-item>
-        <n-switch class="variableSharedSwitch" v-model:value="variableModel.shared" :disabled="variableModel.key < 1" aria-label="Shared" @update:value="changeShared">
+        <n-switch class="variableSharedSwitch" v-model:value="variableModel.shared" :disabled="variableModel.key < 1" aria-label="Shared" @update:value="changeVariableShared">
           <template #checked>
             Shared across characters
           </template>
@@ -80,8 +80,8 @@
         </n-form-item>
         <n-form-item path="variable-value" label="Value">
           <n-scrollbar>
-            <n-input v-model:value="variableModel.commands" :disabled="variableModel.key < 1" type="textarea"
-                     placeholder="Value(s)" style="height: 110px"/>
+            <n-input v-model:value="variableModel.values" :disabled="variableModel.key < 1" type="textarea"
+                     placeholder="Value(s) on separate lines." style="height: 110px"/>
           </n-scrollbar>
         </n-form-item>
       </n-grid-item>
@@ -96,12 +96,12 @@
       </n-grid-item>
 
       <n-grid-item>
-        <n-button type="success" ghost @click="newTrigger" style="float: right">New</n-button>
+        <n-button type="success" ghost @click="newVariable" style="float: right">New</n-button>
       </n-grid-item>
 
       <n-grid-item>
-        <n-button type="error" ghost @click="deleteTrigger(variableModel.key)" style="float: right">Delete</n-button>
-        <n-button type="warning" ghost @click="saveTrigger" style="margin-right: 8px; float: right">Save</n-button>
+        <n-button type="error" ghost @click="deleteVariable(variableModel.key)" style="float: right">Delete</n-button>
+        <n-button type="warning" ghost @click="saveVariable" style="margin-right: 8px; float: right">Save</n-button>
       </n-grid-item>
     </n-grid>
 
@@ -113,7 +113,7 @@ import { NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NSwitc
 import { state } from '@/composables/state'
 import { useKeyHandler } from '@/composables/key_handler'
 import { onMounted, ref } from "vue"
-import { getNextKey, loadTriggers, storeTriggers } from "@/composables/triggers"
+import { getNextKey, loadSettingsByNameAndType, storeSettingsOfType } from "@/composables/triggers"
 
 const { onKeydown, keyState } = useKeyHandler()
 
@@ -122,9 +122,9 @@ const triggerTreeData = ref([])
 const checkedTriggerKeys = ref([])
 const selectedTriggerKeys = ref([])
 
-const variableModel = ref({ key: '-1', name: "", value: "", shared: false })
+const variableModel = ref({ key: '-1', name: "", values: "", shared: false })
 const variableTreeData = ref([])
-// const selectedVariableKeys = ref([])
+const selectedVariableKeys = ref([])
 
 function getSideClass() {
   return state.options.swapControls ? 'triggers-modal-right' : 'triggers-modal-left'
@@ -136,7 +136,7 @@ const updateCheckedTriggerKeys = (keys) => {
     state.triggers.value.get(key).active = true
   })
   checkedTriggerKeys.value = keys
-  storeTriggers()
+  storeSettingsOfType(state.triggers, 'triggers')
 }
 
 const updateSelectedTriggerKeys = (keys) => {
@@ -152,13 +152,30 @@ const updateSelectedTriggerKeys = (keys) => {
   }
 }
 
+const updateSelectedVariableKeys = (keys) => {
+  if (keys.length === 1) {
+    let key = keys[0]
+    selectedVariableKeys.value = [key]
+    let variable = state.variables.value.get(key)
+    variableModel.value.key = key
+    variableModel.value.name = variable.name
+    variableModel.value.values = variable.values
+    variableModel.value.shared = variable.shared
+  }
+}
+
 function onlyAlphaNumericMax50(value) {
   return /^[a-zA-Z0-9]{0,50}$/.test(value)
 }
 
-function changeShared(shared) {
+function changeTriggerShared(shared) {
   triggerModel.value.shared = shared
-  storeTriggers()
+  storeSettingsOfType(state.triggers, 'triggers')
+}
+
+function changeVariableShared(shared) {
+  variableModel.value.shared = shared
+  storeSettingsOfType(state.variables, 'variables')
 }
 
 onKeydown((ev) => {
@@ -182,11 +199,19 @@ onKeydown((ev) => {
 })
 
 function newTrigger() {
-  let key = getNextKey()
+  let key = getNextKey(state.triggers.value) + ''
   triggerModel.value = { key, name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false }
   state.triggers.value.set(key, { name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false })
   updateTriggerTree()
-  storeTriggers()
+  storeSettingsOfType(state.triggers, 'triggers')
+}
+
+function newVariable() {
+  let key = getNextKey(state.variables.value) + ''
+  variableModel.value = { key, name: 'NewVariable', values: null, shared: false }
+  state.variables.value.set(key, { name: 'NewVariable', values: null, shared: false })
+  updateVariableTree()
+  storeSettingsOfType(state.variables, 'variables')
 }
 
 function saveTrigger(e) {
@@ -198,15 +223,33 @@ function saveTrigger(e) {
     trigger.commands = triggerModel.value.commands
     trigger.shared = triggerModel.value.shared
     updateTriggerTree()
-    storeTriggers()
+    storeSettingsOfType(state.triggers, 'triggers')
   }
 }
 
+function saveVariable(e) {
+  e?.preventDefault()
+  if (variableModel.value.name && onlyAlphaNumericMax50(variableModel.value.name)) {
+    let variable = state.variables.value.get(variableModel.value.key)
+    variable.name = variableModel.value.name
+    variable.values = variableModel.value.values
+    variable.shared = variableModel.value.shared
+    updateVariableTree()
+    storeSettingsOfType(state.variables, 'variables')
+  }
+}
 function deleteTrigger(key) {
   state.triggers.value.delete(key)
   triggerModel.value = { key: '-1', name: "", pattern: "", commands: "", active: false, shared: false }
   updateTriggerTree()
-  storeTriggers()
+  storeSettingsOfType(state.triggers, 'triggers')
+}
+
+function deleteVariable(key) {
+  state.variables.value.delete(key)
+  variableModel.value = { key: '-1', name: "", values: "", shared: false }
+  updateVariableTree()
+  storeSettingsOfType(state.variables, 'variables')
 }
 
 function updateTriggerTree() {
@@ -223,16 +266,31 @@ function updateTriggerTree() {
   selectedTriggerKeys.value = [triggerModel.value.key]
 }
 
+function updateVariableTree() {
+  variableTreeData.value = []
+  state.variables.value.forEach((variable, key) => {
+    variableTreeData.value.push({ key, label: (variable.shared ? '• ' : '') + variable.name })
+  })
+  selectedVariableKeys.value = [variableModel.value.key]
+}
+
 onMounted(() => {
   updateTriggerTree()
   selectedTriggerKeys.value = []
+  updateVariableTree()
+  selectedVariableKeys.value = []
 })
 
 window.onstorage = (event) => {
   if (event.key === 'triggers') {
-    loadTriggers(state.name)
+    loadSettingsByNameAndType(state.triggers, state.name, 'triggers')
     updateTriggerTree()
     updateSelectedTriggerKeys([triggerModel.value.key])
+  }
+  if (event.key === 'variables') {
+    loadSettingsByNameAndType(state.variables, state.name, 'variables')
+    updateVariableTree()
+    updateSelectedVariableKeys([variableModel.value.key])
   }
 }
 
