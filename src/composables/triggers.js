@@ -3,8 +3,8 @@ import { useWebSocket } from '@/composables/web_socket'
 
 const { cmd } = useWebSocket()
 
-const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{1,50}) = (.+)$';
-const listValuePattern = '^{(.*)}$';
+const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{1,50}) = (.+)$'
+const listValuePattern = '^{(.*)}$'
 
 export function loadSettingsByNameAndType(settings, name, settingsType) {
   let privateSettings = loadSettingsByStorageKey(settingsType + '-' + name.toLowerCase())
@@ -61,16 +61,17 @@ function processTrigger(trigger, line) {
     trigger.commands
         .split('\n')
         .filter(command => command)
-        .forEach(command => processCommand(command, matches, trigger.shared))
+        .map(command => substitutePatternMatches(matches, command))
+        .forEach(commandWithMatches => processCommand(commandWithMatches, matches, trigger.shared))
   }
 }
 
-function processCommand(command, matches, isTriggerShared) {
-  let assignmentParts = command.match(assignmentPattern)
+function processCommand(commandWithMatches, isTriggerShared) {
+  let assignmentParts = commandWithMatches.match(assignmentPattern)
   if (assignmentParts) {
     assignValueToVariable(assignmentParts, isTriggerShared)
   } else {
-    executeCommand(matches, command);
+    executeCommand(commandWithMatches)
   }
 }
 
@@ -95,8 +96,7 @@ function assignValueToVariable(assignmentParts, isTriggerShared) {
   window.onstorage({ key: 'variables' })
 }
 
-function executeCommand(matches, command) {
-  let commandWithMatches = substitutePatternMatches(matches, command)
+function executeCommand(commandWithMatches) {
   let commandWithMatchesAndVariables = substituteVariables(commandWithMatches)
   cmd(commandWithMatchesAndVariables, null, true)
 }
