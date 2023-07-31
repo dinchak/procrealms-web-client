@@ -42,6 +42,7 @@ export const state = reactive({
 
   animations: [],
   triggers: ref(new Map()),
+  variables: ref(new Map()),
 
   name: '',
   token: '',
@@ -70,6 +71,7 @@ export function resetState () {
   state.newbie = []
   state.animations = []
   state.triggers.value = new Map()
+  state.variables.value = new Map()
 }
 
 function resetCache () {
