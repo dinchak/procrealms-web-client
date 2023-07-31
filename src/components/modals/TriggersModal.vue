@@ -50,7 +50,7 @@
         <n-form-item path="commands" label="Commands">
           <n-scrollbar>
             <n-input v-model:value="triggerModel.commands" :disabled="triggerModel.key < 1" type="textarea"
-                     placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values."/>
+                     placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values. Use $MyVar for variables. Use $MyVar[0], $MyVar[1], $MyVar[2], ... for variables with multiple values."/>
           </n-scrollbar>
         </n-form-item>
       </n-grid-item>

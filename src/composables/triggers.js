@@ -46,26 +46,44 @@ export function storeSettingsOfType(settings, settingsType) {
 
 export function processTriggers(line) {
   if (line) {
-    state.triggers.value
+    [...state.triggers.value.values()]
+        .filter(trigger => trigger.active && trigger.pattern && trigger.commands)
         .forEach(trigger => processTrigger(trigger, stripHtml(line)))
   }
 }
 
 function processTrigger(trigger, line) {
-  if (trigger.active && trigger.pattern && trigger.commands) {
-    let matches = line.match(trigger.pattern)
-    if (matches) {
-      trigger.commands
-          .split('\n')
-          .filter(command => command)
-          .forEach(command => processCommand(matches, command))
-    }
+  let matches = line.match(trigger.pattern)
+  if (matches) {
+    trigger.commands
+        .split('\n')
+        .filter(command => command)
+        .map(command => substitutePatternMatches(matches, command))
+        .map(command => substituteVariables(command))
+        .forEach(command => executeCommand(matches, command))
   }
 }
 
-function processCommand(matches, command) {
-  let commandWithMatches = matches.reduce((accu, match, index) => accu.replace('$' + index, match), command)
-  cmd(commandWithMatches, null, true)
+function substitutePatternMatches(matches, command) {
+  return matches.reduce((accu, match, index) => accu.replaceAll('$' + index, match), command)
+}
+
+function substituteVariables(command) {
+  return [...state.variables.value.values()]
+      .reduce((accu, variable) => {
+        return substituteValuesByIndex(variable, accu)
+            .replaceAll('$' + variable.name, variable.values.split('\n')[0])
+      }, command)
+}
+
+function substituteValuesByIndex(variable, command) {
+  return variable.values
+      .split('\n')
+      .reduce((accu, value, index) => accu.replaceAll(`$${variable.name}[${index}]`, value), command)
+}
+
+function executeCommand(matches, command) {
+  cmd(command, null, true)
 }
 
 function stripHtml(line) {
