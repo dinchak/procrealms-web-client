@@ -1,6 +1,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 
 let resizeHandlers = []
+
 export function useWindowHandler () {
 
   function onResize (cb) {
