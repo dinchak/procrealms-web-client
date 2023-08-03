@@ -1,6 +1,6 @@
 <template>
   <div class="minimap">
-    <div class="line" v-for="(line, i) in renderMap()" :key="'line-' + i" v-html="line"></div>
+    <div class="line" v-for="(line, i) in renderMap()" :key="'line-' + i" v-html-safe="line"></div>
   </div>
 </template>
 

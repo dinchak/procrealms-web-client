@@ -3,9 +3,9 @@
     <div class="quests">
       <div v-if="quests().length == 0">You don't have any quests.</div>
       <div class="quest" v-for="quest in quests()" :key="quest.name">
-        <div v-html="getQuestName(quest)"></div>
-        <div v-html="getGivenBy(quest)"></div>
-        <div v-if="quest.location" v-html="getLocation(quest)"></div>
+        <div v-html-safe="getQuestName(quest)"></div>
+        <div v-html-safe="getGivenBy(quest)"></div>
+        <div v-if="quest.location" v-html-safe="getLocation(quest)"></div>
 
         <div
           class="expand-link"
@@ -16,7 +16,7 @@
         </div>
         <div
           v-if="quest.desc && questsExpanded[quest.name]"
-          v-html="ansiToHtml(quest.desc).replace(/@NAME/g, player().name)"
+          v-html-safe="ansiToHtml(quest.desc).replace(/@NAME/g, player().name)"
         ></div>
         <div
           class="expand-link"

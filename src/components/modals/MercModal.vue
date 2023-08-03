@@ -10,9 +10,9 @@
     <div class="affects">
       <n-tooltip trigger="hover" v-for="(affect, index) in affects" v-bind:key='index'>
         <template #trigger>
-          <span v-html="ansiToHtml(affect.shortFlag) + ' '"></span>
+          <span v-html-safe="ansiToHtml(affect.shortFlag) + ' '"></span>
         </template>
-        <span v-html="ansiToHtml(affect.longFlag)" class="longflag"></span>
+        <span v-html-safe="ansiToHtml(affect.longFlag)" class="longflag"></span>
         <span v-if="affect.desc">:&nbsp;{{affect.desc}}</span>
       </n-tooltip>
     </div>

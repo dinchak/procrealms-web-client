@@ -17,8 +17,12 @@ export function useWindowHandler () {
   }
 
   function calcTerminalSize (outputWidth, outputHeight) {
+    let output = document.getElementById('output')
+    if (!output) {
+      return { width: 80, height: 25 }
+    }
 
-    let outputStyle = getComputedStyle(document.getElementById('output').querySelector('.line'))
+    let outputStyle = getComputedStyle(output.querySelector('.line'))
 
     let canvas = calcTerminalSize.canvas || (calcTerminalSize.canvas = document.createElement("canvas"))
     let context = canvas.getContext("2d")

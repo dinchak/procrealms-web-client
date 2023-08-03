@@ -1,12 +1,10 @@
 import { createApp } from 'vue'
-
-// import GridLayout from 'vue3-drr-grid-layout'
-// import 'vue3-drr-grid-layout/dist/style.css'
+import VueSecureHTML from 'vue-html-secure'
 
 import App from './App.vue'
 import router from './router'
 
 createApp(App)
   .use(router)
-  // .use(GridLayout)
+  .use(VueSecureHTML)
   .mount('#app')

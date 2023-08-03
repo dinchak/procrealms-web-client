@@ -3,7 +3,7 @@
   <n-tabs class="tabs" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
-        <div v-for="(line, i) in state.output" class="line" v-html="line" :key="`line-${i}`"></div>
+        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDown('output')">
@@ -20,7 +20,7 @@
             <div class="name bold-yellow">{{ line.from }}</div>
             <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
           </div>
-          <div class="body bold-white" v-html="line.message"></div>
+          <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
       <div v-show="state.scrolledBack.chat" :class="getScrollbackControlClass()" @click="scrollDown('chat')">
@@ -37,7 +37,7 @@
             <div class="name bold-green">{{ line.from }}</div>
             <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
           </div>
-          <div class="body bold-white" v-html="line.message"></div>
+          <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
       <div v-show="state.scrolledBack.trade" :class="getScrollbackControlClass()" @click="scrollDown('trade')">
@@ -54,7 +54,7 @@
             <div class="name bold-magenta">{{ line.from }}</div>
             <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
           </div>
-          <div class="body bold-white" v-html="line.message"></div>
+          <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
       <div v-show="state.scrolledBack.newbie" :class="getScrollbackControlClass()" @click="scrollDown('newbie')">
