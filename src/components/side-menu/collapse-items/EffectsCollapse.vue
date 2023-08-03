@@ -5,11 +5,11 @@
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
       <div class="effect" v-for="effect in effects()" :key="effect.name">
         <n-progress type="line" status="default" :percentage="getEffectPercentage(effect)" v-if="!isHiredEffect(effect)">
-          <div v-html="getEffectName(effect)"></div>
+          <div v-html-safe="getEffectName(effect)"></div>
         </n-progress>
         <div v-if="effect.desc">{{ effect.desc }}</div>
         <div class="effect-bonuses">
-          <div class="effect-bonus" v-for="(bonus, i) in getEffectBonuses(effect)" :key="`bouns-${i}`" v-html="bonus"></div>
+          <div class="effect-bonus" v-for="(bonus, i) in getEffectBonuses(effect)" :key="`bouns-${i}`" v-html-safe="bonus"></div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
   <n-card :class="getSideClass()" v-if="state.modals.mapModal">
     <p class="close" v-on:click="closeModal()">x</p>
-    <div class="ansi" v-for="(line, id) in largeMap" :key="id" v-html="ansiToHtml(line)"></div>
+    <div class="ansi" v-for="(line, id) in largeMap" :key="id" v-html-safe="ansiToHtml(line)"></div>
   </n-card>
 </template>
 
