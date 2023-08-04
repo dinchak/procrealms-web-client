@@ -13,7 +13,7 @@ export function useKeyHandler () {
   let handlerAttached = false
 
   function handleMetaKey (key, state) {
-    if (key == 'Control') {
+    if (key == 'Control' || key == 'Meta') {
       keyState.ctrl = state
       return true
     }

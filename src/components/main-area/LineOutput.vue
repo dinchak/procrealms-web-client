@@ -1,6 +1,6 @@
 <template>
 
-  <n-tabs class="tabs" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
+  <n-tabs class="tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
         <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`"></div>
@@ -75,6 +75,7 @@ import { ref, watch, nextTick, onMounted, h } from 'vue'
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
+import { useKeyHandler } from '@/composables/key_handler'
 
 import BattleStatus from '@/components/main-area/BattleStatus.vue'
 
@@ -87,11 +88,52 @@ const output = ref(null)
 const chat = ref(null)
 const trade = ref(null)
 const newbie = ref(null)
+const tabsInstance = ref(null)
+const currentPane = ref("output") // chat, trade, or newbie
 
 const refs = { output, chat, trade, newbie }
 
 const { send } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
+
+// Keyboard Shortcuts
+const { onKeydown, keyState } = useKeyHandler()
+onKeydown((ev) => {
+  // Switch to Main
+  if (keyState.ctrl && ev.code =='Digit1') {
+    onBeforeChangeTab(currentPane.value)
+    currentPane.value = "output"
+    state.activeTab = "output"
+    nextTick(() => tabsInstance.value?.syncBarPosition());
+    return true
+  } 
+  // Switch to Chat
+  else if (keyState.ctrl && ev.code =='Digit2') {
+    onBeforeChangeTab(currentPane.value)
+    currentPane.value = "chat"
+    state.activeTab = "chat"
+    nextTick(() => tabsInstance.value?.syncBarPosition());
+    return true
+  }
+  // Switch to Trade
+  else if (keyState.ctrl && ev.code =='Digit3') {
+    onBeforeChangeTab(currentPane.value)
+    currentPane.value = "trade"
+    state.activeTab = "trade"
+    nextTick(() => tabsInstance.value?.syncBarPosition());
+    return true
+  }
+  // Switch to Newbie
+  else if (keyState.ctrl && ev.code =='Digit4') {
+    onBeforeChangeTab(currentPane.value)
+    currentPane.value = "newbie"
+    state.activeTab = "newbie"
+    nextTick(() => tabsInstance.value?.syncBarPosition());
+    return true
+  }
+
+  return false
+})
 
 onResize(doResize)
 
