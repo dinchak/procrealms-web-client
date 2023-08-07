@@ -1,5 +1,5 @@
 <template>
-  <n-card title="Map" size="small" :class="[getSideClass(), geMapModalSizeClass()]" v-if="state.modals.mapModal" content-style="display: flex; flex-wrap: wrap; justify-content: center; align-content:center; overflow:hidden;" closable @close="closeModal()">
+  <n-card title="Map" size="small" :class="['right', geMapModalSizeClass()]" v-if="state.modals.mapModal" content-style="display: flex; flex-wrap: wrap; justify-content: center; align-content:center; overflow:hidden;" closable @close="closeModal()">
     <template #header-extra>
       <n-button text @click="toggleMapModalSize()">
         <n-icon size="15"><WindowOutlined></WindowOutlined></n-icon>
@@ -64,9 +64,9 @@ function geMapModalSizeClass() {
   return "map-" + state.modals.mapModalSize
 }
 
-function getSideClass() {
-  return state.options.swapControls ? 'map-modal right' : 'map-modal left'
-}
+// function getSideClass() {
+//   return state.options.swapControls ? 'map-modal right' : 'map-modal left'
+// }
 
 function closeModal() {
   state.modals.mapModal = false
@@ -102,12 +102,8 @@ onMounted(() => {
   line-height: 13px;
 }
 
-.left {
-  right: 10px;
-}
-
 .right {
-  left: 10px;
+  right: 10px;
 }
 
 .n-card {
