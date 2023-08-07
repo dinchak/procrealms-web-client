@@ -105,6 +105,7 @@ onKeydown((ev) => {
     currentPane.value = "output"
     state.activeTab = "output"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   } 
   // Switch to Chat
@@ -113,6 +114,7 @@ onKeydown((ev) => {
     currentPane.value = "chat"
     state.activeTab = "chat"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
   // Switch to Trade
@@ -121,6 +123,7 @@ onKeydown((ev) => {
     currentPane.value = "trade"
     state.activeTab = "trade"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
   // Switch to Newbie
@@ -129,6 +132,7 @@ onKeydown((ev) => {
     currentPane.value = "newbie"
     state.activeTab = "newbie"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
 
