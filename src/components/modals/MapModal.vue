@@ -124,7 +124,6 @@ onMounted(() => {
 
 .n-card.map-medium {
   width: 600px;
-  height: 600px;
 }
 
 .close {
