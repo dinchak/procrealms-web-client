@@ -90,6 +90,7 @@ const trade = ref(null)
 const newbie = ref(null)
 const tabsInstance = ref(null)
 const currentPane = ref("output") // chat, trade, or newbie
+var mapWasOpen = false
 
 const refs = { output, chat, trade, newbie }
 
@@ -201,6 +202,11 @@ function onBeforeChangeTab (activeName) {
     state[activeName].forEach(msg => msg.unread = false)
   }
   state.activeTab = activeName
+  // Hide Map Modal on chat tabs
+  if (activeName !== "output" && state.modals.mapModal == true) {
+    mapWasOpen = true
+    state.modals.mapModal = false
+  }
   return true
 }
 
@@ -208,6 +214,11 @@ function onAfterChangeTab (activeName) {
   setTimeout(() => {
     scrollDown(activeName)
   })
+  // Show Map Modal on output tab if it was open before
+  if (activeName == "output" && mapWasOpen == true) {
+    mapWasOpen = false
+    state.modals.mapModal = true
+  }
 }
 
 function getTab (name) {
