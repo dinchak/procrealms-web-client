@@ -101,34 +101,38 @@ const { onKeydown, keyState } = useKeyHandler()
 onKeydown((ev) => {
   // Switch to Main
   if (keyState.ctrl && ev.code =='Digit1') {
-    onBeforeChangeTab(currentPane.value)
+    onBeforeChangeTab("output")
     currentPane.value = "output"
     state.activeTab = "output"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   } 
   // Switch to Chat
   else if (keyState.ctrl && ev.code =='Digit2') {
-    onBeforeChangeTab(currentPane.value)
+    onBeforeChangeTab("chat")
     currentPane.value = "chat"
     state.activeTab = "chat"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
   // Switch to Trade
   else if (keyState.ctrl && ev.code =='Digit3') {
-    onBeforeChangeTab(currentPane.value)
+    onBeforeChangeTab("trade")
     currentPane.value = "trade"
     state.activeTab = "trade"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
   // Switch to Newbie
   else if (keyState.ctrl && ev.code =='Digit4') {
-    onBeforeChangeTab(currentPane.value)
+    onBeforeChangeTab("newbie")
     currentPane.value = "newbie"
     state.activeTab = "newbie"
     nextTick(() => tabsInstance.value?.syncBarPosition());
+    onAfterChangeTab(currentPane.value)
     return true
   }
 
