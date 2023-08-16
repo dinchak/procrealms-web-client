@@ -121,6 +121,7 @@ handlers['affect.cure'] = ({ target, amount }) => {
 }
 
 const channelColors = { chat: 'bold-yellow', trade: 'bold-green', newbie: 'bold-magenta' }
+
 handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   if (from == state.gameState.player.name) {
     from = 'You'
@@ -130,9 +131,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     to = 'You'
   }
 
-  const stripTags = /<\/?([a-z][a-z0-9]*)\b[^>]*>?/gi
-
-  message = ansiToHtml(`\u{1b}[0m${message.replace(stripTags, '')}`)
+  message = ansiToHtml(`\u{1b}[0m${message}`)
 
   let out = ''
   if (['chat', 'trade', 'newbie'].includes(channel)) {

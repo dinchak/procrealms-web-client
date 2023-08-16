@@ -146,7 +146,7 @@ const updateSelectedTriggerKeys = (keys) => {
     let trigger = state.triggers.value.get(key)
     triggerModel.value.key = key
     triggerModel.value.name = trigger.name
-    triggerModel.value.pattern = trigger.pattern
+    triggerModel.value.pattern = trigger.patterns[0]
     triggerModel.value.commands = trigger.commands
     triggerModel.value.shared = trigger.shared
   }
@@ -201,7 +201,7 @@ onKeydown((ev) => {
 function newTrigger() {
   let key = getNextKey(state.triggers.value) + ''
   triggerModel.value = { key, name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false }
-  state.triggers.value.set(key, { name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false })
+  state.triggers.value.set(key, { name: 'NewTrigger', patterns: [''], commands: null, active: false, shared: false })
   updateTriggerTree()
   storeSettingsOfType(state.triggers, 'triggers')
 }
@@ -219,7 +219,7 @@ function saveTrigger(e) {
   if (triggerModel.value.name && onlyAlphaNumericMax50(triggerModel.value.name)) {
     let trigger = state.triggers.value.get(triggerModel.value.key)
     trigger.name = triggerModel.value.name
-    trigger.pattern = triggerModel.value.pattern
+    trigger.patterns[0] = triggerModel.value.pattern
     trigger.commands = triggerModel.value.commands
     trigger.shared = triggerModel.value.shared
     updateTriggerTree()
