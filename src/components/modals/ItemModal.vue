@@ -5,7 +5,7 @@
       <n-tabs type="line" animated size="large" :class="props.isPlayer + '-modal'" @update:value="handleUpdateValue"
               style="max-height: 600px">
         <n-tab-pane name="actions" tab="Actions" class="actions-pane" style="max-height: 600px">
-          <h3 v-html="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
+          <h3 v-html-safe="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
 
           <div class="actions">
             <n-button v-for="action in actions"
@@ -49,15 +49,15 @@
           </n-collapse>
         </n-tab-pane>
         <n-tab-pane name="look" tab="Look" style="max-height: 600px">
-          <div class="item-desc" v-html="ansiToHtml(getLook())"></div>
+          <div class="item-desc" v-html-safe="ansiToHtml(getLook())"></div>
         </n-tab-pane>
         <n-tab-pane name="examine" tab="Examine" style="max-height: 600px">
-          <div class="examine" v-html="ansiToHtml(rawExamine())"></div>
+          <div class="examine" v-html-safe="ansiToHtml(rawExamine())"></div>
         </n-tab-pane>
         <n-tab-pane name="compare" tab="Compare"
                     v-if="props.menu === 'inventory' && (props.item.type === 'weapon' || props.item.type === 'armor')"
                     style="max-height: 600px">
-          <div class="examine" v-html="ansiToHtml(rawCompare())"></div>
+          <div class="examine" v-html-safe="ansiToHtml(rawCompare())"></div>
         </n-tab-pane>
       </n-tabs>
     </n-card>
@@ -66,7 +66,7 @@
 
 <script setup>
 import { NCard, NTabs, NTabPane, NButton, NCollapse, NCollapseItem, NInputNumber } from 'naive-ui'
-import {defineProps, ref, watch} from 'vue'
+import { defineProps, ref, watch} from 'vue'
 import { helpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, addLine } from '@/composables/state'

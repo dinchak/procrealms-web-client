@@ -1,5 +1,5 @@
 <template>
-  <div ref="picture" class="picture" v-html="state.picture"></div>
+  <div ref="picture" class="picture" v-html-safe="state.picture"></div>
   <div class="login-controls" v-if="state.disconnected">
     You have been disconnected
   </div>
