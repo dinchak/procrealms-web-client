@@ -1,6 +1,6 @@
 <template>
   <div class="inventory-item">
-    <div v-html="`L${props.level} ${props.amount}x ${ansiToHtml(props.colorName)}`" class="item-name"></div>
+    <div v-html-safe="`L${props.level} ${props.amount}x ${ansiToHtml(props.colorName)}`" class="item-name"></div>
   </div>
 </template>
 

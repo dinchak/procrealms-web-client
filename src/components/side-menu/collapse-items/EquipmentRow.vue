@@ -3,7 +3,7 @@
     <div class="slot">{{ props.slot }}</div>
     <div>
       <span class="equipment-level" v-if="props.level">L{{props.level}}</span>
-      <span class="equipment-item" v-html="ansiToHtml(props.colorName)"></span></div>
+      <span class="equipment-item" v-html-safe="ansiToHtml(props.colorName)"></span></div>
   </div>
 </template>
 

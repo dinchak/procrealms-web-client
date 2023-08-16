@@ -50,13 +50,13 @@ export function storeSettingsOfType(settings, settingsType) {
 export function processTriggers(line) {
   if (line) {
     [...state.triggers.value.values()]
-        .filter(trigger => trigger.active && trigger.pattern && trigger.commands)
+        .filter(trigger => trigger.active && trigger.patterns[0] && trigger.commands)
         .forEach(trigger => processTrigger(trigger, stripHtml(line)))
   }
 }
 
 function processTrigger(trigger, line) {
-  let matches = line.match(trigger.pattern)
+  let matches = line.match(trigger.patterns[0])
   if (matches) {
     trigger.commands
         .split('\n')

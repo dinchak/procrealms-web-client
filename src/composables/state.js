@@ -53,6 +53,7 @@ export const state = reactive({
       mercItemModal: ref('')
     },
     mapModal: false,
+    mapModalSize: 'large',
     mercModal: false,
     triggersModal: false,
   }

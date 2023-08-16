@@ -14,7 +14,6 @@ import { NConfigProvider, darkTheme } from 'naive-ui'
 
 import { useEventHandler } from './composables/event_handler'
 import { useWebSocket } from './composables/web_socket'
-import { useWindowHandler } from './composables/window_handler'
 import { constants } from './composables/constants/constants'
 
 import SplashScreen from '@/components/SplashScreen.vue'
@@ -30,18 +29,10 @@ const themeOverrides = {
 }
 
 const { onEvent } = useEventHandler()
-const { initConnection, send } = useWebSocket()
-const { calcTerminalSize } = useWindowHandler()
+const { initConnection } = useWebSocket()
 
 function onConnect () {
   state.connected = true
-  if (state.disconnected) {
-    return
-  }
-
-  let { width, height } = calcTerminalSize(window.innerWidth, window.innerHeight)
-
-  send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
 }
 
 function doConnect () {

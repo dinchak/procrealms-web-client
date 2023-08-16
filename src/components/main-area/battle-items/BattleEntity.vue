@@ -1,8 +1,8 @@
 <template>
   <div :class="getClass(entity)" @click="target(entity)">
     <div class="status">
-      <div class="name" v-html="ansiToHtml(`${entity.hp > 0 ? entity.tag + ' ' : ''}${entity.name}`)"></div>
-      <div class="affects" v-html="ansiToHtml(`${ansi.boldBlack}L${ansi.boldWhite}${entity.level}${ansi.reset} ${getAffects(entity)}`)"></div>
+      <div class="name" v-html-safe="ansiToHtml(`${entity.hp > 0 ? entity.tag + ' ' : ''}${entity.name}`)"></div>
+      <div class="affects" v-html-safe="ansiToHtml(`${ansi.boldBlack}L${ansi.boldWhite}${entity.level}${ansi.reset} ${getAffects(entity)}`)"></div>
     </div>
 
     <n-progress v-if="entity.hp > 0" class="hp" type="line" status="success" aria-label="Health" :percentage="entity.hp">{{ entity.hp }}% <span class="bold-green">HP</span></n-progress>
@@ -11,8 +11,8 @@
 
     <div class="footer">
       <div class="left">
-        <div v-if="entity.targetName && entity.hp > 0" class="targeting" v-html="'Target: ' + ansiToHtml(entity.targetName)"></div>
-        <div v-if="!entity.targetName && entity.hp > 0" class="targeting" v-html="'Target: None'"></div>
+        <div v-if="entity.targetName && entity.hp > 0" class="targeting" v-html-safe="'Target: ' + ansiToHtml(entity.targetName)"></div>
+        <div v-if="!entity.targetName && entity.hp > 0" class="targeting" v-html-safe="'Target: None'"></div>
       </div>
       <div class="right">
         <div class="action" v-if="entity.hp > 0">
