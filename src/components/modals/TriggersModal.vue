@@ -165,7 +165,7 @@ const updateSelectedVariableKeys = (keys) => {
 }
 
 function onlyAlphaNumericMax50(value) {
-  return /^[a-zA-Z][a-zA-Z0-9]{1,50}$/.test(value)
+  return /^[a-zA-Z][a-zA-Z0-9]{0,50}$/.test(value) || !value
 }
 
 function changeTriggerShared(shared) {
