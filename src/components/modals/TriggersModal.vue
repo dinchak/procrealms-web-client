@@ -301,7 +301,7 @@ window.onstorage = (event) => {
 .n-card {
   position: absolute;
   margin-top: 125px;
-  max-width: calc(100vw - 610px);
+  max-width: calc(100vw - 290px);
   z-index: 3;
 }
 
@@ -323,11 +323,11 @@ window.onstorage = (event) => {
 }
 
 .triggers-modal-left {
-  left: 45px
+  left: 8px
 }
 
 .triggers-modal-right {
-  right: 45px;
+  right: 8px;
 }
 
 .close {
