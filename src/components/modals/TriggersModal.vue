@@ -177,13 +177,13 @@ const updateSelectedVariableKeys = (keys) => {
     let variable = state.variables.value.get(key)
     variableModel.value.key = key
     variableModel.value.name = variable.name
-    variableModel.value.values = variable.values.join('\n')
+    variableModel.value.values = variable.values
     variableModel.value.shared = variable.shared
   }
 }
 
 function onlyAlphaNumericMax50(value) {
-  return /^[a-zA-Z][a-zA-Z0-9\s]{0,50}$/.test(value) || !value
+  return /^[a-zA-Z][a-zA-Z0-9]{0,50}$/.test(value) || !value
 }
 
 function changeTriggerShared(shared) {
@@ -218,16 +218,16 @@ onKeydown((ev) => {
 
 function newTrigger() {
   let key = getNextKey(state.triggers.value) + ''
-  triggerModel.value = { key, name: 'New Trigger', pattern: null, commands: null, active: false, shared: false }
-  state.triggers.value.set(key, { name: 'New Trigger', patterns: [''], commands: null, active: false, shared: false })
+  triggerModel.value = { key, name: 'NewTrigger', pattern: null, commands: null, active: false, shared: false }
+  state.triggers.value.set(key, { name: 'NewTrigger', patterns: [''], commands: null, active: false, shared: false })
   updateTriggerTree()
   storeSettingsOfType(state.triggers, 'triggers')
 }
 
 function newVariable() {
   let key = getNextKey(state.variables.value) + ''
-  variableModel.value = { key, name: 'New Variable', values: null, shared: false }
-  state.variables.value.set(key, { name: 'New Variable', values: null, shared: false })
+  variableModel.value = { key, name: 'NewVariable', values: null, shared: false }
+  state.variables.value.set(key, { name: 'NewVariable', values: null, shared: false })
   updateVariableTree()
   storeSettingsOfType(state.variables, 'variables')
 }
