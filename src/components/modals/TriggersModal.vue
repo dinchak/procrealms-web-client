@@ -1,130 +1,135 @@
 <template>
-  <n-card :class="getSideClass()" v-if="state.modals.triggersModal">
-    <p class="close" v-on:click="state.modals.triggersModal = false ">x</p>
+  <n-card title="Automation" v-if="state.modals.triggersModal" closable @close="state.modals.triggersModal = false">
 
-    <n-grid cols="3 1100:5" :x-gap="12" :y-gap="20">
-
-      <!-- Triggers section: -->
-      <n-grid-item :span="3">
-        <n-grid :cols="3" :x-gap="12">
-          <n-grid-item :span="3">
-            <h3>Triggers</h3>
-            <hr style="margin-bottom: 12px"/>
-          </n-grid-item>
-          <n-grid-item>
-            <n-tree
-                block-line
-                checkable
-                virtual-scroll
-                :data="triggerTreeData"
-                :checked-keys="checkedTriggerKeys"
-                :selected-keys="selectedTriggerKeys"
-                @update:checked-keys="updateCheckedTriggerKeys"
-                @update:selected-keys="updateSelectedTriggerKeys"
-            />
-          </n-grid-item>
-
-          <n-grid-item :span="2">
-            <n-grid :cols="2" :x-gap="12">
-              <n-grid-item>
-                <n-form-item path="trigger-name" label="Name">
-                  <n-input v-model:value="triggerModel.name" :disabled="triggerModel.key < 1"
-                           :allow-input="onlyAlphaNumericMax50"
-                           placeholder="Trigger name"/>
-                </n-form-item>
-              </n-grid-item>
-              <n-grid-item>
-                <n-switch class="triggerSharedSwitch" v-model:value="triggerModel.shared"
-                          :disabled="triggerModel.key < 1" aria-label="Shared" @update:value="changeTriggerShared">
-                  <template #checked>
-                    Shared across characters
-                  </template>
-                  <template #unchecked>
-                    {{ state.name }}'s trigger
-                  </template>
-                </n-switch>
-              </n-grid-item>
-            </n-grid>
-            <n-form-item path="pattern" label="Pattern">
+  <n-tabs
+    type="line"
+    pane-class="automation-tab-pane"
+    >
+    <!-- Triggers section: -->
+    <n-tab-pane name="Triggers">
+      <n-grid x-gap="24" y-gap="24" :cols="3">
+        <n-grid-item>
+          <n-grid y-gap="12" :cols="1">
+            <n-grid-item>
+              <n-tree
+              block-line
+              checkable
+              virtual-scroll
+              :data="triggerTreeData"
+              :checked-keys="checkedTriggerKeys"
+              :selected-keys="selectedTriggerKeys"
+              @update:checked-keys="updateCheckedTriggerKeys"
+              @update:selected-keys="updateSelectedTriggerKeys"
+              />
+            </n-grid-item>
+            <n-grid-item>
+              <n-button block="true" type="success" ghost @click="newTrigger">New</n-button>
+            </n-grid-item>
+          </n-grid>
+        </n-grid-item>
+        <n-grid-item :span="2">
+          <n-grid x-gap="24" :cols="4">
+            <n-grid-item :span="3">
+              <n-form-item path="trigger-name" label="Name">
+                <n-input v-model:value="triggerModel.name" :disabled="triggerModel.key < 1"
+                :allow-input="onlyAlphaNumericMax50"
+                placeholder="Trigger name"/>
+              </n-form-item>
+            </n-grid-item>
+            <n-grid-item>
+              <n-form-item label="Enabled">
+                <n-switch v-model:value="triggerModel.active" :disabled="triggerModel.key < 1" aria-label="Enabled" />
+              </n-form-item>
+            </n-grid-item>
+          </n-grid>
+          <n-form-item path="pattern" label="Pattern">
+            <n-input-group>
               <n-input v-model:value="triggerModel.pattern" :disabled="triggerModel.key < 1"
-                       placeholder="RegEx pattern (JavaScript)"/>
-            </n-form-item>
-            <n-form-item path="commands" label="Commands">
-              <n-scrollbar>
-                <n-input v-model:value="triggerModel.commands" :disabled="triggerModel.key < 1" type="textarea"
-                         placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values. Use $MyVar for variables. Use $MyVar[0], $MyVar[1], $MyVar[2], ... for variables with multiple values."/>
-              </n-scrollbar>
-            </n-form-item>
-          </n-grid-item>
-          <n-grid-item>
-            <n-button type="success" ghost @click="newTrigger">New</n-button>
-          </n-grid-item>
-
-          <n-grid-item :span="2">
-            <n-button type="warning" ghost @click="saveTrigger" style="margin-right: 8px;">Save</n-button>
-            <n-button type="error" ghost @click="deleteTrigger(triggerModel.key)">Delete</n-button>
-          </n-grid-item>
-        </n-grid>
-      </n-grid-item>
-
-      <!-- Variables section: -->
-      <n-grid-item span="3 1100:2">
-        <n-grid :cols="2" :x-gap="12">
-          <n-grid-item :span="2">
-            <h3>Variables</h3>
-            <hr style="margin-bottom: 12px"/>
-          </n-grid-item>
-          <n-grid-item>
-            <n-tree
-                block-line
-                virtual-scroll
-                :data="variableTreeData"
-                :selected-keys="selectedVariableKeys"
-                @update:selected-keys="updateSelectedVariableKeys"
-            />
-          </n-grid-item>
-
-          <n-grid-item>
-            <n-switch class="variableSharedSwitch" v-model:value="variableModel.shared"
-                      :disabled="variableModel.key < 1" aria-label="Shared" @update:value="changeVariableShared">
-              <template #checked>
-                Shared across characters
-              </template>
-              <template #unchecked>
-                {{ state.name }}'s variable
-              </template>
-            </n-switch>
-            <n-form-item path="variable-name" label="Name">
-              <n-input v-model:value="variableModel.name" :disabled="variableModel.key < 1"
-                       :allow-input="onlyAlphaNumericMax50"
-                       placeholder="Variable name"/>
-            </n-form-item>
-            <n-form-item path="variable-value" label="Value">
-              <n-scrollbar>
-                <n-input v-model:value="variableModel.values" :disabled="variableModel.key < 1" type="textarea"
-                         placeholder="Value(s) on separate lines." style="height: 110px"/>
-              </n-scrollbar>
-            </n-form-item>
-          </n-grid-item>
-          <n-grid-item>
-            <n-button type="success" ghost @click="newVariable" style="float: right">New</n-button>
-          </n-grid-item>
-
-          <n-grid-item>
-            <n-button type="error" ghost @click="deleteVariable(variableModel.key)" style="float: right">Delete
+              placeholder="RegEx pattern (JavaScript)"/>
+              <!-- <n-select :style="{ width: '35%' }" :disabled="triggerModel.key < 1" default-value="RegEx" :options="[{'label': 'Exact Match', 'value': 'substring'}, {'label': 'RegEx', 'value': 'regex'}]" /> -->
+            </n-input-group>
+          </n-form-item>
+          <n-form-item path="commands" label="Commands">
+            <n-scrollbar>
+              <n-input v-model:value="triggerModel.commands" :disabled="triggerModel.key < 1" type="textarea"
+              placeholder="Commands to send to the server. Use $1, $2, $3, ... for captured values. Use $MyVar for variables. Use $MyVar[0], $MyVar[1], $MyVar[2], ... for variables with multiple values."/>
+            </n-scrollbar>
+          </n-form-item>
+          <n-checkbox v-model:checked="triggerModel.shared" :disabled="triggerModel.key < 1" aria-label="Share across characters" @update:checked="changeTriggerShared">
+            Share across characters
+          </n-checkbox>
+          <n-space justify="end" style="margin-top: 1.5em;">
+            <n-button quaternary type="error" ghost :disabled="triggerModel.key < 1" @click="deleteTrigger(triggerModel.key)">Delete</n-button>
+            <n-button type="warning" ghost :disabled="triggerModel.key < 1" @click="saveTrigger">Save</n-button>
+          </n-space>
+        </n-grid-item>
+      </n-grid>
+    </n-tab-pane>
+    <!-- Variables section: -->
+    <n-tab-pane name="Variables">
+      <n-grid x-gap="24" y-cap="24" :cols="3">
+        <n-grid-item>
+          <n-grid y-gap="12" :cols="1">
+            <n-grid-item>
+              <n-tree
+              block-line
+              virtual-scroll
+              :data="variableTreeData"
+              :selected-keys="selectedVariableKeys"
+              @update:selected-keys="updateSelectedVariableKeys"
+              />
+            </n-grid-item>
+            <n-grid-item>
+              <n-button block="true" type="success" ghost @click="newVariable">New</n-button>
+            </n-grid-item>
+          </n-grid>
+        </n-grid-item>
+        <n-grid-item :span="2">
+          <n-form-item path="variable-name" label="Name">
+            <n-input v-model:value="variableModel.name" :disabled="variableModel.key < 1"
+            :allow-input="onlyAlphaNumericMax50"
+            placeholder="Variable name"/>
+          </n-form-item>
+          <n-form-item path="variable-value" label="Value">
+            <n-scrollbar>
+              <n-input v-model:value="variableModel.values" :disabled="variableModel.key < 1" type="textarea"
+              placeholder="Value(s) on separate lines." style="height: 110px"/>
+            </n-scrollbar>
+          </n-form-item>
+          <n-checkbox v-model:checked="variableModel.shared" :disabled="variableModel.key < 1" aria-label="Share across characters" @update:checked="changeVariableShared">
+            Share across characters
+          </n-checkbox>
+          <n-space justify="end" style="margin-top: 1.5em">
+            <n-button quatenary type="error" ghost :disabled="variableModel.key < 1" @click="deleteVariable(variableModel.key)">Delete
             </n-button>
-            <n-button type="warning" ghost @click="saveVariable" style="margin-right: 8px; float: right">Save
+            <n-button type="warning" ghost :disabled="variableModel.key < 1" @click="saveVariable">Save
             </n-button>
-          </n-grid-item>
-        </n-grid>
-      </n-grid-item>
-    </n-grid>
-
-  </n-card>
+          </n-space>
+        </n-grid-item>
+      </n-grid>
+    </n-tab-pane>
+  </n-tabs>
+</n-card>
 </template>
 
 <script setup>
-import { NButton, NCard, NFormItem, NGrid, NGridItem, NInput, NScrollbar, NSwitch, NTree } from 'naive-ui'
+import { 
+  NButton, 
+  NTabs, 
+  NTabPane, 
+  NCard, 
+  NFormItem, 
+  NGrid, 
+  NGridItem, 
+  NInput, 
+  NInputGroup, 
+  // NSelect, 
+  NScrollbar, 
+  NSpace,
+  NSwitch, 
+  NCheckbox, 
+  NTree 
+} from 'naive-ui'
 import { state } from '@/composables/state'
 import { useKeyHandler } from '@/composables/key_handler'
 import { onMounted, ref } from "vue"
@@ -141,10 +146,6 @@ const variableModel = ref({ key: '-1', name: "", values: "", shared: false })
 const variableTreeData = ref([])
 const selectedVariableKeys = ref([])
 
-function getSideClass() {
-  return state.options.swapControls ? 'triggers-modal-right' : 'triggers-modal-left'
-}
-
 const updateCheckedTriggerKeys = (keys) => {
   Array.from(state.triggers.value.values()).forEach(t => t.active = false)
   keys.forEach(key => {
@@ -152,6 +153,7 @@ const updateCheckedTriggerKeys = (keys) => {
   })
   checkedTriggerKeys.value = keys
   storeSettingsOfType(state.triggers, 'triggers')
+  updateSelectedTriggerKeys([triggerModel.value.key])
 }
 
 const updateSelectedTriggerKeys = (keys) => {
@@ -164,6 +166,7 @@ const updateSelectedTriggerKeys = (keys) => {
     triggerModel.value.pattern = trigger.patterns[0]
     triggerModel.value.commands = trigger.commands
     triggerModel.value.shared = trigger.shared
+    triggerModel.value.active = trigger.active
   }
 }
 
@@ -174,7 +177,7 @@ const updateSelectedVariableKeys = (keys) => {
     let variable = state.variables.value.get(key)
     variableModel.value.key = key
     variableModel.value.name = variable.name
-    variableModel.value.values = variable.values.join('\n')
+    variableModel.value.values = variable.values
     variableModel.value.shared = variable.shared
   }
 }
@@ -237,6 +240,7 @@ function saveTrigger(e) {
     trigger.patterns[0] = triggerModel.value.pattern
     trigger.commands = triggerModel.value.commands
     trigger.shared = triggerModel.value.shared
+    trigger.active = triggerModel.value.active
     updateTriggerTree()
     storeSettingsOfType(state.triggers, 'triggers')
   }
@@ -315,10 +319,19 @@ window.onstorage = (event) => {
 
 .n-card {
   position: absolute;
-  margin-top: 125px;
+  margin-top: 35px;
+  width: 800px;
   max-width: calc(100vw - 290px);
   z-index: 3;
-  overflow-y: scroll
+  overflow-y: scroll;
+  left: 0; /* align center */
+  right: 0; /* align center */
+  margin-left: auto; /* align center */
+  margin-right: auto; /* align center */
+}
+
+.automation-tab-pane {
+  margin-top: 1em;
 }
 
 .n-tree {
@@ -327,30 +340,4 @@ window.onstorage = (event) => {
   background-color: #303033
 }
 
-.triggerSharedSwitch {
-  width: 100%;
-  margin-top: 32px;
-}
-
-.variableSharedSwitch {
-  width: 100%;
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
-
-.triggers-modal-left {
-  left: 8px
-}
-
-.triggers-modal-right {
-  right: 8px;
-}
-
-.close {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  cursor: pointer;
-  font-size: 1.4em;
-}
 </style>
