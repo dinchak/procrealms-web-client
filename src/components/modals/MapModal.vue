@@ -98,7 +98,7 @@ onMounted(() => {
 .ansi {
   white-space: pre;
   font-size: 1rem;
-  line-height: 13px;
+  line-height: 0.9rem;
 }
 
 .right {
