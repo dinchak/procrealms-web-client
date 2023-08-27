@@ -54,7 +54,7 @@ function getEffectBonuses (effect) {
 
   if (effect.damageOverTime) {
     let { damLow, damHigh, damageType } = effect.damageOverTime
-    bonuses.push(`Deals ${damLow.toFixed(0)} - ${damHigh.toFixed()} ${damageType} damage every ${effect.triggerTime}s`)
+    bonuses.push(`Deals ${damLow.toFixed(0)} - ${damHigh.toFixed(0)} ${damageType} damage every ${effect.triggerTime}s`)
   }
 
   bonuses = bonuses.concat(effect.bonuses.map( ({ name, value }) => {
