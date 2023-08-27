@@ -123,7 +123,7 @@ function resetOptions () {
     wasdMovement: true,
     keepSentCommands: false,
     fontFamily: true,
-    fontSize: 'medium'
+    fontSize: '16px'
   }
 }
 
