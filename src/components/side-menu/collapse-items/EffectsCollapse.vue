@@ -49,12 +49,12 @@ function getEffectBonuses (effect) {
 
   if (effect.healOverTime) {
     let { healLow, healHigh } = effect.healOverTime
-    bonuses.push(`Heals ${healLow}-${healHigh} every ${effect.triggerTime}s`)
+    bonuses.push(`Heals ${healLow.toFixed(0)} - ${healHigh.toFixed(0)} every ${effect.triggerTime}s`)
   }
 
   if (effect.damageOverTime) {
     let { damLow, damHigh, damageType } = effect.damageOverTime
-    bonuses.push(`Deals ${damLow}-${damHigh} ${damageType} damage every ${effect.triggerTime}s`)
+    bonuses.push(`Deals ${damLow.toFixed(0)} - ${damHigh.toFixed()} ${damageType} damage every ${effect.triggerTime}s`)
   }
 
   bonuses = bonuses.concat(effect.bonuses.map( ({ name, value }) => {
@@ -64,10 +64,7 @@ function getEffectBonuses (effect) {
 }
 
 function isHiredEffect(effect) {
-  if (effect.longFlag && effect.longFlag.includes("Hired")) {
-    return true;
-  }
-  return false;
+  return effect.longFlag && effect.longFlag.includes("Hired")
 }
 
 </script>
