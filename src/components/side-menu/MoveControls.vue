@@ -183,7 +183,7 @@ onKeydown((ev) => {
     display: flex;
     flex-direction: row;
     .direction {
-      font-size: 24px;
+      font-size: 1.5rem;
       display: flex;
       justify-content: center;
       align-items: center;

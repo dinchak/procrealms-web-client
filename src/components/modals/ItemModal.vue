@@ -334,7 +334,6 @@ h3 {
   font-size: 1.2em;
   overflow: scroll;
   height: calc(100vh - 95px);
-  font-family: 'Inconsolata', monospace;
 }
 
 .stats {

@@ -78,16 +78,17 @@ function clearCache(object) {
 <style lang="less">
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&display=swap');
 
-// @font-face {
-//   font-family: 'DOS';
-//   src: url('@/assets/WebPlus_IBM_VGA_8x16.woff') format('woff');
-// }
+@font-face {
+  font-family: 'DOS';
+  src: url('@/assets/WebPlus_IBM_VGA_8x16.woff') format('woff');
+}
 
 body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
   font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
   color: #fff;
   overflow-x: hidden;
   color-scheme: dark;

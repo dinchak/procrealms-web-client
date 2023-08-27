@@ -99,11 +99,11 @@ function entity () {
         margin-right: 0px;
       }
       .value {
-        font-size: 14px;
+        font-size: 0.9rem;
         font-weight: bold;
       }
       .label {
-        font-size: 10px;
+        font-size: 0.7rem;
       }
     }
   }
@@ -112,10 +112,9 @@ function entity () {
     display: flex;
     flex-direction: row;
     .circle-stat {
-      font-family: 'Inconsolata', monospace;
       width: 35px;
       height: 35px;
-      font-size: 10px;
+      font-size: 0.7rem;
     }
   }
    .quick-stats {
