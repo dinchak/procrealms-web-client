@@ -48,7 +48,7 @@ watch(() => state.connected, () => {
   user-select: none;
   min-height: 300px;
   font-size: 1rem;
-  line-height: 16px;
+  line-height: 1rem;
   white-space: pre;
   text-align: center;
 }

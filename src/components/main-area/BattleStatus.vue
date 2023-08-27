@@ -150,7 +150,7 @@ watch(state.gameState.battle.participants, function () {
         font-size: 1.4rem;
         color: #ff3333;
         &.crit {
-          line-height: 20px;
+          line-height: 1.2rem;
           font-size: 1.9rem;
           color: #ffcc33;
         }

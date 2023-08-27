@@ -373,7 +373,7 @@ onMounted(() => {
 
     .line {
       font-size: 1rem;
-      line-height: 20px;
+      line-height: 1.2rem;
       display: block;
       white-space: pre-wrap;
       font-weight: normal !important;
@@ -400,20 +400,20 @@ onMounted(() => {
       .from {
         .name {
           font-size: 0.9rem;
-          line-height: 12px;
+          line-height: 0.8rem;
           text-align: right;
           word-break: break-all;
         }
         .timestamp {
           font-size: 0.6rem;
-          line-height: 8px;
+          line-height: 0.6rem;
           text-align: right;
         }
       }
       .body {
         display: flex;
         font-size: 1.2rem;
-        line-height: 20px;
+        line-height: 1.2rem;
         margin-left: 10px;
       }
     }

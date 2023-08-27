@@ -26,6 +26,6 @@ function renderMap () {
   user-select: none;
   white-space: pre;
   font-size: 1.2rem;
-  line-height: 20px;
+  line-height: 1.2rem;
 }
 </style>
