@@ -163,13 +163,13 @@ function getSlotClass (slot) {
 
       .slot-number {
         height: 12px;
-        font-size: 14px;
+        font-size: 0.9rem;
         line-height: 12px;
       }
 
       .slot-label {
-        font-size: 10px;
-        width: 50px;
+        font-size: 0.7rem;
+        width: 3.5rem;
         max-height: 16px;
         word-wrap: break-word;
         line-height: 8px;

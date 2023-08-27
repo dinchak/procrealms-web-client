@@ -99,6 +99,26 @@
       </template>
     </n-switch>
 
+    <p>Fonts</p>
+    <n-switch v-model:value="state.options.fontFamily" aria-label="Font Family" @update:value="setFont">
+      <template #checked>
+          Inconsolata
+      </template>
+      <template #unchecked>
+          DOS
+      </template>
+    </n-switch>
+
+    <n-radio-group v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
+      <n-radio-button
+              v-for="fontSize in fontSizes"
+              :key="fontSize.value"
+              :value="fontSize.value"
+              :label="fontSize.label"
+              @change="changeFontSize"
+      />
+    </n-radio-group>
+
     <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
     <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
     <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
@@ -106,16 +126,44 @@
 </template>
 
 <script setup>
-import { NSwitch, NButton } from 'naive-ui'
+import { NSwitch, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
 
 import { state } from '@/composables/state'
-import { watch } from 'vue';
+import { watch, ref} from 'vue';
+
+const fontSizes = [
+    {
+        value: '14px',
+        label: 'Small'
+    },
+    {
+        value: '16px',
+        label: 'Medium'
+    },
+    {
+        value: '18px',
+        label: 'Large'
+    }
+]
+
+const selectedFontSize = ref(state.options.fontSize)
 
 watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 function goFullscreen () {
   let app = document.getElementById('app')
   app.requestFullscreen()
+}
+
+function setFont(value) {
+    if (value) {
+        document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
+    } else document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
+}
+
+function changeFontSize() {
+    state.options.fontSize = selectedFontSize.value;
+    document.getElementsByTagName('html')[0].style.fontSize = selectedFontSize.value;
 }
 
 </script>
@@ -130,6 +178,12 @@ function goFullscreen () {
     .n-switch__rail {
       width: 100%;
     }
+  }
+
+  .font-size-selector {
+    align-self: center;
+    margin-top: 5px;
+    margin-bottom: 20px;
   }
 }
 

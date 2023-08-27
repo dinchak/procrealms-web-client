@@ -25,8 +25,7 @@ function renderMap () {
 .minimap {
   user-select: none;
   white-space: pre;
-  font-size: 20px;
+  font-size: 1.2rem;
   line-height: 20px;
-  font-family: 'Inconsolata', monospace;
 }
 </style>
