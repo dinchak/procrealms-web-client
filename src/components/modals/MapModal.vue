@@ -100,10 +100,9 @@ onMounted(() => {
 
 <style scoped lang="less">
 .ansi {
-  font-family: 'Inconsolata', monospace;
   white-space: pre;
-  font-size: 16px;
-  line-height: 13px;
+  font-size: 1rem;
+  line-height: 0.9rem;
 }
 
 .right {

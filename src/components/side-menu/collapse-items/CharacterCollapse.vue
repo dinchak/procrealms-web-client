@@ -241,12 +241,12 @@ function addStatPoint (stat) {
 }
 
 .add-point {
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
 }
 
 .inline {
-  font-size: 16px;
+  font-size: 1rem;
   display: inline-flex;
   vertical-align: middle;
 }

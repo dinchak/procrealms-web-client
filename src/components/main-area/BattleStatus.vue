@@ -116,7 +116,7 @@ watch(state.gameState.battle.participants, function () {
 
   .vs {
     flex-basis: 4%;
-    font-size: 18px;
+    font-size: 1.1rem;
     color: #c50f1f;
     text-align: center;
   }
@@ -147,11 +147,11 @@ watch(state.gameState.battle.participants, function () {
         opacity: 0;
         top: 40px;
         left: 10px;
-        font-size: 20px;
+        font-size: 1.4rem;
         color: #ff3333;
         &.crit {
-          line-height: 20px;
-          font-size: 30px;
+          line-height: 1.2rem;
+          font-size: 1.9rem;
           color: #ffcc33;
         }
       }
@@ -161,7 +161,7 @@ watch(state.gameState.battle.participants, function () {
         opacity: 0;
         top: -22px;
         left: 20px;
-        font-size: 20px;
+        font-size: 1.4rem;
         color: #33ff33;
       }
 
@@ -215,7 +215,7 @@ watch(state.gameState.battle.participants, function () {
 @media screen and (max-width: 1000px) {
   .battle-status {
     .vs {
-      font-size: 14px;
+      font-size: 0.9rem;
     }
   }
 }
@@ -223,7 +223,7 @@ watch(state.gameState.battle.participants, function () {
 @media screen and (max-width: 800px) {
   .battle-status {
     .vs {
-      font-size: 12px;
+      font-size: 0.8rem;
     }
     .side {
       .entity {

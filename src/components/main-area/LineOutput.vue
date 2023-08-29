@@ -307,7 +307,7 @@ onMounted(() => {
     line-height: 40px;
     width: 100%;
     background-color: rgba(20, 80, 20, 0.4);
-    font-size: 24px;
+    font-size: 1.5rem;
     text-align: center;
     cursor: pointer;
     user-select: none;
@@ -357,7 +357,6 @@ onMounted(() => {
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
-    font-family: 'Inconsolata', monospace;
 
     height: ~"calc(100vh - 85px)";
 
@@ -373,8 +372,8 @@ onMounted(() => {
     }
 
     .line {
-      font-size: 16px;
-      line-height: 20px;
+      font-size: 1rem;
+      line-height: 1.2rem;
       display: block;
       white-space: pre-wrap;
       font-weight: normal !important;
@@ -400,21 +399,21 @@ onMounted(() => {
       }
       .from {
         .name {
-          font-size: 14px;
-          line-height: 12px;
+          font-size: 0.9rem;
+          line-height: 0.8rem;
           text-align: right;
           word-break: break-all;
         }
         .timestamp {
-          font-size: 10px;
-          line-height: 8px;
+          font-size: 0.6rem;
+          line-height: 0.6rem;
           text-align: right;
         }
       }
       .body {
         display: flex;
-        font-size: 20px;
-        line-height: 20px;
+        font-size: 1.2rem;
+        line-height: 1.2rem;
         margin-left: 10px;
       }
     }
@@ -426,14 +425,14 @@ onMounted(() => {
   .tabs {
     .output {
       .line {
-        font-size: 16px;
-        line-height: 16px;
+        font-size: 1rem;
+        line-height: 1rem;
       }
       .message {
         grid-template-columns: 90px calc(100% - 90px);
         .body {
-          font-size: 16px;
-          line-height: 16px;
+          font-size: 1rem;
+          line-height: 1rem;
         }
       }
     }
