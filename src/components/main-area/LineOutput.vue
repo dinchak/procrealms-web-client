@@ -285,12 +285,15 @@ onMounted(() => {
 </script>
 
 <style lang="less">
-.tabs {
-
-  .n-tab-pane {
-    padding: 0;
+.content-area {
+  .n-tabs {
+    .n-tab-pane {
+      padding: 0;
+    }
   }
+}
 
+.tabs {
   .n-tabs-nav {
     margin: 0 10px;
     &.hide {
