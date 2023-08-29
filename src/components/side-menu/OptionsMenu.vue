@@ -127,10 +127,14 @@
 </template>
 
 <script setup>
+import { watch, ref } from 'vue'
+
 import { NSwitch, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
 
 import { state } from '@/composables/state'
-import { watch, ref} from 'vue';
+import { useWindowHandler } from '@/composables/window_handler'
+
+const { triggerResize } = useWindowHandler()
 
 const fontSizes = [
     {
@@ -151,20 +155,25 @@ const selectedFontSize = ref(state.options.fontSize)
 
 watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
-function goFullscreen () {
+async function goFullscreen () {
   let app = document.getElementById('app')
-  app.requestFullscreen()
+  await app.requestFullscreen()
+  triggerResize()
 }
 
-function setFont(value) {
-    if (value) {
-        document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
-    } else document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
+function setFont (value) {
+  if (value) {
+    document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
+  } else {
+    document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
+  }
+  triggerResize()
 }
 
-function changeFontSize() {
-    state.options.fontSize = selectedFontSize.value;
-    document.getElementsByTagName('html')[0].style.fontSize = selectedFontSize.value;
+function changeFontSize () {
+  state.options.fontSize = selectedFontSize.value
+  document.getElementsByTagName('html')[0].style.fontSize = selectedFontSize.value
+  triggerResize()
 }
 
 </script>
