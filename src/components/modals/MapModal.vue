@@ -1,5 +1,5 @@
 <template>
-  <n-card title="Map" size="small" :class="['right', geMapModalSizeClass()]" v-if="state.modals.mapModal" content-style="display: flex; flex-wrap: wrap; justify-content: center; align-content:center; overflow:hidden;" closable @close="closeModal()">
+  <n-card title="Map" size="small" :class="[rightClass, geMapModalSizeClass()]" v-if="state.modals.mapModal" content-style="display: flex; flex-wrap: wrap; justify-content: center; align-content:center; overflow:hidden;" closable @close="closeModal()">
     <template #header-extra>
       <n-button text @click="toggleMapModalSize()">
         <n-icon size="15"><WindowOutlined></WindowOutlined></n-icon>
@@ -25,6 +25,7 @@ const { ansiToHtml } = helpers()
 
 const MAP_ID = command_ids.MAP
 const largeMap = ref([])
+const rightClass = ref('right')
 
 watch(() => state.cache.commandCache[MAP_ID], () => {
   if (state.modals.mapModal) {
@@ -48,6 +49,14 @@ watch(() => state.gameState.map, () => {
   }
 })
 
+watch(() => [state.modals.mercModal, state.options.swapControls, state.modals.mapModalSize], () => {
+	if (state.modals.mercModal && !state.options.swapControls && state.modals.mapModalSize !== 'large') {
+      rightClass.value = 'right-offset'
+    } else {
+		rightClass.value = 'right'
+    }
+})
+
 function toggleMapModalSize() {
   if (state.modals.mapModalSize == "small") {
     state.modals.mapModalSize = "medium"
@@ -58,6 +67,9 @@ function toggleMapModalSize() {
   else {
     state.modals.mapModalSize = "small"
   }
+
+  state.options.mapModalSize = state.modals.mapModalSize
+  localStorage.setItem('options', JSON.stringify(state.options))
 }
 
 function geMapModalSizeClass() {
@@ -107,6 +119,10 @@ onMounted(() => {
 
 .right {
   right: 10px;
+}
+
+.right-offset {
+  right: 410px;
 }
 
 .n-card {
