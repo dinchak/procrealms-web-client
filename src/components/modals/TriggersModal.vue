@@ -100,7 +100,7 @@
             Share across characters
           </n-checkbox>
           <n-space justify="end" style="margin-top: 1.5em">
-            <n-button quatenary type="error" ghost :disabled="variableModel.key < 1" @click="deleteVariable(variableModel.key)">Delete
+            <n-button quaternary type="error" ghost :disabled="variableModel.key < 1" @click="deleteVariable(variableModel.key)">Delete
             </n-button>
             <n-button type="warning" ghost :disabled="variableModel.key < 1" @click="saveVariable">Save
             </n-button>
