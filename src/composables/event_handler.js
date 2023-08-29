@@ -1,9 +1,10 @@
-import {useCookieHandler} from "@/composables/cookie_handler";
 
 const { ansiSpan } = require('ansi-to-span')
 
-import { state, addLine } from '@/composables/state'
+import { processTriggers } from "@/composables/triggers"
+import { addLine, state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
+import { useCookieHandler} from "@/composables/cookie_handler";
 
 const { ansiToHtml } = helpers()
 const { addTokenToCookie } = useCookieHandler()
@@ -64,6 +65,7 @@ handlers['out'] = (line) => {
   let lines = strToLines(line)
   for (let line of lines) {
     addLine(line, 'output')
+    processTriggers(line)
   }
 }
 
@@ -84,6 +86,7 @@ handlers['room.describe'] = ({ desc, map }) => {
 
   for (let line of lines) {
     addLine(line, 'output')
+    processTriggers(line)
   }
 }
 
@@ -130,6 +133,7 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
 
   message = ansiToHtml(`\u{1b}[0m${message}`)
 
+  let out = ''
   if (['chat', 'trade', 'newbie'].includes(channel)) {
     if (state[channel].find(msg => msg.id == id)) {
       return
@@ -143,28 +147,27 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
     addLine({ id, from, to, timestamp, message, unread }, channel)
 
     if (state.options.chatInMain) {
-      let out = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> <span class="bold-white">'${message}'</span>`
-      addLine(out, 'output')
+      out = `<span class="bold-yellow">${from}</span> <span class="${channelColors[channel]}">${channel}${from == 'You' ? '' : 's'}</span> <span class="bold-white">'${message}'</span>`
     }
   } else if (['party'].includes(channel)) {
-    let out = `<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`
-    addLine(out, 'output')
+    out = `<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`
 
   } else if (['tell'].includes(channel)) {
     if (from == 'You') {
-      let out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
-      addLine(out, 'output')
+      out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
     } else {
-      let out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
-      addLine(out, 'output')
+      out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
     }
 
   } else if (['info', 'announce', 'events'].includes(channel)) {
-    addLine(message, 'output')
+    out = message
 
   } else {
-    let out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+    out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+  }
+  if (out) {
     addLine(out, 'output')
+    processTriggers(out)
   }
 }
 

@@ -138,62 +138,73 @@ onKeydown((ev) => {
     return false
   }
 
-  if (ev.key == 'Enter' && state.mode == 'hotkey') {
-    input.value.focus()
-    return true
-  }
+  if (state.mode == 'input') {
 
-  if (ev.code == 'Escape' && state.mode == 'input') {
-    input.value.blur()
-    return true
-  }
+    if (ev.key == 'Enter') {
+      if (!input.value.value) {
+        input.value.blur()
+        return true
+      }
+      sendCommand()
+      return true
+    }
 
-  if (ev.code == 'ArrowUp') {
-    prevCommand()
-    return true
-  }
-
-  if (ev.code == 'ArrowDown') {
-    nextCommand()
-    return true
-  }
-
-  if (ev.key == 'Enter' && state.mode == 'input') {
-    if (!input.value.value) {
+    if (ev.code == 'Escape') {
       input.value.blur()
       return true
     }
-    sendCommand()
-    return true
-  }
 
-  if (ev.key == '?' && state.mode == 'hotkey') {
-    state.showHelp = true
-    return true
-  }
-
-  if (ev.code == 'PageUp') {
-    let activeTabElement = document.getElementById(state.activeTab)
-    activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
-    return true
-  }
-
-  if (ev.code == 'PageDown') {
-    let activeTabElement = document.getElementById(state.activeTab)
-    activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
-    return true
-  }
-
-  if (ev.code == 'End') {
-    let activeTabElement = document.getElementById(state.activeTab)
-    if (activeTabElement) {
-      activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
+    if (ev.code == 'ArrowUp') {
+      prevCommand()
+      return true
     }
-    return true
+
+    if (ev.code == 'ArrowDown') {
+      nextCommand()
+      return true
+    }
+  }
+
+  if(state.mode == 'input' || !state.modals.triggersModal) {
+
+    if (ev.code == 'PageUp') {
+      let activeTabElement = document.getElementById(state.activeTab)
+      activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
+      return true
+    }
+
+    if (ev.code == 'PageDown') {
+      let activeTabElement = document.getElementById(state.activeTab)
+      activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
+      return true
+    }
+
+    if (ev.code == 'End') {
+      let activeTabElement = document.getElementById(state.activeTab)
+      if (activeTabElement) {
+        activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
+      }
+      return true
+    }
+  }
+
+  if (state.modals.triggersModal) {
+    return false
   }
 
   if (state.mode == 'hotkey') {
-    const { slots } = state.gameState
+
+    if (ev.key == 'Enter') {
+      input.value.focus()
+      return true
+    }
+
+    if (ev.key == '?') {
+      state.showHelp = true
+      return true
+    }
+
+    const {slots} = state.gameState
     let slot = slots.find(s => s.slot == ev.key)
     if (slot) {
       cmd(slot.slot)

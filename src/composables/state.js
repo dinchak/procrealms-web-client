@@ -41,6 +41,8 @@ export const state = reactive({
   newbie: [],
 
   animations: [],
+  triggers: ref(new Map()),
+  variables: ref(new Map()),
 
   name: '',
   token: '',
@@ -52,7 +54,8 @@ export const state = reactive({
     },
     mapModal: false,
     mapModalSize: 'large',
-    mercModal: false
+    mercModal: false,
+    triggersModal: false,
   }
 })
 
@@ -68,6 +71,8 @@ export function resetState () {
   state.trade = []
   state.newbie = []
   state.animations = []
+  state.triggers.value = new Map()
+  state.variables.value = new Map()
 }
 
 function resetCache () {
