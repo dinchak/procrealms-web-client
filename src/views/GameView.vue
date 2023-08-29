@@ -59,7 +59,7 @@ import TriggersModal from "@/components/modals/TriggersModal.vue";
       width: 100%;
 
       .map-icon {
-        font-size: 30px;
+        font-size: 1.9rem;
         text-align: left;
         cursor: pointer;
       }

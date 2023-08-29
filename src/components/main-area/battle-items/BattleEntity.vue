@@ -116,10 +116,10 @@ function getAffects (entity) {
     flex-direction: column;
     min-height: 30px;
     .name {
-      font-size: 16px;
+      font-size: 1rem;
     }
     .affects {
-      font-size: 14px;
+      font-size: 0.9rem;
     }
     .sten {
       display: flex;
@@ -158,8 +158,8 @@ function getAffects (entity) {
   }
 
   .n-progress {
-    font-size: 14px;
-    line-height: 14px;
+    font-size: 0.9rem;
+    line-height: 0.9rem;
     .n-progress-custom-content {
       width: 60px;
       text-align: right;
@@ -184,18 +184,18 @@ function getAffects (entity) {
     width: 150px;
     .status {
       .name {
-        font-size: 14px;
+        font-size: 0.9rem;
       }
       .affects {
-        font-size: 12px;
+        font-size: 0.8rem;
       }
     }
     .targeting {
-      font-size: 12px;
+      font-size: 0.8rem;
     }
     .n-progress {
-      font-size: 12px;
-      line-height: 12px;
+      font-size: 0.8rem;
+      line-height: 0.8rem;
       .n-progress-custom-content {
         width: 50px;
         text-align: right;
@@ -222,19 +222,19 @@ function getAffects (entity) {
     width: 125px;
     .status {
       .name {
-        font-size: 12px;
+        font-size: 0.8rem;
       }
       .affects {
-        font-size: 10px;
+        font-size: 0.7rem;
       }
     }
     .targeting {
-      font-size: 10px;
+      font-size: 0.7rem;
     }
 
     .n-progress {
-      font-size: 10px;
-      line-height: 10px;
+      font-size: 0.7rem;
+      line-height: 0.7rem;
       .n-progress-custom-content {
         width: 40px;
         text-align: right;

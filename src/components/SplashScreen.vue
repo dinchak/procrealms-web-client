@@ -47,11 +47,10 @@ watch(() => state.connected, () => {
 .picture {
   user-select: none;
   min-height: 300px;
-  font-size: 16px;
-  line-height: 16px;
+  font-size: 1rem;
+  line-height: 1rem;
   white-space: pre;
   text-align: center;
-  font-family: 'Inconsolata', monospace;
 }
 
 .login-controls {
@@ -62,7 +61,7 @@ watch(() => state.connected, () => {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  font-size: 22px;
+  font-size: 1.3rem;
   color: #ff9752;
   text-shadow: 0px 0px 6px #ff0000;
   button {
@@ -72,8 +71,8 @@ watch(() => state.connected, () => {
 
 @media screen and (max-width: 800px) {
   .picture {
-    font-size: 14px;
-    line-height: 14px;
+    font-size: 0.9rem;
+    line-height: 0.9rem;
   }
 }
 

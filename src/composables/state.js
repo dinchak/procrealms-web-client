@@ -126,7 +126,9 @@ function resetOptions () {
     showMobileMovement: false,
     numPadMovement: true,
     wasdMovement: true,
-    keepSentCommands: false
+    keepSentCommands: false,
+    fontFamily: true,
+    fontSize: '16px'
   }
 }
 

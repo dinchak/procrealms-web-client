@@ -232,7 +232,7 @@ onKeydown((ev) => {
 .input-wrapper {
   display: flex;
   flex-direction: row;
-  font-size: 14px;
+  font-size: 0.9rem;
   margin-top: 7px;
   // height: 40px;
   align-items: center;

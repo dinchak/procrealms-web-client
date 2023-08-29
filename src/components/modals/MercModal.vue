@@ -133,7 +133,7 @@ function setAffects(affectList) {
 
 .n-card {
   position: absolute;
-  width: 25rem;
+  width: 400px;
   margin-top: 35px;
   z-index: 2;
   max-height: 80vh;

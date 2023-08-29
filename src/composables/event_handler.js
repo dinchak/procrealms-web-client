@@ -200,6 +200,15 @@ function loadOptions() {
     if (options !== null) {
       state.options = Object.assign(state.options, options)
     }
+
+    // Set font options
+    if (state.options.fontFamily) {
+      document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
+    }  else {
+      document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
+    }
+
+    document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize;
   } catch (err) {
     console.log(err.stack)
     localStorage.setItem('options', '')
