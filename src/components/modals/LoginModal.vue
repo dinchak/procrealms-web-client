@@ -38,6 +38,8 @@ import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
 
 import { useWebSocket } from '@/composables/web_socket'
+import { loadSettingsByNameAndType } from "@/composables/triggers"
+
 const { send } = useWebSocket()
 
 const formRef = ref(null)
@@ -78,6 +80,8 @@ const rules = {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
+          loadSettingsByNameAndType(state.triggers, model.value.name, 'triggers')
+          loadSettingsByNameAndType(state.variables, model.value.name, 'variables')
           send('login', { name: model.value.name, password: model.value.password, width: 80, height: 24, ttype: 'play.proceduralrealms.com' })
         })
       }
