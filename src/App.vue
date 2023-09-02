@@ -29,10 +29,11 @@ const themeOverrides = {
 }
 
 const { onEvent } = useEventHandler()
-const { initConnection } = useWebSocket()
+const { initConnection, send } = useWebSocket()
 
 function onConnect () {
   state.connected = true
+  send('welcome', { width: Math.floor(window.innerWidth / 9) })
 }
 
 function doConnect () {
@@ -87,7 +88,7 @@ body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'DOS', sans-serif;
   font-size: 16px;
   color: #fff;
   overflow-x: hidden;
