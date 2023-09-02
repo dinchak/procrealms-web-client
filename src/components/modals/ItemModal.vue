@@ -6,6 +6,7 @@
               style="max-height: 600px">
         <n-tab-pane name="actions" tab="Actions" class="actions-pane" style="max-height: 600px">
           <h3 v-html-safe="props.item.amount + 'x ' + ansiToHtml(props.item.colorName)"></h3>
+            <div class="item-desc" v-html-safe="ansiToHtml(getLook())"></div>
 
           <div class="actions">
             <n-button v-for="action in actions"
@@ -22,34 +23,26 @@
               {{action.split(" ").length > 1 ? action.split(" ")[1] : action}}
             </n-button>
           </div>
-
-          <n-collapse v-if="props.menu === 'inventory'" class="additional-collapse">
-            <n-collapse-item title="Additional actions">
-              <div class="additional-actions">
-                <n-button ghost type="warning" @click="giveAll()" v-if="state.gameState.mercEid !== -1">
-                  Give all
-                </n-button>
-                <div class="input-button" v-if="state.gameState.mercEid !== -1">
-                  <n-button ghost type="warning" @click="giveItems()">
-                    Give
-                  </n-button>
-                  <n-input-number class="input-field" button-placement="both" v-model:value="giveValue" min=1 :max="item.amount" />
-                </div>
-                <n-button ghost type="error" @click="dropAll()">
-                  Drop all
-                </n-button>
-                <div class="input-button">
-                  <n-button ghost type="error" @click="dropItems()">
-                    Drop
-                  </n-button>
-                  <n-input-number class="input-field" button-placement="both" v-model:value="dropValue" min=1 :max="item.amount" />
-                </div>
-              </div>
-            </n-collapse-item>
-          </n-collapse>
-        </n-tab-pane>
-        <n-tab-pane name="look" tab="Look" style="max-height: 600px">
-          <div class="item-desc" v-html-safe="ansiToHtml(getLook())"></div>
+          <div class="additional-actions">
+            <n-button ghost type="warning" @click="giveAll()" v-if="state.gameState.mercEid !== -1">
+              Give all
+            </n-button>
+            <div class="input-button" v-if="state.gameState.mercEid !== -1">
+              <n-button ghost type="warning" @click="giveItems()">
+                Give
+              </n-button>
+              <n-input-number class="input-field" button-placement="both" v-model:value="giveValue" min=1 :max="item.amount" />
+            </div>
+            <n-button ghost type="error" @click="dropAll()">
+              Drop all
+            </n-button>
+            <div class="input-button">
+              <n-button ghost type="error" @click="dropItems()">
+                Drop
+              </n-button>
+              <n-input-number class="input-field" button-placement="both" v-model:value="dropValue" min=1 :max="item.amount" />
+            </div>
+          </div>
         </n-tab-pane>
         <n-tab-pane name="examine" tab="Examine" style="max-height: 600px">
           <div class="examine" v-html-safe="ansiToHtml(rawExamine())"></div>
@@ -65,7 +58,7 @@
 </template>
 
 <script setup>
-import { NCard, NTabs, NTabPane, NButton, NCollapse, NCollapseItem, NInputNumber } from 'naive-ui'
+import { NCard, NTabs, NTabPane, NButton, NInputNumber } from 'naive-ui'
 import { defineProps, ref, watch} from 'vue'
 import { helpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
@@ -269,14 +262,12 @@ function clickedAction(action) {
 
 .n-card {
   position: fixed;
-  margin-top: 3px;
-  width: calc(100vw - 280px);
-  min-width: 300px;
-  max-width: 700px;
+  margin-top: 200px;
+  width: 400px;
   z-index: 3;
   top: 0;
-  height: calc(100vh - 6px);
-  max-height: 600px;
+  min-height: 300px;
+  overflow-y: scroll;
 }
 
 .player-inventory-modal-left {
@@ -306,8 +297,6 @@ function clickedAction(action) {
 .item-desc {
   white-space: pre-wrap;
   font-size: 1.2em;
-  overflow: scroll;
-  height: calc(100vh - 95px);
 }
 
 h3 {
@@ -324,16 +313,14 @@ h3 {
 }
 
 .actions-pane {
-  overflow: scroll;
-  height: calc(100vh - 95px);
+  overflow-y: scroll;
   margin-bottom: 20px;
 }
 
 .examine {
   white-space: pre-wrap;
   font-size: 1.2em;
-  overflow: scroll;
-  height: calc(100vh - 95px);
+  overflow-y: scroll;
 }
 
 .stats {
@@ -355,6 +342,7 @@ h3 {
   display: grid;
   gap: 1em;
   grid-template-columns: 1fr 1fr 1fr;
+  overflow-y: scroll;
 
 .action {
   text-transform: capitalize;
@@ -374,11 +362,28 @@ h3 {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 15px;
+  margin-top: 20px;
 }
 
 .input-field {
   margin-left: 5px;
   width: 100px;
+}
+
+@media screen and (max-width: 800px) {
+  .n-card {
+    margin-top: 3px;
+    width: calc(100vw - 280px);
+    min-width: 300px;
+    max-width: 700px;
+    z-index: 3;
+    top: 0;
+    height: calc(100vh - 6px);
+  }
+
+    .merc-inventory-modal-left, .merc-inventory-modal-right {
+      left: 5px;
+    }
 }
 
 </style>

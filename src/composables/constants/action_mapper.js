@@ -85,11 +85,12 @@ export const action_mapper = [
         condition: (it) => it.subtype === 'hook',
         crafting: true
     },
-    {
+    // Drop action is removed right now because it's a default action in ItemModal
+    /*{
         action: 'drop',
         condition: () => true,
         crafting: false
-    },
+    },*/
     {
         action: 'salvage',
         condition: (it) => ['armor', 'tool', 'weapon'].includes(it.type) && !it.name.includes('artifact'),

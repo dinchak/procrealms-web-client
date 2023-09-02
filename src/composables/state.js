@@ -128,7 +128,8 @@ function resetOptions () {
     wasdMovement: true,
     keepSentCommands: false,
     fontFamily: true,
-    fontSize: '16px'
+    fontSize: '16px',
+    mapModalSize: 'medium'
   }
 }
 

@@ -208,7 +208,8 @@ function loadOptions() {
       document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
     }
 
-    document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize;
+    document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize
+    state.modals.mapModalSize = state.options.mapModalSize
   } catch (err) {
     console.log(err.stack)
     localStorage.setItem('options', '')
