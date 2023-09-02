@@ -368,9 +368,9 @@ onMounted(() => {
     }
 
     &.show-quickslots {
-      height: ~"calc(100vh - 125px)";
+      height: ~"calc(100vh - 130px)";
       &.tabs-hidden {
-        height: ~"calc(100vh - 92px)";
+        height: ~"calc(100vh - 97px)";
       }
     }
 
@@ -453,9 +453,9 @@ onMounted(() => {
       }
 
       &.show-quickslots {
-        height: ~"calc(100vh - 119px)";
+        height: ~"calc(100vh - 124px)";
         &.tabs-hidden {
-          height: ~"calc(100vh - 86px)";
+          height: ~"calc(100vh - 91px)";
         }
       }
 
