@@ -14,7 +14,7 @@
     <n-form ref="formRef" :model="model" :rules="rules" size="large">
 
       <n-form-item path="name" label="Character Name">
-        <n-input v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?"/>
+        <n-input ref="nameInput" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" />
       </n-form-item>
 
       <n-form-item path="password" label="Password">
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
@@ -43,10 +43,19 @@ import { loadSettingsByNameAndType } from "@/composables/triggers"
 const { send } = useWebSocket()
 
 const formRef = ref(null)
+const nameInput = ref(null)
 
 const model = ref({
   name: null,
   password: null
+})
+
+watch(() => state.showLogin, () => {
+  if (state.showLogin) {
+    setTimeout(() => {
+      nameInput.value.focus()
+    }, 100)
+  }
 })
 
 const rules = {
