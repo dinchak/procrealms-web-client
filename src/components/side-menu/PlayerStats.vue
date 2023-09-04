@@ -107,13 +107,23 @@ function getPlayerStatsClass () {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    width: 100%;
     .stat {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: space-around;
+      align-items: center;
       .label {
         color: #aaa;
         width: 70px;
+        text-align: right;
+      }
+      i {
+        margin-left: 5px;
+      }
+      .white-label {
+        width: 70px;
+        color: #fff;
         text-align: right;
       }
       .value {
