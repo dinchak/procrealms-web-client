@@ -259,80 +259,76 @@
     <div class="subtitle"><span class="title">Combat</span></div>
 
     <div class="character-stats">
-      <div class="combat-row">
+      <div class="damage-row">
         <div class="flex-row">
-          <div class="label">Damage</div>
           <div class="value bold-red">{{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ player().damage }}</div>
         </div>
         <div class="flex-row">
-          <div class="addtl-value bold-red">{{ renderNumber(player().dpr) }}</div>
-          <div class="addtl-label">avg/round</div>
+          <div class="label">Damage</div>
+        </div>
+      </div>
+      <div class="damage-row">
+        <div class="flex-row">
+          <div class="value bold-red">{{ renderNumber(player().dpr) }}</div>
+        </div>
+        <div class="flex-row">
+          <div class="label">avg/round</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="character-stats">
+      <div class="combat-row">
+        <div class="flex-row">
+          <div class="left-label">Armor</div>
+          <div class="left-value bold-white">{{ player().armor }}</div>
+          <div class="right-value bold-white">{{ player().armorAbsorbtion }}</div>
+          <div class="right-label">absorbtion</div>
         </div>
       </div>
 
       <div class="combat-row">
         <div class="flex-row">
-          <div class="label">Armor</div>
-          <div class="value bold-white">{{ player().armor }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-white">{{ player().armorAbsorbtion }}</div>
-          <div class="addtl-label">absorbtion</div>
+          <div class="left-label">Speed</div>
+          <div class="left-value bold-yellow">{{ player().speed }}</div>
+          <div class="right-value bold-green">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
+          <div class="right-label">recovery</div>
         </div>
       </div>
 
       <div class="combat-row">
         <div class="flex-row">
-          <div class="label">Speed</div>
-          <div class="value bold-yellow">{{ player().speed }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-green">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
-          <div class="addtl-label">recovery</div>
+          <div class="left-label">Recovery</div>
+          <div class="left-value bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
+          <div class="right-value bold-yellow">{{ renderNumber(player().apr) }}</div>
+          <div class="right-label">attacks/round</div>
         </div>
       </div>
 
       <div class="combat-row">
         <div class="flex-row">
-          <div class="label">Recovery</div>
-          <div class="value bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-yellow">{{ renderNumber(player().apr) }}</div>
-          <div class="addtl-label">attacks/round</div>
+          <div class="left-label">Critical</div>
+          <div class="left-value bold-red">{{ renderNumber(player().critical) }}<span class="white">%</span></div>
+          <div class="right-value bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
+          <div class="right-label">multiplier</div>
         </div>
       </div>
 
       <div class="combat-row">
         <div class="flex-row">
-          <div class="label">Critical</div>
-          <div class="value bold-red">{{ renderNumber(player().critical) }}<span class="white">%</span></div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
-          <div class="addtl-label">multiplier</div>
+          <div class="left-label">Focus</div>
+          <div class="left-value bold-blue">{{ renderNumber(player().focus) }}</div>
+          <div class="right-value bold-blue">{{ renderNumber(player().interruptChance) }}<span class="white">%</span></div>
+          <div class="right-label">interrupt</div>
         </div>
       </div>
 
       <div class="combat-row">
         <div class="flex-row">
-          <div class="label">Focus</div>
-          <div class="value bold-blue">{{ renderNumber(player().focus) }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-blue">{{ renderNumber(player().interruptChance) }}<span class="white">%</span></div>
-          <div class="addtl-label">interrupt</div>
-        </div>
-      </div>
-
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="label">Command</div>
-          <div class="value bold-green">{{ renderNumber(player().focus) }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="addtl-value bold-green">{{ player().numCharmies }}<span class="white">/</span><span class="green">{{ player().maxCharmies }}</span></div>
-          <div class="addtl-label">followers</div>
+          <div class="left-label">Command</div>
+          <div class="left-value bold-green">{{ renderNumber(player().focus) }}</div>
+          <div class="right-value bold-green">{{ player().numCharmies }}<span class="white">/</span><span class="green">{{ player().maxCharmies }}</span></div>
+          <div class="right-label">followers</div>
         </div>
       </div>
     </div>
@@ -343,22 +339,22 @@
       <div class="row">
         <div class="col">
           <div class="flex-row">
-            <div class="value bold-magenta">
-              {{ renderNumber(player().magicDamage) }}
+            <div class="value bold-cyan">
+              {{ renderNumber(player().castingTime) }}<span class="white">s</span>
             </div>
             <div class="bonus">
-              Magic Damage
+              Casting Time
             </div>
           </div>
         </div>
 
         <div class="col">
           <div class="flex-row">
-            <div class="value bold-cyan">
-              {{ renderNumber(player().castingTime) }}<span class="white">s</span>
+            <div class="value bold-magenta">
+              {{ renderNumber(player().magicDamage) }}
             </div>
             <div class="bonus">
-              Casting Time
+              Magic Damage
             </div>
           </div>
         </div>
@@ -378,11 +374,11 @@
 
         <div class="col">
           <div class="flex-row">
-            <div class="value yellow">
-              {{ renderNumber(player().skillCooldown) }}<span class="white">s</span>
+            <div class="value bold-blue">
+              {{ renderNumber(player().magicFindBonus) }}
             </div>
             <div class="bonus">
-              Skill Cooldown
+              Magic Find
             </div>
           </div>
         </div>
@@ -391,11 +387,11 @@
       <div class="row">
         <div class="col">
           <div class="flex-row">
-            <div class="value bold-blue">
-              {{ renderNumber(player().magicFindBonus) }}
+            <div class="value yellow">
+              {{ renderNumber(player().skillCooldown) }}<span class="white">s</span>
             </div>
             <div class="bonus">
-              Magic Find
+              Skill Cooldown
             </div>
           </div>
         </div>
@@ -529,6 +525,7 @@ function addStatPoint (stat) {
   font-size: 16px;
   text-align: center;
   margin-top: 10px;
+  margin-left: -10px;
   .title {
     border-bottom: 1px solid #333;
   }
@@ -568,7 +565,7 @@ function addStatPoint (stat) {
         align-items: center;
         line-height: 10px;
         .value {
-          width: 38px;
+          width: 42px;
           margin-right: 5px;
           text-align: right;
         }
@@ -582,6 +579,28 @@ function addStatPoint (stat) {
     }
   }
 
+  .damage-row {
+    display: table-row;
+    margin-bottom: 20px;
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      .value {
+        font-size: 24px;
+        line-height: 20px;
+      }
+      .label {
+        font-size: 11px;
+        line-height: 10px;
+        color: #aaa;
+        margin-left: 5px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
   .combat-row {
     display: table-row;
 
@@ -591,30 +610,32 @@ function addStatPoint (stat) {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      .label {
+      line-height: 10px;
+
+      .left-label {
         font-size: 11px;
         line-height: 10px;
-        width: 48px;
+        width: 70px;
         text-align: right;
         margin-right: 5px;
         color: #aaa;
       }
-      .value {
-        width: 80px;
+      .left-value {
+        width: 50px;
         text-align: left;
       }
 
-      .addtl-value {
+      .right-value {
         margin-right: 5px;
         text-align: right;
-        width: 55px;
+        width: 50px;
       }
-      .addtl-label {
+      .right-label {
         text-align: left;
         color: #aaa;
         font-size: 11px;
         line-height: 10px;
-        width: 60px;
+        width: 70px;
       }
     }
   }
