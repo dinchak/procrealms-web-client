@@ -20,6 +20,7 @@
     <n-collapse>
       <CharacterCollapse
           :character="mercEntity"
+          :equipment="mercEquipment"
           :is-player="false"
       ></CharacterCollapse>
       <EffectsCollapse

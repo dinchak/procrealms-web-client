@@ -28,7 +28,7 @@ const isHead = props.slot !== 'head'
 
   .slot {
     color: #aaa;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     text-transform: capitalize;
     display: flex;
     align-items: center;
