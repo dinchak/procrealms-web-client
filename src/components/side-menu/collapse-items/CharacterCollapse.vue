@@ -261,15 +261,18 @@
     <div class="character-stats">
       <div class="damage-row">
         <div class="flex-row">
-          <div class="value bold-red">{{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ player().damage }}</div>
+          <div :class="'value ' + getDamageColor()">{{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ getDamageBonus() }}</div>
         </div>
         <div class="flex-row">
-          <div class="label">Damage</div>
+          <div class="label">
+            <span :class="getDamageColor()">{{ getDamageType() }}</span>
+            damage
+          </div>
         </div>
       </div>
       <div class="damage-row">
         <div class="flex-row">
-          <div class="value bold-red">{{ renderNumber(player().dpr) }}</div>
+          <div :class="'value ' + getDamageColor()">{{ renderNumber(player().dpr) }}</div>
         </div>
         <div class="flex-row">
           <div class="label">avg/round</div>
@@ -492,14 +495,17 @@
 
 <script setup>
 import { NCollapseItem, NIcon } from 'naive-ui'
-import { defineProps } from 'vue'
+import { defineProps, ref, onMounted, watch } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
+import { constants } from '@/composables/constants/constants'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { cmd } = useWebSocket()
-const props = defineProps(['character', 'isPlayer'])
+const { cmd, fetchItem } = useWebSocket()
+const props = defineProps(['character', 'equipment', 'isPlayer'])
+
+const weapon = ref({})
 
 function player () {
   return props.character || {}
@@ -517,6 +523,50 @@ function addStatPoint (stat) {
   const command = props.isPlayer ? `point ${stat}` : `order eid:${props.character.eid} point ${stat}`
   cmd(command)
 }
+
+async function setWeapon () {
+  let iid = props.equipment.weapon
+  if (!iid) {
+    weapon.value = false
+    return
+  }
+
+  let item = await fetchItem(iid)
+  if (!item) {
+    weapon.value = false
+    return
+  }
+
+  weapon.value = item
+}
+
+function getDamageBonus () {
+  if (weapon.value && weapon.value.subtype == 'wand') {
+    return player().magicDamage
+  } else {
+    return player().damage
+  }
+}
+
+function getDamageColor () {
+  return constants.DAMAGE_TYPE_COLORS[getDamageType()]
+}
+
+function getDamageType () {
+  if (weapon.value && weapon.value.damageType) {
+    return weapon.value.damageType
+  } else {
+    return 'bludgeoning'
+  }
+}
+
+onMounted(() => {
+  setWeapon()
+})
+
+watch(props.equipment, () => {
+  setWeapon()
+})
 </script>
 
 <style lang="less">
@@ -593,10 +643,10 @@ function addStatPoint (stat) {
       }
       .label {
         font-size: 11px;
-        line-height: 10px;
+        line-height: 14px;
         color: #aaa;
         margin-left: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
       }
     }
   }
@@ -610,7 +660,7 @@ function addStatPoint (stat) {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      line-height: 10px;
+      line-height: 14px;
 
       .left-label {
         font-size: 11px;

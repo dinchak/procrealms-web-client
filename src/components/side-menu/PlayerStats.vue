@@ -14,6 +14,7 @@
     <n-collapse>
       <CharacterCollapse
           :character="state.gameState.player"
+          :equipment="state.gameState.equipment"
           :is-player="true"
       ></CharacterCollapse>
       <EffectsCollapse
