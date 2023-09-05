@@ -143,37 +143,40 @@ onKeydown((ev) => {
   }
 
   if (state.options.wasdMovement) {
-    if (ev.key == 'Q' || ev.key == 'q') {
-      move('northwest')
-      return true
-    } else if (ev.key == 'W' || ev.key == 'w') {
-      move('north')
-      return true
-    } else if (ev.key == 'E' || ev.key == 'e') {
-      move('northeast')
-      return true
-    } else if (ev.key == 'A' || ev.key == 'a') {
-      move('west')
-      return true
-    } else if (ev.key == 'X' || ev.key == 'x') {
-      enter()
-      return true
-    } else if (ev.key == 'D' || ev.key == 'd') {
-      move('east')
-      return true
-    } else if (ev.key == 'Z' || ev.key == 'z') {
-      move('southwest')
-      return true
-    } else if (ev.key == 'S' || ev.key == 's') {
-      move('south')
-      return true
-    } else if (ev.key == 'C' || ev.key == 'c') {
-      move('southeast')
-      return true
+    switch(ev.code) {
+      case 'KeyQ':
+        move('northwest')
+        break
+      case 'KeyW':
+        move('north')
+        break
+      case 'KeyE':
+        move('northeast')
+        break
+      case 'KeyA':
+		move('west')
+        break
+      case 'KeyX':
+        enter()
+        break
+      case 'KeyD':
+        move('east')
+        break
+      case 'KeyZ':
+        move('southwest')
+        break
+      case 'KeyS':
+        move('south')
+        break
+      case 'KeyC':
+        move('southeast')
+        break
+      default:
+        return false
     }
   }
 
-  return false
+  return true
 })
 
 </script>
