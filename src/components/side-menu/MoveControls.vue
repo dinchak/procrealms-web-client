@@ -154,7 +154,7 @@ onKeydown((ev) => {
         move('northeast')
         break
       case 'KeyA':
-		move('west')
+	move('west')
         break
       case 'KeyX':
         enter()
