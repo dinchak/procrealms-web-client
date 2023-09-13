@@ -9,13 +9,13 @@
         <div class="map-actions">
           <MapActions v-show="!state.gameState.battle.active"></MapActions>
         </div>
-        <div class="map-area" v-show="!state.gameState.battle.active" v-if="state.options.showMapArea">
+	<div class="map-area" v-show="!state.gameState.battle.active">
           <MoveControls></MoveControls>
-          <div class="mid-buttons">
+          <div class="mid-buttons" v-if="state.options.showMapArea">
             <n-icon class="map-icon" v-on:click="toggleMap()"><MapOutlined /></n-icon>
             <n-button v-if="state.gameState.mercEid !== -1" ghost @click="toggleMercModal">Merc</n-button>
           </div>
-          <MiniMap></MiniMap>
+          <MiniMap v-if="state.options.showMapArea"></MiniMap>
         </div>
         <QuickStats :entity="state.gameState.player"></QuickStats>
       </div>

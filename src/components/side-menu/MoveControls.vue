@@ -1,5 +1,5 @@
 <template>
-  <div class="movement">
+  <div class="movement" v-if="state.options.showMapArea">
     <div class="row">
       <n-icon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></n-icon>
       <n-icon :class="getMovementClass('north')" @click="move('north')"><NorthOutlined></NorthOutlined></n-icon>
