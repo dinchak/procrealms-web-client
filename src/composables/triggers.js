@@ -48,10 +48,11 @@ export function storeSettingsOfType(settings, settingsType) {
 }
 
 export function processTriggers(line) {
+  let triggers = state.triggers.value ? [...state.triggers.value.values()] : []
   if (line) {
-    [...state.triggers.value.values()]
-        .filter(trigger => trigger.active && trigger.patterns[0] && trigger.commands)
-        .forEach(trigger => processTrigger(trigger, stripHtml(line)))
+    triggers
+      .filter(trigger => trigger.active && trigger.patterns[0] && trigger.commands)
+      .forEach(trigger => processTrigger(trigger, stripHtml(line)))
   }
 }
 
@@ -59,10 +60,10 @@ function processTrigger(trigger, line) {
   let matches = line.match(trigger.patterns[0])
   if (matches) {
     trigger.commands
-        .split('\n')
-        .filter(command => command)
-        .map(command => substitutePatternMatches(matches, command))
-        .forEach(commandWithMatches => processCommand(commandWithMatches, matches, trigger.shared))
+      .split('\n')
+      .filter(command => command)
+      .map(command => substitutePatternMatches(matches, command))
+      .forEach(commandWithMatches => processCommand(commandWithMatches, matches, trigger.shared))
   }
 }
 

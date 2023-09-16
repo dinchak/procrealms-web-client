@@ -274,8 +274,9 @@ function deleteVariable(key) {
 function updateTriggerTree() {
   triggerTreeData.value = []
   checkedTriggerKeys.value = []
+  let triggers = state.triggers.value || new Map()
 
-  state.triggers.value.forEach((trigger, key) => {
+  triggers.forEach((trigger, key) => {
     triggerTreeData.value.push({ key, label: (trigger.shared ? '• ' : '') + trigger.name })
     if (trigger.active) {
       checkedTriggerKeys.value.push(key)
@@ -287,7 +288,8 @@ function updateTriggerTree() {
 
 function updateVariableTree() {
   variableTreeData.value = []
-  state.variables.value.forEach((variable, key) => {
+  let triggers = state.triggers.value || new Map()
+  triggers.forEach((variable, key) => {
     variableTreeData.value.push({ key, label: (variable.shared ? '• ' : '') + variable.name })
   })
   selectedVariableKeys.value = [variableModel.value.key]
