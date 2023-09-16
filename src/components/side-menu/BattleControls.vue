@@ -44,13 +44,14 @@ onKeydown((ev) => {
   //   return true
   // }
 
-  if (ev.code == 'KeyA') {
+
+  if (ev.key === 'A' || ev.key === 'a') {
     cmd('attack')
     return true
-  } else if (ev.code == 'KeyD') {
+  } else if (ev.key === 'D' || ev.key === 'd') {
     cmd('defend')
     return true
-  } else if (ev.code == 'KeyF') {
+  } else if (ev.key === 'F' || ev.key === 'f') {
     cmd('flee')
     return true
   }
