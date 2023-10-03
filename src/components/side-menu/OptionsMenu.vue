@@ -16,8 +16,8 @@
     </div>
 
     <div class="option">
-      <label for="option-chat-tabs">Chat In Main Output</label>
-      <n-switch id="option-chat-tabs" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
+      <label for="option-chat-in-main-output">Chat In Main Output</label>
+      <n-switch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
     </div>
 
     <div class="option">
