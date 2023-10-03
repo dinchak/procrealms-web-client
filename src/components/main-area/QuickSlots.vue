@@ -178,6 +178,7 @@ function getSlotClass (slot) {
 
       .n-progress {
         --n-rail-height: 4px !important;
+        margin-top: 4px;
       }
     }
   }

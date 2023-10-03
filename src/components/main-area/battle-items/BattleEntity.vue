@@ -197,7 +197,7 @@ function getAffects (entity) {
       font-size: 0.8rem;
       line-height: 0.8rem;
       .n-progress-custom-content {
-        width: 50px;
+        width: 60px;
         text-align: right;
         margin: 0;
       }
@@ -236,7 +236,7 @@ function getAffects (entity) {
       font-size: 0.7rem;
       line-height: 0.7rem;
       .n-progress-custom-content {
-        width: 40px;
+        width: 50px;
         text-align: right;
         margin: 0;
       }

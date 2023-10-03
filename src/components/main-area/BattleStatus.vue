@@ -1,6 +1,7 @@
 <template>
   <div class="battle-area">
     <MercOrders v-if="showOrdersRef"></MercOrders>
+
     <div class="battle-status">
       <div class="side good">
         <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
