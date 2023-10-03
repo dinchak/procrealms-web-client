@@ -1,105 +1,62 @@
 <template>
   <div class="options-menu">
-    <n-switch v-model:value="state.options.numPadMovement" aria-label="Enable Numpad Movement">
-      <template #checked>
-        Enable Numpad Movement
-      </template>
-      <template #unchecked>
-        Disable Numpad Movement
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-show-mobile-buttons">Mobile Input Controls</label>
+      <n-switch id="option-show-mobile-buttons" v-model:value="state.options.commandHistoryButton" aria-label="Mobile Input Controls"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.wasdMovement" aria-label="Enable WASD Movement">
-      <template #checked>
-        Enable WASD Movement
-      </template>
-      <template #unchecked>
-        Disable WASD Movement
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-show-mobile-movement">Mobile Movement Controls</label>
+      <n-switch id="option-show-mobile-movement" v-model:value="state.options.showMobileMovement" aria-label="Show Mobile Movement"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.fixedMap" aria-label="Fixed Mini Map">
-      <template #checked>
-        Fixed Minimap
-      </template>
-      <template #unchecked>
-        Scrolling Minimap
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-chat-tabs">Chat Tabs</label>
+      <n-switch id="option-chat-tabs" v-model:value="state.options.showTabs" aria-label="Chat Tabs"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.commandHistoryButton" aria-label="Hide Mobile Buttons">
-      <template #checked>
-        Show Mobile Buttons
-      </template>
-      <template #unchecked>
-        Hide Mobile Buttons
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-chat-tabs">Chat In Main Output</label>
+      <n-switch id="option-chat-tabs" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.swapControls" aria-label="Menu On Left">
-      <template #checked>
-        Menu On Right
-      </template>
-      <template #unchecked>
-        Menu On Left
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-show-map-area">Show Map Area</label>
+      <n-switch id="option-show-map-area" v-model:value="state.options.showMapArea" aria-label="Show Map Area"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.chatInMain" aria-label="Chat In Main Output">
-      <template #checked>
-        Chat In Main Output
-      </template>
-      <template #unchecked>
-        Chat Only In Tabs
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-fixed-minimap">Fixed Minimap</label>
+      <n-switch id="option-fixed-minimap" v-model:value="state.options.fixedMap" aria-label="Fixed Mini Map"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.showTabs" aria-label="Show Tabs">
-      <template #checked>
-        Show Tabs
-      </template>
-      <template #unchecked>
-        Hide Tabs
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-show-quick-slots">Show Quick Slots</label>
+      <n-switch id="option-show-quick-slots" v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.showMapArea" aria-label="Show Map Area">
-      <template #checked>
-        Show Map Area
-      </template>
-      <template #unchecked>
-        Hide Map Area
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-numpad-movement">Numpad Movement</label>
+      <n-switch id="option-movement-option" v-model:value="state.options.numPadMovement" aria-label="Numpad Movement"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots">
-      <template #checked>
-        Show Quick Slots
-      </template>
-      <template #unchecked>
-        Hide Quick Slots
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-wasd-movement">WASD Movement</label>
+      <n-switch id="option-wasd-movement" v-model:value="state.options.wasdMovement" aria-label="WASD Movement"></n-switch>
+    </div>
+    
+    <div class="option">
+      <label for="option-keep-sent-commands">Keep Sent Commands</label>
+      <n-switch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands"></n-switch>
+    </div>
 
-    <n-switch v-model:value="state.options.showMobileMovement" aria-label="Show Mobile Movement">
-      <template #checked>
-        Show Mobile Movement
-      </template>
-      <template #unchecked>
-        Hide Mobile Movement
-      </template>
-    </n-switch>
-
-    <n-switch v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands">
-      <template #checked>
-        Keep Sent Commands
-      </template>
-      <template #unchecked>
-        Clear Sent Commands
-      </template>
-    </n-switch>
+    <div class="option">
+      <label for="option-swap-menu-side">Swap Menu Side</label>
+      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side"></n-switch>
+    </div>
 
     <p>Fonts</p>
+
     <n-switch v-model:value="state.options.fontFamily" aria-label="Font Family" @update:value="setFont">
       <template #checked>
           Inconsolata
@@ -183,11 +140,19 @@ function changeFontSize () {
   padding: 0 10px;
   display: flex;
   flex-direction: column;
-  .n-switch, .n-button {
+  // .n-switch, .n-button {
+    // margin-bottom: 10px;
+    // .n-switch__rail {
+    //   width: 100%;
+    // }
+  // }
+
+  .option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
-    .n-switch__rail {
-      width: 100%;
-    }
   }
 
   .font-size-selector {
