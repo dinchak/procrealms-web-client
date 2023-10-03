@@ -34,7 +34,7 @@ watch(() => state.cache.commandCache[MAP_ID], () => {
 })
 
 watch(() => state.modals.mapModal, () => {
-  if (state.modals.mapModal) {
+  if (state.modals.mapModal && !state.gameState.battle.active) {
     cmd('map', MAP_ID)
   }
 })
@@ -44,7 +44,7 @@ watch(() => state.cache.commandCache[MAP_ID], () => {
 })
 
 watch(() => state.gameState.map, () => {
-  if (state.modals.mapModal) {
+  if (state.modals.mapModal && !state.gameState.battle.active) {
     cmd('map', MAP_ID)
   }
 })
@@ -104,7 +104,7 @@ onKeydown((ev) => {
 })
 
 onMounted(() => {
-  if (state.modals.mapModal) {
+  if (state.modals.mapModal && !state.gameState.battle.active) {
     cmd('map', MAP_ID)
   }
 })
