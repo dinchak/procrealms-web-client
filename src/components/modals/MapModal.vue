@@ -148,4 +148,11 @@ onMounted(() => {
   cursor: pointer;
   font-size: 1.4em;
 }
+
+@media (max-width: 600px) {
+  .n-card {
+    max-width: calc(100vw - 20px);
+    max-height: 300px;
+  }
+}
 </style>

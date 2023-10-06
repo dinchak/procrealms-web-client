@@ -122,13 +122,11 @@ function getEnterClass () {
       margin-bottom: 2px;
       margin-right: 2px;
       &.active {
-        opacity: 0.2;
+        opacity: 0.4;
         background-color: #444;
-        @media (hover: hover) {
-          &:hover {
-            cursor: pointer;
-            background-color: darken(#16c60c, 33%);
-          }
+        &:hover, &:active {
+          cursor: pointer;
+          background-color: #16c60c;
         }
       }
     }

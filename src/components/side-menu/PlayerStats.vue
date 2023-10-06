@@ -102,7 +102,8 @@ function getPlayerStatsClass () {
     width: 100%;
     margin-top: 5px;
     margin-bottom: 10px;
-    border: 1px solid #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
   }
 
   .stat-row {
