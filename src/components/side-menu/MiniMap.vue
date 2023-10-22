@@ -27,5 +27,8 @@ function renderMap () {
   white-space: pre;
   font-size: 1.2rem;
   line-height: 1.2rem;
+  .line {
+    height: 1.2rem;
+  }
 }
 </style>
