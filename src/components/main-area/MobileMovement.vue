@@ -102,7 +102,7 @@ function getEnterClass () {
 .mobile-movement {
   position: absolute;
   right: 7px;
-  bottom: 87px;
+  bottom: 92px;
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -124,10 +124,6 @@ function getEnterClass () {
       &.active {
         opacity: 0.4;
         background-color: #444;
-        &:hover, &:active {
-          cursor: pointer;
-          background-color: #16c60c;
-        }
       }
     }
   }
