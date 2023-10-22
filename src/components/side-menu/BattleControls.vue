@@ -6,7 +6,14 @@
       <n-button type="warning" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('flee')" :aria-label="state.gameState.battle.myTurn ? 'Flee My Turn' : 'Flee Not My Turn'">[<span class="bold-yellow">F</span>]lee</n-button>
     </div>
     <div class="battle-skills" v-show="getSkills().size">
-      <n-button :disabled="!state.gameState.battle.myTurn" type="default" ghost v-for="{ skill, command } in getSkills().values()" :key="skill" @click="cmd(command)" :aria-label="state.gameState.battle.myTurn ? command + ' My Turn' : command + ' Not My Turn'">{{ skill }}</n-button>
+      <n-button
+        type="default" ghost
+        :disabled="!state.gameState.battle.myTurn"
+        v-for="{ skill, command } in getSkills().values()"
+        :key="skill"
+        @click="cmd(command)"
+        :aria-label="state.gameState.battle.myTurn ? command + ' My Turn' : command + ' Not My Turn'"
+      >{{ skill }}</n-button>
     </div>
   </div>
 </template>
@@ -35,15 +42,16 @@ onKeydown((ev) => {
     return false
   }
 
-  // if (ev.key == '`') {
-  //   let json = JSON.stringify(state.gameState, null, 2)
-  //   let lines = json.split('\n')
-  //   for (let line of lines) {
-  //     state.output.push(line)
-  //   }
-  //   return true
-  // }
-
+/*
+  if (ev.key == '`') {
+    let json = JSON.stringify(state.gameState, null, 2)
+    let lines = json.split('\n')
+    for (let line of lines) {
+      state.output.push(line)
+    }
+    return true
+  }
+*/
 
   if (ev.key === 'A' || ev.key === 'a') {
     cmd('attack')
@@ -68,6 +76,17 @@ onKeydown((ev) => {
   return false
 })
 
+function addSkill(skill, command, skillsByKey) {
+  let key = [...skill].find(char => !skillsByKey.has(char))
+  if (key) {
+    let skillObj = {
+      skill: skill.replace(key, `[${key.toUpperCase()}]`),
+      command: command
+    }
+    skillsByKey.set(key, skillObj)
+  }
+}
+
 function getSkills () {
   let skillsByKey = new Map([['a', 0], ['d', 0], ['f', 0]])
 
@@ -75,18 +94,10 @@ function getSkills () {
     return []
   }
 
-  function addSkill(skill, command, skillsByKey) {
-    let key = [...skill].find(char => !skillsByKey.has(char))
-    if (key) {
-      let skillObj = {
-        skill: skill.replace(key, `[${key.toUpperCase()}]`),
-        command: command
-      }
-      skillsByKey.set(key, skillObj)
-    }
-  }
-
   for (let skill of state.gameState.battle.actions.skills) {
+    if (state.gameState.slots.find(sl => sl.label == skill)) {
+      continue
+    }
     addSkill(skill, skill, skillsByKey)
   }
 
