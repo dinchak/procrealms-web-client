@@ -26,7 +26,7 @@
       <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
         <div class="slot-number">[<span class="bold-yellow">{{ slot.slot }}</span>]</div>
         <div class="slot-label">{{ slot.label }}</div>
-        <n-progress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success" :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100" :show-indicator="false" />
+        <n-progress v-if="true || getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success" :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100" :show-indicator="false" />
       </div>
     </div>
 
@@ -169,8 +169,9 @@ function getSlotClass (slot) {
 
       .slot-label {
         font-size: 0.7rem;
-        width: 3.5rem;
         max-height: 16px;
+        width: 3.5rem;
+        padding: 0 2px;
         word-wrap: break-word;
         line-height: 0.6rem;
         text-align: center;
