@@ -1,25 +1,31 @@
 <template>
-  <div ref="picture" class="picture" v-html-safe="state.picture"></div>
-  <div class="login-controls" v-if="state.disconnected">
-    You have been disconnected
-  </div>
-  <div class="login-controls" v-if="!state.connected">
-    Connecting to server...
-  </div>
-  <div class="login-controls" v-if="state.connected">
-    <n-dropdown
-        placement="bottom"
-        v-if="options.length > 0"
-        trigger="click"
-        size="large"
-        type="info"
-        :options="options"
-        @select="doTokenAuth"
-    >
-      <n-button type="info" size="large">Reconnect</n-button>
-    </n-dropdown>
-    <n-button type="success" size="large" @click="state.showLogin = true">Login</n-button>
-    <n-button type="warning" size="large" @click="state.showNewPlayer = true">New Player</n-button>
+  <div class="splashscreen">
+
+    <h1>Procedural Realms</h1>
+    
+    <div class="login-controls" v-if="state.disconnected">
+      You have been disconnected
+    </div>
+
+    <div class="login-controls" v-if="!state.connected">
+      Connecting to server...
+    </div>
+
+    <div class="login-controls" v-if="state.connected">
+      <n-dropdown
+          placement="bottom"
+          v-if="options.length > 0"
+          trigger="click"
+          size="large"
+          type="info"
+          :options="options"
+          @select="doTokenAuth"
+      >
+        <n-button type="info" size="large">Reconnect</n-button>
+      </n-dropdown>
+      <n-button type="success" size="large" @click="state.showLogin = true">Login</n-button>
+      <n-button type="warning" size="large" @click="state.showNewPlayer = true">New Player</n-button>
+    </div>
   </div>
 </template>
 
@@ -44,36 +50,36 @@ watch(() => state.connected, () => {
 </script>
 
 <style scoped lang="less">
-.picture {
-  user-select: none;
-  min-height: 300px;
-  font-size: 1rem;
-  line-height: 1rem;
-  white-space: pre;
-  text-align: center;
-}
-
-.login-controls {
-  position: relative;
-  top: -300px;
-  padding: 10px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 1.3rem;
-  color: #ff9752;
-  text-shadow: 0px 0px 6px #ff0000;
-  button {
-    margin: 0 5px;
+.splashscreen {
+  background-image: url('@/assets/bg.jpg');
+  height: calc(100vh - 150px);
+  background-size: cover;
+  padding-top: 150px;
+  h1 {
+    font-family: 'Pixelify Sans', sans-serif;
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    text-align: center;
+    font-size: 48px;
+  }
+  .login-controls {
+    position: relative;
+    padding: 10px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #ff9752;
+    text-shadow: 0px 0px 6px #ff0000;
+    button {
+      margin: 0 5px;
+    }
   }
 }
 
 @media screen and (max-width: 800px) {
-  .picture {
-    font-size: 0.9rem;
-    line-height: 0.9rem;
-  }
 }
 
 </style>

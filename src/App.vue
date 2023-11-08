@@ -29,11 +29,10 @@ const themeOverrides = {
 }
 
 const { onEvent } = useEventHandler()
-const { initConnection, send } = useWebSocket()
+const { initConnection } = useWebSocket()
 
 function onConnect () {
   state.connected = true
-  send('welcome', { width: Math.floor(window.innerWidth / 9) })
 }
 
 function doConnect () {
@@ -77,7 +76,7 @@ function clearCache(object) {
 </script>
 
 <style lang="less">
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&family=Pixelify+Sans&display=swap');
 
 @font-face {
   font-family: 'DOS';
