@@ -52,9 +52,9 @@ watch(() => state.connected, () => {
 <style scoped lang="less">
 .splashscreen {
   background-image: url('@/assets/bg.jpg');
-  height: calc(100vh - 150px);
   background-size: cover;
-  padding-top: 150px;
+  height: calc(100vh - 100px);
+  padding-top: 100px;
   h1 {
     font-family: 'Pixelify Sans', sans-serif;
     padding: 0 0 100px 0;
@@ -82,6 +82,8 @@ watch(() => state.connected, () => {
 
 @media screen and (max-width: 700px) {
   .splashscreen {
+    height: calc(100vh - 60px);
+    padding-top: 60px;
     h1 {
       font-size: 48px;
     }
