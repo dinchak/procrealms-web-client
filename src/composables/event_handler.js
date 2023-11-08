@@ -1,6 +1,3 @@
-
-const { ansiSpan } = require('ansi-to-span')
-
 import { processTriggers } from "@/composables/triggers"
 import { addLine, state } from '@/composables/state'
 import { helpers } from '@/composables/helpers'
@@ -10,13 +7,6 @@ const { ansiToHtml } = helpers()
 const { addTokenToCookie } = useCookieHandler()
 
 const handlers = {}
-
-handlers['welcome'] = (msg) => {
-  let lines = msg.picture.split('\n')
-  lines.pop()
-  lines.pop()
-  state.picture = ansiSpan(lines.join('\n'))
-}
 
 handlers['login.nameAvailable'] = () => {
   state.nameExistsResolve()
