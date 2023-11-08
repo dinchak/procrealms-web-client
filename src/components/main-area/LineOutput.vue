@@ -3,7 +3,7 @@
   <n-tabs class="tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
-        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`"></div>
+        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDown('output')">
@@ -94,7 +94,7 @@ var mapWasOpen = false
 
 const refs = { output, chat, trade, newbie }
 
-const { send } = useWebSocket()
+const { send, cmd } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
 
 // Keyboard Shortcuts
@@ -260,6 +260,13 @@ function getScrollbackControlClass () {
     cls += ' show-quickslots'
   }
   return cls
+}
+
+function lineClick (event) {
+  const el = event.srcElement
+  if (el.style['text-decoration-line']) {
+    cmd(el.innerText)
+  }
 }
 
 onMounted(() => {
