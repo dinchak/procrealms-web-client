@@ -55,60 +55,79 @@
       <n-switch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side"></n-switch>
     </div>
 
-    <p>Fonts</p>
+    <h3>Font Settings</h3>
 
-    <n-switch v-model:value="state.options.fontFamily" aria-label="Font Family" @update:value="setFont">
-      <template #checked>
-          Inconsolata
-      </template>
-      <template #unchecked>
-          DOS
-      </template>
-    </n-switch>
+    <n-select
+      class="font-selector"
+      v-model:value="state.options.fontFamily"
+      placeholder="Select Font"
+      :options="fontOptions"
+      aria-label="Select Font"
+      @update:value="setFont"
+    />
 
     <n-radio-group v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
       <n-radio-button
-              v-for="fontSize in fontSizes"
-              :key="fontSize.value"
-              :value="fontSize.value"
-              :label="fontSize.label"
-              @change="changeFontSize"
+        v-for="fontSize in fontSizes"
+        :key="fontSize.value"
+        :value="fontSize.value"
+        :label="fontSize.label"
+        @change="changeFontSize"
       />
     </n-radio-group>
 
-    <n-button type="info" @click="state.modals.triggersModal = !state.modals.triggersModal" ghost>Triggers</n-button>
-    <n-button type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
-    <n-button type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
-    <n-button type="error" @click="state.showLogout = true" ghost>Logout</n-button>
+    <n-button class="menu-button" type="info" @click="state.modals.triggersModal = !state.modals.triggersModal" ghost>Triggers</n-button>
+    <n-button class="menu-button" type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
+    <n-button class="menu-button" type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
+    <n-button class="menu-button" type="error" @click="state.showLogout = true" ghost>Logout</n-button>
   </div>
 </template>
 
 <script setup>
 import { watch, ref } from 'vue'
 
-import { NSwitch, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
+import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
 
 const { triggerResize } = useWindowHandler()
 
-const fontSizes = [
-    {
-        value: '14px',
-        label: 'Small'
-    },
-    {
-        value: '16px',
-        label: 'Medium'
-    },
-    {
-        value: '18px',
-        label: 'Large'
-    }
-]
+const fontSizes = [{
+  value: '14px',
+  label: 'Small'
+}, {
+  value: '16px',
+  label: 'Medium'
+}, {
+  value: '18px',
+  label: 'Large'
+}]
 
 const selectedFontSize = ref(state.options.fontSize)
+
+const fontOptions = [{
+  label: 'Consola Mono',
+  value: 'Consola Mono, monospace'
+}, {
+  label: 'DOS',
+  value: 'DOS, monospace'
+}, {
+  label: 'F25 Bank Printer',
+  value: 'F25 Bank Printer, monospace'
+}, {
+  label: 'Inconsolata',
+  value: 'Inconsolata, monospace'
+}, {
+  label: 'Monofonto',
+  value: 'Monofonto, monospace'
+}, {
+  label: 'Source Code Pro',
+  value: 'Source Code Pro, monospace'
+}, {
+  label: 'Ubuntu Mono',
+  value: 'Ubuntu Mono, monospace'
+}]
 
 watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
@@ -118,12 +137,8 @@ async function goFullscreen () {
   triggerResize()
 }
 
-function setFont (value) {
-  if (value) {
-    document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
-  } else {
-    document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
-  }
+function setFont () {
+  document.getElementsByTagName('body')[0].style.fontFamily = state.options.fontFamily
   triggerResize()
 }
 
@@ -140,12 +155,11 @@ function changeFontSize () {
   padding: 0 10px;
   display: flex;
   flex-direction: column;
-  // .n-switch, .n-button {
-    // margin-bottom: 10px;
-    // .n-switch__rail {
-    //   width: 100%;
-    // }
-  // }
+
+  h3 {
+    padding: 0;
+    margin: 20px 0 5px 0;
+  }
 
   .option {
     display: flex;
@@ -155,10 +169,18 @@ function changeFontSize () {
     margin-bottom: 10px;
   }
 
+  .font-selector {
+    align-self: center;
+    margin-bottom: 10px;
+  }
+
   .font-size-selector {
     align-self: center;
-    margin-top: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
+  }
+
+  .menu-button {
+    margin-bottom: 10px;
   }
 }
 
