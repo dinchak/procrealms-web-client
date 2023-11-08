@@ -57,11 +57,12 @@ watch(() => state.connected, () => {
   padding-top: 150px;
   h1 {
     font-family: 'Pixelify Sans', sans-serif;
-    padding: 0 0 50px 0;
+    padding: 0 0 100px 0;
     margin: 0;
     width: 100vw;
     text-align: center;
-    font-size: 48px;
+    font-size: 72px;
+    text-shadow: 0 0 10px rgba(255,255,120,0.5);
   }
   .login-controls {
     margin: 0 auto;
@@ -79,7 +80,12 @@ watch(() => state.connected, () => {
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 700px) {
+  .splashscreen {
+    h1 {
+      font-size: 48px;
+    }
+  } 
 }
 
 </style>
