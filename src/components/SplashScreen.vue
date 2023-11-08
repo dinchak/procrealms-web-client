@@ -57,24 +57,24 @@ watch(() => state.connected, () => {
   padding-top: 150px;
   h1 {
     font-family: 'Pixelify Sans', sans-serif;
-    padding: 0;
+    padding: 0 0 50px 0;
     margin: 0;
     width: 100vw;
     text-align: center;
     font-size: 48px;
   }
   .login-controls {
-    position: relative;
-    padding: 10px;
     margin: 0 auto;
+    padding: 10px;
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
     font-size: 1.3rem;
     color: #ff9752;
     text-shadow: 0px 0px 6px #ff0000;
     button {
-      margin: 0 5px;
+      margin: 5px;
     }
   }
 }
