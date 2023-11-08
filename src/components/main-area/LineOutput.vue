@@ -232,7 +232,7 @@ function getTab (name) {
 
 function getOutputClass () {
   let cls = 'output'
-  if (state.options.showQuickSlots && state.gameState.slots.length > 0) {
+  if (state.options.showQuickSlots && (state.gameState.slots.length > 0 || state.options.hideSidebar)) {
     cls += ' show-quickslots'
   }
   if (!state.options.showTabs) {
