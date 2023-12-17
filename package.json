@@ -12,6 +12,7 @@
     "ansi-to-span": "^0.0.1",
     "core-js": "^3.8.3",
     "dayjs": "^1.11.5",
+    "events": "^3.3.0",
     "strip-ansi": "^7.0.1",
     "vue": "^3.2.13",
     "vue-html-secure": "^1.0.10",
