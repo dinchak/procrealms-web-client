@@ -7,50 +7,14 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref } from 'vue'
-
+import { onMounted, onBeforeUnmount, watch, ref } from 'vue'
 import { NButton } from 'naive-ui'
-
-import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown, keyState } = useKeyHandler()
 const { cmd, fetchEntities, fetchItems } = useWebSocket()
-
 const roomItems = ref([])
 const roomEntities = ref([])
-
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
-
-  if (state.mode == 'input') {
-    return false
-  }
-
-  if (state.modals.triggersModal) {
-    return false
-  }
-
-  if (state.gameState.battle.active) {
-    return false
-  }
-
-  if (ev.code == 'KeyB') {
-    cmd('battle')
-    return true
-  } else if (ev.code == 'KeyH') {
-    cmd('harvest')
-    return true
-  } else if (ev.code == 'KeyL') {
-    cmd('loot')
-    return true
-  }
-
-  return false
-})
 
 async function getRoomEntities () {
   return await fetchEntities(state.gameState.room.entities)
@@ -72,13 +36,17 @@ function roomHasChest () {
   return roomItems.value.find(en => en.type == 'resource' && en.subtype == 'chest')
 }
 
-watch(() => state.gameState.room.entities, async () => {
-  roomEntities.value = await getRoomEntities()
-})
+function battle () {
+  cmd('battle')
+}
 
-watch(() => state.gameState.room.items, async () => {
-  roomItems.value = await getRoomItems()
-})
+function harvest () {
+  cmd('harvest')
+}
+
+function loot () {
+  cmd('loot')
+}
 
 onMounted(() => {
   let ids = ['bottom-left', 'bottom-right']
@@ -93,6 +61,24 @@ onMounted(() => {
       }
     }
   }
+
+  state.inputEmitter.on('battle', battle)
+  state.inputEmitter.on('harvest', harvest)
+  state.inputEmitter.on('loot', loot)
+
+  watch(() => state.gameState.room.entities, async () => {
+    roomEntities.value = await getRoomEntities()
+  })
+
+  watch(() => state.gameState.room.items, async () => {
+    roomItems.value = await getRoomItems()
+  })
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('battle', battle)
+  state.inputEmitter.off('harvest', harvest)
+  state.inputEmitter.off('loot', loot)
 })
 
 </script>
