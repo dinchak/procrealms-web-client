@@ -1,4 +1,5 @@
 import { onMounted, onBeforeUnmount } from 'vue'
+import { state } from './state'
 
 let resizeHandlers = []
 
@@ -37,11 +38,21 @@ export function useWindowHandler () {
     return { width, height }
   }
 
+  function onWindowFocusBlur () {
+    state.metaKeyState.alt = state.metaKeyState.ctrl = state.metaKeyState.shift = false
+  }
+
   onMounted(() => {
     window.addEventListener('resize', triggerResize)
+    window.addEventListener('focus', onWindowFocusBlur)
+    window.addEventListener('blur', onWindowFocusBlur)
   })
 
-  onBeforeUnmount(() => window.removeEventListener('resize', triggerResize))
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', triggerResize)
+    window.removeEventListener('focus', onWindowFocusBlur)
+    window.removeEventListener('blur', onWindowFocusBlur)
+  })
 
   return { onResize, triggerResize, calcTerminalSize }
 }

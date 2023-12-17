@@ -1,9 +1,9 @@
 import { processTriggers } from "@/composables/triggers"
 import { addLine, state } from '@/composables/state'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { useCookieHandler} from "@/composables/cookie_handler";
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 const { addTokenToCookie } = useCookieHandler()
 
 const handlers = {}
@@ -21,11 +21,9 @@ handlers['login.nameExists'] = () => {
 }
 
 handlers['login.fail'] = () => {
-  if (state.loginReject) {
-    state.loginReject(new Error('login.fail'))
-    state.loginResolve = null
-    state.loginReject = null
-  }
+  state.loginReject(new Error('login.fail'))
+  state.loginResolve = null
+  state.loginReject = null
 }
 
 handlers['token.fail'] = () => {
@@ -37,6 +35,9 @@ handlers['token.success'] = ({ name, token }) => {
   state.token = token
   state.disconnected = false
 
+  state.prevModes = ['login']
+  state.mode = 'hotkey'
+
   addTokenToCookie(name, token)
 
   if (state.loginResolve) {
@@ -45,8 +46,8 @@ handlers['token.success'] = ({ name, token }) => {
     state.loginReject = null
   }
 
-  state.showLogin = false
-  state.showNewPlayer = false
+  state.modals.loginModal = false
+  state.modals.newPlayerModal = false
 
   loadOptions()
 }
@@ -62,7 +63,7 @@ handlers['out'] = (line) => {
 handlers['room.describe'] = ({ desc, map }) => {
   let lines = strToLines(desc)
 
-  if (state.options.hideSidebar) {
+  if (state.options.hideSidebar && !state.options.showOverlayMinimap) {
     let linesWithMap = []
     let numLines = Math.max(lines.length, map.length)
 
