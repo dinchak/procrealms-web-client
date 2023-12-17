@@ -7,15 +7,17 @@
         <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
           <TransitionGroup appear name="damage">
             <div
-              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
               :key="anim.key"
+              :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
           <TransitionGroup appear name="healing">
             <div
-              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
               :key="anim.key"
+              :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
@@ -29,15 +31,17 @@
         <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
           <TransitionGroup appear name="damage">
             <div
-              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
               :key="anim.key"
+              :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
           <TransitionGroup appear name="healing">
             <div
-              v-for="anim in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
               :key="anim.key"
+              :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
@@ -50,12 +54,26 @@
 </template>
 
 <script setup>
-import {onMounted, ref, watch} from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 
 import { state } from '@/composables/state'
+import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/main-area/battle-items/BattleEntity.vue'
 import MercOrders from '@/components/main-area/battle-items/MercOrders.vue'
+
+const { selectNearestElement } = useHelpers()
+
+let selectedElement = null
+function selectBattleAction (degree) {
+  selectedElement = selectNearestElement(selectedElement, degree)
+}
+
+function performBattleAction () {
+  if (selectedElement) {
+    selectedElement.click()
+  }
+}
 
 const battleStatus = ref(null)
 const showOrdersRef = ref(false)
@@ -65,8 +83,7 @@ function getSide (side) {
 }
 
 function getAnimationClass (anim) {
-  let classes = []
-  classes.push(anim.type)
+  let classes = [anim.type]
   if (anim.crit) {
     classes.push('crit')
   }
@@ -83,17 +100,28 @@ function isMercHere() {
   return isMercHere
 }
 
+let unwatch
 onMounted(() => {
+  state.inputEmitter.on('selectBattleAction', selectBattleAction)
+  state.inputEmitter.on('performBattleAction', performBattleAction)
+
   let parent = battleStatus.value?.parentElement
   showOrdersRef.value = isMercHere()
   if (parent) {
     parent.scrollTo(0, parent.scrollHeight)
   }
+
+  unwatch = watch(state.gameState.battle.participants, () => {
+    showOrdersRef.value = isMercHere()
+  })
 })
 
-watch(state.gameState.battle.participants, function () {
-  showOrdersRef.value = isMercHere()
+onBeforeUnmount(() => {
+  state.inputEmitter.off('selectBattleAction', selectBattleAction)
+  state.inputEmitter.off('performBattleAction', performBattleAction)
+  unwatch()
 })
+
 
 </script>
 
@@ -124,46 +152,46 @@ watch(state.gameState.battle.participants, function () {
 
   .side {
     display: flex;
-    flex-grow: 1;
-    flex-basis: 48%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    flex-direction: column;
 
     &.good {
-      justify-content: flex-end;
+      align-items: flex-end;
     }
 
     &.evil {
-      justify-content: flex-start;
+      align-items: flex-start;
     }
 
     .entity {
       align-items: center;
       position: relative;
-      margin: 5px;
 
       .damage {
-        position: absolute;
         opacity: 0;
-        top: 40px;
-        left: 10px;
+        position: absolute;
+        top: 0px;
+        // left: 10px;
         font-size: 1.4rem;
         color: #ff3333;
+        padding: 2px 4px;
+        border: 1px solid #330000;
+        background-color: rgba(0, 0, 0, 0.4);
         &.crit {
           line-height: 1.2rem;
           font-size: 1.9rem;
           color: #ffcc33;
+          border: 1px solid #332200
         }
       }
 
       .healing {
         position: absolute;
         opacity: 0;
-        top: -22px;
-        left: 20px;
+        top: -40px;
         font-size: 1.4rem;
         color: #33ff33;
+        border: 1px solid #003300;
+        background-color: rgba(0, 0, 0, 0.4);
       }
 
     }
@@ -177,16 +205,16 @@ watch(state.gameState.battle.participants, function () {
 @keyframes damage {
   0% {
     opacity: 1;
-    top: 40px;
+    top: 0px;
     // font-size: 14px;
   }
   60% {
     opacity: 0.9;
-    top: -18px;
+    top: -35px;
   }
   100% {
     opacity: 0;
-    top: -20px;
+    top: -40px;
     // font-size: 30px;
     // left: 7px;
   }
@@ -199,38 +227,37 @@ watch(state.gameState.battle.participants, function () {
 @keyframes healing {
   0% {
     opacity: 1;
-    top: -27px;
+    top: -40px;
     // font-size: 30px;
   }
   60% {
     opacity: 0.9;
-    top: 30px;
+    top: -5px;
   }
   100% {
     opacity: 0;
-    top: 40px;
+    top: 0px;
     // font-size: 14px;
   }
 }
 
-@media screen and (max-width: 1000px) {
+// @media screen and (max-width: 1000px) {
+//   .battle-status {
+//     .vs {
+//       font-size: 0.9rem;
+//     }
+//   }
+// }
+
+@media screen and (max-width: 850px) {
   .battle-status {
-    .vs {
-      font-size: 0.9rem;
-    }
+    flex-direction: column;
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 420px) {
   .battle-status {
-    .vs {
-      font-size: 0.8rem;
-    }
-    .side {
-      .entity {
-        margin: 1px;
-      }
-    }
+    flex-direction: column;
   }
 }
 
