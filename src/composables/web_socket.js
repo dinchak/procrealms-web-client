@@ -25,7 +25,7 @@ export function useWebSocket () {
           state.cache.commandCache[id] = msg
         }
         if (process.env.NODE_ENV != 'production') {
-          console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
+          // console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
         id ? onEvent(cmd, msg, id) : onEvent(cmd, msg)
