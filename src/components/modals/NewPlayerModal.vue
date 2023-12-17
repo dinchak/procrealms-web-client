@@ -1,7 +1,7 @@
 <template>
 
   <n-modal
-    v-model:show="state.showNewPlayer"
+    v-model:show="state.modals.newPlayerModal"
     type="success"
     preset="dialog"
     title="New Player"
@@ -83,7 +83,7 @@ const rules = {
     {
       message: 'Name is already taken, please choose another',
       trigger: ['blur'],
-      validator: () => {
+      asyncValidator: () => {
         return new Promise((resolve, reject) => {
           state.nameExistsResolve = resolve
           state.nameExistsReject = reject
@@ -116,7 +116,7 @@ const rules = {
 
     {
       message: 'Invalid character name',
-      validator: () => {
+      asyncValidator: () => {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
@@ -136,10 +136,8 @@ const rules = {
 
 function handleValidation (e) {
   e.preventDefault()
-  formRef.value?.validate((errors) => {
-    if (errors) {
-      return
-    }
+  formRef.value?.validate().then(() => {
+  }).catch(() => {
   })
 }
 
