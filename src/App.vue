@@ -3,24 +3,26 @@
     <SplashScreen v-if="state.disconnected || !state.token"></SplashScreen>
     <LoginModal></LoginModal>
     <NewPlayerModal></NewPlayerModal>
+    <InputHandler></InputHandler>
     <router-view/>
   </n-config-provider>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
 
-import { useEventHandler } from './composables/event_handler'
-import { useWebSocket } from './composables/web_socket'
-import { constants } from './composables/constants/constants'
+import { useEventHandler } from '@/composables/event_handler'
+import { useWebSocket } from '@/composables/web_socket'
+import { constants } from '@/composables/constants/constants'
 
+import InputHandler from '@/components/InputHandler.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
-import LoginModal from './components/modals/LoginModal.vue'
-import NewPlayerModal from './components/modals/NewPlayerModal.vue'
+import LoginModal from '@/components/modals/LoginModal.vue'
+import NewPlayerModal from '@/components/modals/NewPlayerModal.vue'
 
-import { resetState, state } from './composables/state'
+import { state, resetState, resetMode } from './composables/state'
 
 const themeOverrides = {
   Button: {
@@ -30,6 +32,8 @@ const themeOverrides = {
 
 const { onEvent } = useEventHandler()
 const { initConnection } = useWebSocket()
+
+let cacheClearInterval = null
 
 function onConnect () {
   state.connected = true
@@ -46,19 +50,13 @@ function doConnect () {
 function onClose () {
   if (state.token) {
     resetState()
+    resetMode()
     state.disconnected = true
   }
 
   state.connected = false
   setTimeout(() => doConnect(), 1000)
 }
-
-onMounted(doConnect)
-
-setInterval(() => {
-  clearCache(state.cache.itemCache)
-  clearCache(state.cache.entityCache)
-}, constants.CACHE_DELETE_INTERVAL)
 
 function clearCache(object) {
   const now = Date.now()
@@ -73,6 +71,20 @@ function clearCache(object) {
     }
   })
 }
+
+onMounted(() => {
+  doConnect()
+
+  cacheClearInterval = setInterval(() => {
+    clearCache(state.cache.itemCache)
+    clearCache(state.cache.entityCache)
+  }, constants.CACHE_DELETE_INTERVAL)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(cacheClearInterval)
+})
+
 </script>
 
 <style lang="less">
@@ -102,7 +114,7 @@ body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
-  font-family: 'DOS', sans-serif;
+  font-family: 'Inconsolata', monospace;
   font-size: 16px;
   color: #fff;
   overflow-x: hidden;
