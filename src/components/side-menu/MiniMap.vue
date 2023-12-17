@@ -6,9 +6,9 @@
 
 <script setup>
 import { state } from '@/composables/state'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 function renderMap () {
   const map = []
@@ -25,10 +25,9 @@ function renderMap () {
 .minimap {
   user-select: none;
   white-space: pre;
-  font-size: 1.2rem;
-  line-height: 1.2rem;
+  font-size: 18px;
   .line {
-    height: 1.2rem;
+    height: 18px;
   }
 }
 </style>
