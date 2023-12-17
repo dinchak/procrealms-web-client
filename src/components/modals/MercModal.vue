@@ -16,7 +16,7 @@
         <span v-if="affect.desc">:&nbsp;{{affect.desc}}</span>
       </n-tooltip>
     </div>
-    <QuickStats :entity="mercVitals"></QuickStats>
+    <MiniStats :entity="mercVitals"></MiniStats>
     <n-collapse>
       <CharacterCollapse
           :character="mercEntity"
@@ -53,17 +53,16 @@
 import { watch, ref, onMounted } from 'vue'
 import {NCard, NTooltip, NCollapse, NProgress} from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
-import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
-import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
 import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
+import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
+import MiniStats from '@/components/side-menu/MiniStats.vue'
+import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
 
 import { state } from '@/composables/state'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 
-import QuickStats from '@/components/side-menu/QuickStats'
-
-const { ansiToHtml, getMerc } = helpers()
+const { ansiToHtml, getMerc } = useHelpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
@@ -135,7 +134,7 @@ function setAffects(affectList) {
 .n-card {
   position: absolute;
   width: 400px;
-  margin-top: 35px;
+  margin-top: 62px;
   z-index: 2;
   max-height: 80vh;
   overflow-y: scroll;

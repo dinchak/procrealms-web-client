@@ -1,7 +1,7 @@
 <template>
 
   <n-modal
-    v-model:show="state.showLogin"
+    v-model:show="state.modals.loginModal"
     type="success"
     preset="dialog"
     title="Login"
@@ -17,8 +17,8 @@
         <n-input ref="nameInput" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" />
       </n-form-item>
 
-      <n-form-item path="password" label="Password">
-        <n-input v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?"/>
+      <n-form-item ref="passwordFormItem" path="password" label="Password">
+        <n-input ref="passwordInput" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?"/>
       </n-form-item>
 
     </n-form>
@@ -44,14 +44,15 @@ const { send } = useWebSocket()
 
 const formRef = ref(null)
 const nameInput = ref(null)
+const passwordFormItem = ref(null)
 
 const model = ref({
   name: null,
   password: null
 })
 
-watch(() => state.showLogin, () => {
-  if (state.showLogin) {
+watch(() => state.modals.loginModal, () => {
+  if (state.modals.loginModal) {
     setTimeout(() => {
       nameInput.value.focus()
     }, 100)
@@ -80,18 +81,22 @@ const rules = {
   password: [
     {
       required: true,
-      trigger: ['input', 'blur'],
+      trigger: ['password-input', 'blur'],
       message: "Password is required"
     },
     {
       message: 'Invalid name or password',
-      validator: () => {
+      asyncValidator: async () => {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
-          loadSettingsByNameAndType(state.triggers, model.value.name, 'triggers')
-          loadSettingsByNameAndType(state.variables, model.value.name, 'variables')
-          send('login', { name: model.value.name, password: model.value.password, width: 80, height: 24, ttype: 'play.proceduralrealms.com' })
+          send('login', {
+            name: model.value.name,
+            password: model.value.password,
+            width: 100,
+            height: 24,
+            ttype: 'play.proceduralrealms.com'
+          })
         })
       }
     }
@@ -100,10 +105,10 @@ const rules = {
 
 function handleValidation (e) {
   e.preventDefault()
-  formRef.value?.validate((errors) => {
-    if (errors) {
-      return
-    }
+  formRef.value?.validate().then(() => {
+    loadSettingsByNameAndType(state.triggers, model.value.name, 'triggers')
+    loadSettingsByNameAndType(state.variables, model.value.name, 'variables')
+  }).catch(() => {
   })
 }
 </script>

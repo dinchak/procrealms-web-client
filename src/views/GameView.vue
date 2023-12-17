@@ -1,42 +1,68 @@
 <template>
-  <LogoutModal></LogoutModal>
-
-  <HelpOverlay></HelpOverlay>
-
   <n-layout has-sider
     v-if="state.token && state.connected && !state.disconnected" class="game" 
     :sider-placement="state.options.swapControls ? 'right' : 'left'">
     <SideMenu v-if="!state.options.swapControls"></SideMenu>
     <n-layout>
+      <LogoutModal></LogoutModal>
+      <HelpModal></HelpModal>
+      <TriggersModal></TriggersModal>
+      <GameModal></GameModal>
       <MapModal></MapModal>
       <MercModal></MercModal>
-      <TriggersModal></TriggersModal>
+      <ButtonControls></ButtonControls>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
-      <MobileMovement v-if="state.options.showMobileMovement"></MobileMovement>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
+      <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
       <KeyboardInput></KeyboardInput>
+
     </n-layout>
     <SideMenu v-if="state.options.swapControls"></SideMenu>
+    <RadialOverlay></RadialOverlay>
   </n-layout>
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { onMounted, onBeforeUnmount } from 'vue'
+import { state, setMode } from '@/composables/state'
 import { NLayout } from 'naive-ui'
 
-import LineOutput from '@/components/main-area/LineOutput.vue'
+// import BattleHUD from '@/components/main-area/BattleHUD.vue'
+import ButtonControls from '@/components/main-area/ButtonControls.vue'
+import GameModal from '@/components/modals/GameModal.vue'
+import HelpModal from '@/components/modals/HelpModal.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
+import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
-import HelpOverlay from '@/components/HelpOverlay.vue'
 import MapModal from '@/components/modals/MapModal'
 import MercModal from '@/components/modals/MercModal'
-import MobileMovement from '@/components/main-area/MobileMovement.vue'
 import QuickSlots from '@/components/main-area/QuickSlots.vue'
+import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
+import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
-import TriggersModal from "@/components/modals/TriggersModal.vue";
+import TriggersModal from "@/components/modals/TriggersModal.vue"
 
+function openGameModal () {
+  setMode('modal')
+  state.modals.gameModal = true
+}
+
+function openHelpModal () {
+  setMode('modal')
+  state.modals.helpModal = true
+}
+
+onMounted(() => {
+  state.inputEmitter.on('openGameModal', openGameModal)
+  state.inputEmitter.on('openHelpModal', openHelpModal)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('openGameModal', openGameModal)
+  state.inputEmitter.off('openHelpModal', openHelpModal)
+})
 </script>
 
 <style lang="less">
