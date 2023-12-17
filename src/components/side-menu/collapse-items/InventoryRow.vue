@@ -11,10 +11,10 @@
 
 <script setup>
 import { defineProps } from 'vue'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { NPopover } from 'naive-ui'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 const props = defineProps(['colorName', 'amount', 'level', 'description'])
 </script>

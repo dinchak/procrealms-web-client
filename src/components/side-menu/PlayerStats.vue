@@ -13,38 +13,54 @@
 
     <n-collapse>
       <CharacterCollapse
-          :character="state.gameState.player"
-          :equipment="state.gameState.equipment"
-          :is-player="true"
+        :character="state.gameState.player"
+        :equipment="state.gameState.equipment"
+        :is-player="true"
+        tabindex="0"
       ></CharacterCollapse>
+
       <EffectsCollapse
-          :affects="state.gameState.affects"
-          :isPlayer="true"
+        :affects="state.gameState.affects"
+        :isPlayer="true"
+        tabindex="0"
       ></EffectsCollapse>
+
       <InventoryCollapse
-          :character="state.gameState.player"
-          :inventory="state.gameState.inventory"
-          :isPlayer="true"
-          :affects="state.gameState.affects"
+        :character="state.gameState.player"
+        :inventory="state.gameState.inventory"
+        :isPlayer="true"
+        :affects="state.gameState.affects"
+        tabindex="0"
       ></InventoryCollapse>
+
       <EquipmentCollapse
         :equipment="state.gameState.equipment"
         :character="state.gameState.player"
         :isPlayer="true"
         :affects="state.gameState.affects"
+        tabindex="0"
       ></EquipmentCollapse>
-      <QuestCollapse></QuestCollapse>
+
+      <QuestCollapse
+        tabindex="0"
+      ></QuestCollapse>
+
       <SkillsCollapse
-          :character="state.gameState.player"
-          :skills="state.gameState.skills"
-          :isPlayer="true"
+        :character="state.gameState.player"
+        :skills="state.gameState.skills"
+        :isPlayer="true"
+        tabindex="0"
       ></SkillsCollapse>
-      <OptionsCollapse></OptionsCollapse>
+
+      <OptionsCollapse
+        tabindex="0"
+      ></OptionsCollapse>
     </n-collapse>
   </div>
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
 import { NProgress, NCollapse } from 'naive-ui'
 import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
 import OptionsCollapse from '@/components/side-menu/collapse-items/OptionsCollapse.vue'
@@ -73,6 +89,24 @@ function getPlayerStatsClass () {
   }
   return 'player-stats'
 }
+
+function toggleCollapsibleMenu () {
+  const collapse = document.activeElement
+  if (collapse.classList.contains('n-collapse-item')) {
+    const header = collapse.querySelector('.n-collapse-item__header-main')
+    if (header) {
+      header.click()
+    }
+  }
+}
+
+onMounted(() => {
+  state.inputEmitter.on('toggleCollapsibleMenu', toggleCollapsibleMenu)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('toggleCollapsibleMenu', toggleCollapsibleMenu)
+})
 
 </script>
 
