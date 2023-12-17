@@ -14,12 +14,12 @@
 
 <script setup>
 import { NDropdown, NButton } from 'naive-ui'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { reactive, onMounted, watch } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { getMerc } = helpers()
+const { getMerc } = useHelpers()
 const { fetchItems, cmd } = useWebSocket()
 
 const options = reactive([])
