@@ -1,24 +1,33 @@
 <template>
   <div class="options-menu">
+    <h3>HUD</h3>
+
     <div class="option">
-      <label for="option-show-mobile-buttons">Mobile Input Controls</label>
-      <n-switch id="option-show-mobile-buttons" v-model:value="state.options.commandHistoryButton" aria-label="Mobile Input Controls"></n-switch>
+      <label for="option-hud-command-controls">Command Controls</label>
+      <n-switch id="option-hud-command-controls" v-model:value="state.options.hudCommandControls" aria-label="Command Controls"></n-switch>
     </div>
 
     <div class="option">
-      <label for="option-show-mobile-movement">Mobile Movement Controls</label>
-      <n-switch id="option-show-mobile-movement" v-model:value="state.options.showMobileMovement" aria-label="Show Mobile Movement"></n-switch>
+      <label for="option-hud-movement-controls">Movement Controls</label>
+      <n-switch id="option-hud-movement-controls" v-model:value="state.options.hudMovementControls" aria-label="Movement Controls"></n-switch>
     </div>
 
     <div class="option">
-      <label for="option-chat-tabs">Chat Tabs</label>
-      <n-switch id="option-chat-tabs" v-model:value="state.options.showTabs" aria-label="Chat Tabs"></n-switch>
+      <label for="option-show-quick-slots">Show Quick Slots</label>
+      <n-switch id="option-show-quick-slots" v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots"></n-switch>
     </div>
 
     <div class="option">
-      <label for="option-chat-in-main-output">Chat In Main Output</label>
-      <n-switch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
+      <label for="option-overlay-controls">Overlay Controls</label>
+      <n-switch id="option-overlay-controls" v-model:value="state.options.overlayControls" aria-label="Overlay Controls"></n-switch>
     </div>
+
+    <div class="option">
+      <label for="option-overlay-minimap">Overlay Minimap</label>
+      <n-switch id="option-overlay-minimap" v-model:value="state.options.showOverlayMinimap" aria-label="Overlay Minimap"></n-switch>
+    </div>
+
+    <h3>Sidebar</h3>
 
     <div class="option">
       <label for="option-show-map-area">Show Map Area</label>
@@ -31,8 +40,20 @@
     </div>
 
     <div class="option">
-      <label for="option-show-quick-slots">Show Quick Slots</label>
-      <n-switch id="option-show-quick-slots" v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots"></n-switch>
+      <label for="option-swap-menu-side">Swap Menu Side</label>
+      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side"></n-switch>
+    </div>
+
+    <h3>General</h3>
+
+    <div class="option">
+      <label for="option-chat-in-main-output">Chat In Main Output</label>
+      <n-switch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
+    </div>
+
+    <div class="option">
+      <label for="option-keep-sent-commands">Keep Sent Commands</label>
+      <n-switch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands"></n-switch>
     </div>
 
     <div class="option">
@@ -44,18 +65,8 @@
       <label for="option-wasd-movement">WASD Movement</label>
       <n-switch id="option-wasd-movement" v-model:value="state.options.wasdMovement" aria-label="WASD Movement"></n-switch>
     </div>
-    
-    <div class="option">
-      <label for="option-keep-sent-commands">Keep Sent Commands</label>
-      <n-switch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands"></n-switch>
-    </div>
 
-    <div class="option">
-      <label for="option-swap-menu-side">Swap Menu Side</label>
-      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side"></n-switch>
-    </div>
-
-    <h3>Font Settings</h3>
+    <h3 class="pad-top">Font Settings</h3>
 
     <n-select
       class="font-selector"
@@ -76,19 +87,22 @@
       />
     </n-radio-group>
 
-    <n-button class="menu-button" type="info" @click="state.modals.triggersModal = !state.modals.triggersModal" ghost>Triggers</n-button>
+    <h3 v-if="Object.values(state.gamepads).length > 0">Connected Gamepads</h3>
+    <ul v-bind:key="idx" v-for="(gamepad, idx) in state.gamepads">
+      <li>{{ gamepad }}</li>
+    </ul>
+
+    <n-button style="margin-top: 30px" class="menu-button" type="info" @click="openTriggersModal()" ghost>Triggers</n-button>
     <n-button class="menu-button" type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
-    <n-button class="menu-button" type="warning" @click="state.showHelp = !state.showHelp" ghost>Help</n-button>
-    <n-button class="menu-button" type="error" @click="state.showLogout = true" ghost>Logout</n-button>
+    <n-button class="menu-button" type="warning" @click="openHelpModal()" ghost>Help</n-button>
+    <n-button class="menu-button" type="error" @click="openLogoutModal()" ghost>Logout</n-button>
   </div>
 </template>
 
 <script setup>
 import { watch, ref } from 'vue'
-
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
-
-import { state } from '@/composables/state'
+import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
 
 const { triggerResize } = useWindowHandler()
@@ -148,6 +162,21 @@ function changeFontSize () {
   triggerResize()
 }
 
+function openTriggersModal () {
+  setMode('modal')
+  state.modals.triggersModal = true
+}
+
+function openHelpModal () {
+  setMode('modal')
+  state.modals.helpModal = true
+}
+
+function openLogoutModal () {
+  setMode('modal')
+  state.modals.logoutModal = true
+}
+
 </script>
 
 <style lang="less">
@@ -156,9 +185,19 @@ function changeFontSize () {
   display: flex;
   flex-direction: column;
 
+  .pad-top {
+    padding-top: 20px;
+  }
+
   h3 {
     padding: 0;
-    margin: 20px 0 5px 0;
+    margin: 5px 0 5px 0;
+  }
+
+  ul {
+    margin: 0;
+    list-style: none;
+    padding: 0 0 0 10px;
   }
 
   .option {
@@ -176,11 +215,14 @@ function changeFontSize () {
 
   .font-size-selector {
     align-self: center;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
 
   .menu-button {
     margin-bottom: 10px;
+    &:first-child {
+      margin-top: 10px;
+    }
   }
 }
 

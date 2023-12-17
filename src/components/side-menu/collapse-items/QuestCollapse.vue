@@ -48,9 +48,9 @@
 import { ref } from 'vue'
 import { NProgress, NCollapseItem } from 'naive-ui'
 import { state } from '@/composables/state'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 const questsExpanded = ref({})
 

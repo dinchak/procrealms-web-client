@@ -9,9 +9,9 @@
 
 <script setup>
 import { defineProps } from 'vue'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 const props = defineProps(['slot', 'colorName', 'level'])
 const isHead = props.slot !== 'head'

@@ -31,19 +31,17 @@
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { state, setMode, prevMode } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { ref, watch, onMounted, defineProps } from 'vue'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
-import { useKeyHandler } from '@/composables/key_handler'
 import { command_ids } from '@/composables/constants/command_ids'
 import ItemModal from '@/components/modals/ItemModal.vue';
 
 const { fetchItems, cmd } = useWebSocket()
-const { copperToMoneyString } = helpers()
-const { onKeydown } = useKeyHandler()
+const { copperToMoneyString } = useHelpers()
 const props = defineProps(['inventory', 'isPlayer', 'character', 'affects', 'menu'])
 
 const items = ref([])
@@ -83,22 +81,21 @@ const value = ref('name')
 // Watchers
 onMounted(() => {
   setItems(props.inventory)
-})
 
-watch(() => props.inventory, () => {
-  setItems(props.inventory)
-})
+  watch(() => props.inventory, () => {
+    setItems(props.inventory)
+  })
 
-watch(searchTerm, () => {
-  setItems(props.inventory)
-})
+  watch(searchTerm, () => {
+    setItems(props.inventory)
+  })
 
-watch(value, () => {
-  filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+  watch(value, () => {
+    filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+  })
 })
 
 // Methods
-
 async function setItems (itemIIDs) {
   items.value = await fetchItems(itemIIDs)
 
@@ -130,18 +127,13 @@ function clickHandler(item) {
 }
 
 // Setters
-onKeydown((ev) => {
-  if (ev.key === 'Escape' && state.mode ==='input' && searchInput.value) {
-    searchInput.value.blur()
-  }
-})
-
 function onFocus() {
-  state.mode = 'input'
+  console.log(`keyboard input onFocus`)
+  setMode('input')
 }
 
 function onBlur() {
-  state.mode = 'hotkey'
+  prevMode()
 }
 
 // Getters

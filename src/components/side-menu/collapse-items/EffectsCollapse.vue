@@ -18,11 +18,11 @@
 
 <script setup>
 import { NProgress, NCollapseItem } from 'naive-ui'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { defineProps } from 'vue'
 
 const props = defineProps(['affects', 'isPlayer'])
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 function effects () {
   return props.affects || []
