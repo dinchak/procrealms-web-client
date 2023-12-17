@@ -5,112 +5,42 @@
       <n-button type="success" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('defend')" :aria-label="state.gameState.battle.myTurn ? 'Defend My Turn' : 'Defend Not My Turn'">[<span class="bold-yellow">D</span>]efend</n-button>
       <n-button type="warning" ghost :disabled="!state.gameState.battle.myTurn" @click="cmd('flee')" :aria-label="state.gameState.battle.myTurn ? 'Flee My Turn' : 'Flee Not My Turn'">[<span class="bold-yellow">F</span>]lee</n-button>
     </div>
-    <div class="battle-skills" v-show="getSkills().size">
-      <n-button
-        type="default" ghost
-        :disabled="!state.gameState.battle.myTurn"
-        v-for="{ skill, command } in getSkills().values()"
-        :key="skill"
-        @click="cmd(command)"
-        :aria-label="state.gameState.battle.myTurn ? command + ' My Turn' : command + ' Not My Turn'"
-      >{{ skill }}</n-button>
-    </div>
   </div>
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
 
 import { NButton } from 'naive-ui'
 
-import { useKeyHandler } from '@/composables/key_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
-const { onKeydown, keyState } = useKeyHandler()
 const { cmd } = useWebSocket()
 
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
+function attack () {
+  cmd('attack')
+}
 
-  if (state.mode == 'input') {
-    return false
-  }
+function defend () {
+  cmd('defend')
+}
 
-  if (!state.gameState.battle.active) {
-    return false
-  }
+function flee () {
+  cmd('flee')
+}
 
-/*
-  if (ev.key == '`') {
-    let json = JSON.stringify(state.gameState, null, 2)
-    let lines = json.split('\n')
-    for (let line of lines) {
-      state.output.push(line)
-    }
-    return true
-  }
-*/
-
-  if (ev.key === 'A' || ev.key === 'a') {
-    cmd('attack')
-    return true
-  } else if (ev.key === 'D' || ev.key === 'd') {
-    cmd('defend')
-    return true
-  } else if (ev.key === 'F' || ev.key === 'f') {
-    cmd('flee')
-    return true
-  }
-
-  if (ev.code.startsWith('Key') && ev.code.length == 4) {
-    let key = [...ev.code][3].toLowerCase()
-    let skillsByKey = getSkills()
-    if (skillsByKey.has(key)) {
-      cmd(skillsByKey.get(key).command)
-      return true
-    }
-  }
-
-  return false
+onMounted(() => {
+  state.inputEmitter.on('attack', attack)
+  state.inputEmitter.on('defend', defend)
+  state.inputEmitter.on('flee', flee)
 })
 
-function addSkill(skill, command, skillsByKey) {
-  let key = [...skill].find(char => !skillsByKey.has(char))
-  if (key) {
-    let skillObj = {
-      skill: skill.replace(key, `[${key.toUpperCase()}]`),
-      command: command
-    }
-    skillsByKey.set(key, skillObj)
-  }
-}
-
-function getSkills () {
-  let skillsByKey = new Map([['a', 0], ['d', 0], ['f', 0]])
-
-  if (!state.gameState.battle.active) {
-    return []
-  }
-
-  for (let skill of state.gameState.battle.actions.skills) {
-    if (state.gameState.slots.find(sl => sl.label == skill)) {
-      continue
-    }
-    addSkill(skill, skill, skillsByKey)
-  }
-
-  for (let spell of state.gameState.battle.actions.spells) {
-    addSkill(spell, `cast '${spell}'`, skillsByKey)
-  }
-
-  skillsByKey.delete('a')
-  skillsByKey.delete('d')
-  skillsByKey.delete('f')
-  return skillsByKey
-}
-
+onBeforeUnmount(() => {
+  state.inputEmitter.off('attack', attack)
+  state.inputEmitter.off('defend', defend)
+  state.inputEmitter.off('flee', flee)
+})
 </script>
 
 <style lang="less">
