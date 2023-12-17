@@ -3,7 +3,7 @@
   <n-tabs class="tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
-        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick"></div>
+        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDown('output')">
@@ -70,19 +70,16 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { ref, watch, nextTick, onMounted, h } from 'vue'
+import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
-import { useKeyHandler } from '@/composables/key_handler'
 
 import BattleStatus from '@/components/main-area/BattleStatus.vue'
 
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon, NTabs, NTabPane, NBadge, NSpace } from 'naive-ui'
-
-dayjs.extend(relativeTime)
 
 const output = ref(null)
 const chat = ref(null)
@@ -90,58 +87,12 @@ const trade = ref(null)
 const newbie = ref(null)
 const tabsInstance = ref(null)
 const currentPane = ref("output") // chat, trade, or newbie
-var mapWasOpen = false
-
 const refs = { output, chat, trade, newbie }
 
 const { send, cmd } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
 
-// Keyboard Shortcuts
-const { onKeydown, keyState } = useKeyHandler()
-onKeydown((ev) => {
-  // Switch to Main
-  if (keyState.ctrl && ev.code =='Digit1') {
-    onBeforeChangeTab("output")
-    currentPane.value = "output"
-    state.activeTab = "output"
-    nextTick(() => tabsInstance.value?.syncBarPosition());
-    onAfterChangeTab(currentPane.value)
-    return true
-  } 
-  // Switch to Chat
-  else if (keyState.ctrl && ev.code =='Digit2') {
-    onBeforeChangeTab("chat")
-    currentPane.value = "chat"
-    state.activeTab = "chat"
-    nextTick(() => tabsInstance.value?.syncBarPosition());
-    onAfterChangeTab(currentPane.value)
-    return true
-  }
-  // Switch to Trade
-  else if (keyState.ctrl && ev.code =='Digit3') {
-    onBeforeChangeTab("trade")
-    currentPane.value = "trade"
-    state.activeTab = "trade"
-    nextTick(() => tabsInstance.value?.syncBarPosition());
-    onAfterChangeTab(currentPane.value)
-    return true
-  }
-  // Switch to Newbie
-  else if (keyState.ctrl && ev.code =='Digit4') {
-    onBeforeChangeTab("newbie")
-    currentPane.value = "newbie"
-    state.activeTab = "newbie"
-    nextTick(() => tabsInstance.value?.syncBarPosition());
-    onAfterChangeTab(currentPane.value)
-    return true
-  }
-
-  return false
-})
-
-onResize(doResize)
-
+let mapWasOpen = false
 let resizeTimeout = null
 
 function doResize () {
@@ -235,41 +186,96 @@ function getOutputClass () {
   if (state.options.showQuickSlots && (state.gameState.slots.length > 0 || state.options.hideSidebar)) {
     cls += ' show-quickslots'
   }
-  if (!state.options.showTabs) {
-    cls += ' tabs-hidden'
+  if (state.gameState.battle.active) {
+    cls += ' in-battle'
   }
+  // if (!state.options.showTabs) {
+  //   cls += ' tabs-hidden'
+  // }
   return cls
 }
 
-function doHideShowTabs () {
-  let tabNav = document.getElementsByClassName('n-tabs-nav')
-  if (tabNav[0]) {
-    let classes = tabNav[0].className.split(' ')
-    if (!state.options.showTabs) {
-      classes.push('hide')
-    } else {
-      classes = classes.filter(cls => cls != 'hide')
-    }
-    tabNav[0].className = classes.join(' ')
-  }
-}
+// function doHideShowTabs () {
+//   let tabNav = document.getElementsByClassName('n-tabs-nav')
+//   if (tabNav[0]) {
+//     let classes = tabNav[0].className.split(' ')
+//     if (!state.options.showTabs) {
+//       classes.push('hide')
+//     } else {
+//       classes = classes.filter(cls => cls != 'hide')
+//     }
+//     tabNav[0].className = classes.join(' ')
+//   }
+// }
 
 function getScrollbackControlClass () {
   let cls = 'scrollback-control'
   if (state.options.showQuickSlots && state.gameState.slots.length > 0) {
     cls += ' show-quickslots'
   }
+  if (state.gameState.battle.active) {
+    cls += ' in-battle'
+  }
   return cls
 }
 
-function lineClick (event) {
-  const el = event.srcElement
+function lineClick (ev) {
+  const el = ev.srcElement
   if (el.style['text-decoration-line']) {
     cmd(el.innerText)
   }
 }
 
+function lineMouseover (ev) {
+  const el = ev.srcElement
+  if (el.style['text-decoration-line']) {
+    el.style.cursor = 'pointer'
+  }
+}
+
+function lineMouseleave (ev) {
+  const el = ev.srcElement
+  if (el.style['text-decoration-line']) {
+    el.style.cursor = 'default'
+  }
+}
+
+function selectOutputTab () {
+  onBeforeChangeTab("output")
+  currentPane.value = "output"
+  state.activeTab = "output"
+  nextTick(() => tabsInstance.value?.syncBarPosition())
+  onAfterChangeTab(currentPane.value)
+}
+
+function selectChatTab () {
+  onBeforeChangeTab("chat")
+  currentPane.value = "chat"
+  state.activeTab = "chat"
+  nextTick(() => tabsInstance.value?.syncBarPosition())
+  onAfterChangeTab(currentPane.value)
+}
+
+function selectTradeTab () {
+  onBeforeChangeTab("trade")
+  currentPane.value = "trade"
+  state.activeTab = "trade"
+  nextTick(() => tabsInstance.value?.syncBarPosition())
+  onAfterChangeTab(currentPane.value)
+}
+
+function selectNewbieTab () {
+  onBeforeChangeTab("newbie")
+  currentPane.value = "newbie"
+  state.activeTab = "newbie"
+  nextTick(() => tabsInstance.value?.syncBarPosition())
+  onAfterChangeTab(currentPane.value)
+}
+
 onMounted(() => {
+  dayjs.extend(relativeTime)
+  onResize(doResize)
+
   for (let id in refs) {
     let el = document.getElementById(id)
     if (el) {
@@ -278,15 +284,27 @@ onMounted(() => {
   }
 
   doResize()
-  doHideShowTabs()
+  // doHideShowTabs()
+
+  state.inputEmitter.on('selectOutputTab', selectOutputTab)
+  state.inputEmitter.on('selectChatTab', selectChatTab)
+  state.inputEmitter.on('selectTradeTab', selectTradeTab)
+  state.inputEmitter.on('selectNewbieTab', selectNewbieTab)
 
   watch(() => state.output.length, () => onChanged('output'))
   watch(() => state.gameState.battle.active, () => onChanged('output'))
   watch(() => state.chat.length, () => onChanged('chat'))
   watch(() => state.trade.length, () => onChanged('trade'))
   watch(() => state.newbie.length, () => onChanged('newbie'))
-  watch(() => state.options.showTabs, () => doHideShowTabs())
+  // watch(() => state.options.showTabs, () => doHideShowTabs())
   watch(() => state.options.hideSidebar, () => doResize())
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('selectOutputTab', selectOutputTab)
+  state.inputEmitter.off('selectChatTab', selectChatTab)
+  state.inputEmitter.off('selectTradeTab', selectTradeTab)
+  state.inputEmitter.off('selectNewbieTab', selectNewbieTab)
 })
 
 </script>
@@ -310,7 +328,7 @@ onMounted(() => {
 
   .scrollback-control {
     position: absolute;
-    bottom: 40px;
+    bottom: 182px;
     left: 0;
     right: 0;
     height: 40px;
@@ -325,7 +343,13 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     &.show-quickslots {
-      bottom: 87px;
+      bottom: 227px;
+    }
+    &.in-battle {
+      bottom: 37px;
+      &.show-quickslots {
+        bottom: 93px;
+      }
     }
     .n-icon {
       margin: 0 15px;
@@ -363,21 +387,27 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     flex-basis: fit-content;
-    margin: 5px 10px;
+    margin: 5px 10px 0 10px;
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
+    height: ~"calc(100vh - 215px)";
 
-    height: ~"calc(100vh - 85px)";
-
-    &.tabs-hidden {
-      height: ~"calc(100vh - 52px)";
-    }
+    // &.tabs-hidden {
+    //   height: ~"calc(100vh - 142px)";
+    // }
 
     &.show-quickslots {
-      height: ~"calc(100vh - 130px)";
-      &.tabs-hidden {
-        height: ~"calc(100vh - 97px)";
+      height: ~"calc(100vh - 270px)";
+      // &.tabs-hidden {
+      //   height: ~"calc(100vh - 187px)";
+      // }
+    }
+
+    &.in-battle {
+      height: ~"calc(100vh - 75px)";
+      &.show-quickslots {
+        height: ~"calc(100vh - 130px)";
       }
     }
 
@@ -449,24 +479,24 @@ onMounted(() => {
   }
 }
 
-@media screen and (max-width: 750px) {
-  .tabs {
-    .output {
-      margin: 2px 8px;
-      height: ~"calc(100vh - 79px)";
+// @media screen and (max-width: 750px) {
+//   .tabs {
+//     .output {
+//       margin: 2px 8px;
+//       height: ~"calc(100vh - 96px)";
 
-      &.tabs-hidden {
-        height: ~"calc(100vh - 46px)";
-      }
+//       &.tabs-hidden {
+//         height: ~"calc(100vh - 63px)";
+//       }
 
-      &.show-quickslots {
-        height: ~"calc(100vh - 124px)";
-        &.tabs-hidden {
-          height: ~"calc(100vh - 91px)";
-        }
-      }
+//       &.show-quickslots {
+//         height: ~"calc(100vh - 141px)";
+//         &.tabs-hidden {
+//           height: ~"calc(100vh - 108px)";
+//         }
+//       }
 
-    }
-  }
-}
+//     }
+//   }
+// }
 </style>
