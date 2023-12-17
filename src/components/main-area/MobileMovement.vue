@@ -19,6 +19,8 @@
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue'
+
 import NorthOutlined from '@vicons/material/NorthOutlined'
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import EastOutlined from '@vicons/material/EastOutlined'
@@ -37,6 +39,19 @@ import { state } from '@/composables/state'
 const { cmd } = useWebSocket()
 
 let moveTimeout = null
+let selectedDirection = ref('enter')
+
+const directionMap = {
+  0: 'enter',
+  1: 'north',
+  2: 'northwest',
+  3: 'west',
+  4: 'southwest',
+  5: 'south',
+  6: 'southeast',
+  7: 'east',
+  8: 'northeast'
+}
 
 function move (dir) {
   if (moveTimeout) {
@@ -77,6 +92,9 @@ function getMovementClass (dir) {
   }
 
   if (room.exits && room.exits.includes(dir)) {
+    if (selectedDirection.value == dir) {
+      return 'direction selected'
+    }
     return 'direction active'
   } else {
     return 'direction'
@@ -90,19 +108,60 @@ function getEnterClass () {
   }
 
   if (room.canEnter) {
+    if (selectedDirection.value == 'enter') {
+      return 'direction selected'
+    }
     return 'direction active'
   } else {
     return 'direction'
   }
 }
 
+function selectMovementDirection (degree) {
+  if (state.gameState.battle.active) {
+    return
+  }
+
+  if (degree == false) {
+    selectedDirection.value = directionMap[0]
+    return
+  }
+
+  let offsetDegree = degree + (45 / 2)
+  if (offsetDegree > 360) {
+    offsetDegree -= 360
+  }
+
+  let itemNumber = Math.ceil(offsetDegree / 360 * 8)
+  selectedDirection.value = directionMap[itemNumber]
+}
+
+function moveInSelectedDirection () {
+  if (state.gameState.battle.active) {
+    return
+  }
+
+  if (selectedDirection.value == 'enter') {
+    enter()
+  } else {
+    move(selectedDirection.value)
+  }
+}
+
+onMounted(() => {
+  state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
+  state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
+  state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+})
+
 </script>
 
 <style lang="less">
 .mobile-movement {
-  position: absolute;
-  right: 7px;
-  bottom: 92px;
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -122,8 +181,12 @@ function getEnterClass () {
       margin-bottom: 2px;
       margin-right: 2px;
       &.active {
-        opacity: 0.4;
-        background-color: #444;
+        opacity: 0.3;
+        background-color: #222;
+      }
+      &.selected {
+        opacity: 1;
+        background-color: darken(#16c60c, 30%);
       }
     }
   }
