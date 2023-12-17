@@ -11,51 +11,19 @@
 
 <script setup>
 import { NCard, NButton, NIcon } from 'naive-ui'
-import { ref, watch, onMounted } from 'vue'
-import { helpers } from '@/composables/helpers'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useHelpers } from '@/composables/helpers'
 import { state } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
 import { useWebSocket } from '@/composables/web_socket'
-import { useKeyHandler } from '@/composables/key_handler'
 import WindowOutlined from '@vicons/material/WindowOutlined'
 
 const { cmd } = useWebSocket()
-const { onKeydown, keyState } = useKeyHandler()
-const { ansiToHtml } = helpers()
+const { ansiToHtml } = useHelpers()
 
 const MAP_ID = command_ids.MAP
 const largeMap = ref([])
 const rightClass = ref('right')
-
-watch(() => state.cache.commandCache[MAP_ID], () => {
-  if (state.modals.mapModal) {
-    largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
-  }
-})
-
-watch(() => state.modals.mapModal, () => {
-  if (state.modals.mapModal && !state.gameState.battle.active) {
-    cmd('map', MAP_ID)
-  }
-})
-
-watch(() => state.cache.commandCache[MAP_ID], () => {
-  largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
-})
-
-watch(() => state.gameState.map, () => {
-  if (state.modals.mapModal && !state.gameState.battle.active) {
-    cmd('map', MAP_ID)
-  }
-})
-
-watch(() => [state.modals.mercModal, state.options.swapControls, state.modals.mapModalSize], () => {
-	if (state.modals.mercModal && !state.options.swapControls && state.modals.mapModalSize !== 'large') {
-      rightClass.value = 'right-offset'
-    } else {
-		rightClass.value = 'right'
-    }
-})
 
 function toggleMapModalSize() {
   if (state.modals.mapModalSize == "small") {
@@ -80,33 +48,54 @@ function geMapModalSizeClass() {
 //   return state.options.swapControls ? 'map-modal right' : 'map-modal left'
 // }
 
+function showMapModal () {
+  state.modals.mapModal = !state.modals.mapModal
+}
+
 function closeModal() {
   state.modals.mapModal = false
 }
-
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
-
-  if (state.modals.triggersModal) {
-    return false
-  }
-
-  if (state.mode === 'input') {
-    return false
-  }
-
-  if (ev.code === 'KeyM') {
-    state.modals.mapModal = !state.modals.mapModal
-    return true
-  }
-})
 
 onMounted(() => {
   if (state.modals.mapModal && !state.gameState.battle.active) {
     cmd('map', MAP_ID)
   }
+
+  state.inputEmitter.on('showMapModal', showMapModal)
+
+  watch(() => state.cache.commandCache[MAP_ID], () => {
+    if (state.modals.mapModal) {
+      largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
+    }
+  })
+
+  watch(() => state.modals.mapModal, () => {
+    if (state.modals.mapModal && !state.gameState.battle.active) {
+      cmd('map', MAP_ID)
+    }
+  })
+
+  watch(() => state.cache.commandCache[MAP_ID], () => {
+    largeMap.value = state.cache.commandCache[MAP_ID].split('\n')
+  })
+
+  watch(() => state.gameState.map, () => {
+    if (state.modals.mapModal && !state.gameState.battle.active) {
+      cmd('map', MAP_ID)
+    }
+  })
+
+  watch(() => [state.modals.mercModal, state.options.swapControls, state.modals.mapModalSize], () => {
+    if (state.modals.mercModal && !state.options.swapControls && state.modals.mapModalSize !== 'large') {
+      rightClass.value = 'right-offset'
+    } else {
+      rightClass.value = 'right'
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('showMapModal', showMapModal)
 })
 </script>
 
@@ -127,7 +116,7 @@ onMounted(() => {
 
 .n-card {
   position: absolute;
-  margin-top: 35px;
+  margin-top: 62px;
   max-width: calc(100vw - 290px);
   z-index: 2;
 }

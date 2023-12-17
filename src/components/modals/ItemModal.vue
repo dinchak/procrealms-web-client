@@ -60,12 +60,12 @@
 <script setup>
 import { NCard, NTabs, NTabPane, NButton, NInputNumber } from 'naive-ui'
 import { defineProps, ref, watch} from 'vue'
-import { helpers } from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, addLine } from '@/composables/state'
 import { command_ids } from '@/composables/constants/command_ids'
 
-const { ansiToHtml, getActions } = helpers()
+const { ansiToHtml, getActions } = useHelpers()
 const { cmd } = useWebSocket()
 const props = defineProps(['isPlayer', 'item', 'visible', 'menu', 'charEId', 'name', 'affects'])
 
@@ -263,7 +263,8 @@ function clickedAction(action) {
 .n-card {
   position: fixed;
   margin-top: 200px;
-  width: 400px;
+  width: calc(100vw - 280px);
+  max-width: 700px;
   z-index: 3;
   top: 0;
   min-height: 300px;
