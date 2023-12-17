@@ -19,6 +19,12 @@
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
+import { NIcon } from 'naive-ui'
+
+import { useWebSocket } from '@/composables/web_socket'
+import { state } from '@/composables/state'
+
 import NorthOutlined from '@vicons/material/NorthOutlined'
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import EastOutlined from '@vicons/material/EastOutlined'
@@ -29,13 +35,6 @@ import NorthWestOutlined from '@vicons/material/NorthWestOutlined'
 import SouthEastOutlined from '@vicons/material/SouthEastOutlined'
 import SouthWestOutlined from '@vicons/material/SouthWestOutlined'
 
-import { NIcon } from 'naive-ui'
-
-import { useKeyHandler } from '@/composables/key_handler'
-import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/composables/state'
-
-const { onKeydown, keyState } = useKeyHandler()
 const { cmd } = useWebSocket()
 
 let moveTimeout = null
@@ -98,87 +97,61 @@ function getEnterClass () {
   }
 }
 
-onKeydown((ev) => {
-  if (keyState.alt || keyState.ctrl) {
-    return false
-  }
+function moveNorth () {
+  move('north')
+}
 
-  if (state.options.numPadMovement) {
-    if (ev.code == 'Numpad7') {
-      move('northwest')
-      return true
-    } else if (ev.code == 'Numpad8') {
-      move('north')
-      return true
-    } else if (ev.code == 'Numpad9') {
-      move('northeast')
-      return true
-    } else if (ev.code == 'Numpad4') {
-      move('west')
-      return true
-    } else if (ev.code == 'Numpad5') {
-      enter()
-      return true
-    } else if (ev.code == 'Numpad6') {
-      move('east')
-      return true
-    } else if (ev.code == 'Numpad1') {
-      move('southwest')
-      return true
-    } else if (ev.code == 'Numpad2') {
-      move('south')
-      return true
-    } else if (ev.code == 'Numpad3') {
-      move('southeast')
-      return true
-    }
-  }
+function moveSouth () {
+  move('south')
+}
 
-  if (state.mode == 'input') {
-    return false
-  }
+function moveEast () {
+  move('east')
+}
 
-  if (state.modals.triggersModal) {
-    return false
-  }
+function moveWest () {
+  move('west')
+}
 
-  if (state.options.wasdMovement) {
-    switch(ev.code) {
-      case 'KeyQ':
-        move('northwest')
-        break
-      case 'KeyW':
-        move('north')
-        break
-      case 'KeyE':
-        move('northeast')
-        break
-      case 'KeyA':
-	move('west')
-        break
-      case 'KeyX':
-        enter()
-        break
-      case 'KeyD':
-        move('east')
-        break
-      case 'KeyZ':
-        move('southwest')
-        break
-      case 'KeyS':
-        move('south')
-        break
-      case 'KeyC':
-        move('southeast')
-        break
-      default:
-        return false
-    }
-  }
+function moveNorthEast () {
+  move('northeast')
+}
 
-  return true
+function moveNorthWest () {
+  move('northwest')
+}
+
+function moveSouthEast () {
+  move('southeast')
+}
+
+function moveSouthWest () {
+  move('southwest')
+}
+
+onMounted(() => {
+  state.inputEmitter.on('moveNorth', moveNorth)
+  state.inputEmitter.on('moveSouth', moveSouth)
+  state.inputEmitter.on('moveEast', moveEast)
+  state.inputEmitter.on('moveWest', moveWest)
+  state.inputEmitter.on('moveNorthEast', moveNorthEast)
+  state.inputEmitter.on('moveNorthWest', moveNorthWest)
+  state.inputEmitter.on('moveSouthEast', moveSouthEast)
+  state.inputEmitter.on('moveSouthWest', moveSouthWest)
+  state.inputEmitter.on('enter', enter)
 })
 
+onBeforeUnmount(() => {
+  state.inputEmitter.off('moveNorth', moveNorth)
+  state.inputEmitter.off('moveSouth', moveSouth)
+  state.inputEmitter.off('moveEast', moveEast)
+  state.inputEmitter.off('moveWest', moveWest)
+  state.inputEmitter.off('moveNorthEast', moveNorthEast)
+  state.inputEmitter.off('moveNorthWest', moveNorthWest)
+  state.inputEmitter.off('moveSouthEast', moveSouthEast)
+  state.inputEmitter.off('moveSouthWest', moveSouthWest)
+  state.inputEmitter.off('enter', enter)
+})
 </script>
 
 <style lang="less">
