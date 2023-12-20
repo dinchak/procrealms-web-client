@@ -183,7 +183,13 @@ onBeforeUnmount(() => {
       &.active {
         opacity: 0.3;
         background-color: #222;
+        &:hover {
+          cursor: pointer;
+          opacity: 1;
+          background-color: darken(#16c60c, 30%);
+        }
       }
+
       &.selected {
         opacity: 1;
         background-color: darken(#16c60c, 30%);

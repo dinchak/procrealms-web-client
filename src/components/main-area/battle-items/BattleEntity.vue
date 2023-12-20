@@ -1,58 +1,32 @@
 <template>
-  <div :class="getClass(entity)" @click="target(entity)">
+  <div :class="getClass(participant)" @click="target(participant)">
     <div class="entity-info">
-      <div class="info">
-
-        <div class="name" v-html-safe="ansiToHtml(`${entity.hp > 0 ? entity.tag + ' ' : ''}${entity.name}`)"></div>
-
-        <div class="affects" v-html-safe="ansiToHtml(`${ansi.boldBlack}L${ansi.boldWhite}${entity.level}${ansi.reset} ${getAffects(entity)}`)"></div>
-
+      <div class="row">
+        <div class="name" v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}${ansi.boldBlack}L${ansi.boldWhite}${participant.level} ${participant.name}`)"></div>
+        <n-progress type="circle" status="error" :percentage="100 - participant.nextAction / 40 * 100" :show-indicator="false"></n-progress>
       </div>
-      <div class="vitals">
 
-        <div class="vital">
-          <div class="amount bold-green">{{ entity.hp }}<span class="green" v-if="entity.side == 'evil'">%</span></div>
-          <n-progress v-if="entity.hp > 0" class="hp" type="line" status="success" aria-label="Health" :percentage="entity.hpPercent" :height="2" :show-indicator="false"></n-progress>
-        </div>
+      <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
 
-        <div class="vital">
-          <div class="amount bold-cyan">{{ entity.en }}<span class="cyan" v-if="entity.side == 'evil'">%</span></div>
-          <n-progress v-if="entity.en > 0" type="line" status="default" aria-label="Energy" :percentage="entity.enPercent" :height="2" :show-indicator="false"></n-progress>
-        </div>
+      <div class="target">
+        <div class="targeting" v-show="participant.hpPercent > 0 && participant.targetName" v-html-safe="getTargetName(participant)"></div>
+        <div class="targeting" v-show="participant.hpPercent > 0 && !participant.targetName" v-html-safe="'Target: None'"></div>
 
-        <div class="vital">
-          <div class="amount bold-yellow">{{ entity.st }}<span class="yellow" v-if="entity.side == 'evil'">%</span></div>
-          <n-progress v-if="entity.st > 0" type="line" status="warning" aria-label="Stamina" :percentage="entity.stPercent" :height="2" :show-indicator="false"></n-progress>
-        </div>
-
+        <div class="status" v-html-safe="ansiToHtml(getStatus(participant))"></div>
       </div>
+
+      <AllyVitals v-show="side == 'good'" :entity="entity"></AllyVitals>
+      <EnemyVitals v-show="side == 'evil'" :participant="participant"></EnemyVitals>
     </div>
-
-    <n-progress type="line" status="error" :height="2" :percentage="entity.nextAction / 40 * 100" :show-indicator="false"></n-progress>
-
-    <!-- <n-progress v-if="entity.hp > 0" class="hp" type="line" status="success" aria-label="Health" :percentage="entity.hp" :height="15">{{ entity.hp }}% <span class="bold-green">HP</span></n-progress>
-
-    <n-progress v-if="entity.hp > 0" class="en" type="line" status="default" aria-label="Energy" :percentage="entity.en" :height="15">{{ entity.en }}% <span class="bold-cyan">EN</span></n-progress>
-
-    <n-progress v-if="entity.hp > 0" class="st" type="line" status="warning" aria-label="Stamina" :percentage="entity.st" :height="15">{{ entity.st }}% <span class="bold-yellow">ST</span></n-progress> -->
-
-    <!-- <div class="footer">
-      <div class="left">
-        <div v-if="entity.targetName && entity.hp > 0" class="targeting" v-html-safe="'Target: ' + ansiToHtml(entity.targetName)"></div>
-        <div v-if="!entity.targetName && entity.hp > 0" class="targeting" v-html-safe="'Target: None'"></div>
-      </div>
-      <div class="right">
-        <div class="action" v-if="entity.hp > 0">
-          <n-progress type="circle" status="error" :percentage="entity.nextAction / 40 * 100" :show-indicator="false"></n-progress>
-        </div>
-      </div>
-    </div> -->
-  </div>
+</div>
 </template>
 <script setup>
 import { defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
+
+import AllyVitals from '@/components/main-area/battle-items/AllyVitals.vue'
+import EnemyVitals from '@/components/main-area/battle-items/EnemyVitals.vue'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
@@ -61,42 +35,58 @@ const { ansiToHtml, ansi } = useHelpers()
 const { cmd } = useWebSocket()
 
 const props = defineProps({
+  participant: Object,
   entity: Object,
+  side: String
 })
-const { entity } = toRefs(props)
+const { participant, entity, side } = toRefs(props)
 
-function target (entity) {
-  if (entity.hp == 0) return
-  cmd(`target ${stripAnsi(entity.tag)}`)
+function target (participant) {
+  if (participant.hpPercent == 0) return
+  cmd(`target ${stripAnsi(participant.tag)}`)
 }
 
-function getClass (entity) {
+function getClass (participant) {
   return [
     'battle-entity',
     'selectable',
-    entity.hp == 0 ? 'dead' : entity.side,
-    entity.isActing ? 'acting' : '',
+    participant.hpPercent == 0 ? 'dead' : participant.side,
+    participant.isActing ? 'acting' : '',
   ].join(' ')
 }
 
-function getAffects (entity) {
-  if (entity.hp == 0) {
+function getAffects (participant) {
+  if (participant.hpPercent == 0) {
     return ansi.boldRed + 'DEAD' + ansi.reset
   }
-  if (entity.affects.length == 0) {
+  if (participant.affects.length == 0) {
     return ''
   }
-  return entity.affects.join(' ')
+  return participant.affects.join(' ')
+}
+
+function getStatus (participant) {
+  if (participant.hpPercent == 0) {
+    return ''
+  }
+  return participant.status
+}
+
+function getTargetName (participant) {
+  if (participant.targetName) {
+    return 'Target: ' + ansiToHtml(participant.targetName)
+  }
+  return ''
 }
 </script>
 <style lang="less">
 .battle-entity {
   display: flex;
-  width: 400px;
   flex-direction: column;
   justify-content: space-between;
   background-color: #462233;
-  padding: 2px;
+  padding: 5px;
+  border: 1px solid #333;
 
   &.selected {
     // border: 1px solid #f8ff25;
@@ -106,14 +96,13 @@ function getAffects (entity) {
 
   &.good {
     cursor: pointer;
-    background-color: #030a03;
+    background-color: #001800;
 
     @media (hover: hover) {
       transition: all 0.3s;
-      // &:hover {
-      //   box-shadow: 0 0 5px #50ff50;
-      //   background-color: #111611;
-      // }
+      &:hover {
+        background-color: #002800;
+      }
     }
 
     // &.acting {
@@ -123,7 +112,7 @@ function getAffects (entity) {
   }
   &.evil {
     cursor: pointer;
-    background-color: #0a0303;
+    background-color: #180000;
 
     @media (hover: hover) {
       transition: all 0.3s;
@@ -144,95 +133,76 @@ function getAffects (entity) {
   // }
   .entity-info {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    .info {
-      display: flex;
-      flex-direction: column;
-      width: 300px;
-      .name {
-        font-size: 16px;
-      }
-      .affects {
-        font-size: 14px;
-      }
-    }
-
-    .vitals {
-      width: 100px;
+    flex-direction: column;
+    width: 300px;
+    .row {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      .vital {
-        text-align: center;
-        width: 30px;
-      }
-    }
-  }
+      align-items: flex-start;
 
-  .footer {
-    display: flex;
-    flex-direction: row;
-    margin-top: 3px;
-    .left {
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      .targeting {
-        font-size: 12px;
+      .name {
+        font-size: 16px;
       }
-    }
 
-    .right {
-      display: flex;
-      flex-direction: column;
-      .action {
-        display: flex;
-        justify-content: center;
-        .n-progress {
-          height: 15px;
+      .n-progress {
+        width: 15px;
+        margin-left: 5px;
+        .n-progress-content {
           width: 15px;
-        }
-      }
-    }
-  }
-
-  .n-progress {
-    .n-progress-custom-content {
-      width: 55px;
-      text-align: right;
-      margin: 0;
-    }
-    --n-rail-height: 2px !important;
-    .n-progress-content {
-      .n-progress-graph {
-        .n-progress-graph-line-rail {
-          border-radius: 0 !important;
-          .n-progress-graph-line-fill {
-            border-radius: 0 !important;
+          .n-progress-graph {
+            .n-progress-graph-circle {
+              display: flex;
+            }
           }
         }
       }
     }
+
+    .affects {
+      font-size: 14px;
+    }
+
+    .target {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 20px;
+      align-items: center;
+      .targeting {
+        display: flex;
+        flex-direction: row;
+        font-size: 14px;
+        span {
+          &:first-child {
+            margin-left: 5px;
+          }
+        }
+      }
+      .status {
+        font-size: 14px;
+      }
+    }
   }
+
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 950px) {
   .battle-entity {
-    width: 300px;
     .entity-info {
-      .info {
+      width: 200px;
+      .row {
         .name {
           font-size: 14px;
         }
-        .affects {
+      }
+      .affects {
+        font-size: 12px;
+      }
+      .target {
+        .targeting {
           font-size: 12px;
         }
-      }
-      .vitals {
-        font-size: 12px;
       }
     }  
   }

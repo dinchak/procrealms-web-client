@@ -3,17 +3,11 @@
     v-model:show="state.modals.helpModal"
     title="Help"
     @after-leave="closeModal"
+    class="help-modal"
   >
-    <n-card
-      style="width: 600px"
-      title="Help"
-      :bordered="false"
-      size="huge"
-      role="dialog"
-      aria-modal="true"
-      closable
-      @close="closeModal"
-    >
+    <n-card>
+      <p class="close" @click="closeModal()">✕</p>
+
       <n-carousel show-arrow :show-dots=false>
         <div class="slide">
           <div class="movement">
@@ -127,12 +121,33 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
-  .slide {
-    display: flex;
-    flex-direction: row;
-    .caption {
-      margin: 0 20px;
+.slide {
+  display: flex;
+  flex-direction: row;
+  .caption {
+    margin: 0 20px;
+  }
+}
+
+.help-modal {
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 1);
+  .close {
+    margin: 0;
+    padding: 10px;
+    background-color: #111;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 32px;
+    z-index: 2;
+    line-height: 16px;
+    cursor: pointer;
+    &:hover {
+      background-color: #311;
     }
   }
+}
 
 </style>
