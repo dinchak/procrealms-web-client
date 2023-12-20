@@ -14,12 +14,10 @@ import { state } from '@/composables/state'
 <style scoped lang="less">
 .mobile-input-controls {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-end;
-  height: 120px;
-  margin-right: 8px;
   .n-button {
-    margin-top: 18px;
+    margin-right: 8px;
   }
 }
 </style>

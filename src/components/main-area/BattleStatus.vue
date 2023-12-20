@@ -4,48 +4,52 @@
 
     <div class="battle-status">
       <div class="side good">
-        <div class="entity" v-for="entity in getSide('good')" :key="entity.name">
+        <div class="entity" v-for="participant in getSide('good')" :key="participant.eid">
           <TransitionGroup appear name="damage">
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
               :key="anim.key"
               :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
+
           <TransitionGroup appear name="healing">
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
               :key="anim.key"
               :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
-          <BattleEntity :entity="entity"></BattleEntity>
+
+          <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="'good'"></BattleEntity>
         </div>
       </div>
 
       <div class="vs">VS</div>
 
       <div class="side evil">
-        <div class="entity" v-for="entity in getSide('evil')" :key="entity.name">
+        <div class="entity" v-for="participant in getSide('evil')" :key="participant.eid">
           <TransitionGroup appear name="damage">
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'damage')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
               :key="anim.key"
               :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
+
           <TransitionGroup appear name="healing">
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == entity.eid && a.type == 'healing')"
+              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
               :key="anim.key"
               :style="{ left: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
             >{{ anim.amount }}</div>
           </TransitionGroup>
-          <BattleEntity :entity="entity"></BattleEntity>
+
+          <BattleEntity :entity="{}" :participant="participant" :side="'evil'"></BattleEntity>
         </div>
       </div>
     </div>
@@ -80,6 +84,10 @@ const showOrdersRef = ref(false)
 
 function getSide (side) {
   return state.gameState.battle.participants.filter(p => p.side == side)
+}
+
+function getPartyEntity (participant) {
+  return state.gameState.party.find(p => p.eid == participant.eid)
 }
 
 function getAnimationClass (anim) {
@@ -165,7 +173,8 @@ onBeforeUnmount(() => {
     .entity {
       align-items: center;
       position: relative;
-
+      margin-bottom: 10px;
+      
       .damage {
         opacity: 0;
         position: absolute;

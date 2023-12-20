@@ -6,24 +6,15 @@
 
     <div class="center-hud">
       <div class="top-center-hud">
-        <QuickVitals
-          v-for="row in getVitalEntities()"
+        <OverworldAllyVitals
+          v-for="row in getAllies()"
           :key="row.entity.id"
           :entity="row.entity"
           :name="row.name" 
         >
-        </QuickVitals>
-        <!-- <QuickVitals :entity="state.gameState.player" :name="state.gameState.player.name"></QuickVitals>
-        <QuickVitals
-          v-for="charmie in Object.values(state.gameState.charmies)"
-          :key="charmie.id"
-          :entity="charmie.stats"
-          :name="charmie.stats.name"
-        ></QuickVitals> -->
+        </OverworldAllyVitals>
       </div>
     </div>
-
-    <MobileInputControls v-if="state.options.hudCommandControls"></MobileInputControls>
 
     <div class="movement-controls-container" v-if="state.options.hudMovementControls">
       <MobileMovement></MobileMovement>
@@ -34,23 +25,31 @@
 <script setup>
 import { state } from '@/composables/state'
 
-// import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import MiniMap from '@/components/side-menu/MiniMap.vue'
 import MobileMovement from '@/components/main-area/MobileMovement.vue'
-import QuickVitals from '@/components/main-area/QuickVitals.vue'
-import MobileInputControls from '@/components/main-area/MobileInputControls.vue'
+import OverworldAllyVitals from '@/components/main-area/OverworldAllyVitals.vue'
 
-function getVitalEntities () {
+function getAllies () {
   let entities = [{
     entity: state.gameState.player,
     name: state.gameState.player.name
   }]
+
   for (let charmie of Object.values(state.gameState.charmies)) {
+    if (entities.find(e => e.entity.eid == charmie.stats.eid)) {
+      continue
+    }
+
     entities.push({
       entity: charmie.stats,
       name: charmie.stats.name
     })
+
     for (let subCharmie of Object.values(charmie.charmies)) {
+      if (entities.find(e => e.entity.eid == subCharmie.stats.eid)) {
+        continue
+      }
+
       entities.push({
         entity: subCharmie.stats,
         name: subCharmie.stats.name
@@ -81,13 +80,13 @@ function getVitalEntities () {
     padding-top: 5px;
     flex-basis: 100%;
     .top-center-hud {
+      padding-left: 10px;
       padding-right: 10px;
       overflow-y: scroll;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       height: 100%;
-      justify-content: space-between;
     }
   }
 }

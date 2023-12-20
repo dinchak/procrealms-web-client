@@ -1,6 +1,7 @@
 <template>
   <div class="input-wrapper">
     <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus :placeholder="getPlaceholder()" :class="state.activeTab" />
+    <MobileInputControls v-if="state.options.hudCommandControls"></MobileInputControls>
   </div>
 </template>
 
@@ -8,6 +9,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, addLine, setMode, prevMode } from '@/composables/state'
+
+import MobileInputControls from '@/components/main-area/MobileInputControls.vue'
 
 let input = ref(null)
 let text = ref('')

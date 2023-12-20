@@ -183,7 +183,13 @@ function getTab (name) {
 
 function getOutputClass () {
   let cls = 'output'
-  if (state.options.showQuickSlots && (state.gameState.slots.length > 0 || state.options.hideSidebar)) {
+  if (
+    state.options.showQuickSlots &&
+    (
+      state.gameState.slots.length > 0 ||
+      state.options.hideSidebar
+    )
+  ) {
     cls += ' show-quickslots'
   }
   if (state.gameState.battle.active) {
@@ -210,12 +216,20 @@ function getOutputClass () {
 
 function getScrollbackControlClass () {
   let cls = 'scrollback-control'
-  if (state.options.showQuickSlots && state.gameState.slots.length > 0) {
+  if (
+    state.options.showQuickSlots &&
+    (
+      state.gameState.slots.length > 0 ||
+      state.options.hideSidebar
+    )
+  ) {
     cls += ' show-quickslots'
   }
+
   if (state.gameState.battle.active) {
     cls += ' in-battle'
   }
+
   return cls
 }
 
@@ -328,7 +342,7 @@ onBeforeUnmount(() => {
 
   .scrollback-control {
     position: absolute;
-    bottom: 182px;
+    bottom: 177px;
     left: 0;
     right: 0;
     height: 40px;
@@ -342,13 +356,15 @@ onBeforeUnmount(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+
     &.show-quickslots {
-      bottom: 227px;
+      bottom: 232px;
     }
+
     &.in-battle {
-      bottom: 37px;
+      bottom: 35px;
       &.show-quickslots {
-        bottom: 93px;
+        bottom: 85px;
       }
     }
     .n-icon {
@@ -398,16 +414,16 @@ onBeforeUnmount(() => {
     // }
 
     &.show-quickslots {
-      height: ~"calc(100vh - 270px)";
+      height: ~"calc(100vh - 263px)";
       // &.tabs-hidden {
       //   height: ~"calc(100vh - 187px)";
       // }
     }
 
     &.in-battle {
-      height: ~"calc(100vh - 75px)";
+      height: ~"calc(100vh - 73px)";
       &.show-quickslots {
-        height: ~"calc(100vh - 130px)";
+        height: ~"calc(100vh - 123px)";
       }
     }
 

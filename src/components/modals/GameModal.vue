@@ -81,14 +81,14 @@ onBeforeUnmount(() => {
   background: rgba(0, 0, 0, 1);
   .close {
     margin: 0;
-    padding: 5px 10px;
+    padding: 10px;
     background-color: #111;
     position: absolute;
     top: 10px;
     right: 20px;
     font-size: 32px;
     z-index: 2;
-    line-height: 32px;
+    line-height: 16px;
     cursor: pointer;
     &:hover {
       background-color: #311;

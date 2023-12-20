@@ -98,7 +98,7 @@ function getSlotClass (slot) {
   flex-direction: row;
   margin-left: 8px;
   justify-content: space-between;
-  padding-bottom: 10px;
+  padding-bottom: 3px;
   .quick-actions {
     margin-left: 1px;
     margin-right: 8px;
