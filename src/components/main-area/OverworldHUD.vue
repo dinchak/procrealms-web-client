@@ -65,13 +65,13 @@ function getAllies () {
 .bottom-hud {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   height: 140px;
   .minimap-container {
     margin-left: 10px;
   }
   .movement-controls-container {
-    margin-right: 5px;
+    margin-right: 3px;
   }
   .center-hud {
     display: flex;

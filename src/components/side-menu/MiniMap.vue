@@ -25,9 +25,9 @@ function renderMap () {
 .minimap {
   user-select: none;
   white-space: pre;
-  font-size: 18px;
+  font-size: 19px;
   .line {
-    height: 18px;
+    height: 19px;
   }
 }
 </style>

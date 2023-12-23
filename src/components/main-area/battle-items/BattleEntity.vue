@@ -134,7 +134,7 @@ function getTargetName (participant) {
   .entity-info {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: 250px;
     .row {
       display: flex;
       flex-direction: row;

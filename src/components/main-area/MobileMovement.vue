@@ -174,12 +174,12 @@ onBeforeUnmount(() => {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 40px;
-      height: 40px;
+      width: 41px;
+      height: 41px;
       background-color: #333;
       transition: all 0.3s;
-      margin-bottom: 2px;
-      margin-right: 2px;
+      margin-bottom: 5px;
+      margin-right: 5px;
       &.active {
         opacity: 0.3;
         background-color: #222;
