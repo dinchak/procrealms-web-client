@@ -4,13 +4,13 @@
       <div class="name">{{ player().name }}</div>
       <div class="exp-row">
         <div class="level">
-          Level {{ player().level }} {{ player().class }}
+          Level <span class="bold-cyan">{{ player().level }}</span> {{ player().class }}
         </div>
         <div class="exp">
-          {{ player().xp }}/{{ player().xpForNextLevel }} EXP
+          <span class="bold-cyan">{{ player().xp }}</span><span class="black">/</span><span class="cyan">{{ player().xpForNextLevel }}</span> EXP
         </div>
         <div class="tnl">
-          {{ player().xpForNextLevel - player().xp }} TNL
+          <span class="bold-yellow">{{ player().xpForNextLevel - player().xp }}</span> TNL
         </div>
       </div>
       <div class="experience"></div>
@@ -468,7 +468,6 @@ watch(state.gameState.equipment, () => {
 .name {
   font-size: 24px;
   height: 36px;
-  font-weight: bold;
 }
 
 .grid-item {
@@ -483,15 +482,12 @@ watch(state.gameState.equipment, () => {
   align-items: center;
   .level {
     font-size: 16px;
-    font-weight: bold;
   }
   .exp {
     font-size: 16px;
-    font-weight: bold;
   }
   .tnl {
     font-size: 16px;
-    font-weight: bold;
   }
 }
 
