@@ -14,19 +14,8 @@
         tab-style="min-width: 80px;"
         ref="tabs"
       >
-        <n-tab-pane
-          name="score"
-          tab="Score"
-        >
-          <ScorePane></ScorePane>
-        </n-tab-pane>
-
-        <n-tab-pane
-          name="skills"
-          tab="Skills"
-        >
-          <div>This is the skills pane</div>
-        </n-tab-pane>
+        <n-tab-pane name="score" tab="Score"><ScorePane></ScorePane></n-tab-pane>
+        <n-tab-pane name="quests" tab="Quests"><QuestsPane></QuestsPane></n-tab-pane>
 
       </n-tabs>
     </n-card>
@@ -38,6 +27,7 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { NModal, NTabs, NCard, NTabPane } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
 
+import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 
 const tabs = ref(null)
@@ -58,8 +48,8 @@ function prevModalTab () {
 }
 
 function nextModalTab () {
-  currentPane.value = "skills"
-  state.gamepadTab = "skills"
+  currentPane.value = "quests"
+  state.gamepadTab = "quests"
   nextTick(() => tabs.value?.syncBarPosition())
 }
 
