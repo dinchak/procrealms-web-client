@@ -114,7 +114,7 @@ body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
-  font-family: 'Inconsolata', monospace;
+  font-family: 'DOS', monospace;
   font-size: 16px;
   color: #fff;
   overflow-x: hidden;
