@@ -192,11 +192,8 @@ function loadOptions() {
       state.options = Object.assign(state.options, options)
     }
 
-    // Set font options
     if (state.options.fontFamily) {
-      document.getElementsByTagName('body')[0].style.fontFamily = 'Inconsolata, monospace'
-    }  else {
-      document.getElementsByTagName('body')[0].style.fontFamily = 'DOS, monospace'
+      document.getElementsByTagName('body')[0].style.fontFamily = state.options.fontFamily
     }
 
     document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize
