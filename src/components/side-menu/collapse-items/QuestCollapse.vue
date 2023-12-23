@@ -5,7 +5,20 @@
       <div class="quest" v-for="quest in quests()" :key="quest.name">
         <div v-html-safe="getQuestName(quest)"></div>
         <div v-html-safe="getGivenBy(quest)"></div>
-        <div v-if="quest.location" v-html-safe="getLocation(quest)"></div>
+        <div v-if="quest.objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
+        <n-progress
+          v-if="quest.amount" 
+          :status="quest.progress < quest.amount ? 'default' : 'success'"
+          type="line"
+          :percentage="quest.progress / quest.amount * 100"
+        >
+          <span v-if="quest.progress < quest.amount">
+            {{ quest.progress }} of {{ quest.amount }}
+          </span>
+          <span class="bold-yellow" v-if="quest.progress >= quest.amount">
+            Complete
+          </span>
+        </n-progress>
 
         <div
           class="expand-link"
@@ -26,19 +39,6 @@
           Less Info
         </div>
 
-        <n-progress
-          v-if="quest.amount" 
-          :status="quest.progress < quest.amount ? 'default' : 'success'"
-          type="line"
-          :percentage="quest.progress / quest.amount * 100"
-        >
-          <span v-if="quest.progress < quest.amount">
-            {{ quest.progress }} of {{ quest.amount }}
-          </span>
-          <span class="bold-yellow" v-if="quest.progress >= quest.amount">
-            Complete
-          </span>
-        </n-progress>
       </div>
     </div>
   </n-collapse-item>
@@ -68,10 +68,6 @@ function getQuestName (quest) {
 
 function getGivenBy (quest) {
   return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
-}
-
-function getLocation (quest) {
-  return `Go to <span class="bold-white">${quest.location.name}</span> at <span class="bold-magenta">${quest.location.coords.x}</span>, <span class="bold-magenta">${quest.location.coords.y}</span>`
 }
 
 </script>
