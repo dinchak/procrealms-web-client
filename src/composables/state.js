@@ -117,7 +117,7 @@ function resetGameState () {
     radials: [],
     quests: [],
     party: [],
-    charmies: {},
+    charmies: [],
     room: {
       exits: [],
       entities: [],
