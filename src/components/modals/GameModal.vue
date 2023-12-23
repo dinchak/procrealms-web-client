@@ -18,7 +18,7 @@
           name="score"
           tab="Score"
         >
-          <div>This is the score pane</div>
+          <ScorePane></ScorePane>
         </n-tab-pane>
 
         <n-tab-pane
@@ -37,6 +37,8 @@
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { NModal, NTabs, NCard, NTabPane } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
+
+import ScorePane from '@/components/game-modal/ScorePane.vue'
 
 const tabs = ref(null)
 const currentPane = ref(state.gamepadTab || "score")
@@ -76,7 +78,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .game-modal {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   background: rgba(0, 0, 0, 1);
   .close {
