@@ -132,9 +132,9 @@ function resetOptions () {
   return {
     chatInMain: true,
     fixedMap: false,
-    fontFamily: 'Inconsolata, monospace',
+    fontFamily: 'DOS, monospace',
     fontSize: '16px',
-    hideSidebar: false,
+    hideSidebar: true,
     keepSentCommands: false,
     mapModalSize: 'medium',
     numPadMovement: true,
@@ -142,8 +142,8 @@ function resetOptions () {
     // showTabs: true,
     showMapArea: true,
     showQuickSlots: true,
-    hudMovementControls: false,
-    showOverlayMinimap: false,
+    hudMovementControls: true,
+    showOverlayMinimap: true,
     swapControls: false,
     wasdMovement: true,
 
