@@ -35,7 +35,7 @@ function getAllies () {
     name: state.gameState.player.name
   }]
 
-  for (let charmie of Object.values(state.gameState.charmies)) {
+  for (let charmie of state.gameState.charmies) {
     if (entities.find(e => e.entity.eid == charmie.stats.eid)) {
       continue
     }
@@ -45,7 +45,7 @@ function getAllies () {
       name: charmie.stats.name
     })
 
-    for (let subCharmie of Object.values(charmie.charmies)) {
+    for (let subCharmie of charmie.charmies) {
       if (entities.find(e => e.entity.eid == subCharmie.stats.eid)) {
         continue
       }
