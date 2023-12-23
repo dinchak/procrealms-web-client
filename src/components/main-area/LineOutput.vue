@@ -286,6 +286,7 @@ function selectNewbieTab () {
   onAfterChangeTab(currentPane.value)
 }
 
+let watchers = []
 onMounted(() => {
   dayjs.extend(relativeTime)
   onResize(doResize)
@@ -305,13 +306,13 @@ onMounted(() => {
   state.inputEmitter.on('selectTradeTab', selectTradeTab)
   state.inputEmitter.on('selectNewbieTab', selectNewbieTab)
 
-  watch(() => state.output.length, () => onChanged('output'))
-  watch(() => state.gameState.battle.active, () => onChanged('output'))
-  watch(() => state.chat.length, () => onChanged('chat'))
-  watch(() => state.trade.length, () => onChanged('trade'))
-  watch(() => state.newbie.length, () => onChanged('newbie'))
-  // watch(() => state.options.showTabs, () => doHideShowTabs())
-  watch(() => state.options.hideSidebar, () => doResize())
+  watchers.push(watch(() => state.output.length, () => onChanged('output')))
+  watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
+  watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
+  watchers.push(watch(() => state.chat.length, () => onChanged('chat')))
+  watchers.push(watch(() => state.trade.length, () => onChanged('trade')))
+  watchers.push(watch(() => state.newbie.length, () => onChanged('newbie')))
+  watchers.push(watch(() => state.options.hideSidebar, () => doResize()))
 })
 
 onBeforeUnmount(() => {
@@ -319,6 +320,10 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('selectChatTab', selectChatTab)
   state.inputEmitter.off('selectTradeTab', selectTradeTab)
   state.inputEmitter.off('selectNewbieTab', selectNewbieTab)
+
+  for (let watcher of watchers) {
+    watcher()
+  }
 })
 
 </script>
@@ -362,9 +367,9 @@ onBeforeUnmount(() => {
     }
 
     &.in-battle {
-      bottom: 35px;
+      bottom: 42px;
       &.show-quickslots {
-        bottom: 85px;
+        bottom: 92px;
       }
     }
     .n-icon {
@@ -403,27 +408,27 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: column;
     flex-basis: fit-content;
-    margin: 5px 10px 0 10px;
+    margin: 5px 10px 5px 10px;
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: ~"calc(100vh - 215px)";
+    height: ~"calc(100vh - 220px)";
 
     // &.tabs-hidden {
     //   height: ~"calc(100vh - 142px)";
     // }
 
     &.show-quickslots {
-      height: ~"calc(100vh - 263px)";
+      height: ~"calc(100vh - 270px)";
       // &.tabs-hidden {
       //   height: ~"calc(100vh - 187px)";
       // }
     }
 
     &.in-battle {
-      height: ~"calc(100vh - 73px)";
+      height: ~"calc(100vh - 80px)";
       &.show-quickslots {
-        height: ~"calc(100vh - 123px)";
+        height: ~"calc(100vh - 130px)";
       }
     }
 
