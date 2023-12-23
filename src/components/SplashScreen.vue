@@ -126,6 +126,7 @@ onBeforeUnmount(() => {
     background-color: rgba(0, 0, 0, 0.6);
     padding: 5px 10px;
     border-radius: 4px;
+    margin-bottom: 10px;
   }
 
   .login-controls {
