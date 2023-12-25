@@ -5,8 +5,6 @@
     <NGi class="quest" v-for="quest in quests()" :key="quest.name">
       <div class="name" v-html-safe="getQuestName(quest)"></div>
       <div class="giver" v-html-safe="getGivenBy(quest)"></div>
-      <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
-
       <NProgress
         v-if="quest.amount" 
         :status="quest.progress < quest.amount ? 'default' : 'success'"
@@ -21,7 +19,8 @@
           Complete
         </span>
       </NProgress>
-      <!-- <pre>{{ quest }}</pre> -->
+
+      <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
 
       <div
         class="expand-link"
@@ -71,7 +70,8 @@ function getGivenBy (quest) {
 <style lang="less" scoped>
 .quests {
   .quest {
-    padding: 5px;
+    padding: 5px 0;
+    margin: 10px 5px;
     .name {
       font-size: 20px;
       line-height: 20px;
@@ -79,22 +79,18 @@ function getGivenBy (quest) {
       text-decoration-color: #333;
     }
     .giver {
-      font-size: 16px;
-      line-height: 16px;
+      font-size: 14px;
+      line-height: 14px;
     }
     .objective {
       white-space: pre-wrap;
       font-size: 16px;
       line-height: 16px;
-      margin-top: 10px;
     }
     .desc {
       white-space: pre-wrap;
       font-size: 16px;
       line-height: 16px;
-      margin-top: 10px;
-    }
-    .expand-link {
       margin-top: 10px;
     }
     .n-progress {

@@ -3,7 +3,7 @@
     <n-icon 
       v-if="state.options.overlayControls"
       :class="state.modals.gameModal ? 'active' : ''"
-      size="32"
+      size="24"
       @click="toggleSettings"
     >
       <SettingsFilled />
@@ -12,7 +12,7 @@
     <n-icon 
       v-if="state.options.overlayControls"
       :class="state.modals.mapModal ? 'active' : ''"
-      size="32"
+      size="24"
       @click="toggleMap()"
     >
       <MapOutlined />
@@ -20,7 +20,7 @@
     
     <n-icon
       :class="!state.options.hideSidebar ? 'active' : ''"
-      size="32"
+      size="24"
       @click="state.options.hideSidebar = !state.options.hideSidebar"
     >
       <MenuOutlined />

@@ -171,9 +171,9 @@ onBeforeUnmount(() => {
     }
 
     .entity {
-      align-items: center;
+      // align-items: center;
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       
       .damage {
         opacity: 0;
@@ -258,7 +258,7 @@ onBeforeUnmount(() => {
 //   }
 // }
 
-@media screen and (max-width: 850px) {
+@media screen and (max-width: 800px) {
   .battle-status {
     flex-direction: column;
   }
