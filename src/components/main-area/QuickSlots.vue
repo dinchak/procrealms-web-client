@@ -1,28 +1,28 @@
 <template>
   <div class="quick-container">
-    <div class="quick-actions" v-show="state.activeTab == 'output' && state.options.hideSidebar">
-      <div class="quick-slot battle selectable" v-if="state.gameState.battle.active" @click="cmd('attack')">
+    <div class="quick-actions" v-show="state.activeTab == 'output'">
+      <div class="quick-slot battle selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('attack')">
         <div class="slot-label"><span class="bold-yellow">A</span><span class="bold-red">ttack</span></div>
       </div>
-      <div class="quick-slot loot selectable" v-if="state.gameState.battle.active" @click="cmd('defend')">
+      <div class="quick-slot loot selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('defend')">
         <div class="slot-label"><span class="bold-yellow">D</span><span class="bold-cyan">efend</span></div>
       </div>
-      <div class="quick-slot harvest selectable" v-if="state.gameState.battle.active" @click="cmd('flee')">
+      <div class="quick-slot harvest selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('flee')">
         <div class="slot-label"><span class="bold-yellow">F</span><span class="yellow">lee</span></div>
       </div>
 
-      <div class="quick-slot battle selectable" v-if="!state.gameState.battle.active" @click="cmd('battle')">
+      <div class="quick-slot battle selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('battle')">
         <div class="slot-label"><span class="bold-yellow">B</span><span class="bold-red">attle</span></div>
       </div>
-      <div class="quick-slot harvest selectable" v-if="!state.gameState.battle.active" @click="cmd('harvest')">
+      <div class="quick-slot harvest selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('harvest')">
         <div class="slot-label"><span class="bold-yellow">H</span><span class="yellow">arvest</span></div>
       </div>
-      <div class="quick-slot loot selectable" v-if="!state.gameState.battle.active" @click="cmd('loot')">
+      <div class="quick-slot loot selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('loot')">
         <div class="slot-label"><span class="bold-yellow">L</span><span class="bold-cyan">oot</span></div>
       </div>
-    </div>
+    <!-- </div>
 
-    <div class="quick-slots" v-show="slots().length && state.activeTab == 'output'">
+    <div class="quick-slots" v-show="slots().length && state.activeTab == 'output'"> -->
       <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
         <n-progress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success" :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100" :show-indicator="false" />
         <div class="slot-label">{{ slot.label }}</div>
@@ -102,6 +102,7 @@ function getSlotClass (slot) {
   .quick-actions {
     margin-left: 1px;
     margin-right: 8px;
+    overflow-x: scroll;
   }
 
   .quick-slots {
@@ -241,13 +242,6 @@ function getSlotClass (slot) {
         z-index: 5;
       }
     }
-  }
-}
-
-@media screen and (max-width: 1000px) {
-  .quick-slots {
-    // justify-content: space-between;
-    overflow-x: scroll;
   }
 }
 </style>
