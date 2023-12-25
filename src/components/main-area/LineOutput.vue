@@ -347,7 +347,7 @@ onBeforeUnmount(() => {
 
   .scrollback-control {
     position: absolute;
-    bottom: 177px;
+    bottom: 182px;
     left: 0;
     right: 0;
     height: 40px;
