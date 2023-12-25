@@ -29,7 +29,6 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { state, setMode } from '@/composables/state'
 import { NLayout } from 'naive-ui'
 
-// import BattleHUD from '@/components/main-area/BattleHUD.vue'
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
