@@ -212,7 +212,7 @@ function quickSlotEquals () {
 }
 
 function showDebug () {
-  let json = JSON.stringify(state.gameState, null, 2)
+  let json = JSON.stringify(state.gameState.player, null, 2)
   let lines = json.split('\n')
   for (let line of lines) {
     addLine(line, 'output')
