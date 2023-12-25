@@ -70,6 +70,10 @@ export function useHelpers () {
   }
 
   function ansiToHtml (str) {
+    if (typeof str !== 'string') {
+      return ''
+    }
+
     for (let { from, to } of replacements) {
       str = str.replace(new RegExp(from, 'g'), to)
     }
