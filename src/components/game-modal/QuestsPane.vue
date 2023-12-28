@@ -1,47 +1,49 @@
 <template>
-  <NGrid class="quests" cols="1 800:2">
-    <NGi v-if="quests().length == 0">You don't have any quests.</NGi>
+  <div class="scroll-container">
+    <NGrid class="quests" cols="1 800:2">
+      <NGi v-if="quests().length == 0">You don't have any quests.</NGi>
 
-    <NGi class="quest" v-for="quest in quests()" :key="quest.name">
-      <div class="name" v-html-safe="getQuestName(quest)"></div>
-      <div class="giver" v-html-safe="getGivenBy(quest)"></div>
-      <NProgress
-        v-if="quest.amount" 
-        :status="quest.progress < quest.amount ? 'default' : 'success'"
-        type="line"
-        :percentage="quest.progress / quest.amount * 100"
-        :border-radius="0"
-      >
-        <span v-if="quest.progress < quest.amount">
-          {{ quest.progress }} of {{ quest.amount }}
-        </span>
-        <span class="bold-yellow" v-if="quest.progress >= quest.amount">
-          Complete
-        </span>
-      </NProgress>
+      <NGi class="quest" v-for="quest in quests()" :key="quest.name">
+        <div class="name" v-html-safe="getQuestName(quest)"></div>
+        <div class="giver" v-html-safe="getGivenBy(quest)"></div>
+        <NProgress
+          v-if="quest.amount" 
+          :status="quest.progress < quest.amount ? 'default' : 'success'"
+          type="line"
+          :percentage="quest.progress / quest.amount * 100"
+          :border-radius="0"
+        >
+          <span v-if="quest.progress < quest.amount">
+            {{ quest.progress }} of {{ quest.amount }}
+          </span>
+          <span class="bold-yellow" v-if="quest.progress >= quest.amount">
+            Complete
+          </span>
+        </NProgress>
 
-      <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
+        <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
 
-      <div
-        class="expand-link"
-        v-if="quest.desc && !questsExpanded[quest.name]"
-        @click="questsExpanded[quest.name] = true"
-      >
-        More Info
-      </div>
-      
-      <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
+        <div
+          class="expand-link"
+          v-if="quest.desc && !questsExpanded[quest.name]"
+          @click="questsExpanded[quest.name] = true"
+        >
+          More Info
+        </div>
+        
+        <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
 
-      <div
-        class="expand-link"
-        v-if="quest.desc && questsExpanded[quest.name] && questsExpanded[quest.name]"
-        @click="questsExpanded[quest.name] = false"
-      >
-        Less Info
-      </div>
+        <div
+          class="expand-link"
+          v-if="quest.desc && questsExpanded[quest.name] && questsExpanded[quest.name]"
+          @click="questsExpanded[quest.name] = false"
+        >
+          Less Info
+        </div>
 
-    </NGi>
-  </NGrid>
+      </NGi>
+    </NGrid>
+  </div>
 </template>
 
 <script setup>
@@ -68,33 +70,38 @@ function getGivenBy (quest) {
 
 </script>
 <style lang="less" scoped>
-.quests {
-  .quest {
-    padding: 5px 0;
-    margin: 10px 5px;
-    .name {
-      font-size: 20px;
-      line-height: 20px;
-      text-decoration: underline;
-      text-decoration-color: #333;
-    }
-    .giver {
-      font-size: 14px;
-      line-height: 14px;
-    }
-    .objective {
-      white-space: pre-wrap;
-      font-size: 16px;
-      line-height: 16px;
-    }
-    .desc {
-      white-space: pre-wrap;
-      font-size: 16px;
-      line-height: 16px;
-      margin-top: 10px;
-    }
-    .n-progress {
-      max-width: 300px;
+.scroll-container {
+  height: calc(100vh - 225px);
+  overflow-y: scroll;
+
+  .quests {
+    .quest {
+      padding: 5px 0;
+      margin: 10px 5px;
+      .name {
+        font-size: 20px;
+        line-height: 22px;
+        text-decoration: underline;
+        text-decoration-color: #333;
+      }
+      .giver {
+        font-size: 14px;
+        line-height: 16px;
+      }
+      .objective {
+        white-space: pre-wrap;
+        font-size: 16px;
+        line-height: 18px;
+      }
+      .desc {
+        white-space: pre-wrap;
+        font-size: 16px;
+        line-height: 18px;
+        margin-top: 10px;
+      }
+      .n-progress {
+        max-width: 300px;
+      }
     }
   }
 }
