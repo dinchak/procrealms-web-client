@@ -6,8 +6,21 @@ const ansi_up = new AU.default
 ansi_up.use_classes = true
 
 const ansi = {
+  black: String.fromCharCode(27) + '[30m',
+  red: String.fromCharCode(27) + '[31m',
+  green: String.fromCharCode(27) + '[32m',
+  yellow: String.fromCharCode(27) + '[33m',
+  blue: String.fromCharCode(27) + '[34m',
+  magenta: String.fromCharCode(27) + '[35m',
+  cyan: String.fromCharCode(27) + '[36m',
+  white: String.fromCharCode(27) + '[37m',
   boldBlack: String.fromCharCode(27) + '[90m',
   boldRed: String.fromCharCode(27) + '[91m',
+  boldGreen: String.fromCharCode(27) + '[92m',
+  boldYellow: String.fromCharCode(27) + '[93m',
+  boldBlue: String.fromCharCode(27) + '[94m',
+  boldMagenta: String.fromCharCode(27) + '[95m',
+  boldCyan: String.fromCharCode(27) + '[96m',
   boldWhite: String.fromCharCode(27) + '[97m',
   reset: String.fromCharCode(27) + '[0m'
 }
@@ -283,7 +296,34 @@ export function useHelpers () {
     return nearestElement  
   }
 
+  function ucfirst (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+
+  function renderNumber (value, digits = 2) {
+    if (typeof value != 'number') {
+      return value
+    }
+    if (value == Math.floor(value)) return Math.round(value) + ''
+    return value.toFixed(digits)
+  }
+
+  function listToString (list, seperator='and') {
+    if (!list) {
+      return ''
+    }
+
+    if (list.length == 1) {
+      return list[0]
+    }
+
+    let firstItems = list.slice(0, list.length - 1)
+    let lastItem = list[list.length - 1]
+
+    return `${firstItems.join(', ')} ${seperator} ${lastItem}`
+  }
+
   return {
-    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement
+    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString
   }
 }

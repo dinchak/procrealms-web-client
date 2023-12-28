@@ -501,22 +501,17 @@ import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
 import { constants } from '@/composables/constants/constants'
 import { useWebSocket } from '@/composables/web_socket'
+import { useHelpers } from '@/composables/helpers'
 
 const { cmd, fetchItem } = useWebSocket()
+const { renderNumber } = useHelpers()
+
 const props = defineProps(['character', 'equipment', 'isPlayer'])
 
 const weapon = ref({})
 
 function player () {
   return props.character || {}
-}
-
-function renderNumber (value, digits = 2) {
-  if (typeof value == 'undefined') {
-    return 0
-  }
-  if (value == Math.floor(value)) return Math.round(value) + ''
-  return value.toFixed(digits)
 }
 
 function addStatPoint (stat) {
