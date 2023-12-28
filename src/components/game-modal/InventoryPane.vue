@@ -63,6 +63,10 @@
               </div>
             </div>
 
+            <div class="actions">
+              <NButton ghost v-for="action in getActions(item)" :key="action.label" :onClick="action.onClick" :class="action.class" :disabled="action.disabled">{{ action.label }}</NButton>
+            </div>
+
           </div>
 
         </div>
@@ -73,14 +77,14 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { NGrid, NGi } from 'naive-ui'
+import { NGrid, NGi, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { constants } from '@/composables/constants/constants'
 
 const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, ansi, listToString } = useHelpers()
-const { fetchItems } = useWebSocket()
+const { fetchItems, fetchItem, cmd } = useWebSocket()
 
 const items = ref([])
 const selectedItem = ref({})
@@ -302,6 +306,103 @@ function renderSkillsRequired (item) {
   return listToString(item.skillsRequired.map(req => `<span class="bold-green">${req.name}</span> (level <span class="bold-white">${req.level}</span>)`))
 }
 
+async function updateItem (iid) {
+  delete state.cache.itemCache[iid]
+  let oldItem = items.value[items.value.findIndex(i => i.iid == iid)]
+  let newItem = await fetchItem(iid)
+  items.value[items.value.findIndex(i => i.iid == iid)] = newItem
+  if (selectedItem.value == oldItem) {
+    selectedItem.value = newItem
+  }
+}
+
+function getActions (item) {
+  console.log(item)
+  
+  let actions = [{
+    label: 'Drop',
+    onClick: () => cmd(`drop iid:${item.iid}`),
+    class: 'bold-red',
+    disabled: false
+  }]
+
+  if (item.keeping) {
+    actions.push({
+      label: 'Unkeep',
+      onClick: () => {
+        cmd(`unkeep iid:${item.iid}`)
+        updateItem(item.iid)
+      },
+      class: 'bold-yellow',
+      disabled: false
+    })
+  } else {
+    actions.push({
+      label: 'Keep',
+      onClick: () => {
+        cmd(`keep iid:${item.iid}`)
+        updateItem(item.iid)
+      },
+      class: 'bold-green',
+      disabled: false
+    })
+  }
+
+  if (state.gameState.room.flags.includes('store')) {
+    actions.push({
+      label: 'Sell',
+      onClick: () => cmd(`sell iid:${item.iid}`),
+      class: 'bold-green',
+      disabled: false
+    })
+  } else {
+    actions.push({
+      label: 'Sell',
+      onClick: () => cmd(`sell iid:${item.iid}`),
+      class: 'bold-green',
+      disabled: true
+    })
+  }
+
+  if (item.type == 'weapon') {
+    actions.push({
+      label: 'Wield',
+      onClick: () => cmd(`wield iid:${item.iid}`),
+      class: 'bold-red',
+      disabled: false
+    })
+  }
+
+  if (item.type == 'armor') {
+    actions.push({
+      label: 'Wear',
+      onClick: () => cmd(`wield iid:${item.iid}`),
+      class: 'bold-red',
+      disabled: false
+    })
+  }
+
+  if (item.type == 'weapon' || item.type == 'armor') {
+    actions.push({
+      label: 'Compare',
+      onClick: () => cmd(`compare iid:${item.iid}`),
+      class: 'bold-yellow',
+      disabled: false
+    })
+  }
+
+  if (item.type == 'weapon' || item.type == 'armor' || item.type == 'tool') {
+    actions.push({
+      label: 'Salvage',
+      onClick: () => cmd(`salvage iid:${item.iid}`),
+      class: 'bold-yellow',
+      disabled: false
+    })
+  }
+
+  return actions
+}
+
 let watchers = []
 onMounted(async () => {
   items.value = await fetchItems(state.gameState.inventory)
@@ -467,7 +568,19 @@ onBeforeUnmount(() => {
               text-align: left;
             }
           }
-        
+        }
+
+        .actions {
+          display: flex;
+          flex-direction: row;
+          padding: 0 10px 0px 10px;
+          background: #111;
+          flex-wrap: wrap;
+
+          .n-button {
+            margin-right: 10px;
+            margin-bottom: 10px;
+          }
         }
       }
     }
