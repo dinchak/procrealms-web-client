@@ -103,7 +103,6 @@ function selectPrevRadialMenu () {
   } else {
     selectedRadial.value--
   }
-  console.log(`selectedRadial: ${selectedRadial.value}`)
 }
 
 function selectNextRadialMenu () {
@@ -112,7 +111,6 @@ function selectNextRadialMenu () {
   } else {
     selectedRadial.value++
   }
-  console.log(`selectedRadial: ${selectedRadial.value}`)
 }
 
 function getSuggestedCommands () {

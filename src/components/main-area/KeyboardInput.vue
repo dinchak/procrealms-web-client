@@ -29,7 +29,6 @@ function blurTextInput () {
 }
 
 function onFocus () {
-  console.log(`keyboard input onFocus`)
   setMode('input')
 }
 

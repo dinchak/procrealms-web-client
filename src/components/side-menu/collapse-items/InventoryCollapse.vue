@@ -128,7 +128,6 @@ function clickHandler(item) {
 
 // Setters
 function onFocus() {
-  console.log(`keyboard input onFocus`)
   setMode('input')
 }
 

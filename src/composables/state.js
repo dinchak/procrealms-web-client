@@ -532,7 +532,6 @@ export function addLine (line, bufferName) {
   if (typeof line.matchAll == 'function') {
     let suggestedCommands = line.matchAll(/<span style="text-decoration:underline" class="ansi-bright-white-fg">([a-zA-Z ]+)<\/span>/g)
     for (let command of suggestedCommands) {
-      console.log(command[1])
       addSuggestedCommand(command[1])
     }
   }
