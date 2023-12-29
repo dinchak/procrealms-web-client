@@ -48,6 +48,12 @@ function openGameModal () {
   state.modals.gameModal = true
 }
 
+function openScore () {
+  setMode('modal')
+  state.modals.gameModal = true
+  state.gamepadTab = "score"
+}
+
 function openInventory () {
   setMode('modal')
   state.modals.gameModal = true
@@ -67,14 +73,16 @@ function openHelpModal () {
 
 onMounted(() => {
   state.inputEmitter.on('openGameModal', openGameModal)
-  state.inputEmitter.on('openInventory', openInventory)
   state.inputEmitter.on('openHelpModal', openHelpModal)
+  state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
+  state.inputEmitter.on('openInventory', openInventory)
 })
 
 onBeforeUnmount(() => {
   state.inputEmitter.off('openGameModal', openGameModal)
   state.inputEmitter.off('openInventory', openInventory)
+  state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
   state.inputEmitter.off('openQuests', openQuests)
 })
