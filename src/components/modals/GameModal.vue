@@ -2,8 +2,8 @@
   <n-modal
     v-model:show="state.modals.gameModal"
     title="Game Menu"
-    @after-enter="scrollDown"
-    @after-leave="closeModal"
+    @after-enter="onOpenModal"
+    @after-leave="onCloseModal"
     class="game-modal"
   >
 
@@ -45,7 +45,15 @@ import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 
 const tabs = ref(null)
-const currentPane = ref(state.gamepadTab || "score")
+const currentPane = ref("score")
+
+function onCloseModal () {
+  closeModal()
+}
+
+function onOpenModal () {
+  currentPane.value = state.gamepadTab || "score"
+}
 
 function closeModal () {
   if (!state.modals.gameModal) {
@@ -103,6 +111,7 @@ onMounted(() => {
   state.inputEmitter.on('closeModal', closeModal)
   state.inputEmitter.on('prevModalTab', prevModalTab)
   state.inputEmitter.on('nextModalTab', nextModalTab)
+
   watchers.push(
     watch(state.output, () => onOutputChanged())
   )
@@ -114,6 +123,7 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('closeModal', closeModal)
   state.inputEmitter.off('prevModalTab', prevModalTab)
   state.inputEmitter.off('nextModalTab', nextModalTab)
+
   watchers.forEach(w => w())
 })
 </script>
