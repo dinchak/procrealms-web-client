@@ -39,7 +39,7 @@ const replacements = [
 export function useHelpers () {
   function copperToMoneyString (amount, short) {
     let valueString = ''
-    let copperString = amount.toString()
+    let copperString = (amount || 0).toString()
 
     const gold = short ? 'g ' : ' gold, '
     const silver = short ? 's ' : ' silver, '
@@ -297,6 +297,9 @@ export function useHelpers () {
   }
 
   function ucfirst (str) {
+    if (typeof str !== 'string') {
+      return ''
+    }
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
