@@ -85,7 +85,7 @@ async function updateItem (iid) {
 }
 
 function getActions (item) {
-    let actions = [{
+  let actions = [{
     label: 'Drop',
     onClick: () => cmd(`drop iid:${item.iid}`),
     class: 'bold-red',
