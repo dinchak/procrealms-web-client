@@ -21,6 +21,7 @@
           <n-tab-pane name="score" tab="Score"><ScorePane></ScorePane></n-tab-pane>
           <n-tab-pane name="quests" tab="Quests"><QuestsPane></QuestsPane></n-tab-pane>
           <n-tab-pane name="inventory" tab="Inventory"><InventoryPane></InventoryPane></n-tab-pane>
+          <n-tab-pane name="equipment" tab="Equipment"><EquipmentPane></EquipmentPane></n-tab-pane>
 
         </n-tabs>
 
@@ -39,6 +40,7 @@ import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { NModal, NTabs, NTabPane } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
 
+import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import QuestsPane from '@/components/game-modal/QuestsPane.vue'
