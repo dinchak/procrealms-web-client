@@ -1,6 +1,6 @@
 <template>
   <div class="input-wrapper">
-    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" autofocus :placeholder="getPlaceholder()" :class="state.activeTab" />
+    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
     <MobileInputControls v-if="state.options.hudCommandControls"></MobileInputControls>
   </div>
 </template>
@@ -243,6 +243,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  onBlur()
   state.inputEmitter.off('focusTextInput', focusTextInput)
   state.inputEmitter.off('blurTextInput', blurTextInput)
   state.inputEmitter.off('sendCommand', sendCommand)
