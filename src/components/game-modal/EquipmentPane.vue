@@ -2,9 +2,14 @@
   <div class="scroll-container">
     <NGrid class="equipment" cols="1">
       <NGi v-for="(iid, slot) in state.gameState.equipment" :key="slot">
-        <div class="slot">
-          <div class="label">{{ slot }}</div>
-          <div class="item" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
+        <div class="slot" @click="selectIid(iid)">
+          <div class="row">
+            <div class="label">{{ slot }}</div>
+            <div class="item" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
+          </div>
+          <div class="row details">
+            <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+          </div>
         </div>
       </NGi>
     </NGrid>
@@ -18,10 +23,28 @@ import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml } = useHelpers()
-const { fetchItems } = useWebSocket()
+import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
+const { ansiToHtml } = useHelpers()
+const { cmd, fetchItems, fetchItem } = useWebSocket()
+
+const selectedIid = ref(0)
+const selectedItem = ref({})
 const equipment = ref([])
+
+async function selectIid (iid) {
+  if (!iid) {
+    return
+  }
+
+  if (selectedIid.value == iid) {
+    selectedIid.value = 0
+    return
+  }
+
+  selectedIid.value = iid
+  selectedItem.value = await fetchItem(iid)
+}
 
 function getItemFullName (iid) {
   const item = equipment.value.find(item => item.iid == iid)
@@ -29,6 +52,15 @@ function getItemFullName (iid) {
     return ''
   }
   return ansiToHtml(item.fullName)
+}
+
+function getActions (iid) {
+  return [{
+    label: 'Remove',
+    onClick: () => cmd(`remove iid:${iid}`),
+    class: 'bold-red',
+    disabled: false
+  }]
 }
 
 let watchers = []
@@ -55,16 +87,34 @@ onBeforeUnmount(() => {
   .equipment {
     .slot {
       display: flex;
-      flex-direction: row;
-      .label {
-        width: 80px;
-        text-align: right;
-        padding: 0 10px;
+      flex-direction: column;
+      font-size: 16px;
+      padding: 5px 10px;
+      cursor: pointer;
+      // background: #111;
+
+      &:hover, &.selected {
+        background: #121;
       }
-      .item {
-        flex: 1;
-        text-align: left;
-        padding: 0 10px;
+
+      .row {
+        display: flex;
+        flex-direction: row;
+
+        &.details {
+          padding-left: 105px;
+        }
+
+        .label {
+          width: 80px;
+          text-align: right;
+          padding: 0 10px;
+        }
+        .item {
+          flex: 1;
+          text-align: left;
+          padding: 0 10px;
+        }
       }
     }
   }
