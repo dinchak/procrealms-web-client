@@ -73,6 +73,11 @@ function onKeyDown (ev) {
 
       console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
       state.inputEmitter.emit(mapping.event)
+      ev.preventDefault()
+
+      if (mapping.stopLoop) {
+        return
+      }
     }
   }
 }
