@@ -479,6 +479,11 @@ function resetInputMappings () {
       modes: ['hotkey', 'input'],
       inBattle: true
     }, {
+      label: 'Open Score',
+      event: 'openScore',
+      keyCodes: ['KeyT'],
+      modes: ['hotkey']
+    }, {
       label: 'Open Inventory',
       event: 'openInventory',
       keyCodes: ['KeyI'],
