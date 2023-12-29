@@ -207,12 +207,13 @@ function resetInputMappings () {
       label: 'Focus Text Input',
       event: 'focusTextInput',
       keyCodes: ['Enter'],
-      modes: ['hotkey']
+      modes: ['hotkey'],
+      stopLoop: true
     }, {
       label: 'Blur Text Input',
       event: 'blurTextInput',
       keyCodes: ['Escape'],
-      modes: ['input']
+      modes: ['input'],
     }, {
       label: 'Send Command',
       event: 'sendCommand',
@@ -395,12 +396,12 @@ function resetInputMappings () {
       event: 'closeModal',
       keyCodes: ['Escape'],
       gamepadButtons: [1],
-      modes: ['modal']
+      modes: ['modal'],
     }, {
-      label: 'Open Gamepad Modal',
+      label: 'Show Game Modal',
       event: 'openGameModal',
       gamepadButtons: [9],
-      modes: ['hotkey', 'input'] 
+      modes: ['hotkey', 'input'],
     }, {
       label: 'Previous Modal Tab',
       event: 'prevModalTab',
@@ -477,7 +478,17 @@ function resetInputMappings () {
       gamepadButtons: [0],
       modes: ['hotkey', 'input'],
       inBattle: true
-    }, 
+    }, {
+      label: 'Open Inventory',
+      event: 'openInventory',
+      keyCodes: ['KeyI'],
+      modes: ['hotkey']
+    }, {
+      label: 'Open Quests',
+      event: 'openQuests',
+      keyCodes: ['KeyQ'],
+      modes: ['hotkey']
+    }
   ]
 }
 
@@ -495,7 +506,6 @@ function addSuggestedCommand (command) {
 
 let preloadBuffers = {}
 let addLinesTimeout = null
-let setModeTimeout = null
 const maxLines = 2000
 const removeLines = 500
 
@@ -505,16 +515,9 @@ export function resetMode () {
 }
 
 export function setMode (newMode) {
-  if (setModeTimeout) {
-    clearTimeout(setModeTimeout)
-  }
-
-  setModeTimeout = setTimeout(() => {
-    state.prevModes.push(state.mode)
-    state.mode = newMode
-    setModeTimeout = null
-    console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
-  })
+  state.prevModes.push(state.mode)
+  state.mode = newMode
+  console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
 }
 
 export function prevMode () {
