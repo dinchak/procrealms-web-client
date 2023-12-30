@@ -107,14 +107,25 @@
       </NGi>
     </NGrid>
 
+    <div class="points-available" v-if="player().abilityPoints > 0">
+      You have {{ player().abilityPoints }} ability point{{ player().abilityPoints > 1 ? 's' : '' }} available to spend.
+    </div>
+
     <NGrid cols="2 800:4">
       <NGi class="grid-item">
         <div class="ability-point">
-          <div class="value">
+          <div class="ability-point-value">
             <span class="bold-red">{{ player().strength }}</span> <span class="black">+</span>
             <span class="red">{{ player().strength - player()._strength }}</span>
           </div>
-          <div class="label bold-red">Strength</div>
+          <div class="ability-point-label bold-red">Strength</div>
+
+          <div class="add-point-button" v-if="player().abilityPoints > 0">
+            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point strength')">
+              <NIcon><AddFilled></AddFilled></NIcon>
+            </NButton>
+          </div>
+
           <div class="ability-bonus">
             <div class="value bold-green">{{ player().strengthHpBonus }}</div>
             <div class="label">Max Health</div>
@@ -136,11 +147,16 @@
 
       <NGi class="grid-item">
         <div class="ability-point">
-          <div class="value">
+          <div class="ability-point-value">
             <span class="bold-yellow">{{ player().agility }}</span> <span class="black">+</span>
             <span class="yellow">{{ player().agility - player()._agility }}</span>
           </div>
-          <div class="label bold-yellow">Agility</div>
+          <div class="ability-point-label bold-yellow">Agility</div>
+          <div class="add-point-button" v-if="player().abilityPoints > 0">
+            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point agility')">
+              <NIcon><AddFilled></AddFilled></NIcon>
+            </NButton>
+          </div>
           <div class="ability-bonus">
             <div class="value bold-yellow">{{ player().agilitySpeedBonus }}</div>
             <div class="label">Speed</div>
@@ -162,11 +178,16 @@
 
       <NGi class="grid-item">
         <div class="ability-point">
-          <div class="value">
+          <div class="ability-point-value">
             <span class="bold-cyan">{{ player().magic }}</span> <span class="black">+</span>
             <span class="cyan">{{ player().magic - player()._magic }}</span>
           </div>
-          <div class="label bold-cyan">Magic</div>
+          <div class="ability-point-label bold-cyan">Magic</div>
+          <div class="add-point-button" v-if="player().abilityPoints > 0">
+            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point magic')">
+              <NIcon><AddFilled></AddFilled></NIcon>
+            </NButton>
+          </div>
           <div class="ability-bonus">
             <div class="value bold-white">{{ player().magicEnergyBonus }}</div>
             <div class="label">Max Energy</div>
@@ -188,11 +209,16 @@
 
       <NGi class="grid-item">
         <div class="ability-point">
-          <div class="value">
+          <div class="ability-point-value">
             <span class="bold-green">{{ player().spirit }}</span> <span class="black">+</span>
             <span class="green">{{ player().spirit - player()._spirit }}</span>
           </div>
-          <div class="label bold-green">Spirit</div>
+          <div class="ability-point-label bold-green">Spirit</div>
+          <div class="add-point-button" v-if="player().abilityPoints > 0">
+            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point spirit')">
+              <NIcon><AddFilled></AddFilled></NIcon>
+            </NButton>
+          </div>
           <div class="ability-bonus">
             <div class="value bold-white">{{ player().spiritEnergyBonus }}</div>
             <div class="label">Max Energy</div>
@@ -325,7 +351,7 @@
     <NGrid cols="1 600:3">
       <NGi class="grid-item">
         <div class="resistance">
-          <div class="label"><span class="bold-red">Physical</span> Resistance</div>
+          <div class="resistance-label"><span class="bold-red">Physical</span> Resistance</div>
           <div class="resistance-row">
             <div class="value bold-magenta">{{ player().resistBludgeoning }}</div>
             <div class="label">Bludgeoning</div>
@@ -343,7 +369,7 @@
 
       <NGi class="grid-item">
         <div class="resistance">
-          <div class="label"><span class="bold-cyan">Magic</span> Resistance</div>
+          <div class="resistance-label"><span class="bold-cyan">Magic</span> Resistance</div>
           <div class="resistance-row">
             <div class="value bold-cyan">{{ player().resistArcane }}</div>
             <div class="label">Arcane</div>
@@ -365,7 +391,7 @@
 
       <NGi class="grid-item">
         <div class="resistance">
-          <div class="label"><span class="bold-green">Spirit</span> Resistance</div>
+          <div class="resistance-label"><span class="bold-green">Spirit</span> Resistance</div>
           <div class="resistance-row">
             <div class="value bold-white">{{ player().resistAcid }}</div>
             <div class="label">Acid</div>
@@ -388,13 +414,15 @@
 <script setup>
 import { onMounted, watch, ref } from 'vue'
 import { state } from '@/composables/state'
-import { NGrid, NGi, NProgress } from 'naive-ui'
+import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
+
+import AddFilled from '@vicons/material/AddFilled'
 
 import { constants } from '@/composables/constants/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { fetchItem } = useWebSocket()
+const { cmd, fetchItem } = useWebSocket()
 const { ucfirst, renderNumber } = useHelpers()
 
 const weapon = ref({})
@@ -461,6 +489,13 @@ watch(state.gameState.equipment, () => {
   height: calc(100vh - 225px);
   overflow-y: scroll;
 
+  .points-available {
+    font-size: 16px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
   .name {
     font-size: 24px;
     height: 36px;
@@ -514,19 +549,27 @@ watch(state.gameState.equipment, () => {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    .value {
+    .ability-point-value {
       font-size: 32px;
       line-height: 32px;
       width: 100%;
       text-align: center;
       padding-right: 10px;
+      padding-bottom: 0px;
+      padding-top: 5px;
     }
-    .label {
+    .ability-point-label {
       width: 100%;
       text-align: center;
       font-size: 20px;
       text-decoration: underline;
       text-decoration-color: #333;
+      padding-bottom: 5px;
+    }
+    .add-point-button {
+      width: 100%;
+      text-align: center;
+      padding-bottom: 5px;
     }
     .ability-bonus {
       display: flex;
@@ -543,6 +586,7 @@ watch(state.gameState.equipment, () => {
         width: 50%;
       }
       .label {
+        width: 100%;
         font-size: 14px;
         text-align: left;
         text-decoration: none;
@@ -592,12 +636,13 @@ watch(state.gameState.equipment, () => {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    .label {
+    .resistance-label {
       width: 100%;
       text-align: center;
       font-size: 20px;
       text-decoration: underline;
       text-decoration-color: #333;
+      padding-bottom: 5px;
     }
     .resistance-row {
       display: flex;
@@ -615,6 +660,7 @@ watch(state.gameState.equipment, () => {
         width: 75%;
       }
       .label {
+        width: 100%;
         font-size: 14px;
         text-align: left;
         text-decoration: none;
