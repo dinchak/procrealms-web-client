@@ -7,6 +7,7 @@
 
       <div class="summary">
         <div class="money" v-html-safe="copperToMoneyString(state.gameState.player.money)"></div>
+        <div class="money-brief" v-html-safe="copperToMoneyString(state.gameState.player.money, true)"></div>
         <div class="limit">
           <div class="value bold-cyan">
             <span class="bold-white">{{ getNumItems() }}</span> <span class="black">/</span> {{ getMaxNumItems() }}
@@ -335,7 +336,11 @@ onBeforeUnmount(() => {
       flex-direction: column;
       justify-content: flex-end;
       .money {
-        font-size: 16px;
+        text-align: right;
+      }
+      .money-brief {
+        display: none;
+        text-align: right;
       }
       .limit {
         display: flex;
@@ -361,6 +366,21 @@ onBeforeUnmount(() => {
 
         &:hover, &.selected {
           background: #121;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .scroll-container {
+    .inventory-summary {
+      .summary {
+        .money {
+          display: none;
+        }
+        .money-brief {
+          display: block;
         }
       }
     }
