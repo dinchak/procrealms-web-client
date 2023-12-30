@@ -19,6 +19,7 @@
           ref="tabs"
         >
           <n-tab-pane name="score" tab="Score"><ScorePane></ScorePane></n-tab-pane>
+          <n-tab-pane name="skills" tab="Skills"><SkillsPane></SkillsPane></n-tab-pane>
           <n-tab-pane name="quests" tab="Quests"><QuestsPane></QuestsPane></n-tab-pane>
           <n-tab-pane name="inventory" tab="Inventory"><InventoryPane></InventoryPane></n-tab-pane>
           <n-tab-pane name="equipment" tab="Equipment"><EquipmentPane></EquipmentPane></n-tab-pane>
@@ -45,6 +46,7 @@ import InventoryPane from '@/components/game-modal/InventoryPane.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
+import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
 const tabs = ref(null)
 const currentPane = ref("score")
@@ -130,7 +132,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 
 .game-modal {
   min-height: 100vh;
@@ -142,6 +144,9 @@ onBeforeUnmount(() => {
     position: relative;
     padding: 10px;
     .game-modal-tabs {
+      .n-tabs-nav {
+        width: calc(100vw - 70px);
+      }
       height: calc(100vh - 170px);
       overflow-y: hidden;
     }
