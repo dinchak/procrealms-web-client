@@ -1,5 +1,5 @@
 <template>
-  <n-modal
+  <NModal
     v-model:show="state.modals.gameModal"
     title="Game Menu"
     @after-enter="onOpenModal"
@@ -11,20 +11,21 @@
       <div class="modal-body">
         <p class="close" @click="closeModal()">✕</p>
 
-        <n-tabs
+        <NTabs
           v-model:value="currentPane"
           class="game-modal-tabs"
           type="card"
           tab-style="min-width: 80px;"
           ref="tabs"
         >
-          <n-tab-pane name="score" tab="Score"><ScorePane></ScorePane></n-tab-pane>
-          <n-tab-pane name="skills" tab="Skills"><SkillsPane></SkillsPane></n-tab-pane>
-          <n-tab-pane name="quests" tab="Quests"><QuestsPane></QuestsPane></n-tab-pane>
-          <n-tab-pane name="inventory" tab="Inventory"><InventoryPane></InventoryPane></n-tab-pane>
-          <n-tab-pane name="equipment" tab="Equipment"><EquipmentPane></EquipmentPane></n-tab-pane>
+          <NTabPane name="score" tab="Score"><ScorePane></ScorePane></NTabPane>
+          <NTabPane name="skills" tab="Skills"><SkillsPane></SkillsPane></NTabPane>
+          <NTabPane name="quests" tab="Quests"><QuestsPane></QuestsPane></NTabPane>
+          <NTabPane name="inventory" tab="Inventory"><InventoryPane></InventoryPane></NTabPane>
+          <NTabPane name="equipment" tab="Equipment"><EquipmentPane></EquipmentPane></NTabPane>
+          <NTabPane name="options" tab="Options"><OptionsPane></OptionsPane></NTabPane>
 
-        </n-tabs>
+        </NTabs>
 
         <div class="mini-output" ref="mini-output" id="mini-output">
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
@@ -33,7 +34,7 @@
         <KeyboardInput></KeyboardInput>
       </div>
     </div>
-  </n-modal>
+  </NModal>
 </template>
 
 <script setup>
@@ -44,6 +45,7 @@ import { state, prevMode } from '@/composables/state'
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
+import OptionsPane from '@/components/game-modal/OptionsPane.vue'
 import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 import SkillsPane from '@/components/game-modal/SkillsPane.vue'
