@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
         }
 
         .label {
-          width: 80px;
+          width: 75px;
           text-align: right;
           padding: 0 10px;
         }
@@ -114,6 +114,20 @@ onBeforeUnmount(() => {
           flex: 1;
           text-align: left;
           padding: 0 10px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .scroll-container {
+    .equipment {
+      .slot {
+        .row {
+          &.details {
+            padding-left: 0;
+          }
         }
       }
     }
