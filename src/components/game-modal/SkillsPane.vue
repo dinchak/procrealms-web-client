@@ -107,6 +107,9 @@ function getArtisanSkills () {
 .scroll-container {
   height: calc(100vh - 225px);
   overflow-y: scroll;
+  max-width: 1200px;
+  margin: 0 auto;
+
   .skills {
     .skill-container {
       display: flex;

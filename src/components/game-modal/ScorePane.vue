@@ -488,6 +488,8 @@ watch(state.gameState.equipment, () => {
 .scroll-container {
   height: calc(100vh - 225px);
   overflow-y: scroll;
+  max-width: 1200px;
+  margin: 0 auto;
 
   .points-available {
     font-size: 16px;
