@@ -1,24 +1,47 @@
 <template>
   <div class="quick-container">
     <div class="quick-actions" v-show="state.activeTab == 'output'">
-      <div class="quick-slot battle selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('attack')">
-        <div class="slot-label"><span class="bold-yellow">A</span><span class="bold-red">ttack</span></div>
-      </div>
-      <div class="quick-slot loot selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('defend')">
-        <div class="slot-label"><span class="bold-yellow">D</span><span class="bold-cyan">efend</span></div>
-      </div>
-      <div class="quick-slot harvest selectable" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('flee')">
-        <div class="slot-label"><span class="bold-yellow">F</span><span class="yellow">lee</span></div>
+
+      <div class="quick-slot battle" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('attack')">
+        <div class="slot-label">
+          <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
+        </div>
+        <img src="@/assets/icons/xbox/x.png" class="icon" />
       </div>
 
-      <div class="quick-slot battle selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('battle')">
-        <div class="slot-label"><span class="bold-yellow">B</span><span class="bold-red">attle</span></div>
+      <div class="quick-slot loot" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('defend')">
+        <div class="slot-label">
+          <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
+        </div>
+        <img src="@/assets/icons/xbox/y.png" class="icon" />
       </div>
-      <div class="quick-slot harvest selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('harvest')">
-        <div class="slot-label"><span class="bold-yellow">H</span><span class="yellow">arvest</span></div>
+
+      <div class="quick-slot harvest" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('flee')">
+        <div class="slot-label">
+          <span class="bold-yellow">F</span><span class="yellow">lee</span>
+        </div>
+        <img src="@/assets/icons/xbox/b.png" class="icon" />
       </div>
-      <div class="quick-slot loot selectable" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('loot')">
-        <div class="slot-label"><span class="bold-yellow">L</span><span class="bold-cyan">oot</span></div>
+
+      <div class="quick-slot battle" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('battle')">
+        <div class="slot-label">
+          <span class="bold-yellow">B</span><span class="bold-red">attle</span>
+        </div>
+        <img src="@/assets/icons/xbox/x.png" class="icon" />
+      </div>
+
+      <div class="quick-slot harvest" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('harvest')">
+        <div class="slot-label">
+          <span class="bold-yellow">H</span><span class="yellow">arvest</span>
+        </div>
+        <img src="@/assets/icons/xbox/y.png" class="icon" />
+      </div>
+
+      <div class="quick-slot loot" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('loot')">
+        <div class="slot-label">
+          <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
+        </div>
+        <img src="@/assets/icons/xbox/b.png" class="icon" />
       </div>
     <!-- </div>
 
@@ -34,10 +57,10 @@
 </template>
 
 <script setup>
-import {NProgress} from 'naive-ui'
-import {useWebSocket} from '@/composables/web_socket'
+import { NProgress } from 'naive-ui'
+import { useWebSocket } from '@/composables/web_socket'
 
-import {state} from '@/composables/state'
+import { state } from '@/composables/state'
 
 const { cmd } = useWebSocket()
 
@@ -211,6 +234,14 @@ function getSlotClass (slot) {
         &:hover {
           background-color: darken(#0cc6c6, 33%);
         }
+      }
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
       }
 
       .slot-number {
