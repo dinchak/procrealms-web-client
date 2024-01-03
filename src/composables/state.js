@@ -357,18 +357,21 @@ function resetInputMappings () {
       event: 'attack',
       keyCodes: ['KeyA'],
       modes: ['hotkey'],
+      gamepadButtons: [2],
       inBattle: true
     }, {
       label: 'Defend',
       event: 'defend',
       keyCodes: ['KeyD'],
       modes: ['hotkey'],
+      gamepadButtons: [3],
       inBattle: true
     }, {
       label: 'Flee',
       event: 'flee',
       keyCodes: ['KeyF'],
       modes: ['hotkey'],
+      gamepadButtons: [1],
       inBattle: true
     }, {
       label: 'Battle',
@@ -396,7 +399,7 @@ function resetInputMappings () {
       event: 'closeModal',
       keyCodes: ['Escape'],
       gamepadButtons: [1],
-      modes: ['modal'],
+      modes: ['modal', 'modal-input'],
     }, {
       label: 'Show Game Modal',
       event: 'openGameModal',
@@ -407,13 +410,13 @@ function resetInputMappings () {
       event: 'prevModalTab',
       keyCodes: ['ArrowLeft'],
       gamepadButtons: [4],
-      modes: ['modal']
+      modes: ['modal', 'modal-input']
     }, {
       label: 'Next Modal Tab',
       event: 'nextModalTab',
       keyCodes: ['ArrowRight'],
       gamepadButtons: [5],
-      modes: ['modal']
+      modes: ['modal', 'modal-input']
     }, {
       label: 'Open Radial Menu',
       event: 'openRadialMenu',
@@ -466,6 +469,16 @@ function resetInputMappings () {
       event: 'performLoginAction',
       gamepadButtons: [0],
       modes: ['login']
+    }, {
+      label: 'Select Modal Action',
+      event: 'selectModalAction',
+      axis: 'left',
+      modes: ['modal', 'modal-input']
+    }, {
+      label: 'Perform Modal Action',
+      event: 'performModalAction',
+      gamepadButtons: [0],
+      modes: ['modal', 'modal-input']
     }, {
       label: 'Select Battle Action',
       event: 'selectBattleAction',
