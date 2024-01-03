@@ -35,22 +35,25 @@
 
         <div class="quests">
           <div class="quest" v-for="quest in state.gameState.quests" :key="quest.name">
-            <div class="name" v-html-safe="getQuestName(quest)"></div>
-            <div class="given" v-html-safe="getGivenBy(quest)"></div>
-            <div class="objective" v-if="quest.objective" v-html-safe="ansiToHtml(quest.objective)"></div>
-            <NProgress
-              v-if="quest.amount" 
-              :status="quest.progress < quest.amount ? 'default' : 'success'"
-              type="line"
-              :percentage="quest.progress / quest.amount * 100"
-            >
-              <span v-if="quest.progress < quest.amount">
-                {{ quest.progress }} of {{ quest.amount }}
-              </span>
-              <span class="bold-yellow" v-if="quest.progress >= quest.amount">
-                Complete
-              </span>
-            </NProgress>
+            <div class="row">
+              <div class="name" v-html-safe="getQuestName(quest)"></div>
+              <NProgress
+                v-if="quest.amount" 
+                :status="quest.progress < quest.amount ? 'default' : 'success'"
+                type="line"
+                :percentage="quest.progress / quest.amount * 100"
+              >
+                <span class="progress-label" v-if="quest.progress < quest.amount">
+                  {{ quest.progress }} of {{ quest.amount }}
+                </span>
+                <span class="progress-label bold-yellow" v-if="quest.progress >= quest.amount">
+                  Done
+                </span>
+              </NProgress>
+              <div v-if="!quest.amount && quest.extra" class="objective" v-html-safe="ansiToHtml(quest.objective)"></div>
+            </div>
+            <div class="objective" v-if="quest.type != 'generated' && quest.extra && !quest.amount" v-html-safe="ansiToHtml(quest.extra)"></div>
+            <div class="objective" v-if="quest.type != 'generated' && quest.extra && quest.amount" v-html-safe="ansiToHtml(quest.objective)"></div>
           </div>
         </div>
 
@@ -110,10 +113,6 @@ function getQuestName (quest) {
   return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(quest.name)}</span>`
 }
 
-function getGivenBy (quest) {
-  return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
-}
-
 </script>
 
 <style scoped lang="less">
@@ -141,6 +140,7 @@ function getGivenBy (quest) {
       display: flex;
       flex-direction: row;
       height: 130px;
+      width: 100%;
 
       .allies {
         height: 130px;
@@ -164,6 +164,7 @@ function getGivenBy (quest) {
           margin-bottom: 5px;
           padding-bottom: 5px;
           border-bottom: 1px solid #333;
+          line-height: 14px;
           &:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
@@ -171,6 +172,7 @@ function getGivenBy (quest) {
           }
           .desc {
             font-size: 12px;
+            line-height: 12px;
           }
           .bonuses {
             display: flex;
@@ -196,26 +198,45 @@ function getGivenBy (quest) {
         overflow-y: scroll;
         flex-basis: calc(100% - 470px);
 
+
         .quest {
           display: flex;
           flex-direction: column;
-          margin-bottom: 5px;
-          padding-bottom: 5px;
+          margin: 0;
           border-bottom: 1px solid #333;
           &:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: 0;
           }
-          // .name {
-          //   font-size: 12px;
-          // }
-          .given {
-            font-size: 14px;
+          .row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            .name {
+              font-size: 14px;
+              line-height: 14px;
+            }
+            .n-progress {
+              max-width: 200px;
+              font-size: 12px;
+              .progress-label {
+                font-size: 14px;
+                display: block;
+                width: 45px;
+                text-align: center;
+              }
+            }
+
+            .objective {
+              font-size: 14px;
+              line-height: 14px;
+            }
           }
           .objective {
-            font-size: 14px;
-            white-space: pre-line;
+            font-size: 12px;
+            line-height: 12px;
           }
         }
       }
