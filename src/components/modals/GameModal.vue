@@ -31,7 +31,7 @@
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput></KeyboardInput>
+        <KeyboardInput focus-mode="modal-input"></KeyboardInput>
       </div>
     </div>
   </NModal>
@@ -41,6 +41,7 @@
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { NModal, NTabs, NTabPane } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
+import { useHelpers } from '@/composables/helpers'
 
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
@@ -50,8 +51,26 @@ import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
+const { selectNearestElement } = useHelpers()
+
+let selectedElement = null
+function selectModalAction (degree) {
+  selectedElement = selectNearestElement(selectedElement, degree)
+  console.log(`selected element: ${selectedElement.className}`)
+  if (selectedElement) {
+    selectedElement.focus()
+  }
+}
+
+function performModalAction () {
+  if (selectedElement) {
+    selectedElement.click()
+  }
+}
+
 const tabs = ref(null)
 const currentPane = ref("score")
+const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options'])
 
 function onCloseModal () {
   closeModal()
@@ -70,14 +89,24 @@ function closeModal () {
 }
 
 function prevModalTab () {
-  currentPane.value = "score"
-  state.gamepadTab = "score"
+  let index = panes.value.indexOf(currentPane.value)
+  if (index == 0) {
+    currentPane.value = panes.value[panes.value.length - 1]
+  } else {
+    currentPane.value = panes.value[index - 1]
+  }
+  state.gamepadTab = currentPane.value
   nextTick(() => tabs.value?.syncBarPosition())
 }
 
 function nextModalTab () {
-  currentPane.value = "quests"
-  state.gamepadTab = "quests"
+  let index = panes.value.indexOf(currentPane.value)
+  if (index == panes.value.length - 1) {
+    currentPane.value = panes.value[0]
+  } else {
+    currentPane.value = panes.value[index + 1]
+  }
+  state.gamepadTab = currentPane.value
   nextTick(() => tabs.value?.syncBarPosition())
 }
 
@@ -117,6 +146,8 @@ onMounted(() => {
   state.inputEmitter.on('closeModal', closeModal)
   state.inputEmitter.on('prevModalTab', prevModalTab)
   state.inputEmitter.on('nextModalTab', nextModalTab)
+  state.inputEmitter.on('selectModalAction', selectModalAction)
+  state.inputEmitter.on('performModalAction', performModalAction)
 
   watchers.push(
     watch(state.output, () => onOutputChanged())
@@ -129,6 +160,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('closeModal', closeModal)
   state.inputEmitter.off('prevModalTab', prevModalTab)
   state.inputEmitter.off('nextModalTab', nextModalTab)
+  state.inputEmitter.off('selectModalAction', selectModalAction)
+  state.inputEmitter.off('performModalAction', performModalAction)
 
   watchers.forEach(w => w())
 })

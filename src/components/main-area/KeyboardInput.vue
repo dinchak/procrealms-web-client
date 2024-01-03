@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, defineProps, toRefs } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, addLine, setMode, prevMode } from '@/composables/state'
 
@@ -17,6 +17,15 @@ let text = ref('')
 let commandBuffer = ''
 let historyIndex = -1
 let commandHistory = []
+
+const props = defineProps({
+  focusMode: {
+    type: String,
+    default: 'input'
+  }
+})
+
+const { focusMode } = toRefs(props)
 
 const { cmd } = useWebSocket()
 
@@ -29,12 +38,12 @@ function blurTextInput () {
 }
 
 function onFocus () {
-  setMode('input')
+  setMode(focusMode.value)
 }
 
 function onBlur () {
-  if (state.mode != 'input') {
-    state.prevModes = state.prevModes.filter(m => m != 'input')
+  if (state.mode != focusMode.value) {
+    state.prevModes = state.prevModes.filter(m => m != focusMode.value)
     return
   }
   prevMode()
