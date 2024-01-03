@@ -114,6 +114,12 @@ export function useHelpers () {
           return false
         }
 
+        const gameModal = document.querySelector('.game-modal')
+        if (gameModal && !gameModal.contains(el)) {
+          console.log(`${el.className} not in game modal`)
+          return false
+        }
+
         const rect = el.getBoundingClientRect()
         return (
           rect.top >= 0 &&
