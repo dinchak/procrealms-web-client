@@ -213,40 +213,40 @@ function resetInputMappings () {
       label: 'Blur Text Input',
       event: 'blurTextInput',
       keyCodes: ['Escape'],
-      modes: ['input'],
+      modes: ['input', 'modal-input'],
     }, {
       label: 'Send Command',
       event: 'sendCommand',
       keyCodes: ['Enter'],
-      modes: ['input']
+      modes: ['input', 'modal-input'],
     }, {
       label: 'Previous Command',
       event: 'prevCommand',
       keyCodes: ['ArrowUp'],
-      modes: ['input']
+      modes: ['input', 'modal-input']
     }, {
       label: 'Next Command',
       event: 'nextCommand',
       keyCodes: ['ArrowDown'],
-      modes: ['input']
+      modes: ['input', 'modal-input']
     }, {
       label: 'Page Up',
       event: 'pageUp',
       keyCodes: ['PageUp'],
       gamepadButtons: [6],
-      modes: ['hotkey', 'input'],
+      modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Page Down',
       event: 'pageDown',
       keyCodes: ['PageDown'],
       gamepadButtons: [7],
-      modes: ['hotkey', 'input'],
+      modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Scroll Down',
       event: 'scrollDown',
       keyCodes: ['End'],
       gamepadButtons: [13],
-      modes: ['hotkey', 'input'],
+      modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Open Help Modal',
       event: 'openHelpModal',
