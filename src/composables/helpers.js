@@ -120,24 +120,48 @@ export function useHelpers () {
           return false
         }
 
-        const rect = el.getBoundingClientRect()
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        )
+        return true
+
+        // const rect = el.getBoundingClientRect()
+        // return (
+        //   rect.top >= 0 &&
+        //   rect.left >= 0 &&
+        //   rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        //   rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        // )
       })
+  }
+
+  function scrollParentToElement (element) {
+    if (!element) {
+      return
+    }
+
+    let parent = element.parentElement
+    while (parent) {
+      if (
+        parent.scrollHeight == parent.clientHeight && parent.scrollTop == 0 &&
+        parent.scrollWidth == parent.clientWidth && parent.scrollLeft == 0
+      ) {
+        parent = parent.parentElement
+        continue
+      }
+
+      let elementRect = element.getBoundingClientRect()
+      if (elementRect.top > parent.clientHeight / 2) {
+        parent.scrollTop += elementRect.bottom - parent.clientHeight / 2
+      } else if (elementRect.top < parent.clientHeight / 2) {
+        parent.scrollTop -= parent.clientHeight / 2 - elementRect.top
+      }
+
+      parent = parent.parentElement
+    }
   }
 
   let selectDelay = false
   let selectDelayTimeout = null
   function selectNearestElement (selectedElement, degree) {
     if (degree === false) {
-      // if (selectDelay) {
-      //   clearTimeout(selectDelayTimeout)
-      //   selectDelay = false
-      // }
       return selectedElement
     }
 
@@ -148,6 +172,7 @@ export function useHelpers () {
       }
 
       selectedElement.classList.add('selected')
+      scrollParentToElement(selectedElement)
       return selectedElement
     }
   
@@ -173,6 +198,7 @@ export function useHelpers () {
       selectedElement.classList.add('selected')
     }
 
+    scrollParentToElement(selectedElement)
     return selectedElement
   }
 
@@ -203,37 +229,28 @@ export function useHelpers () {
     return { x1: x, y1: y, x2: x + width, y2: y + height }
   }
 
-  function distance (x1, y1, x2, y2) {
-    let a = x1 - x2
-    let b = y1 - y2
-    return Math.sqrt(a * a + b * b)
-  }
+  function calcRectDistance (rect1, rect2, favorDirection = false) {
+    let rect1CenterX = (rect1.x1 + rect1.x2) / 2
+    let rect1CenterY = (rect1.y1 + rect1.y2) / 2
+    let rect2CenterX = (rect2.x1 + rect2.x2) / 2
+    let rect2CenterY = (rect2.y1 + rect2.y2) / 2
 
-  function calcRectDistance (rect1, rect2) {
-    let left = rect2.x2 < rect1.x1
-    let right = rect1.x2 < rect2.x1
-    let bottom = rect2.y2 < rect1.y1
-    let top = rect1.y2 < rect2.y1
-
-    if (top && left) {
-      return distance(rect1.x1, rect1.y2, rect2.x2, rect2.y1)
-    } else if (left && bottom) {
-      return distance(rect1.x1, rect1.y1, rect2.x2, rect2.y2)
-    } else if (bottom && right) {
-      return distance(rect1.x2, rect1.y1, rect2.x1, rect2.y2)
-    } else if (right && top) {
-      return distance(rect1.x2, rect1.y2, rect2.x1, rect2.y1)
-    } else if (left) {
-      return rect1.x1 - rect2.x2
-    } else if (right) {
-      return rect2.x1 - rect1.x2
-    } else if (bottom) {
-      return rect1.y1 - rect2.y2
-    } else if (top) {
-      return rect2.y1 - rect1.y2
-    } else {
-      return 0
+    if (favorDirection) {
+      if (favorDirection == 'left') {
+        rect2CenterX = rect2.x1
+      } else if (favorDirection == 'right') {
+        rect2CenterX = rect2.x2
+      } else if (favorDirection == 'up') {
+        rect2CenterY = rect2.y1
+      } else if (favorDirection == 'down') {
+        rect2CenterY = rect2.y2
+      }
     }
+
+    let dx = Math.max(rect1CenterX, rect2CenterX) - Math.min(rect1CenterX, rect2CenterX)
+    let dy = Math.max(rect1CenterY, rect2CenterY) - Math.min(rect1CenterY, rect2CenterY)
+
+    return Math.sqrt(dx * dx + dy * dy)
   }
 
   function getPosition (element) {
@@ -257,6 +274,7 @@ export function useHelpers () {
   function findNearestSelectableElement (selectedElement, direction) {
     const rect1 = getBoundingRect(selectedElement)
     const { x, y } = getPosition(selectedElement)
+
     let nearestElement = null
     let nearestDistance = Infinity
     let selectableElements = getSelectableElements()
@@ -265,8 +283,8 @@ export function useHelpers () {
       if (element === selectedElement) {
         continue
       }
-      const rect2 = getBoundingRect(element)
 
+      const rect2 = getBoundingRect(element)
       const elementPosition = getPosition(element)
       const elX = elementPosition.x
       const elY = elementPosition.y
@@ -281,18 +299,7 @@ export function useHelpers () {
         continue
       }
 
-      let rectDistance = calcRectDistance(rect1, rect2)
-
-      // let distanceHorizontal = Math.abs(elX - x)
-      // let distanceVertical = Math.abs(elY - y)
-
-      // if (direction == 'left' || direction == 'right') {
-      //   distanceVertical *= 4
-      // } else {
-      //   distanceHorizontal *= 4
-      // }
-  
-      // let distance = Math.sqrt(distanceHorizontal * distanceHorizontal + distanceVertical * distanceVertical)
+      let rectDistance = calcRectDistance(rect1, rect2, direction)
       if (rectDistance < nearestDistance) {
         nearestDistance = rectDistance
         nearestElement = element
@@ -332,7 +339,11 @@ export function useHelpers () {
     return `${firstItems.join(', ')} ${seperator} ${lastItem}`
   }
 
+  function isGamepadConnected () {
+    return Object.values(state.gamepads).length > 0
+  }
+
   return {
-    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString
+    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString, isGamepadConnected
   }
 }
