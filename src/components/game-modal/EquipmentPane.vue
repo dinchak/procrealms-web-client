@@ -2,8 +2,8 @@
   <div class="scroll-container">
     <NGrid class="equipment" cols="1">
       <NGi v-for="(iid, slot) in state.gameState.equipment" :key="slot">
-        <div class="slot" @click="selectIid(iid)">
-          <div class="row">
+        <div class="slot">
+          <div :class="'row' + (iid ? ' selectable' : '')" @click="selectIid(iid)">
             <div class="label">{{ slot }}</div>
             <div class="item" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
           </div>
@@ -93,15 +93,15 @@ onBeforeUnmount(() => {
       font-size: 16px;
       padding: 5px 10px;
       cursor: pointer;
-      // background: #111;
-
-      &:hover, &.selected {
-        background: #121;
-      }
-
       .row {
         display: flex;
         flex-direction: row;
+
+        &.selectable {
+          &:hover, &.selected {
+            background: #121;
+          }
+        }
 
         &.details {
           padding-left: 105px;
