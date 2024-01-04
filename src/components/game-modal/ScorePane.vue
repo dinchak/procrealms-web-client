@@ -121,7 +121,7 @@
           <div class="ability-point-label bold-red">Strength</div>
 
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point strength')">
+            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point strength')">
               <NIcon><AddFilled></AddFilled></NIcon>
             </NButton>
           </div>
@@ -153,7 +153,7 @@
           </div>
           <div class="ability-point-label bold-yellow">Agility</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point agility')">
+            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point agility')">
               <NIcon><AddFilled></AddFilled></NIcon>
             </NButton>
           </div>
@@ -184,7 +184,7 @@
           </div>
           <div class="ability-point-label bold-cyan">Magic</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point magic')">
+            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point magic')">
               <NIcon><AddFilled></AddFilled></NIcon>
             </NButton>
           </div>
@@ -215,7 +215,7 @@
           </div>
           <div class="ability-point-label bold-green">Spirit</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button" @click="cmd('point spirit')">
+            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point spirit')">
               <NIcon><AddFilled></AddFilled></NIcon>
             </NButton>
           </div>
@@ -572,6 +572,11 @@ watch(state.gameState.equipment, () => {
       width: 100%;
       text-align: center;
       padding-bottom: 5px;
+
+      &.selected {
+        box-shadow: 0 0 5px #f8ff25;
+        color: #f8ff25;
+      }
     }
     .ability-bonus {
       display: flex;
