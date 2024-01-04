@@ -56,7 +56,7 @@
     </div>
 
     <div class="actions">
-      <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class" :disabled="action.disabled">{{ action.label }}</NButton>
+      <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
 
   </div>
@@ -451,6 +451,10 @@ function renderSkillsRequired () {
     .n-button {
       margin-right: 10px;
       margin-bottom: 10px;
+      &.selected {
+        box-shadow: 0 0 5px #f8ff25;
+        color: #f8ff25;
+      }
     }
   }
 }
