@@ -28,7 +28,7 @@
 
       <NGi v-for="item in getItems()" :key="item.iid">
         <div class="item">
-          <div class="name" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
+          <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
 
           <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedItem == item"></ItemDetails>
 
@@ -365,7 +365,9 @@ onBeforeUnmount(() => {
         font-size: 16px;
         padding: 5px 10px;
         cursor: pointer;
-        // background: #111;
+        &.selected {
+          background: #121;
+        }
 
         &:hover, &.selected {
           background: #121;
