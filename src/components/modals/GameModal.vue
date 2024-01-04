@@ -56,7 +56,6 @@ const { selectNearestElement } = useHelpers()
 let selectedElement = null
 function selectModalAction (degree) {
   selectedElement = selectNearestElement(selectedElement, degree)
-  console.log(`selected element: ${selectedElement.className}`)
   if (selectedElement) {
     selectedElement.focus()
   }
@@ -78,6 +77,7 @@ function onCloseModal () {
 
 function onOpenModal () {
   currentPane.value = state.gamepadTab || "score"
+  scrollDown()
 }
 
 function closeModal () {
@@ -85,6 +85,9 @@ function closeModal () {
     return
   }
   state.modals.gameModal = false
+  if (state.mode == 'modal-input') {
+    prevMode()
+  }
   prevMode()
 }
 
@@ -152,8 +155,6 @@ onMounted(() => {
   watchers.push(
     watch(state.output, () => onOutputChanged())
   )
-
-  scrollDown()
 })
 
 onBeforeUnmount(() => {
