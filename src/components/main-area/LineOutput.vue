@@ -6,7 +6,7 @@
         <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
-      <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDown('output')">
+      <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDownTab('output')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -23,7 +23,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.chat" :class="getScrollbackControlClass()" @click="scrollDown('chat')">
+      <div v-show="state.scrolledBack.chat" :class="getScrollbackControlClass()" @click="scrollDownTab('chat')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -40,7 +40,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.trade" :class="getScrollbackControlClass()" @click="scrollDown('trade')">
+      <div v-show="state.scrolledBack.trade" :class="getScrollbackControlClass()" @click="scrollDownTab('trade')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -57,7 +57,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.newbie" :class="getScrollbackControlClass()" @click="scrollDown('newbie')">
+      <div v-show="state.scrolledBack.newbie" :class="getScrollbackControlClass()" @click="scrollDownTab('newbie')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -72,7 +72,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
-import { state } from '@/composables/state'
+import { state, addLine } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -125,11 +125,11 @@ function onChanged (id) {
   let scrolledBack = scrollPosition <= scrollHeight
 
   if (!scrolledBack) {
-    nextTick(() => scrollDown(id))
+    nextTick(() => scrollDownTab(id))
   }
 }
 
-function scrollDown (id) {
+function scrollDownTab (id) {
   let el = document.getElementById(id)
   if (el) {
     el.scrollTo(0, el.scrollHeight)
@@ -163,7 +163,7 @@ function onBeforeChangeTab (activeName) {
 
 function onAfterChangeTab (activeName) {
   setTimeout(() => {
-    scrollDown(activeName)
+    scrollDownTab(activeName)
   })
   // Show Map Modal on output tab if it was open before
   if (activeName == "output" && mapWasOpen == true) {
@@ -286,6 +286,31 @@ function selectNewbieTab () {
   onAfterChangeTab(currentPane.value)
 }
 
+function pageUp () {
+  let activeTabElement = document.getElementById(state.activeTab)
+  activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
+}
+
+function pageDown () {
+  let activeTabElement = document.getElementById(state.activeTab)
+  activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
+}
+
+function scrollDown () {
+  let activeTabElement = document.getElementById(state.activeTab)
+  if (activeTabElement) {
+    activeTabElement.scrollTo(0, activeTabElement.scrollHeight)
+  }
+}
+
+function showDebug () {
+  let json = JSON.stringify(state.gameState.player, null, 2)
+  let lines = json.split('\n')
+  for (let line of lines) {
+    addLine(line, 'output')
+  }
+}
+
 let watchers = []
 onMounted(() => {
   dayjs.extend(relativeTime)
@@ -305,6 +330,10 @@ onMounted(() => {
   state.inputEmitter.on('selectChatTab', selectChatTab)
   state.inputEmitter.on('selectTradeTab', selectTradeTab)
   state.inputEmitter.on('selectNewbieTab', selectNewbieTab)
+  state.inputEmitter.on('pageUp', pageUp)
+  state.inputEmitter.on('pageDown', pageDown)
+  state.inputEmitter.on('scrollDown', scrollDown)
+  state.inputEmitter.on('showDebug', showDebug)
 
   watchers.push(watch(() => state.output.length, () => onChanged('output')))
   watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
@@ -320,6 +349,10 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('selectChatTab', selectChatTab)
   state.inputEmitter.off('selectTradeTab', selectTradeTab)
   state.inputEmitter.off('selectNewbieTab', selectNewbieTab)
+  state.inputEmitter.off('pageUp', pageUp)
+  state.inputEmitter.off('pageDown', pageDown)
+  state.inputEmitter.off('scrollDown', scrollDown)
+  state.inputEmitter.off('showDebug', showDebug)
 
   for (let watcher of watchers) {
     watcher()
