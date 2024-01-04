@@ -202,7 +202,7 @@ function getQuestName (quest) {
         .quest {
           display: flex;
           flex-direction: column;
-          margin: 0;
+          margin: 2px 0;
           border-bottom: 1px solid #333;
           &:last-child {
             margin-bottom: 0;
@@ -249,11 +249,14 @@ function getQuestName (quest) {
     .center-hud {
       .top-center-hud {
         .allies {
+          width: 350px;
+          flex-shrink: 0;
         }
         .affects {
+          display: none;
         }
         .quests {
-          display: none;
+          flex-basis: 100%;
         }
       }
     }
