@@ -1,8 +1,8 @@
 import { state } from "@/composables/state"
 import { action_mapper } from '@/composables/constants/action_mapper'
+import { AnsiUp } from 'ansi_up'
 
-const AU = require('ansi_up')
-const ansi_up = new AU.default
+const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
 const ansi = {

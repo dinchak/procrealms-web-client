@@ -491,21 +491,6 @@ function resetInputMappings () {
       gamepadButtons: [0],
       modes: ['hotkey', 'input'],
       inBattle: true
-    }, {
-      label: 'Open Score',
-      event: 'openScore',
-      keyCodes: ['KeyT'],
-      modes: ['hotkey']
-    }, {
-      label: 'Open Inventory',
-      event: 'openInventory',
-      keyCodes: ['KeyI'],
-      modes: ['hotkey']
-    }, {
-      label: 'Open Quests',
-      event: 'openQuests',
-      keyCodes: ['KeyQ'],
-      modes: ['hotkey']
     }
   ]
 }

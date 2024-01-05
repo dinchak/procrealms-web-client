@@ -5,6 +5,7 @@
     @after-enter="onOpenModal"
     @after-leave="onCloseModal"
     class="game-modal"
+    :auto-focus="false"
   >
 
     <div>

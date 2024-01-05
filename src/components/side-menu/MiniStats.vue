@@ -2,40 +2,40 @@
   <div class="stats">
     <span class="left">
       <span class="stat">
-        <div class="value bold-green">{{ entity().hp }}<span class="label green">HP</span></div>
-        <n-progress class="quick-stats" type="line" status="success" :percentage="entity().hp / entity().maxHp * 100" :show-indicator="false"></n-progress>
+        <div class="value bold-green">{{ entity.hp }}<span class="label green">HP</span></div>
+        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false"></n-progress>
       </span>
 
       <span class="stat">
-        <div class="value bold-cyan">{{ entity().energy }}<span class="label cyan">EN</span></div>
-        <n-progress class="quick-stats" type="line" status="default" :percentage="entity().energy / entity().maxEnergy * 100" :show-indicator="false"></n-progress>
+        <div class="value bold-cyan">{{ entity.energy }}<span class="label cyan">EN</span></div>
+        <n-progress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :show-indicator="false"></n-progress>
       </span>
 
       <span class="stat">
-        <div class="value bold-yellow">{{ entity().stamina }}<span class="label yellow">ST</span></div>
-        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().stamina / entity().maxStamina * 100" :show-indicator="false"></n-progress>
+        <div class="value bold-yellow">{{ entity.stamina }}<span class="label yellow">ST</span></div>
+        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :show-indicator="false"></n-progress>
       </span>
 
       <span class="stat">
-        <div class="value bold-green">{{ entity().regeneration }}</div>
+        <div class="value bold-green">{{ entity.regeneration }}</div>
         <div class="label green">Regen</div>
       </span>
     </span>
 
     <span class="right">
-      <span class="stat" v-if="entity().rage > 0">
+      <span class="stat" v-if="entity.rage > 0">
         <div class="label bold-red">Rage</div>
-        <n-progress class="quick-stats" type="line" status="danger" :percentage="entity().rage / entity().maxRage * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="danger" :percentage="entity.rage / entity.maxRage * 100" :show-indicator="false"></n-progress>
       </span>
 
-      <span class="stat" v-if="entity().combo > 0">
+      <span class="stat" v-if="entity.combo > 0">
         <div class="label bold-yellow">Combo</div>
-        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity().combo / entity().maxCombo * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.combo / entity.maxCombo * 100" :show-indicator="false"></n-progress>
       </span>
 
       <span class="stat">
         <div class="label bold-green">Food</div>
-        <n-progress class="quick-stats" type="line" status="success" :percentage="entity().food / entity().maxFood * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false"></n-progress>
       </span>
 
     </span>
@@ -45,13 +45,15 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
-import { defineProps } from 'vue'
+import { defineProps, toRefs } from 'vue'
 
 const props = defineProps(['entity'])
 
-function entity () {
-  return props.entity || {}
-}
+const { entity } = toRefs(props)
+
+// function entity () {
+//   return props.entity || {}
+// }
 </script>
 
 <style lang="less">
