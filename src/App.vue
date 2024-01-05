@@ -3,7 +3,7 @@
     <SplashScreen v-if="state.disconnected || !state.token"></SplashScreen>
     <LoginModal></LoginModal>
     <NewPlayerModal></NewPlayerModal>
-    <InputHandler></InputHandler>
+    <InputHandler v-if="state.mode !== 'login'"></InputHandler>
     <router-view/>
   </n-config-provider>
 </template>
