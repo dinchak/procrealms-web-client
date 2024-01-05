@@ -1,20 +1,21 @@
 <template>
-  <div class="equipment-row" :class="{'border-top' : isHead}">
-    <div class="slot">{{ props.slot }}</div>
-    <div>
-      <span class="equipment-level" v-if="props.level">L{{props.level}}</span>
-      <span class="equipment-item" v-html-safe="ansiToHtml(props.colorName)"></span></div>
+  <div class="equipment-row">
+    <div class="slot">{{ itemSlot }}</div>
+    <div class="item" v-if="item" v-html-safe="ansiToHtml(`L${item.level} ${item.colorName}`)"></div>
+    <div class="item" v-if="!item">Nothing</div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, toRefs } from 'vue'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()
 
-const props = defineProps(['slot', 'colorName', 'level'])
-const isHead = props.slot !== 'head'
+const props = defineProps(['item', 'itemSlot'])
+
+const { item, itemSlot } = toRefs(props)
+
 </script>
 
 <style scoped lang="less">
@@ -38,12 +39,6 @@ const isHead = props.slot !== 'head'
 
   .remove {
     cursor: pointer;
-  }
-
-  div {
-    .equipment-level {
-      margin-right: 8px;
-    }
   }
 }
 

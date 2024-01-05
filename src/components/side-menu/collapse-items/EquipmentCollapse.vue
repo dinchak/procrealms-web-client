@@ -1,64 +1,47 @@
 <template>
   <n-collapse-item title="Equipment">
     <EquipmentRow
-      v-for="slotItem in equipment"
-      :key="slotItem.slot"
-      v-bind="slotItem"
-      v-on:click="clickHandler(slotItem.iid)"
+      v-for="(iid, slot) in equipment"
+      :key="slot"
+      :itemSlot="slot"
+      :item="getItem(iid)"
+      v-on:click="clickHandler(iid)"
     ></EquipmentRow>
     <ItemModal
-        :visible="isModalOpen"
-        :isPlayer="props.isPlayer"
-        :item="clickedItem"
-        :charEId="props.character.eid"
-        :name="props.character.name"
-        :affects="props.affects"
+        :visible="selectedItem.iid"
+        :isPlayer="isPlayer"
+        :item="selectedItem"
+        :charEId="character.eid"
+        :name="character.name"
+        :affects="affects"
         menu="equipment"
     ></ItemModal>
   </n-collapse-item>
 </template>
 
 <script setup>
-import { useWebSocket } from '@/composables/web_socket';
-import { watch, ref, onMounted, defineProps } from 'vue';
+import { ref, defineProps, toRefs, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NCollapseItem } from 'naive-ui'
 
+import { state } from "@/composables/state"
+
 import EquipmentRow from '@/components/side-menu/collapse-items/EquipmentRow.vue'
-import ItemModal from '@/components/modals/ItemModal.vue';
-import {state} from "@/composables/state";
+import ItemModal from '@/components/modals/ItemModal.vue'
 
-const { fetchItem, fetchItems } = useWebSocket()
+import { useWebSocket } from '@/composables/web_socket'
 
-const equipment = ref([])
-const isModalOpen = ref(0)
-const clickedItem = ref({})
+const { fetchItems } = useWebSocket()
+
+const selectedItem = ref({})
+
 const props = defineProps(['character', 'isPlayer', 'affects', 'equipment'])
 
-onMounted(() => {
-  setEquipment()
-})
+const { character, isPlayer, affects, equipment } = toRefs(props)
 
-watch(props.equipment, () => {
-  setEquipment()
-})
+const items = ref([])
 
-async function setEquipment() {
-  let iids = Object.values(props.equipment)
-  let items = await fetchItems(iids.filter(iid => iid))
-
-  let slots = Object.keys(props.equipment)
-
-  equipment.value = slots.map(slot => {
-    let item = items.find(it => it.iid == props.equipment[slot])
-
-    if (!item) {
-      return {
-        slot, iid: false, colorName: 'nothing', level: false
-      }
-    }
-
-    return { slot, iid: item.iid, colorName: item.colorName, level: item.level }
-  })
+function getItem (iid) {
+  return items.value.find(item => item.iid == iid)
 }
 
 async function clickHandler (iid) {
@@ -66,10 +49,29 @@ async function clickHandler (iid) {
     return
   }
 
-  props.isPlayer ? state.modals.inventoryModals.playerItemModal = "equipment" : state.modals.inventoryModals.mercItemModal = "equipment"
+  if (isPlayer.value) {
+    state.modals.inventoryModals.playerItemModal = "equipment"
+  } else {
+    state.modals.inventoryModals.mercItemModal = "equipment"
+  }
 
-  let item = await fetchItem(iid)
-  isModalOpen.value++
-  clickedItem.value = item
+  let item = items.value.find(item => item.iid == iid)
+  selectedItem.value = item
 }
+
+let watchers = []
+onMounted(async () => {
+  items.value = await fetchItems(Object.values(equipment.value))
+  
+  watchers.push(
+    watch(equipment.value, async (newVal) => items.value = await fetchItems(Object.values(newVal)))
+  )
+})
+
+onBeforeUnmount(() => {
+  for (let watcher of watchers) {
+    watcher()
+  }
+})
+
 </script>
