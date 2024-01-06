@@ -289,15 +289,15 @@ export function useHelpers () {
       const elX = elementPosition.x
       const elY = elementPosition.y
 
-      if (direction == 'left' && elX >= x) {
+      if (direction == 'left' && (elX >= x || rect1.y1 > rect2.y2 || rect1.y2 < rect2.y1)) {
         continue
-      } else if (direction == 'right' && elX <= x) {
+      } else if (direction == 'right' && (elX <= x || rect1.y1 > rect2.y2 || rect1.y2 < rect2.y1)) {
         continue
       } else if (direction == 'up' && elY >= y) {
         continue
       } else if (direction == 'down' && elY <= y) {
         continue
-      }
+      }      
 
       let rectDistance = calcRectDistance(rect1, rect2, direction)
       if (rectDistance < nearestDistance) {
