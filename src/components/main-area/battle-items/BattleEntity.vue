@@ -131,8 +131,8 @@ function getAffects (participant) {
   
   &.selected {
     // border: 1px solid #f8ff25;
-    box-shadow: 0 0 5px #f8ff25;
-    color: #f8ff25;
+    box-shadow: 0 0 5px #f8ff25 !important;
+    color: #f8ff25 !important;
   }
 
   &.good {
