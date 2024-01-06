@@ -14,8 +14,9 @@ export const state = reactive({
   options: resetOptions(),
   cache: resetCache(),
 
+  outputTabs: ['output', 'chat', 'trade', 'newbie'],
   activeTab: 'output',
-  // valid modes: login, hotkey, input, modal, radial
+  // valid modes: login, hotkey, input, modal, modal-input, radial
   mode: 'login',
 
   prevModes: [],
@@ -233,19 +234,19 @@ function resetInputMappings () {
       label: 'Page Up',
       event: 'pageUp',
       keyCodes: ['PageUp'],
-      gamepadButtons: [6],
+      gamepadButtons: [12],
       modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Page Down',
       event: 'pageDown',
       keyCodes: ['PageDown'],
-      gamepadButtons: [7],
+      gamepadButtons: [13],
       modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Scroll Down',
       event: 'scrollDown',
       keyCodes: ['End'],
-      gamepadButtons: [13],
+      // gamepadButtons: [13],
       modes: ['hotkey', 'input', 'modal-input'],
     }, {
       label: 'Open Help Modal',

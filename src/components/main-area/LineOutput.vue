@@ -286,6 +286,30 @@ function selectNewbieTab () {
   onAfterChangeTab(currentPane.value)
 }
 
+function selectPrevOutputTab () {
+  let index = state.outputTabs.indexOf(state.activeTab)
+  if (index > 0) {
+    let prevTab = state.outputTabs[index - 1]
+    onBeforeChangeTab(prevTab)
+    currentPane.value = prevTab
+    state.activeTab = prevTab
+    nextTick(() => tabsInstance.value?.syncBarPosition())
+    onAfterChangeTab(currentPane.value)
+  }
+}
+
+function selectNextOutputTab () {
+  let index = state.outputTabs.indexOf(state.activeTab)
+  if (index < state.outputTabs.length - 1) {
+    let nextTab = state.outputTabs[index + 1]
+    onBeforeChangeTab(nextTab)
+    currentPane.value = nextTab
+    state.activeTab = nextTab
+    nextTick(() => tabsInstance.value?.syncBarPosition())
+    onAfterChangeTab(currentPane.value)
+  }
+}
+
 function pageUp () {
   let activeTabElement = document.getElementById(state.activeTab)
   activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
@@ -330,6 +354,8 @@ onMounted(() => {
   state.inputEmitter.on('selectChatTab', selectChatTab)
   state.inputEmitter.on('selectTradeTab', selectTradeTab)
   state.inputEmitter.on('selectNewbieTab', selectNewbieTab)
+  state.inputEmitter.on('selectPrevOutputTab', selectPrevOutputTab)
+  state.inputEmitter.on('selectNextOutputTab', selectNextOutputTab)
   state.inputEmitter.on('pageUp', pageUp)
   state.inputEmitter.on('pageDown', pageDown)
   state.inputEmitter.on('scrollDown', scrollDown)
@@ -349,6 +375,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('selectChatTab', selectChatTab)
   state.inputEmitter.off('selectTradeTab', selectTradeTab)
   state.inputEmitter.off('selectNewbieTab', selectNewbieTab)
+  state.inputEmitter.off('selectPrevOutputTab', selectPrevOutputTab)
+  state.inputEmitter.off('selectNextOutputTab', selectNextOutputTab)
   state.inputEmitter.off('pageUp', pageUp)
   state.inputEmitter.off('pageDown', pageDown)
   state.inputEmitter.off('scrollDown', scrollDown)
