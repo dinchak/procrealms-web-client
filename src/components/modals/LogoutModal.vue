@@ -26,11 +26,11 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { NModal, NButton } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
 
-import { useCookieHandler } from '@/composables/cookie_handler'
 import { useWebSocket } from '@/composables/web_socket'
+import { useTokenHandler } from '@/composables/token_handler'
 
-const { removeTokenFromCookie } = useCookieHandler()
 const { cmd } = useWebSocket()
+const { deleteToken } = useTokenHandler()
 
 function closeModal () {
   if (!state.modals.logoutModal) {
@@ -44,7 +44,7 @@ function logout () {
   closeModal()
   cmd('quit')
   state.token = ''
-  removeTokenFromCookie(state.name)
+  deleteToken(state.name)
 }
 
 onMounted(() => {

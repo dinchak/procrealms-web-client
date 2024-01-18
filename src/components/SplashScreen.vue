@@ -12,19 +12,24 @@
     </div>
 
     <div class="login-controls" v-if="state.connected">
-      <n-button
-        v-for="name in options"
-        :key="name"
-        type="info"
-        size="large"
-        tabindex="0"
-        class="selectable"
-        @click="doTokenAuth(name)"
-      >
-        Login as {{ name }}
-      </n-button>
+      <div class="token" v-for="token in tokens" :key="token.name">
+        <NButton
+          type="info"
+          size="large"
+          tabindex="0"
+          class="selectable"
+          @click="doTokenAuth(token.name)"
+        >
+          Login as {{ token.name }}
+        </NButton>
+        <NButton class="delete" @click="doDeleteToken(token.name)">
+          <NIcon>
+            <DeleteFilled />
+          </NIcon>
+        </NButton>
+      </div>
 
-      <n-button
+      <NButton
         type="success"
         size="large"
         tabindex="0"
@@ -32,9 +37,9 @@
         @click="state.modals.loginModal = true"
       >
         Login
-      </n-button>
+      </NButton>
       
-      <n-button
+      <NButton
         type="warning"
         size="large"
         tabindex="0"
@@ -42,35 +47,41 @@
         @click="state.modals.newPlayerModal = true"
       >
         New Player
-      </n-button>
+      </NButton>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, watch, onMounted, onBeforeUnmount } from "vue"
-import { NButton } from 'naive-ui'
+import { ref, watch, onMounted, onBeforeUnmount } from "vue"
+import { NButton, NIcon } from 'naive-ui'
+
+import DeleteFilled from '@vicons/material/DeleteFilled'
 
 import { state } from '@/composables/state'
+
+import { useTokenHandler } from '@/composables/token_handler'
 import { useWebSocket } from '@/composables/web_socket'
-import { useCookieHandler } from '@/composables/cookie_handler'
 import { useHelpers } from '@/composables/helpers'
 
 const { doTokenAuth } = useWebSocket()
-const { readTokensFromCookie } = useCookieHandler()
 const { selectNearestElement } = useHelpers()
+const { getTokens, deleteToken } = useTokenHandler()
 
-const options = reactive([])
+let tokens = ref([])
 
 function onConnected () {
-  options.length = 0
-  Object.keys(readTokensFromCookie())
-    .forEach(name => options.push(name))
+  tokens.value = getTokens()
 }
 
 let selectedElement = null
 function selectLoginItem (degree) {
   selectedElement = selectNearestElement(selectedElement, degree)
+}
+
+function doDeleteToken (name) {
+  deleteToken(name)
+  tokens.value = getTokens()
 }
 
 function performLoginAction () {
@@ -136,6 +147,29 @@ onBeforeUnmount(() => {
     flex-direction: column;
     justify-content: center;
     width: 300px;
+    .token {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+      width: 300px;
+      .delete {
+        margin-left: 10px;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ff0000;
+        color: #fff;
+        &:hover {
+          background-color: #ff3333;
+        }
+      }
+
+      .selectable {
+        cursor: pointer;
+      }
+    }
     button {
       max-width: 300px;
       width: 100%;
