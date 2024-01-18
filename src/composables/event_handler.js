@@ -1,10 +1,11 @@
 import { processTriggers } from "@/composables/triggers"
 import { addLine, state } from '@/composables/state'
+
 import { useHelpers } from '@/composables/helpers'
-import { useCookieHandler} from "@/composables/cookie_handler";
+import { useTokenHandler } from '@/composables/token_handler'
 
 const { ansiToHtml } = useHelpers()
-const { addTokenToCookie } = useCookieHandler()
+const { addToken } = useTokenHandler()
 
 const handlers = {}
 
@@ -38,7 +39,7 @@ handlers['token.success'] = ({ name, token }) => {
   state.prevModes = ['login']
   state.mode = 'hotkey'
 
-  addTokenToCookie(name, token)
+  addToken(name, token)
 
   if (state.loginResolve) {
     state.loginResolve()
