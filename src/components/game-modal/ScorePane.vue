@@ -193,7 +193,7 @@
             <div class="label">Max Energy</div>
           </div>
           <div class="ability-bonus">
-            <div class="value magenta">{{ player().magicSpellCooldownBonus }}<span class="black">s</span></div>
+            <div class="value magenta">{{ renderNumber(player().magicSpellCooldownBonus) }}<span class="black">s</span></div>
             <div class="label">Spell Cooldown</div>
           </div>
           <div class="ability-bonus">
