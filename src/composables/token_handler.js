@@ -2,7 +2,11 @@ export function useTokenHandler () {
 
   function getTokens () {
     try {
-      return JSON.parse(localStorage.getItem('tokens'))
+      let json = localStorage.getItem('tokens')
+      if (!json) {
+        return []
+      }
+      return JSON.parse(json)
     } catch (err) {
       return []
     }
@@ -10,7 +14,14 @@ export function useTokenHandler () {
 
   function addToken (name, token) {
     let tokens = getTokens()
-    tokens.push({ name, token })
+    let existingToken = tokens.find(token => token.name == name)
+
+    if (existingToken) {
+      existingToken.token = token
+    } else {
+      tokens.push({ name, token })
+    }
+
     localStorage.setItem('tokens', JSON.stringify(tokens))
   }
 

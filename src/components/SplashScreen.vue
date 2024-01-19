@@ -18,7 +18,7 @@
           size="large"
           tabindex="0"
           class="selectable"
-          @click="doTokenAuth(token.name)"
+          @click="doTokenAuth(token.name, token.token)"
         >
           Login as {{ token.name }}
         </NButton>
