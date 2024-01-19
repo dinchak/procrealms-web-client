@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
+
   chainWebpack: (config) => {
     config.plugin('define').tap((definitions) => {
       Object.assign(definitions[0], {
@@ -10,5 +11,10 @@ module.exports = defineConfig({
       })
       return definitions
     })
+  },
+
+  configureWebpack: {
+    mode: process.env.VUE_APP_BUILD_MODE
   }
+
 })
