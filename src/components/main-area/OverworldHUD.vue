@@ -45,6 +45,15 @@
             <div class="row">
               <div class="name" v-html-safe="getQuestName(quest)"></div>
               
+              <div class="objectives" v-if="!quest.amount && quest.extra && quest.type != 'generated'">
+                <div class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
+              </div>
+
+              <div class="objective" v-if="!quest.extra">
+                <div v-if="!quest.amount" class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+                <div class="objective" v-if="quest.type != 'generated' && quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+              </div>
+
               <NProgress
                 v-if="quest.amount" 
                 :status="quest.progress < quest.amount ? 'warning' : 'success'"
@@ -61,11 +70,6 @@
                 </span>
               </NProgress>
 
-              <div class="objectives" v-if="quest.extra">
-                <div v-if="!quest.amount" class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
-                <div class="objective" v-if="quest.type != 'generated' && !quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
-                <div class="objective" v-if="quest.type != 'generated' && quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
-              </div>
             </div>
           </div>
         </div>
