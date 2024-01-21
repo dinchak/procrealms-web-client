@@ -3,46 +3,45 @@
     <h3 v-html-safe="getName()"></h3>
     <div class="ally-vitals">
 
-      <div class="row">
-        <div class="vital">
-          <div class="amount bold-green">{{ entity.hp }}</div>
-          <NProgress
-            type="line" status="success" aria-label="Health" :height="4" :show-indicator="false" :border-radius="0"
-            :percentage="entity.hp / entity.maxHp * 100"
-          ></NProgress>
-        </div>
+      <div class="basic">
+        <NProgress
+          type="line" status="success" aria-label="Health" :height="8" :border-radius="0"
+          :show-indicator="true"
+          :percentage="entity.hp / entity.maxHp * 100"
+        >
+          <div class="pair">
+            <div class="amount bold-green">{{ entity.hp }}</div>
+          </div>
+        </NProgress>
 
-        <div class="vital">
-          <div class="amount bold-cyan">{{ entity.energy }}</div>
-          <NProgress
-            type="line" status="default" aria-label="Energy" :height="4" :show-indicator="false" :border-radius="0"
-            :percentage="entity.energy / entity.maxEnergy * 100"
-          ></NProgress>
-        </div>
+        <NProgress
+          type="line" status="default" aria-label="Energy" :height="8" :border-radius="0"
+          :show-indicator="true"
+          :percentage="entity.energy / entity.maxEnergy * 100"
+        >
+          <div class="pair">
+            <div class="amount bold-cyan">{{ entity.energy }}</div>
+          </div>
+        </NProgress>
 
-        <div class="vital">
-          <div class="amount bold-yellow">{{ entity.stamina }}</div>
-          <NProgress
-            type="line" status="warning" aria-label="Stamina" :height="4" :show-indicator="false" :border-radius="0"
-            :percentage="entity.stamina / entity.maxStamina * 100" 
-          ></NProgress>
-        </div>
-
-        <div class="vital narrow">
-          <div class="amount"><span class="bold-blue">{{ getXPPercentage() }}</span>%</div>
-          <div class="label bold-blue">Level</div>
-        </div>
-
-        <div class="vital narrow">
-          <div class="amount"><span :class="getHungerColor()">{{ getHungerPercentage() }}</span>%</div>
-          <div :class="'label ' + getHungerColor()">Hunger</div>
-        </div>
-
-        <div class="vital narrow" v-show="entity.rage > 0">
-          <div class="amount bold-red">{{ entity.rage }}</div>
-          <div class="label bold-red">Rage</div>
-        </div>
-
+        <NProgress
+          type="line" status="warning" aria-label="Stamina" :height="8" :border-radius="0"
+          :show-indicator="true"
+          :percentage="entity.stamina / entity.maxStamina * 100" 
+        >
+          <div class="pair">
+            <div class="amount bold-yellow">{{ entity.stamina }}</div>
+          </div>
+        </NProgress>
+        <NProgress
+          type="line" color="#838" aria-label="Experience" :height="8" :border-radius="0"
+          :show-indicator="true"
+          :percentage="getXPPercentage()" 
+        >
+          <div class="pair">
+            <div class="amount bold-white">{{ getTNL() }}</div>
+          </div>
+        </NProgress>
       </div>
 
     </div>
@@ -66,28 +65,32 @@ const props = defineProps({
 const { entity } = toRefs(props)
 
 function getName() {
-  return ansiToHtml(`L${ansi.boldWhite}${entity.value.level} ${entity.value.colorName}`)
+  return ansiToHtml(`${ansi.reset}L${ansi.boldWhite}${entity.value.level} ${entity.value.colorName}`)
 }
 
-function getHungerPercentage () {
-  return 100 - Math.round(entity.value.food / entity.value.maxFood * 100)
-}
+// function getHungerPercentage () {
+//   return 100 - Math.round(entity.value.food / entity.value.maxFood * 100)
+// }
 
-function getHungerColor () {
-  let percentage = getHungerPercentage()
-  if (percentage > 85) {
-    return 'red'
-  } else if (percentage > 70) {
-    return 'bold-red'
-  } else if (percentage > 55) {
-    return 'bold-yellow'
-  } else if (percentage > 40) {
-    return 'yellow'
-  } else if (percentage > 25) {
-    return 'green'
-  } else {
-    return 'bold-green'
-  }
+// function getHungerColor () {
+//   let percentage = getHungerPercentage()
+//   if (percentage > 85) {
+//     return 'red'
+//   } else if (percentage > 70) {
+//     return 'bold-red'
+//   } else if (percentage > 55) {
+//     return 'bold-yellow'
+//   } else if (percentage > 40) {
+//     return 'yellow'
+//   } else if (percentage > 25) {
+//     return 'green'
+//   } else {
+//     return 'bold-green'
+//   }
+// }
+
+function getTNL () {
+  return entity.value.xpForNextLevel - entity.value.xp
 }
 
 function getXPPercentage () {
@@ -96,62 +99,58 @@ function getXPPercentage () {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .overworld-ally-vitals {
-  width: 220px;
-  height: 32px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+
   h3 {
     font-size: 14px;
     font-weight: normal;
     margin: 0;
     line-height: 12px;
   }
+
   .ally-vitals {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     font-size: 16px;
-    .row {
+
+    .basic {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       width: 100%;
-      justify-content: space-around;
-
-      .vital {
-        text-align: center;
-        width: 35px;
-        margin-right: 5px;
-
-        &.narrow {
-          width: 35px;
-        }
-
-        &:last-child {
-          margin-right: 0;
-        }
-
-        .label {
-          font-size: 12px;
-          line-height: 4px;
-        }
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 500px) {
-  .overworld-ally-vitals {
-    width: 120px;
-    .ally-vitals {
-      .row {
-        .vital {
-          &.narrow {
-            display: none;
+      .n-progress {
+        width: 100%;
+        height: 8px;
+        margin-bottom: 1px;
+        font-size: 10px;
+        .n-progress-content {
+          div {
+            .n-progress-custom-content {
+              font-size: 10px;
+              line-height: 10px;
+              padding: 0;
+              margin: 0;
+              text-align: right;
+              .pair {
+                display: flex;
+                flex-direction: row;
+                .amount {
+                  width: 35px;
+                  text-align: left;
+                  margin-left: 4px;
+                }
+                .label {
+                  width: 15px;
+                  text-align: right;
+                }
+              }
+            }
           }
         }
-        
       }
+
     }
   }
 }

@@ -17,14 +17,21 @@
 
         <div class="affects">
           <div class="affect" v-for="affect in state.gameState.affects" :key="affect.name">
-            <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(affect.longFlag) : affect.name"></div>
-            <NProgress v-show="typeof affect.timeLeft == 'number'" type="line" status="success" :percentage="Math.min(60, affect.timeLeft) / 60 * 100" :show-indicator="false" :border-radius="0" />
-            <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(affect.desc)"></div>
+            <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ansi.reset + affect.longFlag) : ansiToHtml(ansi.reset + affect.name)"></div>
+
+            <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
+            v-show="typeof affect.timeLeft == 'number'"
+            :status="getTimeLeftPercentage(affect) >= 100 ? 'success' : 'warning'" :percentage="getTimeLeftPercentage(affect)" />
+
+            <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ansi.reset + affect.desc)"></div>
+
             <div class="bonuses">
+
               <div class="bonus" v-for="bonus in affect.bonuses" :key="bonus.name">
-                <div class="value">{{ bonus.value }}</div>
+                <div class="value">{{ (bonus.value > 0 ? '+' : '') + bonus.value }}</div>
                 <div class="label">{{ bonus.name }}</div>
               </div>
+
               <div v-show="affect.charges" class="bonus">
                 <div class="value">{{ affect.charges }}</div>
                 <div class="label">charges</div>
@@ -37,11 +44,14 @@
           <div class="quest" v-for="quest in state.gameState.quests" :key="quest.name">
             <div class="row">
               <div class="name" v-html-safe="getQuestName(quest)"></div>
+              
               <NProgress
                 v-if="quest.amount" 
-                :status="quest.progress < quest.amount ? 'default' : 'success'"
+                :status="quest.progress < quest.amount ? 'warning' : 'success'"
                 type="line"
                 :percentage="quest.progress / quest.amount * 100"
+                :height="4"
+                :border-radius="0"
               >
                 <span class="progress-label" v-if="quest.progress < quest.amount">
                   {{ quest.progress }} of {{ quest.amount }}
@@ -50,10 +60,13 @@
                   Done
                 </span>
               </NProgress>
-              <div v-if="!quest.amount && quest.extra" class="objective" v-html-safe="ansiToHtml(quest.objective)"></div>
+
+              <div class="objectives" v-if="quest.extra">
+                <div v-if="!quest.amount" class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+                <div class="objective" v-if="quest.type != 'generated' && !quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
+                <div class="objective" v-if="quest.type != 'generated' && quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+              </div>
             </div>
-            <div class="objective" v-if="quest.type != 'generated' && quest.extra && !quest.amount" v-html-safe="ansiToHtml(quest.extra)"></div>
-            <div class="objective" v-if="quest.type != 'generated' && quest.extra && quest.amount" v-html-safe="ansiToHtml(quest.objective)"></div>
           </div>
         </div>
 
@@ -76,7 +89,7 @@ import MiniMap from '@/components/side-menu/MiniMap.vue'
 import MobileMovement from '@/components/main-area/MobileMovement.vue'
 import OverworldAllyVitals from '@/components/main-area/OverworldAllyVitals.vue'
 
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, ansi } = useHelpers()
 
 function getAllies () {
   let entities = [{
@@ -113,6 +126,10 @@ function getQuestName (quest) {
   return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(quest.name)}</span>`
 }
 
+function getTimeLeftPercentage (affect) {
+  return Math.min(60, affect.timeLeft) / 60 * 100
+}
+
 </script>
 
 <style scoped lang="less">
@@ -141,19 +158,21 @@ function getQuestName (quest) {
       flex-direction: row;
       height: 130px;
       width: 100%;
+      justify-content: space-between;
 
       .allies {
         height: 130px;
         overflow-y: scroll;
-        flex-basis: 220px;
         margin-right: 10px;
+        flex-basis: 150px;
+        width: 150px;
       }
 
       .affects {
         display: flex;
         flex-direction: column;
-        flex-basis: 230px;
-        width: 230px;
+        flex-basis: 250px;
+        width: 250px;
         height: 130px;
         margin-right: 10px;
         overflow-y: scroll;
@@ -164,7 +183,7 @@ function getQuestName (quest) {
           margin-bottom: 5px;
           padding-bottom: 5px;
           border-bottom: 1px solid #333;
-          line-height: 14px;
+          // line-height: 14px;
           &:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
@@ -196,9 +215,8 @@ function getQuestName (quest) {
       .quests {
         height: 130px;
         overflow-y: scroll;
-        flex-basis: calc(100% - 470px);
-
-
+        flex-basis: calc(100% - 400px);
+        max-width: 500px;
         .quest {
           display: flex;
           flex-direction: column;
@@ -214,29 +232,34 @@ function getQuestName (quest) {
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            height: 24px;
             .name {
               font-size: 14px;
               line-height: 14px;
             }
             .n-progress {
-              max-width: 200px;
+              max-width: 100px;
               font-size: 12px;
               .progress-label {
                 font-size: 14px;
                 display: block;
-                width: 45px;
+                width: 50px;
                 text-align: center;
               }
             }
-
-            .objective {
-              font-size: 14px;
-              line-height: 14px;
+            .objectives {
+              display: flex;
+              flex-direction: column;
+              .objective {
+                font-size: 12px;
+                line-height: 12px;
+              }
             }
           }
           .objective {
             font-size: 12px;
             line-height: 12px;
+            text-align: right;
           }
         }
       }
@@ -249,7 +272,7 @@ function getQuestName (quest) {
     .center-hud {
       .top-center-hud {
         .allies {
-          width: 350px;
+          // width: 350px;
           flex-shrink: 0;
         }
         .affects {
