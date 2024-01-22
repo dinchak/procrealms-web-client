@@ -6,6 +6,7 @@
     @after-leave="onCloseModal"
     class="game-modal"
     :auto-focus="false"
+    :close-on-esc="false"
   >
 
     <div>
@@ -32,7 +33,7 @@
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput focus-mode="modal-input"></KeyboardInput>
+        <KeyboardInput :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
       </div>
     </div>
   </NModal>
