@@ -42,16 +42,13 @@
 
         <div class="quests">
           <div class="quest" v-for="quest in state.gameState.quests" :key="quest.name">
+
             <div class="row">
               <div class="name" v-html-safe="getQuestName(quest)"></div>
               
-              <div class="objectives" v-if="!quest.amount && quest.extra && quest.type != 'generated'">
-                <div class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
-              </div>
-
-              <div class="objective" v-if="!quest.extra">
-                <div v-if="!quest.amount" class="objective" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
-                <div class="objective" v-if="quest.type != 'generated' && quest.amount" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+              <div class="objectives" v-if="quest.extra || quest.objective">
+                <div class="objective" v-if="quest.objective && quest.type != 'generated'" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
+                <div class="objective" v-if="quest.extra && !quest.activity.startsWith('kill')" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
               </div>
 
               <NProgress
@@ -240,10 +237,13 @@ function getTimeLeftPercentage (affect) {
             .name {
               font-size: 14px;
               line-height: 14px;
+              min-width: 150px;
+              margin-right: 5px;
             }
             .n-progress {
               max-width: 100px;
               font-size: 12px;
+              margin-left: 5px;
               .progress-label {
                 font-size: 14px;
                 display: block;
