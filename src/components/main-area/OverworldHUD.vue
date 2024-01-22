@@ -168,8 +168,8 @@ function getTimeLeftPercentage (affect) {
         height: 130px;
         overflow-y: scroll;
         margin-right: 10px;
-        flex-basis: 150px;
-        width: 150px;
+        flex-basis: ~"calc(100% - 750px)";
+        width: ~"calc(100% - 750px)";
       }
 
       .affects {
@@ -219,8 +219,8 @@ function getTimeLeftPercentage (affect) {
       .quests {
         height: 130px;
         overflow-y: scroll;
-        flex-basis: calc(100% - 400px);
-        max-width: 500px;
+        flex-basis: 500px;
+        width: 500px;
         .quest {
           display: flex;
           flex-direction: column;
@@ -271,33 +271,59 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
+@media screen and (max-width: 1200px) {
+  .bottom-hud {
+    .center-hud {
+      .top-center-hud {
+        .allies {
+          width: ~"calc(100% - 600px)";
+          flex-basis: ~"calc(100% - 600px)";
+        }
+        .affects {
+          width: 200px;
+          flex-basis: 200px;
+        }
+        .quests {
+          width: 400px;
+          flex-basis: 400px;
+        }
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 1000px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
         .allies {
-          // width: 350px;
-          flex-shrink: 0;
+          width: ~"calc(100% - 400px)";
+          flex-basis: ~"calc(100% - 400px)";
         }
         .affects {
           display: none;
         }
+
         .quests {
-          flex-basis: 100%;
+          width: 400px;
+          flex-basis: 400px;
         }
       }
     }
   }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 850px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
         .allies {
+          width: ~"calc(100% - 200px)";
+          flex-basis: ~"calc(100% - 200px)";
         }
         .affects {
-          display: none;
+          width: 200px;
+          flex-basis: 200px;
         }
         .quests {
           display: none;
@@ -307,7 +333,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
