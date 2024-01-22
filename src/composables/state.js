@@ -141,13 +141,13 @@ function resetOptions () {
     numPadMovement: true,
     overlayControls: true,
     // showTabs: true,
+
     showMapArea: true,
     showQuickSlots: true,
     hudMovementControls: true,
     showOverlayMinimap: true,
     swapControls: false,
     wasdMovement: true,
-
     hudCommandControls: true,
   }
 }
@@ -208,13 +208,14 @@ function resetInputMappings () {
       label: 'Focus Text Input',
       event: 'focusTextInput',
       keyCodes: ['Enter'],
-      modes: ['hotkey'],
+      modes: ['hotkey', 'modal'],
       stopLoop: true
     }, {
       label: 'Blur Text Input',
       event: 'blurTextInput',
       keyCodes: ['Escape'],
       modes: ['input', 'modal-input'],
+      stopLoop: true
     }, {
       label: 'Send Command',
       event: 'sendCommand',
@@ -400,12 +401,17 @@ function resetInputMappings () {
       event: 'closeModal',
       keyCodes: ['Escape'],
       gamepadButtons: [1],
-      modes: ['modal', 'modal-input'],
+      modes: ['modal'],
     }, {
       label: 'Show Game Modal',
       event: 'openGameModal',
       gamepadButtons: [9],
       modes: ['hotkey', 'input'],
+    }, {
+      label: 'Show Game Modal',
+      event: 'openGameModal',
+      keyCodes: ['Escape'],
+      modes: ['hotkey'],
     }, {
       label: 'Previous Modal Tab',
       event: 'prevModalTab',

@@ -22,19 +22,27 @@ const props = defineProps({
   focusMode: {
     type: String,
     default: 'input'
+  },
+  activeModes: {
+    type: Array,
+    default: () => []
   }
 })
 
-const { focusMode } = toRefs(props)
+const { focusMode, activeModes } = toRefs(props)
 
 const { cmd } = useWebSocket()
 
 function focusTextInput () {
-  input.value.focus()
+  if (activeModes.value.includes(state.mode)) {
+    input.value.focus()
+  }
 }
 
 function blurTextInput () {
-  input.value.blur()
+  if (activeModes.value.includes(state.mode)) {
+    input.value.blur()
+  }
 }
 
 function onFocus () {
@@ -50,6 +58,10 @@ function onBlur () {
 }
 
 function prevCommand () {
+  if (!activeModes.value.includes(state.mode)) {
+    return
+  }
+
   if (!commandHistory.length || historyIndex == commandHistory.length - 1) {
     return
   }
@@ -63,6 +75,10 @@ function prevCommand () {
 }
 
 function nextCommand () {
+  if (!activeModes.value.includes(state.mode)) {
+    return
+  }
+
   if (historyIndex == -1) {
     return
   }
@@ -77,7 +93,12 @@ function nextCommand () {
 }
 
 function sendCommand () {
+  if (!activeModes.value.includes(state.mode)) {
+    return
+  }
+
   let command = input.value.value
+
   if (!command) {
     blurTextInput()
     return

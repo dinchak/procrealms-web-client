@@ -16,7 +16,7 @@
       </div>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
-      <KeyboardInput focus-mode="input"></KeyboardInput>
+      <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
     </n-layout>
     <SideMenu v-if="state.options.swapControls"></SideMenu>
