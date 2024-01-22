@@ -163,10 +163,11 @@ function getTimeLeftPercentage (affect) {
 
       .allies {
         height: 130px;
+        width: 200px;
+        flex-basis: 200px;
         overflow-y: scroll;
-        margin-right: 10px;
-        flex-basis: ~"calc(100% - 750px)";
-        width: ~"calc(100% - 750px)";
+        display: flex;
+        flex-direction: column;
       }
 
       .affects {
@@ -175,7 +176,6 @@ function getTimeLeftPercentage (affect) {
         flex-basis: 250px;
         width: 250px;
         height: 130px;
-        margin-right: 10px;
         overflow-y: scroll;
 
         .affect {
@@ -275,10 +275,6 @@ function getTimeLeftPercentage (affect) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
-        .allies {
-          width: ~"calc(100% - 600px)";
-          flex-basis: ~"calc(100% - 600px)";
-        }
         .affects {
           width: 200px;
           flex-basis: 200px;
@@ -292,14 +288,10 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1050px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
-        .allies {
-          width: ~"calc(100% - 400px)";
-          flex-basis: ~"calc(100% - 400px)";
-        }
         .affects {
           display: none;
         }
@@ -317,13 +309,10 @@ function getTimeLeftPercentage (affect) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
-        .allies {
-          width: ~"calc(100% - 200px)";
-          flex-basis: ~"calc(100% - 200px)";
-        }
         .affects {
           width: 200px;
           flex-basis: 200px;
+          display: initial;
         }
         .quests {
           display: none;
@@ -333,7 +322,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 650px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {

@@ -6,42 +6,43 @@
       <div class="basic">
         <NProgress
           type="line" status="success" aria-label="Health" :height="4" :border-radius="0"
-          :show-indicator="true"
+          :show-indicator="false"
           :percentage="entity.hp / entity.maxHp * 100"
-        >
-          <!-- <div class="pair">
-            <div class="amount bold-green">{{ entity.hp }}</div>
-          </div> -->
-        </NProgress>
+        ></NProgress>
 
         <NProgress
           type="line" status="default" aria-label="Energy" :height="4" :border-radius="0"
-          :show-indicator="true"
+          :show-indicator="false"
           :percentage="entity.energy / entity.maxEnergy * 100"
-        >
-          <!-- <div class="pair">
-            <div class="amount bold-cyan">{{ entity.energy }}</div>
-          </div> -->
-        </NProgress>
+        ></NProgress>
 
         <NProgress
           type="line" status="warning" aria-label="Stamina" :height="4" :border-radius="0"
-          :show-indicator="true"
+          :show-indicator="false"
           :percentage="entity.stamina / entity.maxStamina * 100" 
-        >
-          <!-- <div class="pair">
-            <div class="amount bold-yellow">{{ entity.stamina }}</div>
-          </div> -->
-        </NProgress>
+        ></NProgress>
+
         <NProgress
           type="line" color="#838" aria-label="Experience" :height="4" :border-radius="0"
-          :show-indicator="true"
+          :show-indicator="false"
           :percentage="getXPPercentage()" 
-        >
-          <!-- <div class="pair">
-            <div class="amount bold-white">{{ getTNL() }}</div>
-          </div> -->
-        </NProgress>
+        ></NProgress>
+
+        <div class="statuses">
+          <div :class="'status ' + getHungerColor()" v-if="getHungerPercentage() >= 50">
+            {{ getHungerDescription() }}
+          </div>
+
+          <div :class="'status ' + getHappinessColor()" v-if="entity.happiness <= 5">
+            {{ getHappinessDescription() }}
+          </div>
+
+          <div class="status" v-if="entity.rage > 0">
+            <span class="value bold-red">{{ entity.rage }}</span>
+            <span class="label red">Rage</span>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -68,26 +69,59 @@ function getName() {
   return ansiToHtml(`${ansi.reset}L${ansi.boldWhite}${entity.value.level} ${entity.value.colorName}`)
 }
 
-// function getHungerPercentage () {
-//   return 100 - Math.round(entity.value.food / entity.value.maxFood * 100)
-// }
+function getHungerPercentage () {
+  return 100 - Math.round(entity.value.food / entity.value.maxFood * 100)
+}
 
-// function getHungerColor () {
-//   let percentage = getHungerPercentage()
-//   if (percentage > 85) {
-//     return 'red'
-//   } else if (percentage > 70) {
-//     return 'bold-red'
-//   } else if (percentage > 55) {
-//     return 'bold-yellow'
-//   } else if (percentage > 40) {
-//     return 'yellow'
-//   } else if (percentage > 25) {
-//     return 'green'
-//   } else {
-//     return 'bold-green'
-//   }
-// }
+function getHungerDescription () {
+  let percentage = getHungerPercentage()
+  if (percentage >= 90) {
+    return 'Starving'
+  } else if (percentage >= 80) {
+    return 'Famished'
+  } else if (percentage >= 65) {
+    return 'Hungry'
+  } else {
+    return 'Peckish'
+  }
+}
+
+function getHungerColor () {
+  let percentage = getHungerPercentage()
+  if (percentage >= 90) {
+    return 'red'
+  } else if (percentage >= 80) {
+    return 'bold-red'
+  } else if (percentage >= 65) {
+    return 'bold-yellow'
+  } else {
+    return 'yellow'
+  }
+}
+
+function getHappinessColor () {
+  if (entity.value.happiness <= 1) {
+    return 'red'
+  } else if (entity.value.happiness <= 2) {
+    return 'bold-red'
+  } else if (entity.value.happiness <= 4) {
+    return 'bold-yellow'
+  } else {
+    return 'yellow'
+  }
+}
+
+function getHappinessDescription () {
+  if (entity.value.happiness <= 1) {
+    return 'Miserable'
+  } else if (entity.value.happiness <= 2) {
+    return 'Unhappy'
+  } else if (entity.value.happiness <= 4) {
+    return 'Agitated'
+  } else {
+    return 'Discontent'
+  }
+}
 
 // function getTNL () {
 //   return entity.value.xpForNextLevel - entity.value.xp
@@ -102,7 +136,7 @@ function getXPPercentage () {
 <style lang="less">
 .overworld-ally-vitals {
   margin-bottom: 5px;
-  max-width: 200px;
+  width: 200px;
 
   h3 {
     font-size: 14px;
@@ -121,6 +155,23 @@ function getXPPercentage () {
       display: flex;
       flex-direction: column;
       width: 100%;
+
+      .statuses {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .status {
+          font-size: 12px;
+          line-height: 12px;
+          padding: 0;
+          margin: 0;
+          text-align: right;
+          .value {
+            margin-right: 5px;
+          }
+        }
+      }
+
       .n-progress {
         width: 100%;
         height: 4px;
