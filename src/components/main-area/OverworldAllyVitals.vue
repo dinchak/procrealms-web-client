@@ -5,42 +5,42 @@
 
       <div class="basic">
         <NProgress
-          type="line" status="success" aria-label="Health" :height="8" :border-radius="0"
+          type="line" status="success" aria-label="Health" :height="4" :border-radius="0"
           :show-indicator="true"
           :percentage="entity.hp / entity.maxHp * 100"
         >
-          <div class="pair">
+          <!-- <div class="pair">
             <div class="amount bold-green">{{ entity.hp }}</div>
-          </div>
+          </div> -->
         </NProgress>
 
         <NProgress
-          type="line" status="default" aria-label="Energy" :height="8" :border-radius="0"
+          type="line" status="default" aria-label="Energy" :height="4" :border-radius="0"
           :show-indicator="true"
           :percentage="entity.energy / entity.maxEnergy * 100"
         >
-          <div class="pair">
+          <!-- <div class="pair">
             <div class="amount bold-cyan">{{ entity.energy }}</div>
-          </div>
+          </div> -->
         </NProgress>
 
         <NProgress
-          type="line" status="warning" aria-label="Stamina" :height="8" :border-radius="0"
+          type="line" status="warning" aria-label="Stamina" :height="4" :border-radius="0"
           :show-indicator="true"
           :percentage="entity.stamina / entity.maxStamina * 100" 
         >
-          <div class="pair">
+          <!-- <div class="pair">
             <div class="amount bold-yellow">{{ entity.stamina }}</div>
-          </div>
+          </div> -->
         </NProgress>
         <NProgress
-          type="line" color="#838" aria-label="Experience" :height="8" :border-radius="0"
+          type="line" color="#838" aria-label="Experience" :height="4" :border-radius="0"
           :show-indicator="true"
           :percentage="getXPPercentage()" 
         >
-          <div class="pair">
+          <!-- <div class="pair">
             <div class="amount bold-white">{{ getTNL() }}</div>
-          </div>
+          </div> -->
         </NProgress>
       </div>
 
@@ -89,9 +89,9 @@ function getName() {
 //   }
 // }
 
-function getTNL () {
-  return entity.value.xpForNextLevel - entity.value.xp
-}
+// function getTNL () {
+//   return entity.value.xpForNextLevel - entity.value.xp
+// }
 
 function getXPPercentage () {
   const { xp, xpForCurrentLevel, xpForNextLevel } = entity.value
@@ -102,6 +102,7 @@ function getXPPercentage () {
 <style lang="less">
 .overworld-ally-vitals {
   margin-bottom: 5px;
+  max-width: 200px;
 
   h3 {
     font-size: 14px;
@@ -122,7 +123,7 @@ function getXPPercentage () {
       width: 100%;
       .n-progress {
         width: 100%;
-        height: 8px;
+        height: 4px;
         margin-bottom: 1px;
         font-size: 10px;
         .n-progress-content {
@@ -152,6 +153,12 @@ function getXPPercentage () {
       }
 
     }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .overworld-ally-vitals {
+    max-width: 150px;
   }
 }
 
