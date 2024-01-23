@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, watch } from 'vue'
 import { state, setMode } from '@/composables/state'
 import { NLayout } from 'naive-ui'
 
@@ -71,12 +71,20 @@ function openHelpModal () {
   state.modals.helpModal = true
 }
 
+let watchers = []
 onMounted(() => {
   state.inputEmitter.on('openGameModal', openGameModal)
   state.inputEmitter.on('openHelpModal', openHelpModal)
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
+
+  watchers.push(watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options))))
+  watchers.push(watch(state.options.textInputAlwaysFocused, () => {
+    if (state.options.textInputAlwaysFocused) {
+      state.inputEmitter.emit('focusTextInput')
+    }
+  }))
 })
 
 onBeforeUnmount(() => {
@@ -85,6 +93,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
   state.inputEmitter.off('openQuests', openQuests)
+
+  watchers.forEach(w => w())
 })
 </script>
 

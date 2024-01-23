@@ -102,6 +102,13 @@
           </div>
         </NGi>
 
+        <NGi>
+          <div class="option">
+            <label for="option-text-input-always-focused">Text Input Always Focused</label>
+            <NSwitch id="option-text-input-always-focused" v-model:value="state.options.textInputAlwaysFocused" aria-label="Text Input Always Focused" class="selectable"></NSwitch>
+          </div>
+        </NGi>
+
       </NGrid>
     </div>
 

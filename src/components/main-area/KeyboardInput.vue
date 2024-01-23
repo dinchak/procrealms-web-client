@@ -40,6 +40,10 @@ function focusTextInput () {
 }
 
 function blurTextInput () {
+  if (state.options.textInputAlwaysFocused) {
+    return
+  }
+
   if (activeModes.value.includes(state.mode)) {
     input.value.blur()
   }
@@ -50,6 +54,13 @@ function onFocus () {
 }
 
 function onBlur () {
+  if (state.options.textInputAlwaysFocused) {
+    if (activeModes.value.includes(state.mode)) {
+      input.value.focus()
+    }
+    return
+  }
+
   if (state.mode != focusMode.value) {
     state.prevModes = state.prevModes.filter(m => m != focusMode.value)
     return
@@ -145,6 +156,12 @@ onMounted(() => {
   state.inputEmitter.on('sendCommand', sendCommand)
   state.inputEmitter.on('prevCommand', prevCommand)
   state.inputEmitter.on('nextCommand', nextCommand)
+
+  if (state.options.textInputAlwaysFocused) {
+    if (activeModes.value.includes(state.mode)) {
+      state.inputEmitter.emit('focusTextInput')
+    }
+  }
 })
 
 onBeforeUnmount(() => {

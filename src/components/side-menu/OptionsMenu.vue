@@ -66,6 +66,11 @@
       <n-switch id="option-wasd-movement" v-model:value="state.options.wasdMovement" aria-label="WASD Movement"></n-switch>
     </div>
 
+    <div class="option">
+      <label for="option-text-input-always-focused">Text Input Always Focused</label>
+      <n-switch id="option-text-input-always-focused" v-model:value="state.options.textInputAlwaysFocused" aria-label="Text Input Always Focused"></n-switch>
+    </div>
+
     <h3 class="pad-top">Font Settings</h3>
 
     <n-select
@@ -100,7 +105,7 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue'
+import { ref } from 'vue'
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
@@ -142,8 +147,6 @@ const fontOptions = [{
   label: 'Ubuntu Mono',
   value: 'Ubuntu Mono, monospace'
 }]
-
-watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 async function goFullscreen () {
   let app = document.getElementById('app')

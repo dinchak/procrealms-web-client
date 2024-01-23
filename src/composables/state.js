@@ -140,7 +140,7 @@ function resetOptions () {
     mapModalSize: 'medium',
     numPadMovement: true,
     overlayControls: true,
-    // showTabs: true,
+    textInputAlwaysFocused: false,
 
     showMapArea: true,
     showQuickSlots: true,
@@ -525,6 +525,10 @@ export function resetMode () {
 }
 
 export function setMode (newMode) {
+  if (state.mode == newMode) {
+    console.log('state.mode already set to', newMode)
+    return
+  }
   state.prevModes.push(state.mode)
   state.mode = newMode
   console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
