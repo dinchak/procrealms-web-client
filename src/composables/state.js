@@ -157,347 +157,667 @@ function resetInputMappings () {
     {
       label: 'Move North',
       event: 'moveNorth',
-      keyCodes: ['Numpad8', 'KeyW', 'ArrowUp'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad8',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyW',
+        modes: ['hotkey']
+      }, {
+        keyCode: 'ArrowUp',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move South',
       event: 'moveSouth',
-      keyCodes: ['Numpad2', 'KeyS', 'ArrowDown'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad2',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyS',
+        modes: ['hotkey']
+      }, {
+        keyCode: 'ArrowDown',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move East',
       event: 'moveEast',
-      keyCodes: ['Numpad6', 'KeyD', 'ArrowRight'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad6',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyD',
+        modes: ['hotkey']
+      }, {
+        keyCode: 'ArrowRight',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move West',
       event: 'moveWest',
-      keyCodes: ['Numpad4', 'KeyA', 'ArrowLeft'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad4',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyA',
+        modes: ['hotkey']
+      }, {
+        keyCode: 'ArrowLeft',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move Northeast',
       event: 'moveNorthEast',
-      keyCodes: ['Numpad9', 'KeyE'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad9',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyE',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move Northwest',
       event: 'moveNorthWest',
-      keyCodes: ['Numpad7', 'KeyQ'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad7',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyQ',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move Southeast',
       event: 'moveSouthEast',
-      keyCodes: ['Numpad3', 'KeyC'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad3',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyC',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Move Southwest',
       event: 'moveSouthWest',
-      keyCodes: ['Numpad1', 'KeyZ'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad1',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyZ',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Enter',
       event: 'enter',
-      keyCodes: ['Numpad5', 'KeyX'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Numpad5',
+        modes: ['hotkey', 'input']
+      }, {
+        keyCode: 'KeyX',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Toggle Collapsible Menu',
       event: 'toggleCollapsibleMenu',
-      keyCodes: ['Space'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Space',
+        modes: ['hotkey']
+      }],
+    },
+    
+    {
       label: 'Focus Text Input',
       event: 'focusTextInput',
-      keyCodes: ['Enter'],
-      modes: ['hotkey', 'modal'],
-      stopLoop: true
-    }, {
+      bindings: [{
+        keyCode: 'Slash',
+        modes: ['hotkey', 'modal']
+      }, {
+        keyCode: 'Enter',
+        modes: ['hotkey', 'modal']
+      }],
+    },
+    
+    {
       label: 'Blur Text Input',
       event: 'blurTextInput',
-      keyCodes: ['Escape'],
-      modes: ['input', 'modal-input'],
-      stopLoop: true
-    }, {
+      bindings: [{
+        keyCode: 'Escape',
+        modes: ['input', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Send Command',
       event: 'sendCommand',
-      keyCodes: ['Enter'],
-      modes: ['input', 'modal-input'],
-    }, {
+      bindings: [{
+        keyCode: 'Enter',
+        modes: ['input', 'modal-input']
+      }],
+    },
+    
+    {
       label: 'Previous Command',
       event: 'prevCommand',
-      keyCodes: ['ArrowUp'],
-      modes: ['input', 'modal-input']
-    }, {
+      bindings: [{
+        keyCode: 'ArrowUp',
+        modes: ['input', 'modal-input']
+      }],
+    },
+    
+    {
       label: 'Next Command',
       event: 'nextCommand',
-      keyCodes: ['ArrowDown'],
-      modes: ['input', 'modal-input']
-    }, {
+      bindings: [{
+        keyCode: 'ArrowDown',
+        modes: ['input', 'modal-input']
+      }],
+    },
+    
+    {
       label: 'Page Up',
       event: 'pageUp',
-      keyCodes: ['PageUp'],
-      gamepadButtons: [12],
-      modes: ['hotkey', 'input', 'modal-input'],
-    }, {
+      bindings: [{
+        keyCode: 'PageUp',
+        modes: ['hotkey', 'input', 'modal-input']
+      }, {
+        gamepadButton: 12,
+        modes: ['hotkey', 'input', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Page Down',
       event: 'pageDown',
-      keyCodes: ['PageDown'],
-      gamepadButtons: [13],
-      modes: ['hotkey', 'input', 'modal-input'],
-    }, {
+      bindings: [{
+        keyCode: 'PageDown',
+        modes: ['hotkey', 'input', 'modal-input']
+      }, {
+        gamepadButton: 13,
+        modes: ['hotkey', 'input', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Scroll Down',
       event: 'scrollDown',
-      keyCodes: ['End'],
-      // gamepadButtons: [13],
-      modes: ['hotkey', 'input', 'modal-input'],
-    }, {
+      bindings: [{
+        keyCode: 'End',
+        modes: ['hotkey', 'input', 'modal-input']
+      }, {
+        gamepadButton: 15,
+        modes: ['hotkey', 'input', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Open Help Modal',
       event: 'openHelpModal',
-      keyCodes: [{ code: 'Slash', shift: true }],
-      modes: ['hotkey'],
-    }, {
+      bindings: [{
+        keyCode: 'Slash',
+        shift: true,
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Show Debug',
       event: 'showDebug',
-      keyCodes: ['Backquote'],
-      modes: ['hotkey'],
-    }, {
+      bindings: [{
+        keyCode: 'Backquote',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 1',
       event: 'quickSlot1',
-      keyCodes: ['Digit1'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit1',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 2',
       event: 'quickSlot2',
-      keyCodes: ['Digit2'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit2',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 3',
       event: 'quickSlot3',
-      keyCodes: ['Digit3'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit3',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 4',
       event: 'quickSlot4',
-      keyCodes: ['Digit4'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit4',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 5',
       event: 'quickSlot5',
-      keyCodes: ['Digit5'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit5',
+        modes: ['hotkey']
+      }]
+    },
+
+    {
       label: 'Quick Slot 6',
       event: 'quickSlot6',
-      keyCodes: ['Digit6'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit6',
+        modes: ['hotkey']
+      }]
+    }, 
+    
+    {
       label: 'Quick Slot 7',
       event: 'quickSlot7',
-      keyCodes: ['Digit7'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit7',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 8',
       event: 'quickSlot8',
-      keyCodes: ['Digit8'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit8',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 9',
       event: 'quickSlot9',
-      keyCodes: ['Digit9'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit9',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot 0',
       event: 'quickSlot0',
-      keyCodes: ['Digit0'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Digit0',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot -',
       event: 'quickSlotMinus',
-      keyCodes: ['Minus'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Minus',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Quick Slot =',
       event: 'quickSlotEqual',
-      keyCodes: ['Equal'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'Equal',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Select Output Tab',
       event: 'selectOutputTab',
-      keyCodes: [{ code: 'Digit1', ctrl: true }],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        keyCode: 'Digit1',
+        ctrl: true,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Select Chat Tab',
       event: 'selectChatTab',
-      keyCodes: [{ code: 'Digit2', ctrl: true }],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        keyCode: 'Digit2',
+        ctrl: true,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Select Trade Tab',
       event: 'selectTradeTab',
-      keyCodes: [{ code: 'Digit3', ctrl: true }],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        keyCode: 'Digit3',
+        ctrl: true,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Select Newbie Tab',
       event: 'selectNewbieTab',
-      keyCodes: [{ code: 'Digit4', ctrl: true }],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        keyCode: 'Digit4',
+        ctrl: true,
+        modes: ['hotkey', 'input']
+      }]
+    },
+
+    {
       label: 'Select Prev Output Tab',
       event: 'selectPrevOutputTab',
-      gamepadButtons: [14],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        gamepadButton: 14,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Select Next Output Tab',
       event: 'selectNextOutputTab',
-      gamepadButtons: [15],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        gamepadButton: 15,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Show Map Modal',
       event: 'showMapModal',
-      keyCodes: ['KeyM'],
-      modes: ['hotkey']
-    }, {
+      bindings: [{
+        keyCode: 'KeyM',
+        modes: ['hotkey']
+      }]
+    },
+    
+    {
       label: 'Attack',
       event: 'attack',
-      keyCodes: ['KeyA'],
-      modes: ['hotkey'],
-      gamepadButtons: [2],
-      inBattle: true
-    }, {
+      inBattle: true,
+      bindings: [{
+        keyCode: 'KeyA',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 2,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Defend',
       event: 'defend',
-      keyCodes: ['KeyD'],
-      modes: ['hotkey'],
-      gamepadButtons: [3],
-      inBattle: true
-    }, {
+      inBattle: true,
+      bindings: [{
+        keyCode: 'KeyD',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 3,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Flee',
       event: 'flee',
-      keyCodes: ['KeyF'],
-      modes: ['hotkey'],
-      gamepadButtons: [1],
-      inBattle: true
-    }, {
+      inBattle: true,
+      bindings: [{
+        keyCode: 'KeyF',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 1,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Battle',
       event: 'battle',
-      keyCodes: ['KeyB'],
-      gamepadButtons: [2],
-      modes: ['hotkey'],
-      inBattle: false
-    }, {
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyB',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 2,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Harvest',
       event: 'harvest',
-      keyCodes: ['KeyH'],
-      gamepadButtons: [3],
-      modes: ['hotkey'],
-      inBattle: false
-    }, {
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyH',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 3,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Loot',
       event: 'loot',
-      keyCodes: ['KeyL'],
-      gamepadButtons: [1],
-      modes: ['hotkey'],
-      inBattle: false
-    }, {
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyL',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 1,
+        modes: ['hotkey', 'input']
+      }],
+    },
+
+    {
       label: 'Close Modal',
       event: 'closeModal',
-      keyCodes: ['Escape'],
-      gamepadButtons: [1],
-      modes: ['modal'],
-    }, {
+      bindings: [{
+        keyCode: 'Escape',
+        modes: ['modal'],
+      }, {
+        gamepadButton: 1,
+        modes: ['modal']
+      }],
+    },
+    
+    {
       label: 'Show Game Modal',
       event: 'openGameModal',
-      gamepadButtons: [9],
-      modes: ['hotkey', 'input'],
-    }, {
-      label: 'Show Game Modal',
-      event: 'openGameModal',
-      keyCodes: ['Escape'],
-      modes: ['hotkey'],
-    }, {
+      bindings: [{
+        keyCode: 'Escape',
+        modes: ['hotkey']
+      }, {
+        gamepadButton: 9,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Previous Modal Tab',
       event: 'prevModalTab',
-      keyCodes: ['ArrowLeft'],
-      gamepadButtons: [4],
-      modes: ['modal', 'modal-input']
-    }, {
+      bindings: [{
+        keyCode: 'ArrowLeft',
+        modes: ['modal', 'modal-input']
+      }, {
+        gamepadButton: 4,
+        modes: ['modal', 'modal-input']
+      }],
+    },
+    
+    {
       label: 'Next Modal Tab',
       event: 'nextModalTab',
-      keyCodes: ['ArrowRight'],
-      gamepadButtons: [5],
-      modes: ['modal', 'modal-input']
-    }, {
+      bindings: [{
+        keyCode: 'ArrowRight',
+        modes: ['modal', 'modal-input']
+      }, {
+        gamepadButton: 5,
+        modes: ['modal', 'modal-input']
+      }],
+    },
+    
+    {
       label: 'Open Radial Menu',
       event: 'openRadialMenu',
-      gamepadButtons: [4, 5],
-      modes: ['hotkey', 'input']
-    }, {
+      bindings: [{
+        gamepadButton: 4,
+        modes: ['hotkey', 'input']
+      }, {
+        gamepadButton: 5,
+        modes: ['hotkey', 'input']
+      }],
+    },
+    
+    {
       label: 'Close Radial Menu',
       event: 'closeRadialMenu',
-      gamepadButtonsReleased: [1],
-      modes: ['radial']
-    }, {
+      bindings: [{
+        gamepadButtonReleased: 1,
+        modes: ['radial']
+      }],
+    },
+    
+    {
       label: 'Select Radial Item',
       event: 'selectRadialItem',
-      axis: 'left',
-      modes: ['radial']
-    }, {
+      bindings: [{
+        axis: 'left',
+        modes: ['radial']
+      }],
+    },
+    
+    {
       label: 'Perform Radial Action',
       event: 'performRadialAction',
-      gamepadButtons: [0],
-      modes: ['radial']
-    }, {
+      bindings: [{
+        gamepadButton: 0,
+        modes: ['radial']
+      }],
+    },
+    
+    {
       label: 'Select Prev Radial Menu',
       event: 'selectPrevRadialMenu',
-      gamepadButtons: [4],
-      modes: ['radial']
-    }, {
+      bindings: [{
+        gamepadButton: 4,
+        modes: ['radial']
+      }],
+    },
+    
+    {
       label: 'Select Next Radial Menu',
       event: 'selectNextRadialMenu',
-      gamepadButtons: [5],
-      modes: ['radial']
-    }, {
+      bindings: [{
+        gamepadButton: 5,
+        modes: ['radial']
+      }],
+    },
+    
+    {
       label: 'Select Movement Direction',
       event: 'selectMovementDirection',
-      axis: 'left',
-      modes: ['hotkey', 'input'],
-      inBattle: false
-    }, {
+      inBattle: false,
+      bindings: [{
+        axis: 'left',
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Move In Selected Direction',
       event: 'moveInSelectedDirection',
-      gamepadButtons: [0],
-      modes: ['hotkey', 'input'],
-      inBattle: false
-    }, {
+      inBattle: false,
+      bindings: [{
+        gamepadButton: 0,
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Select Login Action',
       event: 'selectLoginAction',
-      axis: 'left',
-      modes: ['login']
-    }, {
+      bindings: [{
+        axis: 'left',
+        modes: ['login']
+      }]
+    },
+    
+    {
       label: 'Perform Login Action',
       event: 'performLoginAction',
-      gamepadButtons: [0],
-      modes: ['login']
-    }, {
+      bindings: [{
+        gamepadButton: 0,
+        modes: ['login']
+      }]
+    },
+    
+    {
       label: 'Select Modal Action',
       event: 'selectModalAction',
-      axis: 'left',
-      modes: ['modal', 'modal-input']
-    }, {
+      bindings: [{
+        axis: 'left',
+        modes: ['modal', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Perform Modal Action',
       event: 'performModalAction',
-      gamepadButtons: [0],
-      modes: ['modal', 'modal-input']
-    }, {
+      bindings: [{
+        gamepadButton: 0,
+        modes: ['modal', 'modal-input']
+      }]
+    },
+    
+    {
       label: 'Select Battle Action',
       event: 'selectBattleAction',
-      axis: 'left',
-      modes: ['hotkey', 'input'],
-      inBattle: true
-    }, {
+      inBattle: true,
+      bindings: [{
+        axis: 'left',
+        modes: ['hotkey', 'input']
+      }]
+    },
+    
+    {
       label: 'Perform Battle Action',
       event: 'performBattleAction',
-      gamepadButtons: [0],
-      modes: ['hotkey', 'input'],
-      inBattle: true
+      inBattle: true,
+      bindings: [{
+        gamepadButton: 0,
+        modes: ['hotkey', 'input']
+      }]
     }
   ]
 }
