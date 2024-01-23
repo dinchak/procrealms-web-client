@@ -151,7 +151,6 @@ onBeforeUnmount(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 5px 0;
       width: 300px;
       .delete {
         margin-left: 10px;
