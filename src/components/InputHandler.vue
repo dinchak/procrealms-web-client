@@ -6,7 +6,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import { state } from '@/composables/state'
 
-let stopLoop = true
+let gamepadStateLoopPaused = true
 
 function handleMetaKey (ev, keyState) {
   if (ev.key == 'Control' || ev.key == 'Meta') {
@@ -34,38 +34,30 @@ function onKeyDown (ev) {
 
   console.log(`onKeyDown code=${ev.code}`)
 
-  for (let mapping of validMappings().filter(m => m.keyCodes)) {
-    for (let code of mapping.keyCodes) {
-      if (typeof code == 'string') {
-        if (state.metaKeyState.alt || state.metaKeyState.ctrl) {
-          continue
-        }
-        if (code != ev.code) {
-          continue
-        }
-      } else {
-        if (code.code != ev.code) {
-          continue
-        }
-        if (typeof code.ctrl != 'undefined' && code.ctrl != state.metaKeyState.ctrl) {
-          continue
-        }
-        if (typeof code.shift != 'undefined' && code.shift != state.metaKeyState.shift) {
-          continue
-        }
-        if (typeof code.alt != 'undefined' && code.alt != state.metaKeyState.alt) {
-          continue
-        }
+  let mappings = validMappings({ keyCode: ev.code })
+    .filter(m => {
+      let binding = m.bindings.find(b => b.keyCode == ev.code && b.modes.includes(state.mode))
+      if (binding.ctrl && !state.metaKeyState.ctrl) {
+        return false
       }
-
-      console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
-      state.inputEmitter.emit(mapping.event)
-      ev.preventDefault()
-
-      if (mapping.stopLoop) {
-        return
+      if (binding.shift && !state.metaKeyState.shift) {
+        return false
       }
-    }
+      if (binding.alt && !state.metaKeyState.alt) {
+        return false
+      }
+      return true
+    })
+
+  if (mappings.length == 0) {
+    return
+  }
+
+  ev.preventDefault()
+
+  for (let mapping of mappings) {
+    console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
+    state.inputEmitter.emit(mapping.event)
   }
 }
 
@@ -79,7 +71,7 @@ function onGamePadConnected (ev) {
   console.log(`onGamePadConnected ${ev.gamepad.index}`)
   console.log(ev.gamepad)
   state.gamepads[ev.gamepad.index] = ev.gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
-  stopLoop = false
+  gamepadStateLoopPaused = false
   gamepadStateLoop()
 }
 
@@ -87,13 +79,21 @@ function onGamePadDisconnected (ev) {
   console.log(`onGamePadDisconnected ${ev.gamepad.index}`)
   delete state.gamepads[ev.gamepad.index]
   if (Object.values(state.gamepads).length == 0) {
-    stopLoop = true
+    gamepadStateLoopPaused = true
   }
 }
 
-function validMappings () {
+function validMappings ({ keyCode, gamepadButton, gamepadButtonReleased, axis } = {}) {
   return state.inputMappings.filter(m =>
-    (!m.modes || m.modes.includes(state.mode)) &&
+    m.bindings.find(m => 
+      m.modes && m.modes.includes(state.mode) &&
+      (
+        (keyCode && m.keyCode == keyCode) ||
+        (gamepadButton && m.gamepadButton == gamepadButton) ||
+        (gamepadButtonReleased && m.gamepadButtonReleased == gamepadButtonReleased) ||
+        (axis && m.axis == axis)
+      )
+    ) &&
     (
       typeof m.inBattle == 'undefined' ||
       (m.inBattle === true && state.gameState.battle.active) ||
@@ -103,7 +103,7 @@ function validMappings () {
 }
 
 function gamepadStateLoop () {
-  if (Object.values(state.gamepads).length == 0 || stopLoop) {
+  if (Object.values(state.gamepads).length == 0 || gamepadStateLoopPaused) {
     return
   }
 
@@ -128,9 +128,7 @@ function gamepadStateLoop () {
           console.log(`gamepad button pressed: ${i} (mode=${state.mode})`)
           prevState.buttons[i] = true
 
-          let mappings = validMappings().filter(m =>
-            m.gamepadButtons && m.gamepadButtons.includes(i)
-          )
+          let mappings = validMappings({ gamepadButton: i })
 
           for (let mapping of mappings) {
             console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
@@ -142,9 +140,8 @@ function gamepadStateLoop () {
           console.log(`gamepad button released: ${i} (mode=${state.mode})`)
           prevState.buttons[i] = false
 
-          let mappings = validMappings().filter(m =>
-            m.gamepadButtonsReleased && m.gamepadButtonsReleased.includes(i)
-          )
+
+          let mappings = validMappings({ gamepadButtonReleased: i })
 
           for (let mapping of mappings) {
             console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
@@ -167,8 +164,7 @@ function gamepadStateLoop () {
         prevState.axes.left = degree
 
         let mappings = validMappings().filter(m =>
-          m.axis && m.axis == 'left'
-        )
+          m.bindings.find(b => b.axis == 'left'))
 
         // console.log(`gamepad left stick pressed: ${degree} (mode=${state.mode})`)
         for (let mapping of mappings) {
@@ -179,9 +175,7 @@ function gamepadStateLoop () {
         if (prevState.axes.left !== false) {
           // console.log(`released`)
           prevState.axes.left = false
-          let mappings = validMappings().filter(m =>
-            m.axis && m.axis == 'left'
-          )
+          let mappings = validMappings({ axis: 'left' })
 
           for (let mapping of mappings) {
             // console.log(`inputEmitter.emit ${mapping.event} false (mode=${state.mode})`)
@@ -206,7 +200,7 @@ onMounted(() => {
     state.gamepads[gamepad.index] = gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
   }
 
-  stopLoop = false
+  gamepadStateLoopPaused = false
 
   gamepadStateLoop()
 })
@@ -217,6 +211,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('gamepadconnected', onGamePadConnected)
   window.removeEventListener('gamepaddisconnected', onGamePadDisconnected)
 
-  stopLoop = true
+  gamepadStateLoopPaused = true
 })
 </script>
