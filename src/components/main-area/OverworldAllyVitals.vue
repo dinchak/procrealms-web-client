@@ -137,6 +137,7 @@ function getXPPercentage () {
 .overworld-ally-vitals {
   margin-bottom: 5px;
   width: 200px;
+  margin-right: 5px;
 
   h3 {
     font-size: 14px;
@@ -207,9 +208,9 @@ function getXPPercentage () {
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 450px) {
   .overworld-ally-vitals {
-    max-width: 150px;
+    width: 150px;
   }
 }
 
