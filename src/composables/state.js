@@ -712,7 +712,7 @@ function resetInputMappings () {
       label: 'Select Radial Item',
       event: 'selectRadialItem',
       bindings: [{
-        axis: 'left',
+        gamepadAxis: 'left',
         modes: ['radial']
       }],
     },
@@ -749,7 +749,7 @@ function resetInputMappings () {
       event: 'selectMovementDirection',
       inBattle: false,
       bindings: [{
-        axis: 'left',
+        gamepadAxis: 'left',
         modes: ['hotkey', 'input']
       }]
     },
@@ -768,7 +768,7 @@ function resetInputMappings () {
       label: 'Select Login Action',
       event: 'selectLoginAction',
       bindings: [{
-        axis: 'left',
+        gamepadAxis: 'left',
         modes: ['login']
       }]
     },
@@ -786,7 +786,7 @@ function resetInputMappings () {
       label: 'Select Modal Action',
       event: 'selectModalAction',
       bindings: [{
-        axis: 'left',
+        gamepadAxis: 'left',
         modes: ['modal', 'modal-input']
       }]
     },
@@ -805,7 +805,7 @@ function resetInputMappings () {
       event: 'selectBattleAction',
       inBattle: true,
       bindings: [{
-        axis: 'left',
+        gamepadAxis: 'left',
         modes: ['hotkey', 'input']
       }]
     },
