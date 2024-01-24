@@ -16,6 +16,11 @@
         </div>
 
         <div class="affects">
+
+          <div class="affect" v-if="state.gameState.affects.length == 0">
+            <div class="name" style="text-align: center;">No affects</div>
+          </div>
+
           <div class="affect" v-for="affect in state.gameState.affects" :key="affect.name">
             <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ansi.reset + affect.longFlag) : ansiToHtml(ansi.reset + affect.name)"></div>
 
@@ -44,11 +49,10 @@
           <div class="quest" v-for="quest in state.gameState.quests" :key="quest.name">
 
             <div class="row">
-              <div class="name" v-html-safe="getQuestName(quest)"></div>
+              <div :class="getQuestNameClass(quest)" v-html-safe="getQuestName(quest)"></div>
               
-              <div class="objectives" v-if="quest.extra || quest.objective">
-                <div class="objective" v-if="quest.objective && quest.type != 'generated'" v-html-safe="ansiToHtml(ansi.reset + quest.objective)"></div>
-                <div class="objective" v-if="quest.extra && !quest.activity.startsWith('kill')" v-html-safe="ansiToHtml(ansi.reset + quest.extra)"></div>
+              <div :class="getQuestObjectivesClass(quest)" v-if="questHasObjectives(quest)">
+                <div class="objective" v-for="objective in getQuestObjectives(quest)" v-html-safe="objective" :key="objective"></div>
               </div>
 
               <NProgress
@@ -123,8 +127,47 @@ function getAllies () {
   return entities
 }
 
+function questHasObjectives (quest) {
+  return (quest.objective && quest.type != 'generated') ||
+    (quest.extra && !quest.activity.startsWith('kill'))
+}
+
+function questHasProgress (quest) {
+  return quest.progress || quest.amount
+}
+
+function getQuestNameClass (quest) {
+  if (questHasObjectives(quest) && questHasProgress(quest)) {
+    return 'name'
+  }
+
+  return 'name wide'
+}
+
 function getQuestName (quest) {
   return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(quest.name)}</span>`
+}
+
+function getQuestObjectivesClass (quest) {
+  if (questHasObjectives(quest) && questHasProgress(quest)) {
+    return 'objectives'
+  }
+
+  return 'objectives wide'
+}
+
+function getQuestObjectives (quest) {
+  let objectives = []
+
+  if (quest.objective && quest.type != 'generated') {
+    objectives.push(ansiToHtml(`${ansi.reset}${quest.objective}`))
+  }
+
+  if (quest.extra && !quest.activity.startsWith('kill')) {
+    objectives.push(ansiToHtml(`${ansi.reset}${quest.extra}`))
+  }
+
+  return objectives
 }
 
 function getTimeLeftPercentage (affect) {
@@ -159,12 +202,10 @@ function getTimeLeftPercentage (affect) {
       flex-direction: row;
       height: 130px;
       width: 100%;
-      justify-content: space-between;
+      // justify-content: space-between;
 
       .allies {
         height: 130px;
-        width: 200px;
-        flex-basis: 200px;
         overflow-y: scroll;
         display: flex;
         flex-direction: column;
@@ -173,10 +214,9 @@ function getTimeLeftPercentage (affect) {
       .affects {
         display: flex;
         flex-direction: column;
-        flex-basis: 250px;
-        width: 250px;
         height: 130px;
         overflow-y: scroll;
+        margin-right: 5px;
 
         .affect {
           display: flex;
@@ -184,6 +224,7 @@ function getTimeLeftPercentage (affect) {
           margin-bottom: 5px;
           padding-bottom: 5px;
           border-bottom: 1px solid #333;
+          width: 200px;
           // line-height: 14px;
           &:last-child {
             margin-bottom: 0;
@@ -216,8 +257,7 @@ function getTimeLeftPercentage (affect) {
       .quests {
         height: 130px;
         overflow-y: scroll;
-        flex-basis: 500px;
-        width: 500px;
+        width: 550px;
         .quest {
           display: flex;
           flex-direction: column;
@@ -233,27 +273,31 @@ function getTimeLeftPercentage (affect) {
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            height: 24px;
+            min-height: 24px;
             .name {
               font-size: 14px;
               line-height: 14px;
-              min-width: 150px;
+              min-width: 175px;
               margin-right: 5px;
             }
             .n-progress {
-              max-width: 100px;
+              width: 100px;
               font-size: 12px;
               margin-left: 5px;
               .progress-label {
-                font-size: 14px;
+                font-size: 12px;
                 display: block;
-                width: 50px;
+                width: 40px;
                 text-align: center;
               }
             }
             .objectives {
               display: flex;
               flex-direction: column;
+              width: 275px;
+              &.wide {
+                width: 100%;
+              }
               .objective {
                 font-size: 12px;
                 line-height: 12px;
@@ -275,20 +319,28 @@ function getTimeLeftPercentage (affect) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
-        .affects {
-          width: 200px;
-          flex-basis: 200px;
-        }
         .quests {
-          width: 400px;
-          flex-basis: 400px;
+          width: 450px;
+          .quest {
+            .row {
+              .name {
+                min-width: 150px;
+              }
+              .objectives {
+                width: 200px;
+              }
+              .n-progress {
+                width: 100px;
+              }
+            }
+          }    
         }
       }
     }
   }
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1100px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
@@ -297,21 +349,19 @@ function getTimeLeftPercentage (affect) {
         }
 
         .quests {
-          width: 400px;
-          flex-basis: 400px;
+          // width: 400px;
+          // flex-basis: 400px;
         }
       }
     }
   }
 }
 
-@media screen and (max-width: 850px) {
+@media screen and (max-width: 900px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
         .affects {
-          width: 200px;
-          flex-basis: 200px;
           display: initial;
         }
         .quests {
@@ -326,9 +376,6 @@ function getTimeLeftPercentage (affect) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
-        .allies {
-          flex-basis: 100%;
-        }
         .affects {
           display: none;
         }
