@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
     <div class="row">
       <NGrid class="options" cols="1">
         <NGi>
@@ -176,10 +176,13 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue'
+import { watch, ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NSwitch, NRadioGroup, NRadioButton, NSelect, NButton } from 'naive-ui'
 import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 const { triggerResize } = useWindowHandler()
 
@@ -252,13 +255,24 @@ function openLogoutModal () {
   setMode('modal')
   state.modals.logoutModal = true
 }
+
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
 </script>
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
+
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
 
   .row {
     display: flex;

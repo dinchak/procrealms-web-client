@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
     <NGrid cols="1 800:2">
       <NGi class="grid-item">
         <div class="name">{{ player().name }}</div>
@@ -412,7 +412,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref } from 'vue'
+import { onMounted, watch, ref, defineProps, toRefs } from 'vue'
 import { state } from '@/composables/state'
 import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
@@ -426,6 +426,9 @@ const { cmd, fetchItem } = useWebSocket()
 const { ucfirst, renderNumber } = useHelpers()
 
 const weapon = ref({})
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 function player () {
   return state.gameState.player || {}
@@ -475,6 +478,13 @@ function getDamageType () {
   }
 }
 
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
+
 onMounted(() => {
   setWeapon()
 })
@@ -486,10 +496,14 @@ watch(state.gameState.equipment, () => {
 
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
+
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
 
   .points-available {
     font-size: 16px;
