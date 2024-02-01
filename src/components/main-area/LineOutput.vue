@@ -473,7 +473,7 @@ onBeforeUnmount(() => {
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: ~"calc(100vh - 225px)";
+    height: ~"calc(100vh - 220px)";
 
     // &.tabs-hidden {
     //   height: ~"calc(100vh - 142px)";
