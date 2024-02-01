@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
     <NGrid class="equipment" cols="1">
       <NGi v-for="(iid, slot) in state.gameState.equipment" :key="slot">
         <div class="slot">
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
@@ -27,6 +27,9 @@ import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 const { ansiToHtml } = useHelpers()
 const { cmd, fetchItems, fetchItem } = useWebSocket()
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 const selectedIid = ref(0)
 const selectedItem = ref({})
@@ -63,6 +66,13 @@ function getActions (iid) {
   }]
 }
 
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
+
 let watchers = []
 onMounted(async () => {
   equipment.value = await fetchItems(Object.values(state.gameState.equipment))
@@ -81,10 +91,14 @@ onBeforeUnmount(() => {
 </script>
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
+
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
 
   .equipment {
     .slot {

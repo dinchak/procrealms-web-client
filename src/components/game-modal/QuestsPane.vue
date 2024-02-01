@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
     <NGrid class="quests" cols="1 800:2">
       <NGi v-if="quests().length == 0">You don't have any quests.</NGi>
 
@@ -47,10 +47,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NProgress } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 const { ansiToHtml } = useHelpers()
 
@@ -68,14 +71,23 @@ function getGivenBy (quest) {
   return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
 }
 
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
 </script>
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
 
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
   .quests {
     .quest {
       padding: 5px 0;

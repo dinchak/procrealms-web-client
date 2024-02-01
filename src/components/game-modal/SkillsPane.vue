@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
 
     <NGrid class="skills" cols="1 800:2">
 
@@ -71,9 +71,12 @@
 </template>
 
 <script setup>
-// import { ref } from 'vue'
+import { defineProps, toRefs } from 'vue'
 import { state } from '@/composables/state'
 import { NGrid, NGi, NProgress } from 'naive-ui'
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 function player () {
   return state.gameState.player
@@ -102,13 +105,24 @@ function getArtisanSkills () {
   skills.sort((a, b) => a.name.localeCompare(b.name))
   return skills
 }
+
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
 </script>
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
+
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
 
   .skills {
     .skill-container {

@@ -1,5 +1,5 @@
 <template>
-  <div class="scroll-container">
+  <div :class="getScrollContainerClass()">
     <div class="inventory-summary">
       <div class="search">
         <NInput placeholder="Search" v-model:value="search" clearable></NInput>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NInput } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
@@ -50,6 +50,9 @@ import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 const { ansiToHtml, copperToMoneyString } = useHelpers()
 const { fetchItems, fetchItem, cmd } = useWebSocket()
+
+const props = defineProps(['miniOutputEnabled'])
+const { miniOutputEnabled } = toRefs(props)
 
 const items = ref([])
 const selectedItem = ref({})
@@ -305,6 +308,13 @@ function getMaxWeight() {
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
+function getScrollContainerClass () {
+  return {
+    'scroll-container': true,
+    'mini-output-enabled': miniOutputEnabled.value
+  }
+}
+
 let watchers = []
 onMounted(async () => {
   items.value = await fetchItems(state.gameState.inventory)
@@ -323,10 +333,14 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .scroll-container {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 75px);
   overflow-y: scroll;
   max-width: 1200px;
   margin: 0 auto;
+
+  &.mini-output-enabled {
+    height: calc(100vh - 225px);
+  }
 
   .inventory-summary {
     display: flex;

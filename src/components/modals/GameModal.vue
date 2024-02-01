@@ -12,28 +12,54 @@
     <div>
       <div class="modal-body">
         <p class="close" @click="closeModal()">✕</p>
+        <p class="toggle-input" @click="toggleMiniOutput()">
+          <NIcon>
+            <KeyboardOutlined />
+          </NIcon>
+        </p>
 
         <NTabs
           v-model:value="currentPane"
-          class="game-modal-tabs"
+          :class="getGameModalTabsClass()"
           type="card"
           tab-style="min-width: 80px;"
           ref="tabs"
         >
-          <NTabPane name="score" tab="Score"><ScorePane></ScorePane></NTabPane>
-          <NTabPane name="skills" tab="Skills"><SkillsPane></SkillsPane></NTabPane>
-          <NTabPane name="quests" tab="Quests"><QuestsPane></QuestsPane></NTabPane>
-          <NTabPane name="inventory" tab="Inventory"><InventoryPane></InventoryPane></NTabPane>
-          <NTabPane name="equipment" tab="Equipment"><EquipmentPane></EquipmentPane></NTabPane>
-          <NTabPane name="options" tab="Options"><OptionsPane></OptionsPane></NTabPane>
+          <NTabPane name="score" tab="Score">
+            <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
+          </NTabPane>
+
+          <NTabPane name="skills" tab="Skills">
+            <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
+          </NTabPane>
+
+          <NTabPane name="quests" tab="Quests">
+            <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
+          </NTabPane>
+          
+          <NTabPane name="inventory" tab="Inventory">
+            <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
+          </NTabPane>
+          
+          <NTabPane name="equipment" tab="Equipment">
+            <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
+          </NTabPane>
+          
+          <NTabPane name="options" tab="Options">
+            <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
+          </NTabPane>
+          
+          <NTabPane name="mappings" tab="Mappings">
+            <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
+          </NTabPane>
 
         </NTabs>
 
-        <div class="mini-output" ref="mini-output" id="mini-output">
+        <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
+        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
       </div>
     </div>
   </NModal>
@@ -41,11 +67,14 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { NModal, NTabs, NTabPane } from 'naive-ui'
+import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
+import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
+
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
+import InputMappingsPane from '@/components/game-modal/InputMappingsPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import OptionsPane from '@/components/game-modal/OptionsPane.vue'
@@ -71,7 +100,8 @@ function performModalAction () {
 
 const tabs = ref(null)
 const currentPane = ref("score")
-const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options'])
+const miniOutputEnabled = ref(false)
+const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options', 'mappings'])
 
 function onCloseModal () {
   closeModal()
@@ -91,6 +121,13 @@ function closeModal () {
     prevMode()
   }
   prevMode()
+}
+
+function toggleMiniOutput () {
+  miniOutputEnabled.value = !miniOutputEnabled.value
+  nextTick(() => {
+    scrollDown()
+  })
 }
 
 function prevModalTab () {
@@ -146,6 +183,13 @@ function onOutputChanged () {
   scrollDown()
 }
 
+function getGameModalTabsClass () {
+  return {
+    'game-modal-tabs': true,
+    'mini-output-hidden': !miniOutputEnabled.value
+  }
+}
+
 let watchers = []
 onMounted(() => {
   state.inputEmitter.on('closeModal', closeModal)
@@ -181,12 +225,16 @@ onBeforeUnmount(() => {
   .modal-body {
     position: relative;
     padding: 10px;
+
     .game-modal-tabs {
       .n-tabs-nav {
-        width: calc(100vw - 70px);
+        width: calc(100vw - 127px);
       }
       height: calc(100vh - 170px);
       overflow-y: hidden;
+      &.mini-output-hidden {
+        height: calc(100vh - 20px);
+      }
     }
 
     .mini-output {
@@ -211,7 +259,7 @@ onBeforeUnmount(() => {
 
     .close {
       margin: 0;
-      padding: 10px;
+      padding: 13px;
       background-color: #111;
       position: absolute;
       top: 10px;
@@ -224,6 +272,23 @@ onBeforeUnmount(() => {
         background-color: #311;
       }
     }
+
+    .toggle-input {
+      margin: 0;
+      padding: 5px;
+      background-color: #111;
+      position: absolute;
+      top: 10px;
+      right: 65px;
+      font-size: 32px;
+      z-index: 2;
+      line-height: 16px;
+      cursor: pointer;
+      &:hover {
+        background-color: #311;
+      }
+    }
+
   }
 }
 </style>
