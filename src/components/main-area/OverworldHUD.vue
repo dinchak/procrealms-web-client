@@ -26,17 +26,17 @@
 
             <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
             v-show="typeof affect.timeLeft == 'number'"
-            :status="getTimeLeftPercentage(affect) >= 100 ? 'success' : 'warning'" :percentage="getTimeLeftPercentage(affect)" />
+            :status="getTimeLeftColor(affect)" :percentage="getTimeLeftPercentage(affect)" />
 
             <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ansi.reset + affect.desc)"></div>
 
             <div class="bonuses">
 
-              <div class="bonus" v-for="bonus in affect.bonuses" :key="bonus.name">
+              <!-- <div class="bonus" v-for="bonus in affect.bonuses" :key="bonus.name">
                 <div class="value">{{ (bonus.value > 0 ? '+' : '') + bonus.value }}</div>
                 <div class="label">{{ bonus.name }}</div>
               </div>
-
+ -->
               <div v-show="affect.charges" class="bonus">
                 <div class="value">{{ affect.charges }}</div>
                 <div class="label">charges</div>
@@ -171,7 +171,20 @@ function getQuestObjectives (quest) {
 }
 
 function getTimeLeftPercentage (affect) {
-  return Math.min(60, affect.timeLeft) / 60 * 100
+  return affect.timeLeft / affect.totalTimeLeft * 100
+}
+
+function getTimeLeftColor (affect) {
+  if (affect.timeLeft / affect.totalTimeLeft > 0.5) {
+    return 'success'
+  }
+
+  if (affect.timeLeft / affect.totalTimeLeft > 0.25) {
+    return 'warning'
+  }
+
+  return 'error'
+
 }
 
 </script>
@@ -209,6 +222,7 @@ function getTimeLeftPercentage (affect) {
         overflow-y: scroll;
         display: flex;
         flex-direction: column;
+        margin-right: 10px;
       }
 
       .affects {
@@ -216,20 +230,24 @@ function getTimeLeftPercentage (affect) {
         flex-direction: column;
         height: 130px;
         overflow-y: scroll;
-        margin-right: 5px;
+        margin-right: 15px;
 
         .affect {
           display: flex;
           flex-direction: column;
           margin-bottom: 5px;
-          padding-bottom: 5px;
-          border-bottom: 1px solid #333;
+          // border-bottom: 1px solid #333;
           width: 200px;
           // line-height: 14px;
           &:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: 0;
+          }
+
+          .name {
+            font-size: 14px;
+            line-height: 14px;
           }
           .desc {
             font-size: 12px;
@@ -245,6 +263,7 @@ function getTimeLeftPercentage (affect) {
               margin-right: 10px;
               .value {
                 margin-right: 5px;
+                font-size: 14px;
               }
               .label {
                 font-size: 12px;
@@ -315,7 +334,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1250px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
@@ -340,7 +359,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1150px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
@@ -357,7 +376,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 950px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
@@ -372,7 +391,7 @@ function getTimeLeftPercentage (affect) {
   }
 }
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 700px) {
   .bottom-hud {
     .center-hud {
       .top-center-hud {
