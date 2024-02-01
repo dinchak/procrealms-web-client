@@ -22,12 +22,12 @@
           :percentage="entity.stamina / entity.maxStamina * 100" 
         ></NProgress>
 
-        <NProgress
+        <!-- <NProgress
           type="line" color="#838" aria-label="Experience" :height="4" :border-radius="0"
           :show-indicator="false"
           :percentage="getXPPercentage()" 
         ></NProgress>
-
+ -->
         <div class="statuses">
           <div :class="'status ' + getHungerColor()" v-if="getHungerPercentage() >= 50">
             {{ getHungerDescription() }}
@@ -127,10 +127,11 @@ function getHappinessDescription () {
 //   return entity.value.xpForNextLevel - entity.value.xp
 // }
 
-function getXPPercentage () {
-  const { xp, xpForCurrentLevel, xpForNextLevel } = entity.value
-  return Math.round((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel) * 100)
-}
+// function getXPPercentage () {
+//   const { xp, xpForCurrentLevel, xpForNextLevel } = entity.value
+//   return Math.round((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel) * 100)
+// }
+
 </script>
 
 <style lang="less">
@@ -143,7 +144,7 @@ function getXPPercentage () {
     font-size: 14px;
     font-weight: normal;
     margin: 0;
-    line-height: 12px;
+    line-height: 14px;
   }
 
   .ally-vitals {
@@ -176,7 +177,7 @@ function getXPPercentage () {
       .n-progress {
         width: 100%;
         height: 4px;
-        margin-bottom: 1px;
+        // margin-bottom: 1px;
         font-size: 10px;
         .n-progress-content {
           div {
