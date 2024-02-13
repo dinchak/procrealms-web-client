@@ -1,5 +1,5 @@
 import { processTriggers } from "@/composables/triggers"
-import { addLine, state } from '@/composables/state'
+import { addLine, resetInputMappings, state } from '@/composables/state'
 
 import { useHelpers } from '@/composables/helpers'
 import { useTokenHandler } from '@/composables/token_handler'
@@ -51,6 +51,7 @@ handlers['token.success'] = ({ name, token }) => {
   state.modals.newPlayerModal = false
 
   loadOptions()
+  loadInputMappings()
 }
 
 handlers['out'] = (line) => {
@@ -186,7 +187,7 @@ function updateState (obj, update) {
   }
 }
 
-function loadOptions() {
+function loadOptions () {
   try {
     const options = JSON.parse(localStorage.getItem('options'))
     if (options !== null) {
@@ -199,9 +200,23 @@ function loadOptions() {
 
     document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize
     state.modals.mapModalSize = state.options.mapModalSize
+
   } catch (err) {
     console.log(err.stack)
     localStorage.setItem('options', '')
+  }
+}
+
+function loadInputMappings () {
+  try {
+    const json = localStorage.getItem('inputMappings')
+    if (json === null) {
+      state.inputMappings = resetInputMappings()
+      return
+    }
+    state.inputMappings = JSON.parse(json)
+  } catch (err) {
+    state.inputMappings = resetInputMappings()
   }
 }
 

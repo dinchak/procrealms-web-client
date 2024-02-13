@@ -9,14 +9,14 @@ export const state = reactive({
   pendingRequests: {},
 
   gameState: resetGameState(),
-  inputMappings: resetInputMappings(),
+  inputMappings: [],
   inputEmitter: new EventEmitter(),
   options: resetOptions(),
   cache: resetCache(),
 
   outputTabs: ['output', 'chat', 'trade', 'newbie'],
   activeTab: 'output',
-  // valid modes: login, hotkey, input, modal, modal-input, radial
+  validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
 
   prevModes: [],
@@ -69,7 +69,8 @@ export const state = reactive({
     loginModal: false,
     logoutModal: false,
     newPlayerModal: false,
-    gameModal: false
+    gameModal: false,
+    inputMapModal: false
   }
 })
 
@@ -78,6 +79,7 @@ export function resetState () {
   state.mode = 'hotkey'
   state.prevModes = ['login']
   state.pendingRequests = []
+  state.inputMappings = resetInputMappings()
   state.cache = resetCache()
   state.gameState = resetGameState()
   state.options = resetOptions()
@@ -152,7 +154,87 @@ function resetOptions () {
   }
 }
 
-function resetInputMappings () {
+
+function addSuggestedCommand (command) {
+  if (state.suggestedCommands.includes(command)) {
+    return
+  }
+
+  state.suggestedCommands.push(command)
+
+  if (state.suggestedCommands.length > 12) {
+    state.suggestedCommands.shift()
+  }
+}
+
+let preloadBuffers = {}
+let addLinesTimeout = null
+const maxLines = 2000
+const removeLines = 500
+
+export function resetMode () {
+  state.mode = 'login'
+  state.prevModes = []
+}
+
+export function setMode (newMode) {
+  if (state.mode == newMode) {
+    console.log('state.mode already set to', newMode)
+    return
+  }
+  state.prevModes.push(state.mode)
+  state.mode = newMode
+  console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
+}
+
+export function prevMode () {
+  if (state.prevModes.length) {
+    state.mode = state.prevModes.pop()
+    console.log(`state.mode set to ${state.mode} (prevMode, ${state.prevModes.length} left)`)
+  }
+}
+
+export function addLine (line, bufferName) {
+  if (!state[bufferName]) {
+    throw new Error(`Unknown buffer ${bufferName}`)
+  }
+
+  if (typeof line.matchAll == 'function') {
+    let suggestedCommands = line.matchAll(/<span style="text-decoration:underline" class="ansi-bright-white-fg">([a-zA-Z ]+)<\/span>/g)
+    for (let command of suggestedCommands) {
+      addSuggestedCommand(command[1])
+    }
+  }
+
+  if (!preloadBuffers[bufferName]) {
+    preloadBuffers[bufferName] = []
+  }
+
+  if (bufferName == 'output') {
+    Object.freeze(line)
+  }
+  if (!line) {
+    line = '<br/>'
+  }
+  preloadBuffers[bufferName].push(line)
+
+  if (addLinesTimeout) {
+    clearTimeout(addLinesTimeout)
+  }
+
+  addLinesTimeout = setTimeout(() => {
+    for (let bufferName in preloadBuffers) {
+      state[bufferName].push(...preloadBuffers[bufferName])
+      preloadBuffers[bufferName] = []
+      if (state[bufferName].length > maxLines) {
+        state[bufferName].splice(0, removeLines)
+      }
+    }
+    addLinesTimeout = null
+  }, 10)
+}
+
+export function resetInputMappings () {
   return [
     {
       label: 'Move North',
@@ -711,6 +793,7 @@ function resetInputMappings () {
     {
       label: 'Select Radial Item',
       event: 'selectRadialItem',
+      type: 'degree',
       bindings: [{
         gamepadAxis: 'left',
         modes: ['radial']
@@ -747,6 +830,7 @@ function resetInputMappings () {
     {
       label: 'Select Movement Direction',
       event: 'selectMovementDirection',
+      type: 'degree',
       inBattle: false,
       bindings: [{
         gamepadAxis: 'left',
@@ -767,6 +851,7 @@ function resetInputMappings () {
     {
       label: 'Select Login Action',
       event: 'selectLoginAction',
+      type: 'degree',
       bindings: [{
         gamepadAxis: 'left',
         modes: ['login']
@@ -785,6 +870,7 @@ function resetInputMappings () {
     {
       label: 'Select Modal Action',
       event: 'selectModalAction',
+      type: 'degree',
       bindings: [{
         gamepadAxis: 'left',
         modes: ['modal', 'modal-input']
@@ -803,6 +889,7 @@ function resetInputMappings () {
     {
       label: 'Select Battle Action',
       event: 'selectBattleAction',
+      type: 'degree',
       inBattle: true,
       bindings: [{
         gamepadAxis: 'left',
@@ -820,83 +907,4 @@ function resetInputMappings () {
       }]
     }
   ]
-}
-
-function addSuggestedCommand (command) {
-  if (state.suggestedCommands.includes(command)) {
-    return
-  }
-
-  state.suggestedCommands.push(command)
-
-  if (state.suggestedCommands.length > 12) {
-    state.suggestedCommands.shift()
-  }
-}
-
-let preloadBuffers = {}
-let addLinesTimeout = null
-const maxLines = 2000
-const removeLines = 500
-
-export function resetMode () {
-  state.mode = 'login'
-  state.prevModes = []
-}
-
-export function setMode (newMode) {
-  if (state.mode == newMode) {
-    console.log('state.mode already set to', newMode)
-    return
-  }
-  state.prevModes.push(state.mode)
-  state.mode = newMode
-  console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
-}
-
-export function prevMode () {
-  if (state.prevModes.length) {
-    state.mode = state.prevModes.pop()
-    console.log(`state.mode set to ${state.mode} (prevMode, ${state.prevModes.length} left)`)
-  }
-}
-
-export function addLine (line, bufferName) {
-  if (!state[bufferName]) {
-    throw new Error(`Unknown buffer ${bufferName}`)
-  }
-
-  if (typeof line.matchAll == 'function') {
-    let suggestedCommands = line.matchAll(/<span style="text-decoration:underline" class="ansi-bright-white-fg">([a-zA-Z ]+)<\/span>/g)
-    for (let command of suggestedCommands) {
-      addSuggestedCommand(command[1])
-    }
-  }
-
-  if (!preloadBuffers[bufferName]) {
-    preloadBuffers[bufferName] = []
-  }
-
-  if (bufferName == 'output') {
-    Object.freeze(line)
-  }
-  if (!line) {
-    line = '<br/>'
-  }
-  preloadBuffers[bufferName].push(line)
-
-  if (addLinesTimeout) {
-    clearTimeout(addLinesTimeout)
-  }
-
-  addLinesTimeout = setTimeout(() => {
-    for (let bufferName in preloadBuffers) {
-      state[bufferName].push(...preloadBuffers[bufferName])
-      preloadBuffers[bufferName] = []
-      if (state[bufferName].length > maxLines) {
-        state[bufferName].splice(0, removeLines)
-      }
-    }
-    addLinesTimeout = null
-  }, 10)
 }

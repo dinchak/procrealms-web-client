@@ -8,6 +8,20 @@ import { state } from '@/composables/state'
 
 let gamepadStateLoopPaused = true
 
+const axesConfig = [
+  {
+    axis: 'left',
+    xIndex: 0,
+    yIndex: 1
+  },
+  {
+    axis: 'right',
+    xIndex: 2,
+    yIndex: 3
+  }
+]
+
+
 function handleMetaKey (ev, keyState) {
   if (ev.key == 'Control' || ev.key == 'Meta') {
     state.metaKeyState.ctrl = keyState
@@ -32,7 +46,9 @@ function onKeyDown (ev) {
     return
   }
 
-  console.log(`onKeyDown code=${ev.code}`)
+  state.inputEmitter.emit('keyCode', ev.code)
+
+  // console.log(`onKeyDown code=${ev.code}`)
 
   let mappings = validMappings({ keyCode: ev.code })
     .filter(m => {
@@ -56,7 +72,7 @@ function onKeyDown (ev) {
   ev.preventDefault()
 
   for (let mapping of mappings) {
-    console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
+    // console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
     state.inputEmitter.emit(mapping.event)
   }
 }
@@ -68,15 +84,15 @@ function onKeyUp (ev) {
 }
 
 function onGamePadConnected (ev) {
-  console.log(`onGamePadConnected ${ev.gamepad.index}`)
-  console.log(ev.gamepad)
+  // console.log(`onGamePadConnected ${ev.gamepad.index}`)
+  // console.log(ev.gamepad)
   state.gamepads[ev.gamepad.index] = ev.gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
   gamepadStateLoopPaused = false
   gamepadStateLoop()
 }
 
 function onGamePadDisconnected (ev) {
-  console.log(`onGamePadDisconnected ${ev.gamepad.index}`)
+  // console.log(`onGamePadDisconnected ${ev.gamepad.index}`)
   delete state.gamepads[ev.gamepad.index]
   if (Object.values(state.gamepads).length == 0) {
     gamepadStateLoopPaused = true
@@ -126,6 +142,8 @@ function gamepadStateLoop () {
         if (!prevState.buttons[i]) {          
           prevState.buttons[i] = true
 
+          state.inputEmitter.emit('gamepadButtonPressed', i)
+
           let mappings = validMappings({ gamepadButton: i })
           for (let mapping of mappings) {
             state.inputEmitter.emit(mapping.event)
@@ -135,6 +153,8 @@ function gamepadStateLoop () {
         if (prevState.buttons[i]) {
           prevState.buttons[i] = false
 
+          state.inputEmitter.emit('gamepadButtonReleased', i)
+
           let mappings = validMappings({ gamepadButtonReleased: i })
           for (let mapping of mappings) {
             state.inputEmitter.emit(mapping.event)
@@ -143,45 +163,32 @@ function gamepadStateLoop () {
       }
     }
 
-    if (gamepad.axes.length > 0) {
-      if (Math.abs(gamepad.axes[0]) > 0.4 || Math.abs(gamepad.axes[1]) > 0.4) {
-        let angle = Math.atan2(gamepad.axes[0], gamepad.axes[1])
+    for (let { axis, xIndex, yIndex } of axesConfig) {
+      let x = gamepad.axes[xIndex]
+      let y = gamepad.axes[yIndex]
+
+      if (Math.abs(x) > 0.4 || Math.abs(y) > 0.4) {
+        let angle = Math.atan2(x, y)
+
         let degree = (angle * 180 / Math.PI) - 180
         if (degree < 0) {
           degree += 360
         }
-        prevState.axes.left = degree
 
-        let mappings = validMappings({ gamepadAxis: 'left' })
+        prevState.axes[axis] = degree
+
+        state.inputEmitter.emit('gamepadAxis', { axis, degree })
+
+        let mappings = validMappings({ gamepadAxis: axis })
         for (let mapping of mappings) {
           state.inputEmitter.emit(mapping.event, degree)
         }
+      } else if (prevState.axes[axis] !== false) {
+        prevState.axes[axis] = false
 
-      } else if (prevState.axes.left !== false) {
-        prevState.axes.left = false
+        state.inputEmitter.emit('gamepadAxis', { axis, degree: false })
 
-        let mappings = validMappings({ gamepadAxis: 'left' })
-        for (let mapping of mappings) {
-          state.inputEmitter.emit(mapping.event, false)
-        }
-
-      } else if (Math.abs(gamepad.axes[2]) > 0.4 || Math.abs(gamepad.axes[3]) > 0.4) {
-        let angle = Math.atan2(gamepad.axes[2], gamepad.axes[3])
-        let degree = (angle * 180 / Math.PI) - 180
-        if (degree < 0) {
-          degree += 360
-        }
-        prevState.axes.right = degree
-
-        let mappings = validMappings({ gamepadAxis: 'right' })
-        for (let mapping of mappings) {
-          state.inputEmitter.emit(mapping.event, degree)
-        }
-
-      } else if (prevState.axes.right !== false) {
-        prevState.axes.right = false
-
-        let mappings = validMappings({ gamepadAxis: 'right' })
+        let mappings = validMappings({ gamepadAxis: axis })
         for (let mapping of mappings) {
           state.inputEmitter.emit(mapping.event, false)
         }
