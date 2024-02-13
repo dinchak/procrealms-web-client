@@ -1,6 +1,6 @@
 <template>
 
-  <n-modal
+  <NModal
     v-model:show="state.modals.newPlayerModal"
     type="success"
     preset="dialog"
@@ -11,33 +11,33 @@
       <div>New Player</div>
     </template>
 
-    <n-form ref="formRef" :model="model" :rules="rules" size="large">
+    <NForm ref="formRef" :model="model" :rules="rules" size="large">
 
-      <n-form-item path="name" label="Character Name">
-        <n-input v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name"/>
-        <n-button size="medium" type="warning" ghost @click="generateName">Random</n-button>
-      </n-form-item>
+      <NFormItem path="name" label="Character Name">
+        <NInput v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name"/>
+        <NButton size="medium" type="warning" ghost @click="generateName">Random</NButton>
+      </NFormItem>
 
 
-      <n-form-item path="password" label="Password">
-        <n-input v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password"/>
-      </n-form-item>
+      <NFormItem path="password" label="Password">
+        <NInput v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password"/>
+      </NFormItem>
 
-      <n-form-item path="repeatPassword" label="Repeat Password">
-        <n-input v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password"/>
-      </n-form-item>
+      <NFormItem path="repeatPassword" label="Repeat Password">
+        <NInput v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password"/>
+      </NFormItem>
 
-      <n-form-item path="tutorial" label="Start the tutorial?">
-        <n-switch v-model:value="model.tutorial" />
-      </n-form-item>
+      <NFormItem path="tutorial" label="Start the tutorial?">
+        <NSwitch v-model:value="model.tutorial" />
+      </NFormItem>
 
-    </n-form>
+    </NForm>
 
     <template #action>
-      <n-button type="success" ghost @click="handleValidation">Play!</n-button>
+      <NButton type="success" ghost @click="handleValidation">Play!</NButton>
     </template>
 
-  </n-modal>
+  </NModal>
 
 </template>
 
