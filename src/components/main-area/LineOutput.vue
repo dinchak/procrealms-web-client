@@ -328,7 +328,7 @@ function scrollDown () {
 }
 
 function showDebug () {
-  let json = JSON.stringify(state.gameState.player, null, 2)
+  let json = JSON.stringify(state.gameState.charmies, null, 2)
   let lines = json.split('\n')
   for (let line of lines) {
     addLine(line, 'output')

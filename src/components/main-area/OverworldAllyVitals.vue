@@ -2,7 +2,6 @@
   <div class="overworld-ally-vitals">
     <h3 v-html-safe="getName()"></h3>
     <div class="ally-vitals">
-
       <div class="basic">
         <NProgress
           type="line" status="success" aria-label="Health" :height="4" :border-radius="0"
@@ -35,6 +34,14 @@
 
           <div :class="'status ' + getHappinessColor()" v-if="entity.happiness <= 5">
             {{ getHappinessDescription() }}
+          </div>
+
+          <div class="status red" v-if="entity.dead">
+            Dead
+          </div>
+
+          <div class="status bold-red" v-if="entity.incapacitated && !entity.dead">
+            Incapacitated
           </div>
 
           <div class="status" v-if="entity.rage > 0">
