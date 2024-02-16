@@ -30,20 +30,14 @@
 
 <script setup>
 import { NIcon } from 'naive-ui'
+
 import MapOutlined from '@vicons/material/MapOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
-import { useWebSocket } from '@/composables/web_socket'
 import { setMode, state } from '@/composables/state'
-import { command_ids } from '@/composables/constants/command_ids'
-
-const { cmd } = useWebSocket()
 
 function toggleMap() {
-  if (!state.modals.mapModal) {
-    cmd('map', command_ids.MAP)
-  }
   state.modals.mapModal = !state.modals.mapModal
 }
 
