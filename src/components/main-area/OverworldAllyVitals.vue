@@ -32,7 +32,7 @@
             {{ getHungerDescription() }}
           </div>
 
-          <div :class="'status ' + getHappinessColor()" v-if="entity.happiness <= 5">
+          <div :class="'status ' + getHappinessColor()" v-if="entity.happiness !== false && entity.happiness <= 5">
             {{ getHappinessDescription() }}
           </div>
 

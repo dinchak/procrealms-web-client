@@ -1,3 +1,5 @@
+import jiff from 'jiff'
+
 import { processTriggers } from "@/composables/triggers"
 import { addLine, resetInputMappings, state } from '@/composables/state'
 
@@ -187,6 +189,20 @@ function updateState (obj, update) {
   }
 }
 
+handlers['state.patch'] = ({ patch }) => {
+  try {
+    // console.log(patch)
+    // for (let { op, path, value } of patch) {
+    //   console.log(`patching ${op} ${path}:`)
+    //   console.log(value)
+    // }
+    state.gameState = jiff.patch(patch, state.gameState)
+  } catch (err) {
+    console.log(`caught jiff patch error`)
+    console.log(err.stack)
+  }
+}
+
 function loadOptions () {
   try {
     const options = JSON.parse(localStorage.getItem('options'))
@@ -233,7 +249,7 @@ export function useEventHandler () {
       return
     }
 
-    let matches = cmd.match(/^entity-(\d+)$/)
+    let matches = cmd.match(/^entity-([\da-f-]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       let eid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
@@ -244,7 +260,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^item-(\d+)$/)
+    matches = cmd.match(/^item-([\da-f-]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       let iid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
@@ -255,7 +271,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^items-(\d+)$/)
+    matches = cmd.match(/^items-([\da-f-]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       for (let item of msg) {
         state.cache.itemCache[item.iid] = { item, date: Date.now() }
@@ -276,7 +292,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^entities-(\d+)$/)
+    matches = cmd.match(/^entities-([\da-f-]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       for (let entity of msg) {
         state.cache.entityCache[entity.eid] = { entity, date: Date.now() }

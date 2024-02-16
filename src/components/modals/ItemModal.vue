@@ -24,10 +24,10 @@
             </n-button>
           </div>
           <div class="additional-actions">
-            <n-button ghost type="warning" @click="giveAll()" v-if="state.gameState.mercEid !== -1">
+            <n-button ghost type="warning" @click="giveAll()" v-if="state.mercEid !== -1">
               Give all
             </n-button>
-            <div class="input-button" v-if="state.gameState.mercEid !== -1">
+            <div class="input-button" v-if="state.mercEid !== -1">
               <n-button ghost type="warning" @click="giveItems()">
                 Give
               </n-button>
@@ -76,7 +76,7 @@ const dropValue = ref(1)
 const giveValue = ref(1)
 const activeTab = ref('')
 
-const otherChar = props.isPlayer ? state.gameState.mercEid : state.gameState.player.eid
+const otherChar = props.isPlayer ? state.mercEid : state.gameState.player.eid
 const mercOrder = props.isPlayer ? "" : `order eid:${props.charEId.toString()} `
 
 // Watchers
@@ -206,7 +206,7 @@ function dropItems() {
 }
 
 function giveAll() {
-  if (state.gameState.mercEid !== -1) {
+  if (state.mercEid !== -1) {
     props.isPlayer ? cmd(`give all iid:${props.item.iid} eid:${otherChar}`)
         : cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, command_ids.MERC_ACTION)
     closeModal()
@@ -214,7 +214,7 @@ function giveAll() {
 }
 
 function giveItems() {
-  if (state.gameState.mercEid !== -1) {
+  if (state.mercEid !== -1) {
     if (giveValue.value === props.item.amount) {
       closeModal()
     }

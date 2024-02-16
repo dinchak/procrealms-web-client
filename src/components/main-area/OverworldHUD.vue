@@ -17,11 +17,11 @@
 
         <div class="affects">
 
-          <div class="affect" v-if="state.gameState.affects.length == 0">
+          <div class="affect" v-if="Object.values(state.gameState.affects).length == 0">
             <div class="name" style="text-align: center;">No affects</div>
           </div>
 
-          <div class="affect" v-for="affect in state.gameState.affects" :key="affect.name">
+          <div class="affect" v-for="affect in Object.values(state.gameState.affects)" :key="affect.name">
             <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ansi.reset + affect.longFlag) : ansiToHtml(ansi.reset + affect.name)"></div>
 
             <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
@@ -102,7 +102,9 @@ function getAllies () {
     name: state.gameState.player.name
   }]
 
-  for (let charmie of state.gameState.charmies) {
+  for (let eid in state.gameState.charmies) {
+    let charmie = state.gameState.charmies[eid]
+
     if (entities.find(e => e.entity.eid == charmie.stats.eid)) {
       continue
     }
@@ -112,7 +114,9 @@ function getAllies () {
       name: charmie.stats.name
     })
 
-    for (let subCharmie of charmie.charmies) {
+    for (let subEid in charmie.charmies) {
+      let subCharmie = charmie.charmies[subEid]
+
       if (entities.find(e => e.entity.eid == subCharmie.stats.eid)) {
         continue
       }
@@ -145,7 +149,7 @@ function getQuestNameClass (quest) {
 }
 
 function getQuestName (quest) {
-  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(quest.name)}</span>`
+  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(ansi.reset + quest.name)}</span>`
 }
 
 function getQuestObjectivesClass (quest) {

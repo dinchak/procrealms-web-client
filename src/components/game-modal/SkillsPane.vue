@@ -83,26 +83,38 @@ function player () {
 }
 
 function getWeaponSkills () {
-  let skills = state.gameState.skills.filter(sk => sk.type.includes('weapon'))
+  let skills = Object.values(state.gameState.skills)
+    .filter(sk => sk.type.includes('weapon'))
+
   skills.sort((a, b) => a.name.localeCompare(b.name))
+
   return skills
 }
 
 function getCraftingSkills () {
-  let skills = state.gameState.skills.filter(sk => sk.type.includes('crafting'))
+  let skills = Object.values(state.gameState.skills)
+    .filter(sk => sk.type.includes('crafting'))
+
   skills.sort((a, b) => a.name.localeCompare(b.name))
+
   return skills
 }
 
 function getCombatSkills () {
-  let skills = state.gameState.skills.filter(sk => sk.type.includes('combat'))
+  let skills = Object.values(state.gameState.skills)
+    .filter(sk => sk.type.includes('combat'))
+
   skills.sort((a, b) => a.name.localeCompare(b.name))
+
   return skills
 }
 
 function getArtisanSkills () {
-  let skills = state.gameState.skills.filter(sk => sk.type.includes('artisan'))
+  let skills = Object.values(state.gameState.skills)
+    .filter(sk => sk.type.includes('artisan'))
+
   skills.sort((a, b) => a.name.localeCompare(b.name))
+
   return skills
 }
 
