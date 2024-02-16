@@ -97,7 +97,7 @@ function runQuickSlot (slot) {
 }
 
 function getSkill (slot) {
-  return (state.gameState.skills || []).find(sk => sk.name == slot.label)
+  return (state.gameState.skills || {})[slot.label]
 }
 
 function getSlotClass (slot) {

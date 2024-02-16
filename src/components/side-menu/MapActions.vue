@@ -17,7 +17,12 @@ const roomItems = ref([])
 const roomEntities = ref([])
 
 async function getRoomEntities () {
-  return await fetchEntities(state.gameState.room.entities)
+  try {
+    return await fetchEntities([...state.gameState.room.entities])
+  } catch (err) {
+    console.log(err)
+    return false
+  }
 }
 
 function roomHasEnemies () {
@@ -25,7 +30,12 @@ function roomHasEnemies () {
 }
 
 async function getRoomItems () {
-  return await fetchItems(state.gameState.room.items)
+  try {
+    return await fetchItems([...state.gameState.room.items])
+  } catch (err) {
+    console.log(err)
+    return false
+  }
 }
 
 function roomHasResources () {
@@ -67,11 +77,17 @@ onMounted(() => {
   state.inputEmitter.on('loot', loot)
 
   watch(() => state.gameState.room.entities, async () => {
-    roomEntities.value = await getRoomEntities()
+    let entities = await getRoomEntities()
+    if (entities !== false) {
+      roomEntities.value = entities
+    }
   })
 
   watch(() => state.gameState.room.items, async () => {
-    roomItems.value = await getRoomItems()
+    let items = await getRoomItems()
+    if (items !== false) {
+      roomItems.value = items
+    }
   })
 })
 

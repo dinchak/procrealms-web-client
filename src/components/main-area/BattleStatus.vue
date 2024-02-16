@@ -83,11 +83,11 @@ const battleStatus = ref(null)
 const showOrdersRef = ref(false)
 
 function getSide (side) {
-  return state.gameState.battle.participants.filter(p => p.side == side)
+  return Object.values(state.gameState.battle.participants).filter(p => p.side == side)
 }
 
 function getPartyEntity (participant) {
-  return state.gameState.party.find(p => p.eid == participant.eid)
+  return state.gameState.party[participant.eid]
 }
 
 function getAnimationClass (anim) {
@@ -100,8 +100,8 @@ function getAnimationClass (anim) {
 
 function isMercHere() {
   let isMercHere = false
-  state.gameState.battle.participants.map(participant => {
-    if (participant.eid === state.gameState.mercEid) {
+  Object.values(state.gameState.battle.participants).map(participant => {
+    if (participant.eid === state.mercEid) {
       isMercHere = true
     }
   })

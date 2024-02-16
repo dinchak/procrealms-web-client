@@ -27,6 +27,8 @@ export const state = reactive({
     alt: false
   },
 
+  mercEid: -1,
+
   gamepadPrevStates: {},
   gamepads: {},
   gamepadTab: false,
@@ -100,27 +102,29 @@ function resetCache () {
   }
 }
 
-function resetGameState () {
+export function resetGameState () {
   return {
     player: {},
-    mercEid: -1,
     battle: {
       actions: {
+        actions: [],
         skills: [],
         spells: []
       },
-      participants: []
+      active: false,
+      myTurn: false,
+      participants: {}
     },
     channels: [],
-    skills: [],
-    affects: [],
+    skills: {},
+    affects: {},
     equipment: {},
     inventory: [],
-    aliases: {},
+    aliases: [],
     radials: [],
     quests: [],
-    party: [],
-    charmies: [],
+    party: {},
+    charmies: {},
     room: {
       exits: [],
       entities: [],

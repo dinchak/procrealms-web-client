@@ -20,7 +20,7 @@
       ></CharacterCollapse>
 
       <EffectsCollapse
-        :affects="state.gameState.affects"
+        :affects="Object.values(state.gameState.affects)"
         :isPlayer="true"
         tabindex="0"
       ></EffectsCollapse>
@@ -29,7 +29,7 @@
         :character="state.gameState.player"
         :inventory="state.gameState.inventory"
         :isPlayer="true"
-        :affects="state.gameState.affects"
+        :affects="Object.values(state.gameState.affects)"
         tabindex="0"
       ></InventoryCollapse>
 
@@ -37,7 +37,7 @@
         :equipment="state.gameState.equipment"
         :character="state.gameState.player"
         :isPlayer="true"
-        :affects="state.gameState.affects"
+        :affects="Object.values(state.gameState.affects)"
         tabindex="0"
       ></EquipmentCollapse>
 
@@ -47,7 +47,7 @@
 
       <SkillsCollapse
         :character="state.gameState.player"
-        :skills="state.gameState.skills"
+        :skills="Object.values(state.gameState.skills)"
         :isPlayer="true"
         tabindex="0"
       ></SkillsCollapse>

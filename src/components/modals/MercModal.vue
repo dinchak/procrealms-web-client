@@ -1,5 +1,5 @@
 <template>
-  <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal && state.gameState.mercEid !== -1">
+  <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal && state.mercEid !== -1">
     <p class="close" v-on:click="closeModal()">x</p>
     <h3 class="bold-green" style="display: inline;margin-right: 10px"> {{mercEntity.name}} </h3>
     <span style="color: #aaa">Level</span> <span class="bold-cyan">{{ mercEntity.level }}</span>
@@ -93,14 +93,14 @@ async function findAndSetMerc() {
   if (!merc) {
       return
   }
-  state.gameState.mercEid = merc.stats.eid
+  state.mercEid = merc.stats.eid
   mercEntity.value = merc.stats
   mercVitals.value = merc.stats
-  mercSkills.value = merc.skills
+  mercSkills.value = Object.values(merc.skills)
   mercInventory.value = merc.items
   mercEquipment.value = merc.equipment
 
-  setAffects(merc.affects)
+  setAffects(Object.values(merc.affects))
 }
 
 function getMercTNL () {

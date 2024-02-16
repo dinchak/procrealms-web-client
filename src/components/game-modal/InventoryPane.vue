@@ -281,7 +281,7 @@ function hasSkillsRequired (item) {
   }
 
   for (let skill of item.skillsRequired) {
-    let playerSkill = state.gameState.skills.find(sk => sk.name == skill.name)
+    let playerSkill = state.gameState.skills[skill.name]
     if (!playerSkill || playerSkill.level < skill.level) {
       return false
     }

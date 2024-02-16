@@ -52,7 +52,8 @@ async function setOptions() {
     }
     options.length = 0
     if (merc) {
-        const mercSkills = merc.skills.filter(skill => !skill.type.includes('passive'))
+        const mercSkills = Object.values(merc.skills)
+            .filter(skill => !skill.type.includes('passive'))
         // The regex fresh hell below is to capitalize first letter for each word in the skill list
         // Ideally, we'd just use CSS' text-transform: capitalize; for this, but naiveUI makes it a pain to target the
         // elements in the dropdown. Will have to revisit this

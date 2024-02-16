@@ -95,15 +95,18 @@ export function useHelpers () {
   }
 
   function getMerc () {
-    const merc = state.gameState.charmies
-      .find(charmie => charmie && charmie.traits && charmie.traits.includes('mercenary'))
+    let charmies = Object.values(state.gameState.charmies)
+
+    const merc = charmies.find(charmie => 
+      charmie && charmie.traits && charmie.traits.includes('mercenary')
+    )
 
     if (!merc) {
-      state.gameState.mercEid = -1
+      state.mercEid = -1
       return false
     }
 
-    state.gameState.mercEid = merc.stats.eid
+    state.mercEid = merc.stats.eid
     return merc
   }
 
