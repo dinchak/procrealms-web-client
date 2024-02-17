@@ -2,7 +2,7 @@
   <div class="interface-overlay">
     <n-icon 
       v-if="state.options.overlayControls"
-      :class="state.modals.gameModal ? 'active' : ''"
+      :class="state.settingsMode ? 'active' : ''"
       size="24"
       @click="toggleSettings"
     >
@@ -11,9 +11,18 @@
 
     <n-icon 
       v-if="state.options.overlayControls"
+      :class="state.modals.gameModal ? 'active' : ''"
+      size="24"
+      @click="toggleGameModal"
+    >
+      <AssessmentOutlined/>
+    </n-icon>
+
+    <n-icon 
+      v-if="state.options.overlayControls"
       :class="state.modals.mapModal ? 'active' : ''"
       size="24"
-      @click="toggleMap()"
+      @click="toggleMap"
     >
       <MapOutlined />
     </n-icon>
@@ -31,6 +40,7 @@
 <script setup>
 import { NIcon } from 'naive-ui'
 
+import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import MapOutlined from '@vicons/material/MapOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
@@ -41,7 +51,11 @@ function toggleMap() {
   state.modals.mapModal = !state.modals.mapModal
 }
 
-function toggleSettings() {
+function toggleSettings () {
+  state.settingsMode = !state.settingsMode
+}
+
+function toggleGameModal() {
   state.modals.gameModal = !state.modals.gameModal
   setMode('modal')
 }
@@ -50,20 +64,21 @@ function toggleSettings() {
 <style scoped lang="less">
 .interface-overlay {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 2px;
+  right: 5px;
   z-index: 1;
   .n-icon {
     padding: 5px 5px;
     color: #aaa;
     cursor: pointer;
+    transition: all 0.2s;
     &:hover {
-      color: #fff;
-      background-color: darken(#16c60c, 33%);
+      color: #000;
+      background-color: #63e2b7;
     }
     &.active {
-      color: #f9f1a5;
-      background-color: darken(#16c60c, 33%);
+      color: #000;
+      background-color: #63e2b7
     }
   }
 }
