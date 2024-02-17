@@ -66,6 +66,7 @@ export function useWebSocket () {
         }
       }
     }
+    console.trace(command)
     send('cmd', command, id)
   }
 

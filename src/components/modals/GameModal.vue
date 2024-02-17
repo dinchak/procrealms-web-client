@@ -11,9 +11,13 @@
 
     <div>
       <div class="modal-body">
-        <p class="close" @click="closeModal()">✕</p>
+        <p class="close" @click="closeModal()">
+          <NIcon size="24">
+            <CloseOutlined />
+          </NIcon>
+        </p>
         <p class="toggle-input" @click="toggleMiniOutput()">
-          <NIcon>
+          <NIcon size="24">
             <KeyboardOutlined />
           </NIcon>
         </p>
@@ -71,6 +75,7 @@ import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
+import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
 
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
@@ -228,7 +233,7 @@ onBeforeUnmount(() => {
 
     .game-modal-tabs {
       .n-tabs-nav {
-        width: calc(100vw - 127px);
+        width: calc(100vw - 95px);
       }
       height: calc(100vh - 170px);
       overflow-y: hidden;
@@ -259,7 +264,7 @@ onBeforeUnmount(() => {
 
     .close {
       margin: 0;
-      padding: 13px;
+      padding: 5px;
       background-color: #111;
       position: absolute;
       top: 10px;
@@ -279,7 +284,7 @@ onBeforeUnmount(() => {
       background-color: #111;
       position: absolute;
       top: 10px;
-      right: 65px;
+      right: 44px;
       font-size: 32px;
       z-index: 2;
       line-height: 16px;

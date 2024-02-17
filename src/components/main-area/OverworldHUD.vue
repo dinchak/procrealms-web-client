@@ -81,14 +81,49 @@
     <div class="movement-controls-container" v-if="state.options.hudMovementControls">
       <MobileMovement></MobileMovement>
     </div>
+
+    <div class="settings" v-if="state.settingsMode">
+      <NButton size="small"
+        :type="getOptionType('showQuickSlots')"
+        @click="toggleOption('showQuickSlots')"
+      >
+        <NIcon><BoltOutlined/></NIcon>
+      </NButton>
+
+      <NButton size="small"
+        :type="getOptionType('showOverlayMinimap')"
+        @click="toggleOption('showOverlayMinimap')"
+      >
+        <NIcon><ExploreOutlined/></NIcon>
+      </NButton>
+
+      <NButton size="small"
+        :type="getOptionType('hudMovementControls')"
+        @click="toggleOption('hudMovementControls')"
+      >
+        <NIcon><OpenWithOutlined/></NIcon>
+      </NButton>
+
+      <NButton size="small"
+        :type="getOptionType('hudCommandControls')"
+        @click="toggleOption('hudCommandControls')"
+      >
+        <NIcon><SmartButtonOutlined/></NIcon>
+      </NButton>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { NProgress } from 'naive-ui'
+import { NProgress, NButton, NIcon } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
+
+import BoltOutlined from '@vicons/material/BoltOutlined'
+import ExploreOutlined from '@vicons/material/ExploreOutlined'
+import OpenWithOutlined from '@vicons/material/OpenWithOutlined'
+import SmartButtonOutlined from '@vicons/material/SmartButtonOutlined'
 
 import MiniMap from '@/components/side-menu/MiniMap.vue'
 import MobileMovement from '@/components/main-area/MobileMovement.vue'
@@ -188,7 +223,14 @@ function getTimeLeftColor (affect) {
   }
 
   return 'error'
+}
 
+function getOptionType (option) {
+  return state.options[option] ? 'success' : ''
+}
+
+function toggleOption (option) {
+  state.options[option] = !state.options[option]
 }
 
 </script>
@@ -204,6 +246,20 @@ function getTimeLeftColor (affect) {
   }
   .movement-controls-container {
     margin-right: 3px;
+  }
+
+  .settings {
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100% - 7px);
+    .n-button {
+      margin-bottom: 5px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
   .center-hud {
     display: flex;
