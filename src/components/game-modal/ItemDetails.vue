@@ -221,8 +221,6 @@ function getItemBonuses () {
     }
   }
 
-  console.log(bonuses)
-
   return bonuses
 }
 
@@ -239,7 +237,6 @@ const renderBonusMultipliers = [
 ]
 
 function renderBonusAmount (bonus) {
-  console.log(bonus)
   if (renderBonusPercent.includes(bonus.name)) {
     return `${renderNumber(bonus.amount)}%`
   } else if (renderBonusSeconds.includes(bonus.name)) {

@@ -3,47 +3,6 @@
     <div class="row">
       <NGrid class="options" cols="1">
         <NGi>
-          <h3>HUD</h3>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-hud-command-controls">Command Controls</label>
-            <NSwitch id="option-hud-command-controls" v-model:value="state.options.hudCommandControls" aria-label="Command Controls" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-hud-movement-controls">Movement Controls</label>
-            <NSwitch id="option-hud-movement-controls" v-model:value="state.options.hudMovementControls" aria-label="Movement Controls" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-show-quick-slots">Show Quick Slots</label>
-            <NSwitch id="option-show-quick-slots" v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-overlay-controls">Overlay Controls</label>
-            <NSwitch id="option-overlay-controls" v-model:value="state.options.overlayControls" aria-label="Overlay Controls" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-overlay-minimap">Overlay Minimap</label>
-            <NSwitch id="option-overlay-minimap" v-model:value="state.options.showOverlayMinimap" aria-label="Overlay Minimap" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-      </NGrid>
-
-      <NGrid class="options" cols="1">
-        <NGi>
           <h3>Sidebar</h3>
         </NGi>
 
@@ -76,6 +35,13 @@
 
         <NGi>
           <div class="option">
+            <label for="option-minimap-in-room-description">Minimap In Room Description</label>
+            <NSwitch id="option-minimap-in-room-description" v-model:value="state.options.roomDescriptionMinimap" aria-label="Minimap In Room Description" class="selectable"></NSwitch>
+          </div>
+        </NGi>
+
+        <NGi>
+          <div class="option">
             <label for="option-chat-in-main-output">Chat In Main Output</label>
             <NSwitch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output" class="selectable"></NSwitch>
           </div>
@@ -85,20 +51,6 @@
           <div class="option">
             <label for="option-keep-sent-commands">Keep Sent Commands</label>
             <NSwitch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-numpad-movement">Numpad Movement</label>
-            <NSwitch id="option-movement-option" v-model:value="state.options.numPadMovement" aria-label="Numpad Movement" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-wasd-movement">WASD Movement</label>
-            <NSwitch id="option-wasd-movement" v-model:value="state.options.wasdMovement" aria-label="WASD Movement" class="selectable"></NSwitch>
           </div>
         </NGi>
 
@@ -176,7 +128,7 @@
 </template>
 
 <script setup>
-import { watch, ref, defineProps, toRefs } from 'vue'
+import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NSwitch, NRadioGroup, NRadioButton, NSelect, NButton } from 'naive-ui'
 import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
@@ -221,8 +173,6 @@ const fontOptions = [{
   label: 'Ubuntu Mono',
   value: 'Ubuntu Mono, monospace'
 }]
-
-watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options)))
 
 async function goFullscreen () {
   let app = document.getElementById('app')

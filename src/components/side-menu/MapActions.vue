@@ -18,7 +18,7 @@ const roomEntities = ref([])
 
 async function getRoomEntities () {
   try {
-    return await fetchEntities([...state.gameState.room.entities])
+    return await fetchEntities(state.gameState.room.entities.map(en => en.eid))
   } catch (err) {
     console.log(err)
     return false
@@ -31,7 +31,7 @@ function roomHasEnemies () {
 
 async function getRoomItems () {
   try {
-    return await fetchItems([...state.gameState.room.items])
+    return await fetchItems(state.gameState.room.items.map(it => it.iid))
   } catch (err) {
     console.log(err)
     return false

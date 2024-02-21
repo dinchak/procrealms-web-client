@@ -114,11 +114,11 @@ onBeforeUnmount(() => {
 .splashscreen {
   background-image: url('@/assets/bg.jpg');
   background-size: cover;
-  height: calc(100vh - 100px);
   padding-top: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: calc(100vh - 100px);
 
   h1 {
     font-family: 'Pixelify Sans', sans-serif;
@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
 
 @media screen and (max-width: 700px) {
   .splashscreen {
-    height: calc(100vh - 60px);
+    min-height: calc(100vh - 100px);
     padding-top: 60px;
     h1 {
       font-size: 48px;

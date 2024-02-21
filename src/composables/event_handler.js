@@ -67,7 +67,7 @@ handlers['out'] = (line) => {
 handlers['room.describe'] = ({ desc, map }) => {
   let lines = strToLines(desc)
 
-  if (state.options.hideSidebar && !state.options.showOverlayMinimap) {
+  if (state.options.roomDescriptionMinimap) {
     let linesWithMap = []
     let numLines = Math.max(lines.length, map.length)
 
@@ -215,8 +215,6 @@ function loadOptions () {
     }
 
     document.getElementsByTagName('html')[0].style.fontSize = state.options.fontSize
-    state.modals.mapModalSize = state.options.mapModalSize
-
   } catch (err) {
     console.log(err.stack)
     localStorage.setItem('options', '')
@@ -249,7 +247,7 @@ export function useEventHandler () {
       return
     }
 
-    let matches = cmd.match(/^entity-([\da-f-]+)$/)
+    let matches = cmd.match(/^entity-([a-zA-Z0-9-_]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       let eid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
@@ -260,7 +258,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^item-([\da-f-]+)$/)
+    matches = cmd.match(/^item-([a-zA-Z0-9-_]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       let iid = parseInt(matches[1], 10)
       let { resolve, timeout } = state.pendingRequests[cmd]
@@ -271,7 +269,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^items-([\da-f-]+)$/)
+    matches = cmd.match(/^items-([a-zA-Z0-9-_]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       for (let item of msg) {
         state.cache.itemCache[item.iid] = { item, date: Date.now() }
@@ -292,7 +290,7 @@ export function useEventHandler () {
       return
     }
 
-    matches = cmd.match(/^entities-([\da-f-]+)$/)
+    matches = cmd.match(/^entities-([a-zA-Z0-9-_]+)$/)
     if (matches && state.pendingRequests[cmd]) {
       for (let entity of msg) {
         state.cache.entityCache[entity.eid] = { entity, date: Date.now() }

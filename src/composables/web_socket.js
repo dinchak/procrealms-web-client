@@ -2,6 +2,7 @@ import { addLine, state } from './state'
 import { loadSettingsByNameAndType } from "@/composables/triggers"
 
 let ws
+let moveTimeout = null
 
 export function useWebSocket () {
   function initConnection ({ onConnect, onClose, onEvent, url }) {
@@ -66,9 +67,42 @@ export function useWebSocket () {
         }
       }
     }
-    console.trace(command)
+
     send('cmd', command, id)
   }
+
+  function move (dir) {
+    if (moveTimeout) {
+      return
+    }
+  
+    let { room } = state.gameState
+    if (!room || !room.exits.includes(dir)) {
+      return
+    }
+  
+    cmd(dir)
+  
+    moveTimeout = setTimeout(() => {
+      moveTimeout = null
+    }, 100)
+  }
+  
+  function enter () {
+    if (moveTimeout) {
+      return
+    }
+  
+    let { room } = state.gameState
+    if (!room || !room.canEnter) {
+      return
+    }
+    cmd('enter')
+  
+    moveTimeout = setTimeout(() => {
+      moveTimeout = null
+    }, 100)
+  }  
 
   function fetchEntity (eid, skipCache) {
     if (state.cache.entityCache[eid] && !skipCache) {
@@ -179,6 +213,6 @@ export function useWebSocket () {
   }
 
   return {
-    initConnection, doTokenAuth, send, cmd, fetchEntity, fetchEntities, fetchItem, fetchItems
+    initConnection, doTokenAuth, send, cmd, fetchEntity, fetchEntities, fetchItem, fetchItems, move, enter
   }
 }

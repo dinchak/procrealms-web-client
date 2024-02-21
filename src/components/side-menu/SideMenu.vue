@@ -22,7 +22,7 @@
 import { state } from '@/composables/state'
 import { NLayoutSider } from 'naive-ui'
 
-import MiniMap from '@/components/side-menu/MiniMap.vue'
+import MiniMap from '@/components/common/MiniMap.vue'
 import PlayerStats from '@/components/side-menu/PlayerStats.vue'
 import BattleControls from '@/components/side-menu/BattleControls.vue'
 import MoveControls from '@/components/side-menu/MoveControls.vue'
