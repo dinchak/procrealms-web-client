@@ -10,7 +10,7 @@ import { ref, onMounted, onBeforeUnmount, defineProps, toRefs } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, setMode, prevMode } from '@/composables/state'
 
-import MobileInputControls from '@/components/main-area/MobileInputControls.vue'
+import MobileInputControls from '@/components/hud/MobileInputControls.vue'
 
 let input = ref(null)
 let text = ref('')

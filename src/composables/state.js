@@ -33,6 +33,7 @@ export const state = reactive({
   gamepads: {},
   gamepadTab: false,
   suggestedCommands: [],
+  selectedDirection: false,
 
   loginResolve: null,
   loginReject: null,
@@ -65,16 +66,13 @@ export const state = reactive({
       playerItemModal: ref(''),
       mercItemModal: ref('')
     },
-    mapModal: false,
-    mapModalSize: 'large',
     mercModal: false,
     triggersModal: false,
     helpModal: false,
     loginModal: false,
     logoutModal: false,
     newPlayerModal: false,
-    gameModal: false,
-    inputMapModal: false
+    gameModal: false
   }
 })
 
@@ -139,24 +137,37 @@ export function resetGameState () {
 
 function resetOptions () {
   return {
+    // general options
     chatInMain: true,
-    fixedMap: false,
-    fontFamily: 'DOS, monospace',
-    fontSize: '16px',
-    hideSidebar: true,
-    keepSentCommands: false,
-    mapModalSize: 'medium',
-    numPadMovement: true,
-    overlayControls: true,
-    textInputAlwaysFocused: false,
+    roomDescriptionMinimap: true,
 
+    // sidebar options
+    fixedMap: false,
+    hideSidebar: true,
+    swapControls: false,
+
+    // side options
+    showSideMap: false,
+    showSideMovement: false,
+    mapWidth: 50,
+    mapHeight: 50,
+
+    // bottom options
+    textInputAlwaysFocused: false,
+    keepSentCommands: false,
+    hudMovementControls: true,
+    hudCommandControls: true,
     showMapArea: true,
     showQuickSlots: true,
-    hudMovementControls: true,
     showOverlayMinimap: true,
-    swapControls: false,
-    wasdMovement: true,
-    hudCommandControls: true,
+    showAllies: true,
+    showAffects: true,
+    showQuests: true,
+    showRoomInfo: true,
+
+    // font options
+    fontFamily: 'DOS, monospace',
+    fontSize: '16px',
   }
 }
 
@@ -198,6 +209,18 @@ export function prevMode () {
     state.mode = state.prevModes.pop()
     console.log(`state.mode set to ${state.mode} (prevMode, ${state.prevModes.length} left)`)
   }
+}
+
+export function showHUD () {
+  const {
+    showOverlayMinimap, hudMovementControls, showRoomInfo,
+    showAllies, showAffects, showQuests,
+  } = state.options
+
+  return (
+    showOverlayMinimap || hudMovementControls || showRoomInfo ||
+    showAllies || showAffects || showQuests
+  )
 }
 
 export function addLine (line, bufferName) {
@@ -641,8 +664,8 @@ export function resetInputMappings () {
     },
     
     {
-      label: 'Show Map Modal',
-      event: 'showMapModal',
+      label: 'Show Side Map',
+      event: 'showSideMap',
       bindings: [{
         keyCode: 'KeyM',
         modes: ['hotkey']

@@ -41,49 +41,6 @@ const { cmd } = useWebSocket()
 let moveTimeout = null
 let selectedDirection = ref('enter')
 
-const directionMap = {
-  0: 'enter',
-  1: 'north',
-  2: 'northwest',
-  3: 'west',
-  4: 'southwest',
-  5: 'south',
-  6: 'southeast',
-  7: 'east',
-  8: 'northeast'
-}
-
-function move (dir) {
-  if (moveTimeout) {
-    return
-  }
-
-  let { room } = state.gameState
-  if (!room || !room.exits.includes(dir)) {
-    return
-  }
-  cmd(dir)
-
-  moveTimeout = setTimeout(() => {
-    moveTimeout = null
-  }, 100)
-}
-
-function enter () {
-  if (moveTimeout) {
-    return
-  }
-
-  let { room } = state.gameState
-  if (!room || !room.canEnter) {
-    return
-  }
-  cmd('enter')
-
-  moveTimeout = setTimeout(() => {
-    moveTimeout = null
-  }, 100)
-}
 
 function getMovementClass (dir) {
   let { room } = state.gameState

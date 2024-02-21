@@ -8,9 +8,11 @@
       <HelpModal></HelpModal>
       <TriggersModal></TriggersModal>
       <GameModal></GameModal>
-      <MapModal></MapModal>
       <MercModal></MercModal>
+
       <ButtonControls></ButtonControls>
+      <SideMap></SideMap>
+      <SideMovement></SideMovement>
       <div class="content-area">
         <LineOutput></LineOutput>
       </div>
@@ -35,13 +37,18 @@ import HelpModal from '@/components/modals/HelpModal.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
-import MapModal from '@/components/modals/MapModal'
 import MercModal from '@/components/modals/MercModal'
-import QuickSlots from '@/components/main-area/QuickSlots.vue'
+import QuickSlots from '@/components/hud/QuickSlots.vue'
 import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
+import SideMap from '@/components/main-area/SideMap.vue'
 import SideMenu from '@/components/side-menu/SideMenu'
+import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
+
+import { useHelpers } from '@/composables/helpers'
+
+const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 
 function openGameModal () {
   setMode('modal')
@@ -78,9 +85,14 @@ onMounted(() => {
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
+  state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
+  state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
 
-  watchers.push(watch(state.options, () => localStorage.setItem('options', JSON.stringify(state.options))))
-  watchers.push(watch(state.options.textInputAlwaysFocused, () => {
+  watchers.push(watch(state.options, () => {
+    localStorage.setItem('options', JSON.stringify(state.options))
+  }))
+
+  watchers.push(watch(() => state.options.textInputAlwaysFocused, () => {
     if (state.options.textInputAlwaysFocused) {
       state.inputEmitter.emit('focusTextInput')
     }
@@ -93,6 +105,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
   state.inputEmitter.off('openQuests', openQuests)
+  state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
+  state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
 
   watchers.forEach(w => w())
 })

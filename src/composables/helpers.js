@@ -1,40 +1,17 @@
-import { state } from "@/composables/state"
-import { action_mapper } from '@/composables/constants/action_mapper'
 import { AnsiUp } from 'ansi_up'
+
+import { state } from '@/composables/state'
+import { useWebSocket } from '@/composables/web_socket'
+
+import { action_mapper } from '@/composables/constants/action_mapper'
+import { ansi } from '@/composables/constants/ansi'
+import { ansi_replacements } from '@/composables/constants/ansi_replacements'
+import { direction_map } from '@/composables/constants/direction_map'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
-const ansi = {
-  black: String.fromCharCode(27) + '[30m',
-  red: String.fromCharCode(27) + '[31m',
-  green: String.fromCharCode(27) + '[32m',
-  yellow: String.fromCharCode(27) + '[33m',
-  blue: String.fromCharCode(27) + '[34m',
-  magenta: String.fromCharCode(27) + '[35m',
-  cyan: String.fromCharCode(27) + '[36m',
-  white: String.fromCharCode(27) + '[37m',
-  boldBlack: String.fromCharCode(27) + '[90m',
-  boldRed: String.fromCharCode(27) + '[91m',
-  boldGreen: String.fromCharCode(27) + '[92m',
-  boldYellow: String.fromCharCode(27) + '[93m',
-  boldBlue: String.fromCharCode(27) + '[94m',
-  boldMagenta: String.fromCharCode(27) + '[95m',
-  boldCyan: String.fromCharCode(27) + '[96m',
-  boldWhite: String.fromCharCode(27) + '[97m',
-  reset: String.fromCharCode(27) + '[0m'
-}
-
-const replacements = [
-  { from: '1;30m', to: '90m' },
-  { from: '1;31m', to: '91m' },
-  { from: '1;32m', to: '92m' },
-  { from: '1;33m', to: '93m' },
-  { from: '1;34m', to: '94m' },
-  { from: '1;35m', to: '95m' },
-  { from: '1;36m', to: '96m' },
-  { from: '1;37m', to: '97m' },
-]
+const { move, enter } = useWebSocket()
 
 export function useHelpers () {
   function copperToMoneyString (amount, short) {
@@ -87,7 +64,7 @@ export function useHelpers () {
       return ''
     }
 
-    for (let { from, to } of replacements) {
+    for (let { from, to } of ansi_replacements) {
       str = str.replace(new RegExp(from, 'g'), to)
     }
 
@@ -119,7 +96,6 @@ export function useHelpers () {
 
         const gameModal = document.querySelector('.game-modal')
         if (gameModal && !gameModal.contains(el)) {
-          console.log(`${el.className} not in game modal`)
           return false
         }
 
@@ -346,7 +322,39 @@ export function useHelpers () {
     return Object.values(state.gamepads).length > 0
   }
 
+  function selectMovementDirection (degree) {
+    if (state.gameState.battle.active) {
+      return
+    }
+  
+    if (degree == false) {
+      state.selectedDirection = direction_map[0]
+      return
+    }
+  
+    let offsetDegree = degree + (45 / 2)
+    if (offsetDegree > 360) {
+      offsetDegree -= 360
+    }
+  
+    let itemNumber = Math.ceil(offsetDegree / 360 * 8)
+    state.selectedDirection = direction_map[itemNumber]
+  }
+  
+  function moveInSelectedDirection () {
+    if (state.gameState.battle.active) {
+      return
+    }
+  
+    if (state.selectedDirection == 'enter') {
+      enter()
+    } else {
+      move(state.selectedDirection)
+    }
+  }  
+
   return {
-    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString, isGamepadConnected
+    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString, isGamepadConnected,
+    selectMovementDirection, moveInSelectedDirection
   }
 }

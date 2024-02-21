@@ -63,8 +63,8 @@ import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
-import BattleEntity from '@/components/main-area/battle-items/BattleEntity.vue'
-import MercOrders from '@/components/main-area/battle-items/MercOrders.vue'
+import BattleEntity from '@/components/battle/BattleEntity.vue'
+import MercOrders from '@/components/battle/MercOrders.vue'
 
 const { selectNearestElement } = useHelpers()
 

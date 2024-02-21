@@ -1,54 +1,57 @@
 <template>
   <div class="interface-overlay">
-    <n-icon 
-      v-if="state.options.overlayControls"
-      :class="state.settingsMode ? 'active' : ''"
-      size="24"
-      @click="toggleSettings"
-    >
-      <SettingsFilled />
-    </n-icon>
+    <div class="interface">
+      <n-icon 
+        :class="state.settingsMode ? 'active' : ''"
+        size="24"
+        @click="toggleSettings"
+      >
+        <SettingsFilled />
+      </n-icon>
 
-    <n-icon 
-      v-if="state.options.overlayControls"
-      :class="state.modals.gameModal ? 'active' : ''"
-      size="24"
-      @click="toggleGameModal"
-    >
-      <AssessmentOutlined/>
-    </n-icon>
+      <n-icon 
+        :class="state.modals.gameModal ? 'active' : ''"
+        size="24"
+        @click="toggleGameModal"
+      >
+        <AssessmentOutlined/>
+      </n-icon>
 
-    <n-icon 
-      v-if="state.options.overlayControls"
-      :class="state.modals.mapModal ? 'active' : ''"
-      size="24"
-      @click="toggleMap"
-    >
-      <MapOutlined />
-    </n-icon>
-    
-    <n-icon
-      :class="!state.options.hideSidebar ? 'active' : ''"
-      size="24"
-      @click="state.options.hideSidebar = !state.options.hideSidebar"
-    >
-      <MenuOutlined />
-    </n-icon>
+      <n-icon 
+        :class="state.options.hideTabs ? 'active' : ''"
+        size="24"
+        @click="toggleMap"
+      >
+        <ChatOutlined />
+      </n-icon>
+      
+      <n-icon
+        :class="!state.options.hideSidebar ? 'active' : ''"
+        size="24"
+        @click="state.options.hideSidebar = !state.options.hideSidebar"
+      >
+        <MenuOutlined />
+      </n-icon>
+    </div>
+
+    <HUDSettings v-if="state.settingsMode" />
   </div>
 </template>
 
 <script setup>
 import { NIcon } from 'naive-ui'
 
+import HUDSettings from '@/components/hud/HUDSettings.vue'
+
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
-import MapOutlined from '@vicons/material/MapOutlined'
+import ChatOutlined from '@vicons/material/ChatOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
 import { setMode, state } from '@/composables/state'
 
 function toggleMap() {
-  state.modals.mapModal = !state.modals.mapModal
+  state.options.showSideMap = !state.options.showSideMap
 }
 
 function toggleSettings () {
@@ -66,19 +69,25 @@ function toggleGameModal() {
   position: absolute;
   top: 2px;
   right: 5px;
-  z-index: 1;
-  .n-icon {
-    padding: 5px 5px;
-    color: #aaa;
-    cursor: pointer;
-    transition: all 0.2s;
-    &:hover {
-      color: #000;
-      background-color: #63e2b7;
-    }
-    &.active {
-      color: #000;
-      background-color: #63e2b7
+  z-index: 5;
+  .interface {
+    .n-icon {
+      padding: 5px 5px;
+      color: #aaa;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 5px;
+      &:last-child {
+        margin-right: 0;
+      }
+      &:hover {
+        color: #000;
+        background-color: #63e2b7;
+      }
+      &.active {
+        color: #000;
+        background-color: #63e2b7
+      }
     }
   }
 }

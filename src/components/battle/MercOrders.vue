@@ -7,17 +7,23 @@
         :options="options"
         @select="handleSelect"
       >
-        <n-button>Queue Order</n-button>
+        <n-button>
+            <n-icon>
+                <AddCommentOutlined />
+            </n-icon>
+        </n-button>
       </n-dropdown>
     </div>
 </template>
 
 <script setup>
-import { NDropdown, NButton } from 'naive-ui'
+import { NDropdown, NButton, NIcon } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { reactive, onMounted, watch } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
+
+import AddCommentOutlined from '@vicons/material/AddCommentOutlined'
 
 const { getMerc } = useHelpers()
 const { fetchItems, cmd } = useWebSocket()

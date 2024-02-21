@@ -17,8 +17,10 @@ function renderMap () {
       map.push(ansiToHtml(line))
     }
   }
+
   return map
 }
+
 </script>
 
 <style lang="less">

@@ -1,31 +1,5 @@
 <template>
   <div class="options-menu">
-    <h3>HUD</h3>
-
-    <div class="option">
-      <label for="option-hud-command-controls">Command Controls</label>
-      <n-switch id="option-hud-command-controls" v-model:value="state.options.hudCommandControls" aria-label="Command Controls"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-hud-movement-controls">Movement Controls</label>
-      <n-switch id="option-hud-movement-controls" v-model:value="state.options.hudMovementControls" aria-label="Movement Controls"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-show-quick-slots">Show Quick Slots</label>
-      <n-switch id="option-show-quick-slots" v-model:value="state.options.showQuickSlots" aria-label="Show Quick Slots"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-overlay-controls">Overlay Controls</label>
-      <n-switch id="option-overlay-controls" v-model:value="state.options.overlayControls" aria-label="Overlay Controls"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-overlay-minimap">Overlay Minimap</label>
-      <n-switch id="option-overlay-minimap" v-model:value="state.options.showOverlayMinimap" aria-label="Overlay Minimap"></n-switch>
-    </div>
 
     <h3>Sidebar</h3>
 
@@ -47,6 +21,11 @@
     <h3>General</h3>
 
     <div class="option">
+      <label for="option-minimap-in-room-description">Minimap In Room Description</label>
+      <n-switch id="option-minimap-in-room-description" v-model:value="state.options.roomDescriptionMinimap" aria-label="Minimap In Room Description"></n-switch>
+    </div>
+
+    <div class="option">
       <label for="option-chat-in-main-output">Chat In Main Output</label>
       <n-switch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
     </div>
@@ -54,16 +33,6 @@
     <div class="option">
       <label for="option-keep-sent-commands">Keep Sent Commands</label>
       <n-switch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-numpad-movement">Numpad Movement</label>
-      <n-switch id="option-movement-option" v-model:value="state.options.numPadMovement" aria-label="Numpad Movement"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-wasd-movement">WASD Movement</label>
-      <n-switch id="option-wasd-movement" v-model:value="state.options.wasdMovement" aria-label="WASD Movement"></n-switch>
     </div>
 
     <div class="option">

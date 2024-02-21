@@ -2,7 +2,7 @@
 
   <n-tabs class="tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
-      <div id="output" :class="getOutputClass()" ref="output" @scroll="onScroll('output')">
+      <div id="output" class="output" :style="{ height: getOutputHeight() }" ref="output" @scroll="onScroll('output')">
         <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
@@ -14,7 +14,7 @@
     </n-tab-pane>
 
     <n-tab-pane name="chat" :tab="getTab('chat')" display-directive="show">
-      <div id="chat" class="output" ref="chat" @scroll="onScroll('chat')">
+      <div id="chat" class="output" :style="{ height: getOutputHeight() }" ref="chat" @scroll="onScroll('chat')">
         <div v-for="(line, i) in state.chat" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-yellow">{{ line.from }}</div>
@@ -31,7 +31,7 @@
     </n-tab-pane>
 
     <n-tab-pane name="trade" :tab="getTab('trade')" display-directive="show">
-      <div id="trade" class="output" ref="trade" @scroll="onScroll('trade')">
+      <div id="trade" class="output" :style="{ height: getOutputHeight() }" ref="trade" @scroll="onScroll('trade')">
         <div v-for="(line, i) in state.trade" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-green">{{ line.from }}</div>
@@ -48,7 +48,7 @@
     </n-tab-pane>
 
     <n-tab-pane name="newbie" :tab="getTab('newbie')" display-directive="show">
-      <div id="newbie" class="output" ref="newbie" @scroll="onScroll('newbie')">
+      <div id="newbie" class="output" :style="{ height: getOutputHeight() }" ref="newbie" @scroll="onScroll('newbie')">
         <div v-for="(line, i) in state.newbie" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-magenta">{{ line.from }}</div>
@@ -72,11 +72,11 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
-import { state, addLine } from '@/composables/state'
+import { state, addLine, showHUD } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
-import BattleStatus from '@/components/main-area/BattleStatus.vue'
+import BattleStatus from '@/components/battle/BattleStatus.vue'
 
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon, NTabs, NTabPane, NBadge, NSpace } from 'naive-ui'
@@ -106,9 +106,7 @@ function doResize () {
     }
 
     let { width, height } = calcTerminalSize(output.value.offsetWidth, output.value.offsetHeight)
-
     send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
-
     resizeTimeout = null
   }, 500)
 }
@@ -154,9 +152,9 @@ function onBeforeChangeTab (activeName) {
   }
   state.activeTab = activeName
   // Hide Map Modal on chat tabs
-  if (activeName !== "output" && state.modals.mapModal == true) {
+  if (activeName !== "output" && state.options.showSideMap == true) {
     mapWasOpen = true
-    state.modals.mapModal = false
+    state.options.showSideMap = false
   }
   return true
 }
@@ -168,7 +166,7 @@ function onAfterChangeTab (activeName) {
   // Show Map Modal on output tab if it was open before
   if (activeName == "output" && mapWasOpen == true) {
     mapWasOpen = false
-    state.modals.mapModal = true
+    state.options.showSideMap = true
   }
 }
 
@@ -180,39 +178,6 @@ function getTab (name) {
   }
   return h(NSpace, {}, () => children)
 }
-
-function getOutputClass () {
-  let cls = 'output'
-  if (
-    state.options.showQuickSlots &&
-    (
-      state.gameState.slots.length > 0 ||
-      state.options.hideSidebar
-    )
-  ) {
-    cls += ' show-quickslots'
-  }
-  if (state.gameState.battle.active) {
-    cls += ' in-battle'
-  }
-  // if (!state.options.showTabs) {
-  //   cls += ' tabs-hidden'
-  // }
-  return cls
-}
-
-// function doHideShowTabs () {
-//   let tabNav = document.getElementsByClassName('n-tabs-nav')
-//   if (tabNav[0]) {
-//     let classes = tabNav[0].className.split(' ')
-//     if (!state.options.showTabs) {
-//       classes.push('hide')
-//     } else {
-//       classes = classes.filter(cls => cls != 'hide')
-//     }
-//     tabNav[0].className = classes.join(' ')
-//   }
-// }
 
 function getScrollbackControlClass () {
   let cls = 'scrollback-control'
@@ -335,6 +300,26 @@ function showDebug () {
   }
 }
 
+function getOutputHeight () {
+  let heightOffset = 80
+  if (showHUD()) {
+    heightOffset = 220
+  }
+
+  if (state.options.showQuickSlots) {
+    heightOffset += 50
+  }
+
+  if (state.gameState.battle.active) {
+    heightOffset = 80
+    if (state.options.showQuickSlots) {
+      heightOffset = 130
+    }
+  }
+
+  return `calc(100vh - ${heightOffset}px)`
+}
+
 let watchers = []
 onMounted(() => {
   dayjs.extend(relativeTime)
@@ -362,12 +347,13 @@ onMounted(() => {
   state.inputEmitter.on('showDebug', showDebug)
 
   watchers.push(watch(() => state.output.length, () => onChanged('output')))
-  watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
-  watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
   watchers.push(watch(() => state.chat.length, () => onChanged('chat')))
   watchers.push(watch(() => state.trade.length, () => onChanged('trade')))
   watchers.push(watch(() => state.newbie.length, () => onChanged('newbie')))
-  watchers.push(watch(() => state.options.hideSidebar, () => doResize()))
+  
+  watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
+  watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
+  watchers.push(watch(state.options, () => doResize()))
 })
 
 onBeforeUnmount(() => {
@@ -473,25 +459,18 @@ onBeforeUnmount(() => {
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
-    height: ~"calc(100vh - 220px)";
+    // height: ~"calc(100vh - 220px)";
 
-    // &.tabs-hidden {
-    //   height: ~"calc(100vh - 142px)";
+    // &.show-quickslots {
+    //   height: ~"calc(100vh - 270px)";
     // }
 
-    &.show-quickslots {
-      height: ~"calc(100vh - 270px)";
-      // &.tabs-hidden {
-      //   height: ~"calc(100vh - 187px)";
-      // }
-    }
-
-    &.in-battle {
-      height: ~"calc(100vh - 80px)";
-      &.show-quickslots {
-        height: ~"calc(100vh - 130px)";
-      }
-    }
+    // &.in-battle {
+    //   height: ~"calc(100vh - 80px)";
+    //   &.show-quickslots {
+    //     height: ~"calc(100vh - 130px)";
+    //   }
+    // }
 
     .line {
       font-size: 1rem;
@@ -542,7 +521,6 @@ onBeforeUnmount(() => {
   }
 }
 
-
 @media screen and (max-height: 500px) {
   .tabs {
     .output {
@@ -561,24 +539,4 @@ onBeforeUnmount(() => {
   }
 }
 
-// @media screen and (max-width: 750px) {
-//   .tabs {
-//     .output {
-//       margin: 2px 8px;
-//       height: ~"calc(100vh - 96px)";
-
-//       &.tabs-hidden {
-//         height: ~"calc(100vh - 63px)";
-//       }
-
-//       &.show-quickslots {
-//         height: ~"calc(100vh - 141px)";
-//         &.tabs-hidden {
-//           height: ~"calc(100vh - 108px)";
-//         }
-//       }
-
-//     }
-//   }
-// }
 </style>
