@@ -16,7 +16,7 @@
             <CloseOutlined />
           </NIcon>
         </p>
-        <p class="toggle-input" @click="toggleMiniOutput()">
+        <p :class="getToggleMiniOutputClass()" @click="toggleMiniOutput()">
           <NIcon size="24">
             <KeyboardOutlined />
           </NIcon>
@@ -128,6 +128,13 @@ function closeModal () {
   prevMode()
 }
 
+function getToggleMiniOutputClass () {
+  return {
+    'toggle-mini-output': true,
+    'active': miniOutputEnabled.value
+  }
+}
+
 function toggleMiniOutput () {
   miniOutputEnabled.value = !miniOutputEnabled.value
   nextTick(() => {
@@ -233,7 +240,7 @@ onBeforeUnmount(() => {
 
     .game-modal-tabs {
       .n-tabs-nav {
-        width: calc(100vw - 95px);
+        width: calc(100vw - 100px);
       }
       height: calc(100vh - 170px);
       overflow-y: hidden;
@@ -274,12 +281,13 @@ onBeforeUnmount(() => {
       line-height: 16px;
       cursor: pointer;
       &:hover {
-        background-color: #311;
+        background-color: #e88080;
+        color: #000;
       }
     }
 
-    .toggle-input {
-      margin: 0;
+    .toggle-mini-output {
+      margin: 0 5px 0 0;
       padding: 5px;
       background-color: #111;
       position: absolute;
@@ -289,8 +297,9 @@ onBeforeUnmount(() => {
       z-index: 2;
       line-height: 16px;
       cursor: pointer;
-      &:hover {
-        background-color: #311;
+      &:hover, &.active {
+        background-color: #63e2b7;
+        color: #000;
       }
     }
 

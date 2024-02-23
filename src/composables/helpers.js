@@ -6,7 +6,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { action_mapper } from '@/composables/constants/action_mapper'
 import { ansi } from '@/composables/constants/ansi'
 import { ansi_replacements } from '@/composables/constants/ansi_replacements'
-import { direction_map } from '@/composables/constants/direction_map'
+import { directionMap } from '@/composables/constants/direction_map'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
@@ -328,7 +328,7 @@ export function useHelpers () {
     }
   
     if (degree == false) {
-      state.selectedDirection = direction_map[0]
+      state.selectedDirection = directionMap[0]
       return
     }
   
@@ -338,7 +338,7 @@ export function useHelpers () {
     }
   
     let itemNumber = Math.ceil(offsetDegree / 360 * 8)
-    state.selectedDirection = direction_map[itemNumber]
+    state.selectedDirection = directionMap[itemNumber]
   }
   
   function moveInSelectedDirection () {
