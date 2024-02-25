@@ -23,7 +23,7 @@
         title="Help"
         :class="state.options.showTabs ? 'active' : ''"
         size="24"
-        @click="toggleTabs"
+        @click="toggleHelp"
       >
         <QuestionMarkOutlined/>
       </n-icon>
@@ -54,8 +54,9 @@ import SettingsFilled from '@vicons/material/SettingsFilled'
 
 import { setMode, state } from '@/composables/state'
 
-function toggleTabs() {
-  state.options.showTabs = !state.options.showTabs
+function toggleHelp () {
+  setMode('modal')
+  state.modals.helpModal = true
 }
 
 function toggleSettings () {

@@ -145,7 +145,8 @@ onBeforeUnmount(() => {
     line-height: 16px;
     cursor: pointer;
     &:hover {
-      background-color: #311;
+      background-color: #e88080;
+      color: #000;
     }
   }
 }
