@@ -2,14 +2,7 @@
   <div class="interface-overlay">
     <div class="interface">
       <n-icon 
-        :class="state.settingsMode ? 'active' : ''"
-        size="24"
-        @click="toggleSettings"
-      >
-        <SettingsFilled />
-      </n-icon>
-
-      <n-icon 
+        title="Game Menu"
         :class="state.modals.gameModal ? 'active' : ''"
         size="24"
         @click="toggleGameModal"
@@ -18,14 +11,25 @@
       </n-icon>
 
       <n-icon 
-        :class="state.options.hideTabs ? 'active' : ''"
+        title="Settings"
+        :class="state.settingsMode ? 'active' : ''"
         size="24"
-        @click="toggleMap"
+        @click="toggleSettings"
       >
-        <ChatOutlined />
+        <SettingsFilled />
+      </n-icon>
+
+      <n-icon
+        title="Help"
+        :class="state.options.showTabs ? 'active' : ''"
+        size="24"
+        @click="toggleTabs"
+      >
+        <QuestionMarkOutlined/>
       </n-icon>
       
       <n-icon
+        title="Sidebar"
         :class="!state.options.hideSidebar ? 'active' : ''"
         size="24"
         @click="state.options.hideSidebar = !state.options.hideSidebar"
@@ -44,14 +48,14 @@ import { NIcon } from 'naive-ui'
 import HUDSettings from '@/components/hud/HUDSettings.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
-import ChatOutlined from '@vicons/material/ChatOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
+import QuestionMarkOutlined from '@vicons/material/QuestionMarkOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
 import { setMode, state } from '@/composables/state'
 
-function toggleMap() {
-  state.options.showSideMap = !state.options.showSideMap
+function toggleTabs() {
+  state.options.showTabs = !state.options.showTabs
 }
 
 function toggleSettings () {

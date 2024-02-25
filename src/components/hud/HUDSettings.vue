@@ -1,9 +1,10 @@
 <template>
   <div class="settings-container">
 
-    <h3>Bottom Area</h3>
+    <!-- <h3>Bottom Area</h3> -->
     <div class="settings">
       <NButton size="small"
+        title="Quick Slots"
         :type="getOptionType('showQuickSlots')"
         @click="toggleOption('showQuickSlots')"
       >
@@ -11,6 +12,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Lower Minimap"
         :type="getOptionType('showOverlayMinimap')"
         @click="toggleOption('showOverlayMinimap')"
       >
@@ -18,6 +20,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Lower Movement Controls"
         :type="getOptionType('hudMovementControls')"
         @click="toggleOption('hudMovementControls')"
       >
@@ -25,6 +28,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Command Controls"
         :type="getOptionType('hudCommandControls')"
         @click="toggleOption('hudCommandControls')"
       >
@@ -34,6 +38,7 @@
 
     <div class="settings">
       <NButton size="small"
+        title="Room Info"
         :type="getOptionType('showRoomInfo')"
         @click="toggleOption('showRoomInfo')"
       >
@@ -41,6 +46,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Allies"
         :type="getOptionType('showAllies')"
         @click="toggleOption('showAllies')"
       >
@@ -48,6 +54,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Affects"
         :type="getOptionType('showAffects')"
         @click="toggleOption('showAffects')"
       >
@@ -55,6 +62,7 @@
       </NButton>
 
       <NButton size="small"
+        title="Quests"
         :type="getOptionType('showQuests')"
         @click="toggleOption('showQuests')"
       >
@@ -62,9 +70,18 @@
       </NButton>
     </div>
 
-    <h3>Side Area</h3>
+    <!-- <h3>Side Area</h3> -->
     <div class="settings">
       <NButton size="small"
+        title="Tabs"
+        :type="getOptionType('showTabs')"
+        @click="toggleOption('showTabs')"
+      >
+        <NIcon><ChatOutlined/></NIcon>
+      </NButton>
+      
+      <NButton size="small"
+        title="Side Map"
         :type="getOptionType('showSideMap')"
         @click="toggleOption('showSideMap')"
       >
@@ -72,17 +89,27 @@
       </NButton>
 
       <NButton size="small"
+        title="Side Movement"
         :type="getOptionType('showSideMovement')"
         @click="toggleOption('showSideMovement')"
       >
         <NIcon><OpenWithOutlined/></NIcon>
       </NButton>
+
+      <NButton size="small"
+        title="Aliases"
+        :type="getOptionType('showAliases')"
+        @click="toggleOption('showAliases')"
+      >
+        <NIcon><DynamicFormOutlined/></NIcon>
+      </NButton>
+
     </div>
 
 
-    <h3>Map Size</h3>
+    <h3 v-if="state.options.showSideMap">Map Size</h3>
 
-    <div class="settings">
+    <div v-if="state.options.showSideMap" class="settings">
       <NSlider class="slider" v-model:value="state.options.mapWidth" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
@@ -92,7 +119,7 @@
       </NSlider>
     </div>
 
-    <div class="settings">
+    <div v-if="state.options.showSideMap" class="settings">
       <NSlider class="slider" v-model:value="state.options.mapHeight" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
@@ -112,6 +139,8 @@ import { state } from '@/composables/state'
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'
 import BoltOutlined from '@vicons/material/BoltOutlined'
+import ChatOutlined from '@vicons/material/ChatOutlined'
+import DynamicFormOutlined from '@vicons/material/DynamicFormOutlined'
 import ExploreOutlined from '@vicons/material/ExploreOutlined'
 import GroupsOutlined from '@vicons/material/GroupsOutlined'
 import MapOutlined from '@vicons/material/MapOutlined'

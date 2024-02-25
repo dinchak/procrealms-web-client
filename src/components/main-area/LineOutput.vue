@@ -6,7 +6,7 @@
         <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
-      <div v-show="state.scrolledBack.output" :class="getScrollbackControlClass()" @click="scrollDownTab('output')">
+      <div v-show="state.scrolledBack.output" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('output')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -23,7 +23,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.chat" :class="getScrollbackControlClass()" @click="scrollDownTab('chat')">
+      <div v-show="state.scrolledBack.chat" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('chat')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -40,7 +40,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.trade" :class="getScrollbackControlClass()" @click="scrollDownTab('trade')">
+      <div v-show="state.scrolledBack.trade" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('trade')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -57,7 +57,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.newbie" :class="getScrollbackControlClass()" @click="scrollDownTab('newbie')">
+      <div v-show="state.scrolledBack.newbie" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('newbie')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -146,6 +146,20 @@ function onScroll (id) {
   }
 }
 
+function getScrollbackControlBottom () {
+  let bottom = 42
+
+  if (state.options.showQuickSlots) {
+    bottom += 50
+  }
+
+  if (showHUD()) {
+    bottom += 140
+  }
+
+  return `${bottom}px`
+}
+
 function onBeforeChangeTab (activeName) {
   if (['chat', 'trade', 'newbie'].includes(activeName)) {
     state[activeName].forEach(msg => msg.unread = false)
@@ -177,25 +191,6 @@ function getTab (name) {
     children.push(h(NBadge, { value: numUnread }))
   }
   return h(NSpace, {}, () => children)
-}
-
-function getScrollbackControlClass () {
-  let cls = 'scrollback-control'
-  if (
-    state.options.showQuickSlots &&
-    (
-      state.gameState.slots.length > 0 ||
-      state.options.hideSidebar
-    )
-  ) {
-    cls += ' show-quickslots'
-  }
-
-  if (state.gameState.battle.active) {
-    cls += ' in-battle'
-  }
-
-  return cls
 }
 
 function lineClick (ev) {
@@ -301,23 +296,37 @@ function showDebug () {
 }
 
 function getOutputHeight () {
-  let heightOffset = 80
+  let heightOffset = 47
   if (showHUD()) {
-    heightOffset = 220
+    heightOffset = 187
+  }
+
+  if (state.gameState.battle.active) {
+    heightOffset = 47
+  }
+
+  if (state.options.showTabs) {
+    heightOffset += 33
   }
 
   if (state.options.showQuickSlots) {
     heightOffset += 50
   }
 
-  if (state.gameState.battle.active) {
-    heightOffset = 80
-    if (state.options.showQuickSlots) {
-      heightOffset = 130
+  return `calc(100vh - ${heightOffset}px)`
+}
+
+function showHideTabs () {
+  console.log(`show hide tabs`)
+  let tabs = document.querySelector('.n-tabs-nav')
+  if (tabs) {
+    if (state.options.showTabs) {
+      tabs.classList.remove('hide')
+    } else {
+      tabs.classList.add('hide')
     }
   }
 
-  return `calc(100vh - ${heightOffset}px)`
 }
 
 let watchers = []
@@ -333,7 +342,7 @@ onMounted(() => {
   }
 
   doResize()
-  // doHideShowTabs()
+  showHideTabs()
 
   state.inputEmitter.on('selectOutputTab', selectOutputTab)
   state.inputEmitter.on('selectChatTab', selectChatTab)
@@ -353,7 +362,8 @@ onMounted(() => {
   
   watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
   watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
-  watchers.push(watch(state.options, () => doResize()))
+  watchers.push(watch(() => state.options, () => doResize()))
+  watchers.push(watch(() => state.options.showTabs, () => showHideTabs()))
 })
 
 onBeforeUnmount(() => {
@@ -394,7 +404,6 @@ onBeforeUnmount(() => {
 
   .scrollback-control {
     position: absolute;
-    bottom: 182px;
     left: 0;
     right: 0;
     height: 40px;
@@ -409,16 +418,6 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
 
-    &.show-quickslots {
-      bottom: 232px;
-    }
-
-    &.in-battle {
-      bottom: 42px;
-      &.show-quickslots {
-        bottom: 92px;
-      }
-    }
     .n-icon {
       margin: 0 15px;
     }

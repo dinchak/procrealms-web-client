@@ -138,6 +138,7 @@ export function resetGameState () {
 function resetOptions () {
   return {
     // general options
+    showTabs: true,
     chatInMain: true,
     roomDescriptionMinimap: true,
 
