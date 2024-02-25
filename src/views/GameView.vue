@@ -12,6 +12,7 @@
 
       <ButtonControls></ButtonControls>
       <SideMap></SideMap>
+      <HUDAliases></HUDAliases>
       <SideMovement></SideMovement>
       <div class="content-area">
         <LineOutput></LineOutput>
@@ -34,6 +35,7 @@ import { NLayout } from 'naive-ui'
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
+import HUDAliases from '@/components/hud/HUDAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'

@@ -150,6 +150,7 @@ function resetOptions () {
     // side options
     showSideMap: false,
     showSideMovement: false,
+    showAliases: false,
     mapWidth: 50,
     mapHeight: 50,
 
