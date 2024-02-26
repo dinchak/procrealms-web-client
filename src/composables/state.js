@@ -73,6 +73,12 @@ export const state = reactive({
     logoutModal: false,
     newPlayerModal: false,
     gameModal: false
+  },
+
+  help: {
+    topics: [],
+    matches: [],
+    contents: {}
   }
 })
 

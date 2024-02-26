@@ -21,7 +21,7 @@
 
       <n-icon
         title="Help"
-        :class="state.options.showTabs ? 'active' : ''"
+        :class="state.modals.helpModal ? 'active' : ''"
         size="24"
         @click="toggleHelp"
       >
