@@ -203,6 +203,23 @@ handlers['state.patch'] = ({ patch }) => {
   }
 }
 
+handlers['help.topics'] = ({ topics }) => {
+  state.help.topics = topics
+}
+
+handlers['help.search'] = ({ matches }) => {
+  state.help.matches = matches
+}
+
+handlers['help.entry'] = ({ contents, error }) => {
+  if (error) {
+    state.help.contents = error
+    return
+  }
+
+  state.help.contents = contents
+}
+
 function loadOptions () {
   try {
     const options = JSON.parse(localStorage.getItem('options'))
