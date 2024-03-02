@@ -115,7 +115,7 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: 'DOS', monospace;
-  font-size: 16px;
+  font-size: 18px;
   color: #fff;
   overflow-x: hidden;
   color-scheme: dark;

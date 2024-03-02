@@ -2,42 +2,42 @@
   <div class="quick-container">
     <div class="quick-actions" v-show="state.activeTab == 'output'">
 
-      <div class="quick-slot battle" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('attack')">
+      <div class="quick-slot battle" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('attack')">
         <div class="slot-label">
           <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon" />
       </div>
 
-      <div class="quick-slot loot" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('defend')">
+      <div class="quick-slot loot" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('defend')">
         <div class="slot-label">
           <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon" />
       </div>
 
-      <div class="quick-slot harvest" v-if="state.gameState.battle.active && state.options.hideSidebar" @click="cmd('flee')">
+      <div class="quick-slot harvest" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('flee')">
         <div class="slot-label">
           <span class="bold-yellow">F</span><span class="yellow">lee</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon" />
       </div>
 
-      <div class="quick-slot battle" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('battle')">
+      <div class="quick-slot battle" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('battle')">
         <div class="slot-label">
           <span class="bold-yellow">B</span><span class="bold-red">attle</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon" />
       </div>
 
-      <div class="quick-slot harvest" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('harvest')">
+      <div class="quick-slot harvest" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('harvest')">
         <div class="slot-label">
           <span class="bold-yellow">H</span><span class="yellow">arvest</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon" />
       </div>
 
-      <div class="quick-slot loot" v-if="!state.gameState.battle.active && state.options.hideSidebar" @click="cmd('loot')">
+      <div class="quick-slot loot" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('loot')">
         <div class="slot-label">
           <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
         </div>

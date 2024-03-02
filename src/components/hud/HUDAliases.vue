@@ -1,5 +1,5 @@
 <template>
-  <div class="aliases" v-if="state.options.showAliases" :style="{ bottom: getBottom() }">
+  <div class="aliases" v-if="state.options.showSideAliases" :style="{ bottom: getBottom() }">
     <div v-if="getAliases().length == 0">
       No aliases defined
     </div>

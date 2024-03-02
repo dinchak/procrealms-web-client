@@ -84,7 +84,7 @@ function questHasProgress (quest) {
 .quests {
   height: 130px;
   overflow-y: scroll;
-  width: 500px;
+  width: 800px;
   .quest {
     display: flex;
     flex-direction: column;
@@ -102,38 +102,37 @@ function questHasProgress (quest) {
       align-items: center;
       min-height: 24px;
       .name {
-        font-size: 14px;
-        line-height: 14px;
-        min-width: 175px;
+        font-size: 18px;
+        line-height: 16px;
         margin-right: 5px;
+        min-width: 150px;
       }
       .n-progress {
-        width: 100px;
-        font-size: 12px;
+        width: 150px;
+        font-size: 16px;
         margin-left: 5px;
         .progress-label {
-          font-size: 12px;
+          font-size: 16px;
           display: block;
-          width: 40px;
+          width: 75px;
           text-align: center;
         }
       }
       .objectives {
         display: flex;
         flex-direction: column;
-        width: 275px;
         &.wide {
           width: 100%;
         }
         .objective {
-          font-size: 12px;
-          line-height: 12px;
+          font-size: 16px;
+          line-height: 16px;
         }
       }
     }
     .objective {
-      font-size: 12px;
-      line-height: 12px;
+      font-size: 16px;
+      line-height: 16px;
       text-align: right;
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="bottom-hud" v-if="showHUD()">
-    <div class="minimap-container" v-if="state.options.showOverlayMinimap">
+    <div class="minimap-container" v-if="state.options.showMinimap">
       <MiniMap></MiniMap>
     </div>
 
@@ -11,7 +11,7 @@
       <HUDQuests v-if="state.options.showQuests"></HUDQuests>
     </div>
 
-    <div class="movement-controls-container" v-if="state.options.hudMovementControls">
+    <div class="movement-controls-container" v-if="state.options.showMovementControls">
       <MovementControls></MovementControls>
     </div>
   </div>

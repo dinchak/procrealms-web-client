@@ -29,8 +29,8 @@ function showSideMap () {
 }
 
 function calcMapSize () {
-  let width = Math.round(5 + (state.options.mapWidth / 2))
-  let height = Math.round(5 + (state.options.mapHeight / 2))
+  let width = Math.round(5 + (state.options.sideMapWidth / 2))
+  let height = Math.round(5 + (state.options.sideMapHeight / 2))
   return `${width}x${height}`
 }
 
@@ -69,7 +69,7 @@ onMounted(() => {
     }
   }))
 
-  watchers.push(watch(() => [state.options.showSideMap, state.options.mapWidth, state.options.mapHeight], () => {
+  watchers.push(watch(() => [state.options.showSideMap, state.options.sideMapWidth, state.options.sideMapHeight], () => {
     if (state.options.showSideMap && !state.gameState.battle.active) {
       refreshMap()
     }

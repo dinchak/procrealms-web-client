@@ -148,26 +148,26 @@ function resetOptions () {
     chatInMain: true,
     roomDescriptionMinimap: true,
 
-    // sidebar options
-    fixedMap: false,
-    hideSidebar: true,
-    swapControls: false,
+    // mobile menu options
+    showMobileMenu: false,
+    showMobileMenuMap: true,
+    fixedMobileMenuMap: false,
+    swapMobileMenuSide: false,
 
     // side options
     showSideMap: false,
     showSideMovement: false,
-    showAliases: false,
-    mapWidth: 50,
-    mapHeight: 50,
+    showSideAliases: false,
+    sideMapWidth: 50,
+    sideMapHeight: 50,
 
     // bottom options
     textInputAlwaysFocused: false,
+    textInputMobileButtons: true,
     keepSentCommands: false,
-    hudMovementControls: true,
-    hudCommandControls: true,
-    showMapArea: true,
+    showMovementControls: true,
     showQuickSlots: true,
-    showOverlayMinimap: true,
+    showMinimap: true,
     showAllies: true,
     showAffects: true,
     showQuests: true,
@@ -221,12 +221,12 @@ export function prevMode () {
 
 export function showHUD () {
   const {
-    showOverlayMinimap, hudMovementControls, showRoomInfo,
+    showMinimap, showMovementControls, showRoomInfo,
     showAllies, showAffects, showQuests,
   } = state.options
 
   return (
-    showOverlayMinimap || hudMovementControls || showRoomInfo ||
+    showMinimap || showMovementControls || showRoomInfo ||
     showAllies || showAffects || showQuests
   )
 }
