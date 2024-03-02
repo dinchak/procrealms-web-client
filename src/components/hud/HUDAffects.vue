@@ -73,12 +73,12 @@ function getTimeLeftColor (affect) {
     }
 
     .name {
-      font-size: 14px;
-      line-height: 14px;
+      font-size: 18px;
+      line-height: 16px;
     }
     .desc {
-      font-size: 12px;
-      line-height: 12px;
+      font-size: 16px;
+      line-height: 16px;
     }
     .bonuses {
       display: flex;
@@ -90,10 +90,10 @@ function getTimeLeftColor (affect) {
         margin-right: 10px;
         .value {
           margin-right: 5px;
-          font-size: 14px;
+          font-size: 16px;
         }
         .label {
-          font-size: 12px;
+          font-size: 14px;
         }
       }
     }

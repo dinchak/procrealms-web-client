@@ -1,5 +1,5 @@
 <template>
-  <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" :collapsed="state.options.hideSidebar">
+  <n-layout-sider id="bottom-left" :collapsed-width="0" :on-update:collapsed="openCloseSider" :collapsed="!state.options.showMobileMenu">
     <div class="stats-area">
       <PlayerStats></PlayerStats>
       <div class="bottom-area" >
@@ -11,7 +11,7 @@
         </div>
         <div class="map-area" v-show="!state.gameState.battle.active">
           <MoveControls></MoveControls>
-          <MiniMap v-if="state.options.showMapArea"></MiniMap>
+          <MiniMap v-if="state.options.showMobileMenuMap"></MiniMap>
         </div>
       </div>
     </div>

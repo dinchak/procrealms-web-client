@@ -9,21 +9,21 @@
         <NGi>
           <div class="option">
             <label for="option-show-map-area">Show Map Area</label>
-            <NSwitch id="option-show-map-area" v-model:value="state.options.showMapArea" aria-label="Show Map Area" class="selectable"></NSwitch>
+            <NSwitch id="option-show-map-area" v-model:value="state.options.showMobileMenuMap" aria-label="Show Map Area" class="selectable"></NSwitch>
           </div>
         </NGi>
 
         <NGi>
           <div class="option">
             <label for="option-fixed-minimap">Fixed Minimap</label>
-            <NSwitch id="option-fixed-minimap" v-model:value="state.options.fixedMap" aria-label="Fixed Mini Map" class="selectable"></NSwitch>
+            <NSwitch id="option-fixed-minimap" v-model:value="state.options.fixedMobileMenuMap" aria-label="Fixed Mini Map" class="selectable"></NSwitch>
           </div>
         </NGi>
 
         <NGi>
           <div class="option">
             <label for="option-swap-menu-side">Swap Menu Side</label>
-            <NSwitch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side" class="selectable"></NSwitch>
+            <NSwitch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side" class="selectable"></NSwitch>
           </div>
         </NGi>
       </NGrid>

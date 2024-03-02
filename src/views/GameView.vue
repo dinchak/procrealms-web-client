@@ -1,8 +1,8 @@
 <template>
   <n-layout has-sider
     v-if="state.token && state.connected && !state.disconnected" class="game" 
-    :sider-placement="state.options.swapControls ? 'right' : 'left'">
-    <SideMenu v-if="!state.options.swapControls"></SideMenu>
+    :sider-placement="state.options.swapMobileMenuSide ? 'right' : 'left'">
+    <SideMenu v-if="!state.options.swapMobileMenuSide"></SideMenu>
     <n-layout>
       <LogoutModal></LogoutModal>
       <HelpModal></HelpModal>
@@ -22,7 +22,7 @@
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
     </n-layout>
-    <SideMenu v-if="state.options.swapControls"></SideMenu>
+    <SideMenu v-if="state.options.swapMobileMenuSide"></SideMenu>
     <RadialOverlay></RadialOverlay>
   </n-layout>
 </template>

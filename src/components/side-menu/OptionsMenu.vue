@@ -5,17 +5,17 @@
 
     <div class="option">
       <label for="option-show-map-area">Show Map Area</label>
-      <n-switch id="option-show-map-area" v-model:value="state.options.showMapArea" aria-label="Show Map Area"></n-switch>
+      <n-switch id="option-show-map-area" v-model:value="state.options.showMobileMenuMap" aria-label="Show Map Area"></n-switch>
     </div>
 
     <div class="option">
       <label for="option-fixed-minimap">Fixed Minimap</label>
-      <n-switch id="option-fixed-minimap" v-model:value="state.options.fixedMap" aria-label="Fixed Mini Map"></n-switch>
+      <n-switch id="option-fixed-minimap" v-model:value="state.options.fixedMobileMenuMap" aria-label="Fixed Mini Map"></n-switch>
     </div>
 
     <div class="option">
       <label for="option-swap-menu-side">Swap Menu Side</label>
-      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapControls" aria-label="Swap Menu Side"></n-switch>
+      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side"></n-switch>
     </div>
 
     <h3>General</h3>
@@ -164,6 +164,8 @@ function openLogoutModal () {
   h3 {
     padding: 0;
     margin: 5px 0 5px 0;
+    font-weight: normal;
+    text-decoration: underline;
   }
 
   ul {

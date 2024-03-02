@@ -160,15 +160,15 @@ function setActions() {
 
 function getClass() {
   let sideClass = ""
-  const swapControls = state.options.swapControls
+  const swapMobileMenuSide = state.options.swapMobileMenuSide
 
-  if (props.isPlayer && swapControls) {
+  if (props.isPlayer && swapMobileMenuSide) {
     sideClass = "player-inventory-modal-right"
-  } else if (props.isPlayer && !swapControls) {
+  } else if (props.isPlayer && !swapMobileMenuSide) {
     sideClass = "player-inventory-modal-left"
-  } else if (!props.isPlayer && swapControls) {
+  } else if (!props.isPlayer && swapMobileMenuSide) {
     sideClass = "merc-inventory-modal-left"
-  } else if (!props.isPlayer && !swapControls) {
+  } else if (!props.isPlayer && !swapMobileMenuSide) {
     sideClass = "merc-inventory-modal-right"
   }
 

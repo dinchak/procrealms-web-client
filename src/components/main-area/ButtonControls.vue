@@ -30,9 +30,9 @@
       
       <n-icon
         title="Sidebar"
-        :class="!state.options.hideSidebar ? 'active' : ''"
+        :class="state.options.showMobileMenu ? 'active' : ''"
         size="24"
-        @click="state.options.hideSidebar = !state.options.hideSidebar"
+        @click="state.options.showMobileMenu = !state.options.showMobileMenu"
       >
         <MenuOutlined />
       </n-icon>

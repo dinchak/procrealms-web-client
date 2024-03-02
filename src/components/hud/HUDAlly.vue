@@ -146,7 +146,7 @@ function getHappinessDescription () {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    line-height: 13px;
+    line-height: 16px;
   }
 
   .summary {
@@ -155,23 +155,23 @@ function getHappinessDescription () {
     align-items: flex-start;
     margin-left: 10px;
     h3 {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: normal;
       margin: 0;
-      line-height: 13px;
+      line-height: 16px;
     }
 
     .short-affects {
-      font-size: 14px;
-      line-height: 13px;
+      font-size: 18px;
+      line-height: 16px;
     }
 
     .statuses {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      font-size: 14px;
-      line-height: 13px;
+      font-size: 18px;
+      line-height: 16px;
       .status {
         padding: 0;
         margin-right: 5px;

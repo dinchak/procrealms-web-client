@@ -84,7 +84,7 @@ function getExpPercentage () {
 }
 
 function getPlayerStatsClass () {
-  if (state.options.fixedMap) {
+  if (state.options.fixedMobileMenuMap) {
     return 'player-stats fixed-map'
   }
   return 'player-stats'

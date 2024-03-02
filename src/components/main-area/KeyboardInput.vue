@@ -1,7 +1,7 @@
 <template>
   <div class="input-wrapper">
     <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
-    <MobileInputControls v-if="state.options.hudCommandControls"></MobileInputControls>
+    <MobileInputControls v-if="state.options.textInputMobileButtons"></MobileInputControls>
   </div>
 </template>
 

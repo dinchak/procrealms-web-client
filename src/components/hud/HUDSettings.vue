@@ -13,24 +13,24 @@
 
       <NButton size="small"
         title="Lower Minimap"
-        :type="getOptionType('showOverlayMinimap')"
-        @click="toggleOption('showOverlayMinimap')"
+        :type="getOptionType('showMinimap')"
+        @click="toggleOption('showMinimap')"
       >
         <NIcon><ExploreOutlined/></NIcon>
       </NButton>
 
       <NButton size="small"
         title="Lower Movement Controls"
-        :type="getOptionType('hudMovementControls')"
-        @click="toggleOption('hudMovementControls')"
+        :type="getOptionType('showMovementControls')"
+        @click="toggleOption('showMovementControls')"
       >
         <NIcon><OpenWithOutlined/></NIcon>
       </NButton>
 
       <NButton size="small"
         title="Command Controls"
-        :type="getOptionType('hudCommandControls')"
-        @click="toggleOption('hudCommandControls')"
+        :type="getOptionType('textInputMobileButtons')"
+        @click="toggleOption('textInputMobileButtons')"
       >
         <NIcon><SmartButtonOutlined/></NIcon>
       </NButton>
@@ -98,8 +98,8 @@
 
       <NButton size="small"
         title="Aliases"
-        :type="getOptionType('showAliases')"
-        @click="toggleOption('showAliases')"
+        :type="getOptionType('showSideAliases')"
+        @click="toggleOption('showSideAliases')"
       >
         <NIcon><DynamicFormOutlined/></NIcon>
       </NButton>
@@ -110,7 +110,7 @@
     <h3 v-if="state.options.showSideMap">Map Size</h3>
 
     <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.mapWidth" :step="2">
+      <NSlider class="slider" v-model:value="state.options.sideMapWidth" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
             <NIcon :size="18" :component="SwapHorizOutlined" />
@@ -120,7 +120,7 @@
     </div>
 
     <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.mapHeight" :step="2">
+      <NSlider class="slider" v-model:value="state.options.sideMapHeight" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
             <NIcon :size="18" :component="SwapVertOutlined" />

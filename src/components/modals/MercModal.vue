@@ -1,5 +1,5 @@
 <template>
-  <n-card :class="state.options.swapControls ? 'left' : 'right'" v-if="state.modals.mercModal && state.mercEid !== -1">
+  <n-card :class="state.options.swapMobileMenuSide ? 'left' : 'right'" v-if="state.modals.mercModal && state.mercEid !== -1">
     <p class="close" v-on:click="closeModal()">x</p>
     <h3 class="bold-green" style="display: inline;margin-right: 10px"> {{mercEntity.name}} </h3>
     <span style="color: #aaa">Level</span> <span class="bold-cyan">{{ mercEntity.level }}</span>
