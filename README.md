@@ -1,35 +1,29 @@
-This is the official web client for [Procedural Realms](https://proceduralrealms.com), an online MUD/text-based MMORPG. The client can be accessed directly at https://play.proceduralrealms.com.
+# procedural-realms-client
 
-# Environment Setup
-1. Install the latest version of [Node.JS](https://nodejs.org/) (LTS)
-2. Clone this repository, change to the directory, and run:
+This template should help get you started developing with Vue 3 in Vite.
 
-```
+## Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
 npm install
 ```
 
-3. Set the development environment configuration to point to the production system:
+### Compile and Hot-Reload for Development
 
-```
-cp .env.production .env.development
-```
-
-4. Start the server:
-
-```
-npm run serve
+```sh
+npm run dev
 ```
 
-5. The web client should be up and running at http://localhost:8080
+### Compile and Minify for Production
 
-
-# Build for Production
-```
+```sh
 npm run build
 ```
-
-# Resources
-The web client is built using Vue 3 and Naive UI:
-
-- [Vue.JS](https://vuejs.org/)
-- [Naive UI](https://www.naiveui.com/)
