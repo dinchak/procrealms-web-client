@@ -22,7 +22,7 @@ export function useWebSocket () {
         if (id) {
           state.cache.commandCache[id] = msg
         }
-        if (process.env.NODE_ENV != 'production') {
+        if (import.meta.env.MODE != 'production') {
           console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
@@ -41,7 +41,7 @@ export function useWebSocket () {
   }
 
   function send (cmd, msg, id = false) {
-    if (process.env.NODE_ENV != 'production') {
+    if (import.meta.env.MODE != 'production') {
       console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
     }
     let out = { cmd, msg }

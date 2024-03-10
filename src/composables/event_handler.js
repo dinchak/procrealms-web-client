@@ -224,7 +224,9 @@ function loadOptions () {
   try {
     const options = JSON.parse(localStorage.getItem('options'))
     if (options !== null) {
+      console.log(options)
       state.options = Object.assign(state.options, options)
+      console.log(state.options)
     }
 
     if (state.options.fontFamily) {

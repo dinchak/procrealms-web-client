@@ -39,12 +39,12 @@ import HUDAliases from '@/components/hud/HUDAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
-import MercModal from '@/components/modals/MercModal'
+import MercModal from '@/components/modals/MercModal.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
 import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import SideMap from '@/components/main-area/SideMap.vue'
-import SideMenu from '@/components/side-menu/SideMenu'
+import SideMenu from '@/components/side-menu/SideMenu.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
 
@@ -92,6 +92,7 @@ onMounted(() => {
 
   watchers.push(watch(state.options, () => {
     localStorage.setItem('options', JSON.stringify(state.options))
+    console.log(state.options)
   }))
 
   watchers.push(watch(() => state.options.textInputAlwaysFocused, () => {

@@ -44,7 +44,7 @@ function doConnect () {
     return
   }
 
-  initConnection({ onConnect, onClose, onEvent, url: process.env.VUE_APP_WEBSOCKET_URL })
+  initConnection({ onConnect, onClose, onEvent, url: import.meta.env.VITE_WEBSOCKET_URL })
 }
 
 function onClose () {
