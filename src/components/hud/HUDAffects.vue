@@ -1,7 +1,7 @@
 <template>
   <div class="affects">
     <div class="affect" v-if="Object.values(state.gameState.affects).length == 0">
-      <div class="name" style="text-align: center;">No affects</div>
+      <div class="name">No affects</div>
     </div>
 
     <div class="affect" v-for="affect in Object.values(state.gameState.affects)" :key="affect.name">
@@ -72,14 +72,6 @@ function getTimeLeftColor (affect) {
       border-bottom: 0;
     }
 
-    .name {
-      font-size: 18px;
-      line-height: 16px;
-    }
-    .desc {
-      font-size: 16px;
-      line-height: 16px;
-    }
     .bonuses {
       display: flex;
       flex-direction: row;
@@ -90,10 +82,8 @@ function getTimeLeftColor (affect) {
         margin-right: 10px;
         .value {
           margin-right: 5px;
-          font-size: 16px;
         }
         .label {
-          font-size: 14px;
         }
       }
     }

@@ -110,6 +110,7 @@ onBeforeUnmount(() => {
   width: 100%;
   .n-button {
     margin: 1px;
+    padding: 0 10px;
   }
 }
 </style>

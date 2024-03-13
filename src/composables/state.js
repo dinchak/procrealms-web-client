@@ -147,7 +147,7 @@ function resetOptions () {
     // general options
     showTabs: true,
     chatInMain: true,
-    roomDescriptionMinimap: true,
+    roomDescriptionMinimap: false,
 
     // mobile menu options
     showMobileMenu: false,

@@ -31,7 +31,6 @@ const { ansiToHtml } = useHelpers()
     .ansi {
       white-space: pre;
       font-size: 1rem;
-      line-height: 0.9rem;
     }
   }
 

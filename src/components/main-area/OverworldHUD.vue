@@ -1,8 +1,6 @@
 <template>
   <div class="bottom-hud" v-if="showHUD()">
-    <div class="minimap-container" v-if="state.options.showMinimap">
-      <MiniMap></MiniMap>
-    </div>
+    <MiniMap v-if="state.options.showMinimap"></MiniMap>
 
     <div class="center-hud">
       <HUDRoomInfo v-if="state.options.showRoomInfo"></HUDRoomInfo>
@@ -34,11 +32,9 @@ import MiniMap from '@/components/common/MiniMap.vue'
   flex-direction: row;
   justify-content: space-between;
   height: 140px;
-  width: 100%;
-  .minimap-container {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
+  width: calc(100% - 10px);
+  padding-left: 10px;
+
   .movement-controls-container {
     margin-right: 3px;
     margin-left: 10px;
@@ -47,6 +43,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
   .center-hud {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     overflow-x: scroll;
     width: 100%;
     padding: 0 8px;

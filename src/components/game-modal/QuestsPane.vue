@@ -1,7 +1,11 @@
 <template>
   <div :class="getScrollContainerClass()">
     <NGrid class="quests" cols="1 800:2">
-      <NGi v-if="quests().length == 0">You don't have any quests.</NGi>
+      <NGi v-if="quests().length == 0">
+        <div>
+          You don't have any quests.
+        </div>
+      </NGi>
 
       <NGi class="quest" v-for="quest in quests()" :key="quest.name">
         <div class="name" v-html-safe="getQuestName(quest)"></div>

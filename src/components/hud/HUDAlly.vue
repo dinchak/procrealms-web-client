@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="summary">
-      <h3 v-html-safe="getName()"></h3>
+      <div class="name" v-html-safe="getName()"></div>
       <div class="short-affects" v-html-safe="ansiToHtml(getShortAffects())"></div>
 
       <div class="statuses">
@@ -146,7 +146,6 @@ function getHappinessDescription () {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    line-height: 16px;
   }
 
   .summary {
@@ -154,24 +153,10 @@ function getHappinessDescription () {
     flex-direction: column;
     align-items: flex-start;
     margin-left: 10px;
-    h3 {
-      font-size: 18px;
-      font-weight: normal;
-      margin: 0;
-      line-height: 16px;
-    }
-
-    .short-affects {
-      font-size: 18px;
-      line-height: 16px;
-    }
-
     .statuses {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      font-size: 18px;
-      line-height: 16px;
       .status {
         padding: 0;
         margin-right: 5px;

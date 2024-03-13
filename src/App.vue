@@ -108,7 +108,6 @@ onBeforeUnmount(() => {
 :root, .n-form-item, .n-form-item-label, .n-button, .n-input {
   --n-font-size: 16px;
   --n-label-font-size: 16px;
-  font-size: 16px;
 }
 
 body, html {
@@ -116,7 +115,6 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: 'DOS', monospace;
-  font-size: 18px;
   color: #fff;
   overflow-x: hidden;
   color-scheme: dark;
@@ -133,6 +131,7 @@ body, html {
 
 #app {
   height: 100vh;
+  font-size: 16px;
 }
 
 .red, .ansi-red-fg { color: #c50f1f; }
