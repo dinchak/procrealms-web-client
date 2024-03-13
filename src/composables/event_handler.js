@@ -166,6 +166,20 @@ handlers['channel.msg'] = ({ id, from, to, channel, timestamp, message }) => {
   }
 }
 
+handlers['map.settings'] = ({ width, height, enabled }) => {
+  if (state.options.showSideMap != enabled) {
+    state.options.showSideMap = enabled
+  }
+
+  if (state.options.sideMapHeight != height) {
+    state.options.sideMapHeight = height
+  }
+
+  if (state.options.sideMapWidth != width) {
+    state.options.sideMapWidth = width
+  }
+}
+
 handlers['state.update'] = ({ update }) => {
   state.gameState = updateState(state.gameState, update)
 }

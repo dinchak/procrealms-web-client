@@ -14,9 +14,9 @@
       <div class="content-area">
         <LineOutput></LineOutput>
         <div class="side-area" :style="{ height: getSideAreaHeight() }">
-          <SideMap></SideMap>
+          <SideMap v-if="!state.gameState.battle.active"></SideMap>
           <SideAliases></SideAliases>
-          <SideMovement></SideMovement>
+          <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
         </div>
       </div>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
