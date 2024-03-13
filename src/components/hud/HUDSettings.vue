@@ -164,7 +164,8 @@ function toggleOption (option) {
   display: flex;
   flex-direction: column;
   padding-top: 5px;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 
   h3 {
     padding: 0;

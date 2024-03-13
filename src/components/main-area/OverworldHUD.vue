@@ -49,6 +49,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
     flex-direction: row;
     overflow-x: scroll;
     width: 100%;
+    padding: 0 8px;
   }
 }
 
