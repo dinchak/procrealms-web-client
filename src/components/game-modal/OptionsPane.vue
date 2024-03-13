@@ -193,13 +193,13 @@ async function goFullscreen () {
 }
 
 function setFont () {
-  document.getElementsByTagName('body')[0].style.fontFamily = state.options.fontFamily
+  document.getElementById('app').style.fontFamily = state.options.fontFamily
   triggerResize()
 }
 
 function changeFontSize () {
   state.options.fontSize = selectedFontSize.value
-  document.getElementsByTagName('html')[0].style.fontSize = selectedFontSize.value
+  document.getElementById('app').style.fontSize = selectedFontSize.value
   triggerResize()
 }
 

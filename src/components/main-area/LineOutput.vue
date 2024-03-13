@@ -460,22 +460,8 @@ onBeforeUnmount(() => {
     position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
-    // height: ~"calc(100vh - 220px)";
-
-    // &.show-quickslots {
-    //   height: ~"calc(100vh - 270px)";
-    // }
-
-    // &.in-battle {
-    //   height: ~"calc(100vh - 80px)";
-    //   &.show-quickslots {
-    //     height: ~"calc(100vh - 130px)";
-    //   }
-    // }
 
     .line {
-      font-size: 1rem;
-      line-height: 1.2rem;
       display: block;
       white-space: pre-wrap;
       font-weight: normal !important;

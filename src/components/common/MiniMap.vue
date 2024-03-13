@@ -1,6 +1,8 @@
 <template>
-  <div class="minimap">
-    <div class="line" v-for="(line, i) in renderMinimap()" :key="'line-' + i" v-html-safe="line"></div>
+  <div class="minimap-container">
+    <div class="minimap">
+      <div class="line" v-for="(line, i) in renderMinimap()" :key="'line-' + i" v-html-safe="line"></div>
+    </div>
   </div>
 </template>
 
@@ -24,12 +26,16 @@ function renderMinimap () {
 </script>
 
 <style lang="less">
-.minimap {
-  user-select: none;
-  white-space: pre;
-  font-size: 19px;
-  .line {
-    height: 19px;
+.minimap-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .minimap {
+    user-select: none;
+    white-space: pre;
+    // .line {
+    //   height: 19px;
+    // }
   }
 }
 </style>
