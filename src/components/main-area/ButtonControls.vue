@@ -76,6 +76,9 @@ function toggleGameModal() {
   right: 5px;
   z-index: 5;
   .interface {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
     .n-icon {
       padding: 5px 5px;
       color: #aaa;

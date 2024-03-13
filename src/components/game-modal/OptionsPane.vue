@@ -151,28 +151,40 @@ const fontSizes = [{
 
 const selectedFontSize = ref(state.options.fontSize)
 
-const fontOptions = [{
+const fontOptions = [
+{
+  label: 'Big Blue Terminal',
+  value: 'Big Blue Terminal, monospace'
+},
+{
   label: 'Consola Mono',
   value: 'Consola Mono, monospace'
-}, {
+},
+{
   label: 'DOS',
   value: 'DOS, monospace'
-}, {
-  label: 'F25 Bank Printer',
-  value: 'F25 Bank Printer, monospace'
-}, {
+},
+{
   label: 'Inconsolata',
   value: 'Inconsolata, monospace'
-}, {
+},
+{
   label: 'Monofonto',
   value: 'Monofonto, monospace'
-}, {
+},
+{
   label: 'Source Code Pro',
   value: 'Source Code Pro, monospace'
-}, {
+},
+{
   label: 'Ubuntu Mono',
   value: 'Ubuntu Mono, monospace'
-}]
+},
+{
+  label: 'VT323',
+  value: '"VT323", monospace'
+}
+]
 
 async function goFullscreen () {
   let app = document.getElementById('app')
