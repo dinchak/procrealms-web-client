@@ -105,13 +105,12 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .side-map {
-  position: absolute;
-  top: 33px;
-  right: 5px;
   display: flex;
   align-items: flex-end;
   flex-direction: column;
   overflow: hidden;
+  margin-bottom: auto;
+  margin-right: 8px;
   .map-container {
     padding-top: 5px;
     .ansi {

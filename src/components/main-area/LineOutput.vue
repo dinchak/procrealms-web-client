@@ -147,15 +147,15 @@ function onScroll (id) {
 }
 
 function getScrollbackControlBottom () {
-  let bottom = 42
+  let bottom = 5
 
-  if (state.options.showQuickSlots) {
-    bottom += 50
-  }
+  // if (state.options.showQuickSlots) {
+  //   bottom += 50
+  // }
 
-  if (showHUD()) {
-    bottom += 140
-  }
+  // if (showHUD()) {
+  //   bottom += 140
+  // }
 
   return `${bottom}px`
 }
@@ -388,7 +388,10 @@ onBeforeUnmount(() => {
 <style lang="less">
 .content-area {
   .n-tabs {
+    width: initial;
+    flex: 1;
     .n-tab-pane {
+      position: relative;
       padding: 0;
     }
   }
@@ -404,11 +407,10 @@ onBeforeUnmount(() => {
 
   .scrollback-control {
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 8px;
     height: 40px;
     line-height: 40px;
-    width: 100%;
+    width: calc(100% - 13px);
     background-color: rgba(20, 80, 20, 0.4);
     font-size: 1.5rem;
     text-align: center;

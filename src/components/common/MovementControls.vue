@@ -78,6 +78,7 @@ function getEnterClass () {
   .row {
     display: flex;
     flex-direction: row;
+    margin-bottom: 5px;
     .direction {
       opacity: 0;
       font-size: 1.5rem;
@@ -88,7 +89,6 @@ function getEnterClass () {
       height: 41px;
       background-color: #333;
       transition: all 0.3s;
-      margin-bottom: 5px;
       margin-right: 5px;
       &.active {
         opacity: 0.3;
@@ -104,6 +104,9 @@ function getEnterClass () {
         opacity: 1;
         background-color: darken(#16c60c, 30%);
       }
+    }
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 }

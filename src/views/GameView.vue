@@ -11,11 +11,13 @@
       <MercModal></MercModal>
 
       <ButtonControls></ButtonControls>
-      <SideMap></SideMap>
-      <HUDAliases></HUDAliases>
-      <SideMovement></SideMovement>
       <div class="content-area">
         <LineOutput></LineOutput>
+        <div class="side-area" :style="{ height: getSideAreaHeight() }">
+          <SideMap></SideMap>
+          <SideAliases></SideAliases>
+          <SideMovement></SideMovement>
+        </div>
       </div>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
@@ -29,13 +31,13 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { state, setMode } from '@/composables/state'
+import { state, setMode, showHUD } from '@/composables/state'
 import { NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
-import HUDAliases from '@/components/hud/HUDAliases.vue'
+import SideAliases from '@/components/main-area/SideAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
@@ -78,6 +80,17 @@ function openQuests () {
 function openHelpModal () {
   setMode('modal')
   state.modals.helpModal = true
+}
+
+function getSideAreaHeight () {
+  let heightOffset = 84
+  if (state.options.showQuickSlots) {
+    heightOffset += 50
+  }
+  if (showHUD()) {
+    heightOffset += 140
+  }
+  return `calc(100vh - ${heightOffset}px)`
 }
 
 let watchers = []
@@ -145,10 +158,17 @@ onBeforeUnmount(() => {
   .content-area {
     flex-basis: fit-content;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    flex-grow: 1;
-    min-height: 0;
+    .side-area {
+      margin-top: 40px;
+      padding-top: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+      align-items: flex-end;
+    }
   }
 }
 
