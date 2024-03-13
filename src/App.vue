@@ -88,26 +88,27 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&family=Pixelify+Sans&family=Source+Code+Pro&family=Ubuntu+Mono&display=swap');
-
-@font-face {
-  font-family: 'DOS';
-  src: url('@/assets/WebPlus_IBM_VGA_8x16.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'Monofonto';
-  src: url('@/assets/monofonto rg.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'F25 Bank Printer';
-  src: url('@/assets/F25_Bank_Printer.otf') format('opentype');
-}
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Open+Sans&family=Pixelify+Sans&family=Source+Code+Pro&family=Ubuntu+Mono&family=VT323&display=swap');
 
 @font-face {
   font-family: 'Consola Mono';
-  src: url('@/assets/ConsolaMono-Book.ttf') format('truetype');
+  src: url('@/assets/fonts/ConsolaMono-Book.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Big Blue Terminal';
+  src: url('@/assets/fonts/BigBlue_Terminal_437TT.TTF') format('truetype');
+}
+
+@font-face {
+  font-family: 'DOS';
+  src: url('@/assets/fonts/WebPlus_IBM_VGA_8x16.woff') format('woff');
+}
+
+:root, .n-form-item, .n-form-item-label, .n-button, .n-input {
+  --n-font-size: 16px;
+  --n-label-font-size: 16px;
+  font-size: 16px;
 }
 
 body, html {

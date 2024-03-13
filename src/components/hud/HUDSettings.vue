@@ -183,8 +183,8 @@ function refreshMapSettings () {
   display: flex;
   flex-direction: column;
   padding-top: 5px;
-  background-color: rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
 
   h3 {
     padding: 0;
@@ -200,7 +200,7 @@ function refreshMapSettings () {
     margin-left: 5px;
     margin-bottom: 5px;
     .n-button {
-      margin-right: 0px;
+      margin-right: 5px;
       &:last-child {
         margin-right: 0;
       }
