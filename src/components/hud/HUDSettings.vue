@@ -83,7 +83,7 @@
       <NButton size="small"
         title="Side Map"
         :type="getOptionType('showSideMap')"
-        @click="toggleOption('showSideMap')"
+        @click="toggleOption('showSideMap'); refreshMapSettings();"
       >
         <NIcon><MapOutlined/></NIcon>
       </NButton>
@@ -110,7 +110,7 @@
     <h3 v-if="state.options.showSideMap">Map Size</h3>
 
     <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.sideMapWidth" :step="2">
+      <NSlider class="slider" v-model:value="state.options.sideMapWidth" @update:value="refreshMapSettings" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
             <NIcon :size="18" :component="SwapHorizOutlined" />
@@ -120,7 +120,7 @@
     </div>
 
     <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.sideMapHeight" :step="2">
+      <NSlider class="slider" v-model:value="state.options.sideMapHeight" @update:value="refreshMapSettings" :step="2">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
             <NIcon :size="18" :component="SwapVertOutlined" />
@@ -135,6 +135,7 @@
 import { NButton, NIconWrapper, NIcon, NSlider } from 'naive-ui'
 
 import { state } from '@/composables/state'
+import { useWebSocket } from '@/composables/web_socket'
 
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'
@@ -150,12 +151,30 @@ import SmartButtonOutlined from '@vicons/material/SmartButtonOutlined'
 import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
 import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
+const { send } = useWebSocket()
+
 function getOptionType (option) {
   return state.options[option] ? 'success' : ''
 }
 
 function toggleOption (option) {
   state.options[option] = !state.options[option]
+}
+
+function calcMapSize () {
+  let width = Math.round(5 + (state.options.sideMapWidth / 2))
+  let height = Math.round(5 + (state.options.sideMapHeight / 2))
+  return { width, height }
+}
+
+function refreshMapSettings () {
+  const { width, height } = calcMapSize()
+
+  send('mapSettings', {
+    width,
+    height,
+    enabled: state.options.showSideMap
+  })
 }
 </script>
 

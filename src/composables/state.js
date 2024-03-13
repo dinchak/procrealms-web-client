@@ -96,8 +96,8 @@ export function resetState () {
   state.trade = []
   state.newbie = []
   state.animations = []
-  state.triggers.value = new Map()
-  state.variables.value = new Map()
+  state.triggers = new Map()
+  state.variables = new Map()
 }
 
 function resetCache () {
@@ -136,7 +136,8 @@ export function resetGameState () {
       entities: [],
       items: []
     },
-    map: [],
+    minimap: [],
+    sidemap: [],
     slots: []
   }
 }

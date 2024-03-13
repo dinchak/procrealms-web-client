@@ -1,6 +1,6 @@
 <template>
   <div class="minimap">
-    <div class="line" v-for="(line, i) in renderMap()" :key="'line-' + i" v-html-safe="line"></div>
+    <div class="line" v-for="(line, i) in renderMinimap()" :key="'line-' + i" v-html-safe="line"></div>
   </div>
 </template>
 
@@ -10,15 +10,15 @@ import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()
 
-function renderMap () {
-  const map = []
-  if (state.gameState.map) {
-    for (let line of state.gameState.map) {
-      map.push(ansiToHtml(line))
+function renderMinimap () {
+  const minimap = []
+  if (state.gameState.minimap) {
+    for (let line of state.gameState.minimap) {
+      minimap.push(ansiToHtml(line))
     }
   }
 
-  return map
+  return minimap
 }
 
 </script>
