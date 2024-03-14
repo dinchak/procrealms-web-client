@@ -30,7 +30,6 @@ const { ansiToHtml } = useHelpers()
     padding-top: 5px;
     .ansi {
       white-space: pre;
-      font-size: 1rem;
     }
   }
 
