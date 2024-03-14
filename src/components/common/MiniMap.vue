@@ -28,14 +28,9 @@ function renderMinimap () {
 <style lang="less">
 .minimap-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
   .minimap {
     user-select: none;
     white-space: pre;
-    // .line {
-    //   height: 19px;
-    // }
   }
 }
 </style>

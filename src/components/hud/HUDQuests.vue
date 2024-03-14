@@ -92,12 +92,25 @@ function questHasObjectives (quest) {
         min-width: 150px;
       }
       .n-progress {
-        width: 150px;
-        margin-left: 5px;
+        width: 125px;
         .progress-label {
           display: block;
           width: 75px;
           text-align: center;
+        }
+
+        .n-progress-content {
+          .n-progress-graph {
+            .n-progress-graph-line {
+              .n-progress-graph-line-rail {
+                width: 40px;
+              }
+            }
+          }
+        }
+
+        .n-progress-custom-content {
+          margin-left: 0;
         }
       }
       .objectives {
