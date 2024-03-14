@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
   src: url('@/assets/fonts/WebPlus_IBM_VGA_8x16.woff') format('woff');
 }
 
-:root, .n-form-item, .n-form-item-label, .n-button, .n-input {
+:root, .n-form-item, .n-form-item-label, .n-button, .n-input, .n-dialog {
   --n-font-size: 16px;
   --n-label-font-size: 16px;
 }
@@ -114,7 +114,7 @@ body, html {
   background-color: #181818;
   margin: 0;
   padding: 0;
-  font-family: 'DOS', monospace;
+  font-family: 'Ubuntu Mono', monospace;
   color: #fff;
   overflow-x: hidden;
   color-scheme: dark;
