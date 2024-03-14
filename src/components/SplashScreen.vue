@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .splashscreen {
-  background-image: url('@/assets/bg.png');
+  background-image: url('@/assets/bg.jpg');
   background-size: cover;
   display: flex;
   flex-direction: column;
