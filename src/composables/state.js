@@ -175,7 +175,7 @@ function resetOptions () {
     showRoomInfo: true,
 
     // font options
-    fontFamily: 'DOS, monospace',
+    fontFamily: 'Ubuntu Mono, monospace',
     fontSize: '16px',
   }
 }
