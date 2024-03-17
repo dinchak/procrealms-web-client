@@ -48,12 +48,9 @@ function doConnect () {
 }
 
 function onClose () {
-  if (state.token) {
-    resetState()
-    resetMode()
-    state.disconnected = true
-  }
-
+  resetState()
+  resetMode()
+  state.disconnected = true
   state.connected = false
   setTimeout(() => doConnect(), 1000)
 }
