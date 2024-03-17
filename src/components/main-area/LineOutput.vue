@@ -6,7 +6,7 @@
         <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
-      <div v-show="state.scrolledBack.output" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('output')">
+      <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDownTab('output')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -23,7 +23,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.chat" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('chat')">
+      <div v-show="state.scrolledBack.chat" class="scrollback-control" @click="scrollDownTab('chat')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -40,7 +40,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.trade" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('trade')">
+      <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDownTab('trade')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -57,7 +57,7 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.newbie" class="scrollback-control" :style="{ bottom: getScrollbackControlBottom() }" @click="scrollDownTab('newbie')">
+      <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDownTab('newbie')">
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
         More
         <n-icon><SouthOutlined></SouthOutlined></n-icon>
@@ -144,20 +144,6 @@ function onScroll (id) {
     let { scrollTop, scrollHeight, offsetHeight } = el
     state.scrolledBack[id] = Math.round(scrollTop + offsetHeight + 5) <= scrollHeight
   }
-}
-
-function getScrollbackControlBottom () {
-  let bottom = 5
-
-  // if (state.options.showQuickSlots) {
-  //   bottom += 50
-  // }
-
-  // if (showHUD()) {
-  //   bottom += 140
-  // }
-
-  return `${bottom}px`
 }
 
 function onBeforeChangeTab (activeName) {
@@ -309,7 +295,7 @@ function getOutputHeight () {
     heightOffset += 33
   }
 
-  if (state.options.showQuickSlots) {
+  if (state.options.showQuickSlots && currentPane.value === 'output') {
     heightOffset += 50
   }
 
@@ -408,6 +394,7 @@ onBeforeUnmount(() => {
   .scrollback-control {
     position: absolute;
     left: 8px;
+    bottom: 5px;
     height: 40px;
     line-height: 40px;
     width: calc(100% - 13px);
@@ -500,8 +487,6 @@ onBeforeUnmount(() => {
       }
       .body {
         display: flex;
-        font-size: 1.2rem;
-        line-height: 1.2rem;
         margin-left: 10px;
       }
     }

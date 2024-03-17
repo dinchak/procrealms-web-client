@@ -238,11 +238,11 @@ onBeforeUnmount(() => {
   flex-direction: row;
   margin-left: 8px;
   justify-content: flex-start;
-  padding-bottom: 5px;
   .quick-actions {
     margin-left: 1px;
     margin-right: 8px;
     overflow-x: scroll;
+    padding-bottom: 5px;
   }
 
   .quick-slots {

@@ -11,7 +11,7 @@
               <div class="name bold-yellow">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
-            <NProgress type="line" status="default" :percentage="skill.tnl" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
+            <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
           </div>
         </div>
       </NGi>
@@ -28,7 +28,7 @@
               <div class="name bold-yellow">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
-            <NProgress type="line" status="default" :percentage="skill.tnl" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
+            <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
           </div>
         </div>
       </NGi>
@@ -43,9 +43,8 @@
           <div v-for="skill of getCombatSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
               <div class="name bold-yellow">{{ skill.name }}</div>
-              <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
+              <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
-            <NProgress type="line" status="default" :percentage="skill.tnl" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
           </div>
         </div>
       </NGi>
@@ -60,9 +59,8 @@
           <div v-for="skill of getArtisanSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
               <div class="name bold-yellow">{{ skill.name }}</div>
-              <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
+              <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
-            <NProgress type="line" status="default" :percentage="skill.tnl" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
           </div>
         </div>
       </NGi>
@@ -79,43 +77,55 @@ const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 function player () {
-  return state.gameState.player
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].stats || {}
+  }
+
+  return state.gameState.player || {}
+}
+
+function skills () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].skills || {}
+  }
+
+  return state.gameState.skills || {}
 }
 
 function getWeaponSkills () {
-  let skills = Object.values(state.gameState.skills)
+  let weaponSkills = Object.values(skills())
     .filter(sk => sk.type.includes('weapon'))
 
-  skills.sort((a, b) => a.name.localeCompare(b.name))
+  weaponSkills.sort((a, b) => a.name.localeCompare(b.name))
 
-  return skills
+  return weaponSkills
 }
 
 function getCraftingSkills () {
-  let skills = Object.values(state.gameState.skills)
+  let craftingSkills = Object.values(skills())
     .filter(sk => sk.type.includes('crafting'))
 
-  skills.sort((a, b) => a.name.localeCompare(b.name))
+  craftingSkills.sort((a, b) => a.name.localeCompare(b.name))
 
-  return skills
+  return craftingSkills
 }
 
 function getCombatSkills () {
-  let skills = Object.values(state.gameState.skills)
+  let combatSkills = Object.values(skills())
     .filter(sk => sk.type.includes('combat'))
 
-  skills.sort((a, b) => a.name.localeCompare(b.name))
+  combatSkills.sort((a, b) => a.name.localeCompare(b.name))
 
-  return skills
+  return combatSkills
 }
 
 function getArtisanSkills () {
-  let skills = Object.values(state.gameState.skills)
+  let artisanSkills = Object.values(skills())
     .filter(sk => sk.type.includes('artisan'))
 
-  skills.sort((a, b) => a.name.localeCompare(b.name))
+  artisanSkills.sort((a, b) => a.name.localeCompare(b.name))
 
-  return skills
+  return artisanSkills
 }
 
 function getScrollContainerClass () {

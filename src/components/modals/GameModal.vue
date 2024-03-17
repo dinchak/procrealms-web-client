@@ -29,11 +29,14 @@
           tab-style="min-width: 80px;"
           ref="tabs"
         >
+          
           <NTabPane name="score" tab="Score">
+            <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
             <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
           </NTabPane>
 
           <NTabPane name="skills" tab="Skills">
+            <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
             <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
           </NTabPane>
 
@@ -71,8 +74,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
-import { state, prevMode } from '@/composables/state'
+import { NModal, NTabs, NTabPane, NIcon, NSelect } from 'naive-ui'
+import { state, prevMode, getGameModalAsOptions } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
 import CloseOutlined from '@vicons/material/CloseOutlined'
@@ -213,6 +216,14 @@ onMounted(() => {
   watchers.push(
     watch(state.output, () => onOutputChanged())
   )
+
+  watchers.push(
+    watch(state.gameState.charmies, () => {
+      if (!state.gameState.charmies[state.gameModalAs]) {
+        state.gameModalAs = ''
+      }
+    })
+  )
 })
 
 onBeforeUnmount(() => {
@@ -241,6 +252,11 @@ onBeforeUnmount(() => {
     .game-modal-tabs {
       .n-tabs-nav {
         width: calc(100vw - 100px);
+      }
+      .n-tab-pane {
+        .n-select {
+          // max-width: 200px;
+        }
       }
       height: calc(100vh - 170px);
       overflow-y: hidden;
