@@ -120,6 +120,10 @@ function sendCommand () {
     if (state.activeTab.indexOf(firstWord.toLowerCase()) != 0) {
       command = `${state.activeTab} ${command}`
     }
+  } else if (focusMode.value == 'modal-input') {
+    if (state.gameModalAs) {
+      command = `order eid:${state.gameModalAs} ${command}`
+    }
   }
 
   commandHistory.unshift(command)

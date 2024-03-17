@@ -5,7 +5,6 @@
     type="success"
     preset="dialog"
     title="Login"
-    :trap-focus=false
   >
 
     <template #header>

@@ -431,6 +431,10 @@ const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 function player () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].stats || {}
+  }
+
   return state.gameState.player || {}
 }
 

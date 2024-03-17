@@ -205,10 +205,9 @@ function updateState (obj, update) {
 
 handlers['state.patch'] = ({ patch }) => {
   try {
-    // console.log(patch)
-    // for (let { op, path, value } of patch) {
-    //   console.log(`patching ${op} ${path}:`)
-    //   console.log(value)
+    // for (let operation of patch) {
+    //   console.log(operation)
+    //   state.gameState = jiff.patch([operation], state.gameState)  
     // }
     state.gameState = jiff.patch(patch, state.gameState)
   } catch (err) {

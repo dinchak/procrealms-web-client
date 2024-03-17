@@ -43,12 +43,12 @@ function handleMetaKey (ev, keyState) {
 
 function onKeyDown (ev) {
   if (handleMetaKey(ev, true)) {
-    return
+    return true
   }
 
   state.inputEmitter.emit('keyCode', ev.code)
 
-  // console.log(`onKeyDown code=${ev.code}`)
+  // console.log(`onKeyDown mode=${state.mode} code=${ev.code}`)
 
   let mappings = validMappings({ keyCode: ev.code })
     .filter(m => {

@@ -27,6 +27,7 @@ export const state = reactive({
     alt: false
   },
 
+  gameModalAs: ref(''),
   mercEid: -1,
 
   gamepadPrevStates: {},
@@ -270,6 +271,20 @@ export function addLine (line, bufferName) {
     }
     addLinesTimeout = null
   }, 10)
+}
+
+export function getGameModalAsOptions () {
+  let values = [{
+    label: state.gameState.player.name,
+    value: ''
+  }].concat(Object.values(state.gameState.charmies).map(charmie => {
+    return {
+      label: charmie.stats.name,
+      value: charmie.stats.eid
+    }
+  }))
+
+  return values
 }
 
 export function resetInputMappings () {

@@ -1,11 +1,15 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <div class="inventory-summary">
-      <div class="search">
-        <NInput placeholder="Search" v-model:value="search" clearable></NInput>
-      </div>
+    <NGrid class="inventory-summary" cols="1 600:3">
+      <NGi class="cell">
+        <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
+      </NGi>
 
-      <div class="summary">
+      <NGi class="cell search">
+        <NInput placeholder="Search" v-model:value="search" clearable></NInput>
+      </NGi>
+
+      <NGi class="cell summary">
         <div class="money" v-html-safe="copperToMoneyString(state.gameState.player.money)"></div>
         <div class="money-brief" v-html-safe="copperToMoneyString(state.gameState.player.money, true)"></div>
         <div class="limit">
@@ -20,8 +24,8 @@
           </div>
           <div class="label red">lbs</div>
         </div>
-      </div>
-    </div>
+      </NGi>
+    </NGrid>
 
     <NGrid class="inventory" cols="1 800:2 1200:3">
       <NGi v-if="getItems().length == 0">You don't have anything in your inventory.</NGi>
@@ -41,8 +45,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NInput } from 'naive-ui'
-import { state } from '@/composables/state'
+import { NGrid, NGi, NInput, NSelect } from 'naive-ui'
+import { state, getGameModalAsOptions } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -91,7 +95,7 @@ async function updateItem (iid) {
 function getActions (item) {
   let actions = [{
     label: 'Drop',
-    onClick: () => cmd(`drop iid:${item.iid}`),
+    onClick: () => cmd(`${getOrderCmd()}drop iid:${item.iid}`),
     class: 'bold-red',
     disabled: false
   }]
@@ -100,7 +104,7 @@ function getActions (item) {
     actions.push({
       label: 'Unkeep',
       onClick: () => {
-        cmd(`unkeep iid:${item.iid}`)
+        cmd(`${getOrderCmd()}unkeep iid:${item.iid}`)
         updateItem(item.iid)
       },
       class: 'bold-yellow',
@@ -110,7 +114,7 @@ function getActions (item) {
     actions.push({
       label: 'Keep',
       onClick: () => {
-        cmd(`keep iid:${item.iid}`)
+        cmd(`${getOrderCmd()}keep iid:${item.iid}`)
         updateItem(item.iid)
       },
       class: 'bold-green',
@@ -122,21 +126,21 @@ function getActions (item) {
     if (item.subtype == 'food') {
       actions.push({
         label: 'Eat',
-        onClick: () => cmd(`eat iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}eat iid:${item.iid}`),
         class: 'bold-green',
         disabled: false
       })
     } else if (item.subtype == 'potion') {
       actions.push({
         label: 'Drink',
-        onClick: () => cmd(`drink iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}drink iid:${item.iid}`),
         class: 'bold-green',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Consume',
-        onClick: () => cmd(`consume iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}consume iid:${item.iid}`),
         class: 'bold-green',
         disabled: false
       })
@@ -146,14 +150,14 @@ function getActions (item) {
   if (state.gameState.room.flags.includes('store')) {
     actions.push({
       label: 'Sell',
-      onClick: () => cmd(`sell iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
       class: 'bold-green',
       disabled: false
     })
   } else {
     actions.push({
       label: 'Sell',
-      onClick: () => cmd(`sell iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
       class: 'bold-green',
       disabled: true
     })
@@ -162,7 +166,7 @@ function getActions (item) {
   if (item.type == 'weapon') {
     actions.push({
       label: 'Wield',
-      onClick: () => cmd(`wield iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}wield iid:${item.iid}`),
       class: 'bold-red',
       disabled: false
     })
@@ -171,7 +175,7 @@ function getActions (item) {
   if (item.type == 'armor') {
     actions.push({
       label: 'Wear',
-      onClick: () => cmd(`wield iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}wear iid:${item.iid}`),
       class: 'bold-red',
       disabled: false
     })
@@ -180,7 +184,7 @@ function getActions (item) {
   if (item.type == 'weapon' || item.type == 'armor') {
     actions.push({
       label: 'Compare',
-      onClick: () => cmd(`compare iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}compare iid:${item.iid}`),
       class: 'bold-yellow',
       disabled: false
     })
@@ -190,14 +194,14 @@ function getActions (item) {
     if (hasSkillsRequired(item)) {
       actions.push({
         label: 'Salvage',
-        onClick: () => cmd(`salvage iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}salvage iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
       if (item.type == 'tool') {
         actions.push({
           label: 'Repair',
-          onClick: () => cmd(`repair iid:${item.iid}`),
+          onClick: () => cmd(`${getOrderCmd()}repair iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -209,7 +213,7 @@ function getActions (item) {
     if (item.subtype == 'hide') {
       actions.push({
         label: 'Tan',
-        onClick: () => cmd(`tan iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}tan iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -218,7 +222,7 @@ function getActions (item) {
     if (item.subtype == 'seed') {
       actions.push({
         label: 'Plant',
-        onClick: () => cmd(`plant iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}plant iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -227,7 +231,7 @@ function getActions (item) {
     if (item.subtype == 'bandage') {
       actions.push({
         label: 'Wrap',
-        onClick: () => cmd(`wrap iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}wrap iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -236,7 +240,7 @@ function getActions (item) {
     if (item.subtype == 'fish') {
       actions.push({
         label: 'Filet',
-        onClick: () => cmd(`filet iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}filet iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -246,7 +250,7 @@ function getActions (item) {
   if (item.type == 'book' || item.type == 'scroll') {
     actions.push({
       label: 'Read',
-      onClick: () => cmd(`read iid:${item.iid}`),
+      onClick: () => cmd(`${getOrderCmd()}read iid:${item.iid}`),
       class: 'bold-magenta',
       disabled: false
     })
@@ -256,7 +260,7 @@ function getActions (item) {
     if (item.subtype == 'penned animal') {
       actions.push({
         label: 'Unpen',
-        onClick: () => cmd(`unpen iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}unpen iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -265,7 +269,7 @@ function getActions (item) {
     if (item.subtype == 'deployable') {
       actions.push({
         label: 'Unpack',
-        onClick: () => cmd(`unpack iid:${item.iid}`),
+        onClick: () => cmd(`${getOrderCmd()}unpack iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -273,6 +277,13 @@ function getActions (item) {
   }
 
   return actions
+}
+
+function getOrderCmd () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return `order eid:${state.gameModalAs} `
+  }
+  return ''
 }
 
 function hasSkillsRequired (item) {
@@ -315,19 +326,61 @@ function getScrollContainerClass () {
   }
 }
 
+function getInventory () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].items || []
+  }
+  return state.gameState.inventory || []
+}
+
+let charmieInventoryWatcher = null
+function unwatchCharmieInventory () {
+  if (charmieInventoryWatcher) {
+    charmieInventoryWatcher()
+  }
+}
+
+function watchCharmieInventory () {
+  if (!state.gameModalAs || !state.gameState.charmies[state.gameModalAs]) {
+    return
+  }
+
+  charmieInventoryWatcher = watch(() => {
+    return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
+  }, async () => {
+    console.log(`charmie inventory changed`)
+    items.value = await fetchItems(getInventory())
+  })
+}
+
 let watchers = []
 onMounted(async () => {
-  items.value = await fetchItems(state.gameState.inventory)
+  items.value = await fetchItems(getInventory())
   
   watchers.push(
-    watch(state.gameState, async (newVal) => items.value = await fetchItems(newVal.inventory))
+    watch(() => state.gameState.inventory, async () => {
+      if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+        return
+      }
+      items.value = await fetchItems(state.gameState.inventory)
+    })
+  )
+
+  watchers.push(
+    watch(() => state.gameModalAs, async () => {
+      items.value = await fetchItems(getInventory())
+      unwatchCharmieInventory()
+      watchCharmieInventory()
+    })
   )
 })
+
 
 onBeforeUnmount(() => {
   for (let watcher of watchers) {
     watcher()
   }
+  unwatchCharmieInventory()
 })
 </script>
 
@@ -348,6 +401,9 @@ onBeforeUnmount(() => {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+    .cell {
+      margin: 5px 5px;
+    }
     .summary {
       display: flex;
       flex-direction: column;
@@ -391,7 +447,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 800px) {
   .scroll-container {
     .inventory-summary {
       .summary {
@@ -401,6 +457,17 @@ onBeforeUnmount(() => {
         .money-brief {
           display: block;
         }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .scroll-container {
+    .inventory-summary {
+      .summary {
+        flex-direction: row;
+        justify-content: space-between;
       }
     }
   }
