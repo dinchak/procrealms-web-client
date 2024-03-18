@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 
 .battle-area {
   margin-top: 5px;

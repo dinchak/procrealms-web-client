@@ -1,6 +1,6 @@
 <template>
-  <div class="quick-container">
-    <div class="quick-actions" v-show="state.activeTab == 'output'">
+  <div :class="'quick-container' + getMobileLayoutClass()">
+    <div :class="'quick-actions'  + getMobileLayoutClass()" v-show="state.activeTab == 'output'">
 
       <div class="quick-slot battle" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('attack')">
         <div class="slot-label">
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
@@ -67,7 +67,21 @@ import { state } from '@/composables/state'
 const { cmd } = useWebSocket()
 const { isGamepadConnected } = useHelpers()
 
+const props = defineProps({
+  layoutMode: String
+})
+
+const { layoutMode } = toRefs(props)
+
 let actionTimeout = null
+
+function getQuickContainerClass () {
+  let classes = ['quick-container']
+  if (layoutMode.value === 'mobile') {
+    classes.push('mobile-layout-mode')
+  }
+  return classes
+}
 
 function slots () {
   let slots = state.gameState.slots || []
@@ -100,20 +114,34 @@ function getSkill (slot) {
   return (state.gameState.skills || {})[slot.label]
 }
 
+function getMobileLayoutClass () {
+  if (layoutMode.value === 'mobile') {
+    return ' mobile-layout-mode'
+  }
+  return ''
+}
+
 function getSlotClass (slot) {
   let skill = getSkill(slot)
+  let classes = ['quick-slot', 'selectable']
+  if (layoutMode.value === 'mobile') {
+    classes.push('mobile-layout-mode')
+  }
+
   if (skill) {
     if (skill.timeLeft) {
-      return 'quick-slot selectable'
+      return classes.join(' ')
     }
     if (!skill.type.includes('combat') && state.gameState.battle.active) {
-      return 'quick-slot selectable'
+      return classes.join(' ')
     }
     if (!skill.type.includes('overworld') && !state.gameState.battle.active) {
-      return 'quick-slot selectable'
+      return classes.join(' ')
     }
   }
-  return 'quick-slot selectable active'
+
+  classes.push('active')
+  return classes.join(' ')
 }
 
 function quickSlot1 () {
@@ -238,11 +266,28 @@ onBeforeUnmount(() => {
   flex-direction: row;
   margin-left: 8px;
   justify-content: flex-start;
+  &.mobile-layout-mode {
+    overflow-x: initial;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
   .quick-actions {
     margin-left: 1px;
     margin-right: 8px;
     overflow-x: scroll;
     padding-bottom: 5px;
+    &.mobile-layout-mode {
+      margin-left: 1px;
+      margin-right: 8px;
+      overflow-x: initial;
+      padding-bottom: 15px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-right: 0;
+    }
   }
 
   .quick-slots {
@@ -254,10 +299,7 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: 45px;
-    &.show-mobile {
-      margin: 0 5px;
-    }
+
     .quick-slot {
       background-color: #222;
       border: 1px solid #222;
@@ -272,6 +314,12 @@ onBeforeUnmount(() => {
       margin-right: 5px;
       border-radius: 4px;
       cursor: pointer;
+      height: 45px;
+
+      &.mobile-layout-mode {
+        margin-right: 0;
+        margin-top: 5px;
+      }
 
       &:last-child {
         margin-right: 0;
