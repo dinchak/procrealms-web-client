@@ -3,41 +3,36 @@
     <span class="left">
       <span class="stat">
         <div class="value bold-green">{{ entity.hp }}<span class="label green">HP</span></div>
-        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false" :height="8" :border-radius="0"></n-progress>
       </span>
 
       <span class="stat">
         <div class="value bold-cyan">{{ entity.energy }}<span class="label cyan">EN</span></div>
-        <n-progress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :height="8" :border-radius="0" :show-indicator="false"></n-progress>
       </span>
 
       <span class="stat">
         <div class="value bold-yellow">{{ entity.stamina }}<span class="label yellow">ST</span></div>
-        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :show-indicator="false"></n-progress>
+        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :height="8" :border-radius="0" :show-indicator="false"></n-progress>
       </span>
 
-      <span class="stat">
-        <div class="value bold-green">{{ entity.regeneration }}</div>
-        <div class="label green">Regen</div>
-      </span>
     </span>
 
     <span class="right">
-      <span class="stat" v-if="entity.rage > 0">
-        <div class="label bold-red">Rage</div>
-        <n-progress class="quick-stats" type="line" status="danger" :percentage="entity.rage / entity.maxRage * 100" :show-indicator="false"></n-progress>
-      </span>
-
       <span class="stat" v-if="entity.combo > 0">
-        <div class="label bold-yellow">Combo</div>
-        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.combo / entity.maxCombo * 100" :show-indicator="false"></n-progress>
+        <div class="value bold-yellow">{{ entity.combo }}</div>
+        <div class="label yellow">Combo</div>
       </span>
 
-      <span class="stat">
-        <div class="label bold-green">Food</div>
-        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false"></n-progress>
+      <span class="stat" v-if="entity.rage > 0">
+        <div class="value bold-red">{{ entity.rage }}</div>
+        <div class="label red">Rage</div>
       </span>
+    </span>
 
+    <span class="stat">
+      <div class="value bold-green"><span class="label green">Food</span></div>
+      <n-progress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></n-progress>
     </span>
 
   </div>
@@ -66,39 +61,32 @@ const { entity } = toRefs(props)
   justify-content: space-between;
   word-break: normal;
 
-  .left {
+  .left, .right {
     display: flex;
     flex-direction: row;
     .stat {
       margin-right: 5px;
+      width: 38px;
       &:last-child {
         margin-right: 0px;
       }
       .value {
         font-size: 16px;
         text-align: center;
+        line-height: 14px;
       }
       .label {
-        font-size: 11px;
+        font-size: 12px;
         line-height: 10px;
+        text-align: center;
       }
     }
   }
 
   .right {
-    display: flex;
-    flex-direction: row;
     justify-content: flex-end;
     .stat {
-      margin-right: 5px;
-      width: 27px;
-      &:last-child {
-        margin-right: 0px;
-      }
-      .label {
-        font-size: 11px;
-        text-align: center;
-      }
+      width: 38px;
     }
   }
   //  .quick-stats {

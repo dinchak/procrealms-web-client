@@ -19,7 +19,7 @@
           <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
         </div>
       </div>
-      <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
+      <QuickSlots v-if="state.options.showQuickSlots && !state.options.showMobileMenu"></QuickSlots>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 

@@ -3,6 +3,9 @@
     <div class="stats-area">
       <PlayerStats></PlayerStats>
       <div class="bottom-area" >
+        <div class="quick-slots" v-show="state.options.showQuickSlots">
+          <QuickSlots :layout-mode="'mobile'"></QuickSlots>
+        </div>
         <div class="battle-area" v-show="state.gameState.battle.active">
           <BattleControls></BattleControls>
         </div>
@@ -12,6 +15,9 @@
         <div class="map-area" v-show="!state.gameState.battle.active">
           <MoveControls></MoveControls>
           <MiniMap v-if="state.options.showMobileMenuMap"></MiniMap>
+        </div>
+        <div class="mini-stats">
+          <MiniStats :entity="state.gameState.player"></MiniStats>
         </div>
       </div>
     </div>
@@ -27,6 +33,8 @@ import PlayerStats from '@/components/side-menu/PlayerStats.vue'
 import BattleControls from '@/components/side-menu/BattleControls.vue'
 import MoveControls from '@/components/side-menu/MoveControls.vue'
 import MapActions from '@/components/side-menu/MapActions.vue'
+import MiniStats from '@/components/side-menu/MiniStats.vue'
+import QuickSlots from '@/components/hud/QuickSlots.vue'
 
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -46,5 +54,9 @@ function openCloseSider () {
   padding-top: 10px;
   padding-bottom: 10px;
   min-height: 152px;
+}
+
+.mini-stats {
+  margin-top: 10px;
 }
 </style>
