@@ -67,6 +67,7 @@ import { defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 
+import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -91,6 +92,7 @@ function getClass (participant) {
     'selectable',
     participant.hpPercent == 0 ? 'dead' : participant.side,
     participant.isActing ? 'acting' : '',
+    state.options.showMobileMenu ? 'mobile-menu-open' : ''
   ].join(' ')
 }
 
@@ -213,68 +215,22 @@ function getAffects (participant) {
   .next-action {
     padding: 0 5px;
     width: 24px;
-    // height: 24px;
   }
 
-  // &.dead {
-  //   border-color: #333;
-  // }
-  // .entity-info {
-  //   display: flex;
-  //   flex-direction: column;
-  //   width: 250px;
-  //   .row {
-  //     display: flex;
-  //     flex-direction: row;
-  //     justify-content: space-between;
-  //     align-items: flex-start;
-
-  //     .name {
-  //       font-size: 16px;
-  //     }
-
-  //     .n-progress {
-  //       width: 15px;
-  //       margin-left: 5px;
-  //       .n-progress-content {
-  //         width: 15px;
-  //         .n-progress-graph {
-  //           .n-progress-graph-circle {
-  //             display: flex;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   .affects {
-  //     font-size: 14px;
-  //   }
-
-  //   .target {
-  //     display: flex;
-  //     flex-direction: row;
-  //     justify-content: space-between;
-  //     height: 20px;
-  //     align-items: center;
-  //     .targeting {
-  //       display: flex;
-  //       flex-direction: row;
-  //       font-size: 14px;
-  //       span {
-  //         &:first-child {
-  //           margin-left: 5px;
-  //         }
-  //       }
-  //     }
-  //     .status {
-  //       font-size: 14px;
-  //     }
-  //   }
-  // }
 
 }
 
+@media screen and (max-width: 1575px) {
+  .battle-entity.mobile-menu-open {
+    width: 450px;
+  }
+}
+
+@media screen and (max-width: 1375px) {
+  .battle-entity.mobile-menu-open {
+    width: 350px;
+  }
+}
 
 @media screen and (max-width: 1300px) {
   .battle-entity {

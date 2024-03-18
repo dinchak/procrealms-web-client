@@ -2,7 +2,7 @@
   <div class="battle-area">
     <MercOrders v-if="showOrdersRef"></MercOrders>
 
-    <div class="battle-status">
+    <div :class="getBattleStatusClass()">
       <div class="side good">
         <div class="entity" v-for="participant in getSide('good')" :key="participant.eid">
           <TransitionGroup appear name="damage">
@@ -82,6 +82,14 @@ function performBattleAction () {
 const battleStatus = ref(null)
 const showOrdersRef = ref(false)
 
+function getBattleStatusClass () {
+  let classes = ['battle-status']
+  if (state.options.showMobileMenu) {
+    classes.push('mobile-menu-open')
+  }
+  return classes.join(' ')
+}
+
 function getSide (side) {
   return Object.values(state.gameState.battle.participants).filter(p => p.side == side)
 }
@@ -129,12 +137,9 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('performBattleAction', performBattleAction)
   unwatch()
 })
-
-
 </script>
 
 <style lang="less" scoped>
-
 .battle-area {
   margin-top: 5px;
   border-top: 2px solid #333;
@@ -171,7 +176,6 @@ onBeforeUnmount(() => {
     }
 
     .entity {
-      // align-items: center;
       position: relative;
       margin-bottom: 5px;
       
@@ -179,7 +183,6 @@ onBeforeUnmount(() => {
         opacity: 0;
         position: absolute;
         top: 0px;
-        // left: 10px;
         font-size: 1.4rem;
         color: #ff3333;
         padding: 2px 4px;
@@ -215,7 +218,6 @@ onBeforeUnmount(() => {
   0% {
     opacity: 1;
     top: 0px;
-    // font-size: 14px;
   }
   60% {
     opacity: 0.9;
@@ -224,8 +226,6 @@ onBeforeUnmount(() => {
   100% {
     opacity: 0;
     top: -40px;
-    // font-size: 30px;
-    // left: 7px;
   }
 }
 
@@ -237,7 +237,6 @@ onBeforeUnmount(() => {
   0% {
     opacity: 1;
     top: -40px;
-    // font-size: 30px;
   }
   60% {
     opacity: 0.9;
@@ -246,17 +245,15 @@ onBeforeUnmount(() => {
   100% {
     opacity: 0;
     top: 0px;
-    // font-size: 14px;
   }
 }
 
-// @media screen and (max-width: 1000px) {
-//   .battle-status {
-//     .vs {
-//       font-size: 0.9rem;
-//     }
-//   }
-// }
+
+@media screen and (max-width: 1075px) {
+  .battle-status.mobile-menu-open {
+    flex-direction: column;
+  }
+}
 
 @media screen and (max-width: 800px) {
   .battle-status {
