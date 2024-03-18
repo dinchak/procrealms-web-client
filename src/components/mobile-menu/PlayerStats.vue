@@ -62,13 +62,13 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import { NProgress, NCollapse } from 'naive-ui'
-import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
-import OptionsCollapse from '@/components/side-menu/collapse-items/OptionsCollapse.vue'
-import QuestCollapse from '@/components/side-menu/collapse-items/QuestCollapse.vue'
-import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
-import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
-import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
-import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
+import CharacterCollapse from '@/components/mobile-menu/collapse-items/CharacterCollapse.vue'
+import OptionsCollapse from '@/components/mobile-menu/collapse-items/OptionsCollapse.vue'
+import QuestCollapse from '@/components/mobile-menu/collapse-items/QuestCollapse.vue'
+import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollapse.vue'
+import EffectsCollapse from '@/components/mobile-menu/collapse-items/EffectsCollapse.vue'
+import InventoryCollapse from '@/components/mobile-menu/collapse-items/InventoryCollapse.vue'
+import EquipmentCollapse from '@/components/mobile-menu/collapse-items/EquipmentCollapse.vue'
 import { state } from '@/composables/state'
 
 function player () {
