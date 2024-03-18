@@ -25,7 +25,7 @@ import { NCollapseItem } from 'naive-ui'
 
 import { state } from "@/composables/state"
 
-import EquipmentRow from '@/components/side-menu/collapse-items/EquipmentRow.vue'
+import EquipmentRow from '@/components/mobile-menu/collapse-items/EquipmentRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'
 
 import { useWebSocket } from '@/composables/web_socket'

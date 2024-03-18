@@ -2,7 +2,7 @@
   <n-layout has-sider
     v-if="state.token && state.connected && !state.disconnected" class="game" 
     :sider-placement="state.options.swapMobileMenuSide ? 'right' : 'left'">
-    <SideMenu v-if="!state.options.swapMobileMenuSide"></SideMenu>
+    <MobileMenu v-if="!state.options.swapMobileMenuSide"></MobileMenu>
     <n-layout>
       <LogoutModal></LogoutModal>
       <HelpModal></HelpModal>
@@ -24,7 +24,7 @@
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
     </n-layout>
-    <SideMenu v-if="state.options.swapMobileMenuSide"></SideMenu>
+    <MobileMenu v-if="state.options.swapMobileMenuSide"></MobileMenu>
     <RadialOverlay></RadialOverlay>
   </n-layout>
 </template>
@@ -46,7 +46,7 @@ import QuickSlots from '@/components/hud/QuickSlots.vue'
 import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import SideMap from '@/components/main-area/SideMap.vue'
-import SideMenu from '@/components/side-menu/SideMenu.vue'
+import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
 

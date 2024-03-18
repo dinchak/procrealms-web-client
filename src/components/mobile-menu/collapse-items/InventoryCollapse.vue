@@ -36,7 +36,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { ref, watch, onMounted, defineProps } from 'vue'
 import { useHelpers } from '@/composables/helpers'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
-import InventoryRow from '@/components/side-menu/collapse-items/InventoryRow.vue'
+import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
 import { command_ids } from '@/composables/constants/command_ids'
 import ItemModal from '@/components/modals/ItemModal.vue';
 

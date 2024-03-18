@@ -52,12 +52,12 @@
 
 import { watch, ref, onMounted } from 'vue'
 import {NCard, NTooltip, NCollapse, NProgress} from 'naive-ui'
-import CharacterCollapse from '@/components/side-menu/collapse-items/CharacterCollapse.vue'
-import EffectsCollapse from '@/components/side-menu/collapse-items/EffectsCollapse.vue'
-import EquipmentCollapse from '@/components/side-menu/collapse-items/EquipmentCollapse.vue'
-import InventoryCollapse from '@/components/side-menu/collapse-items/InventoryCollapse.vue'
-import MiniStats from '@/components/side-menu/MiniStats.vue'
-import SkillsCollapse from '@/components/side-menu/collapse-items/SkillsCollapse.vue'
+import CharacterCollapse from '@/components/mobile-menu/collapse-items/CharacterCollapse.vue'
+import EffectsCollapse from '@/components/mobile-menu/collapse-items/EffectsCollapse.vue'
+import EquipmentCollapse from '@/components/mobile-menu/collapse-items/EquipmentCollapse.vue'
+import InventoryCollapse from '@/components/mobile-menu/collapse-items/InventoryCollapse.vue'
+import MiniStats from '@/components/mobile-menu/MiniStats.vue'
+import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollapse.vue'
 
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
