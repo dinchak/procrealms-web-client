@@ -54,8 +54,7 @@ function openGameModal (pane) {
 .game-modal-shortcuts {
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
-  margin-right: 2px;
+  margin-top: 5px;
   .shortcut {
     cursor: pointer;
     height: 34px;

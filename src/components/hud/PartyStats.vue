@@ -31,19 +31,9 @@
 import { state } from '@/composables/state'
 
 const getPartyMembers = () => {
-  return Object.values(state.gameState.party)
-    .map(member => {
-      return {
-        eid: member.eid,
-        name: member.name,
-        hp: member.hp,
-        maxHp: member.maxHp,
-        energy: member.energy,
-        maxEnergy: member.maxEnergy,
-        stamina: member.stamina,
-        maxStamina: member.maxStamina
-      }
-    })
+  let members = Object.values(state.gameState.party)
+  members.sort((a, b) => a.traits.includes('player') ? -1 : a.name.localeCompare(b.name))
+  return members
 }
 </script>
 <style lang="less" scoped>
