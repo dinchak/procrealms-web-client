@@ -48,23 +48,7 @@ function onKeyDown (ev) {
 
   state.inputEmitter.emit('keyCode', ev.code)
 
-  // console.log(`onKeyDown mode=${state.mode} code=${ev.code}`)
-
-  let mappings = validMappings({ keyCode: ev.code })
-    .filter(m => {
-      let binding = m.bindings.find(b => b.keyCode == ev.code && b.modes.includes(state.mode))
-      if (binding.ctrl && !state.metaKeyState.ctrl) {
-        return false
-      }
-      if (binding.shift && !state.metaKeyState.shift) {
-        return false
-      }
-      if (binding.alt && !state.metaKeyState.alt) {
-        return false
-      }
-      return true
-    })
-
+  let mappings = validMappings({ keyCode: ev.code, metaKeyState: state.metaKeyState })
   if (mappings.length == 0) {
     return
   }
@@ -72,7 +56,6 @@ function onKeyDown (ev) {
   ev.preventDefault()
 
   for (let mapping of mappings) {
-    // console.log(`inputEmitter.emit ${mapping.event} (mode=${state.mode})`)
     state.inputEmitter.emit(mapping.event)
   }
 }
@@ -84,33 +67,38 @@ function onKeyUp (ev) {
 }
 
 function onGamePadConnected (ev) {
-  // console.log(`onGamePadConnected ${ev.gamepad.index}`)
-  // console.log(ev.gamepad)
   state.gamepads[ev.gamepad.index] = ev.gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
   gamepadStateLoopPaused = false
   gamepadStateLoop()
 }
 
 function onGamePadDisconnected (ev) {
-  // console.log(`onGamePadDisconnected ${ev.gamepad.index}`)
   delete state.gamepads[ev.gamepad.index]
   if (Object.values(state.gamepads).length == 0) {
     gamepadStateLoopPaused = true
   }
 }
 
-function validMappings ({ keyCode, gamepadButton, gamepadButtonReleased, gamepadAxis } = {}) {
+function validMappings ({ keyCode, metaKeyState, gamepadButton, gamepadButtonReleased, gamepadAxis } = {}) {
   return state.inputMappings.filter(m =>
     m.bindings.find(m => 
-      m.modes && m.modes.includes(state.mode) &&
+      m.modes && m.modes.includes(state.mode) && (
       (
-        (keyCode && m.keyCode == keyCode) ||
-        (typeof gamepadButton != 'undefined' && m.gamepadButton == gamepadButton) ||
-        (typeof gamepadButtonReleased != 'undefined' && m.gamepadButtonReleased == gamepadButtonReleased) ||
-        (typeof gamepadAxis != 'undefined' && m.gamepadAxis == gamepadAxis)
+        keyCode && m.keyCode == keyCode && 
+        metaKeyState.shift == !!m.shift &&
+        metaKeyState.ctrl == !!m.ctrl &&
+        metaKeyState.alt == !!m.alt
+      ) || (
+        typeof gamepadButton != 'undefined' &&
+        m.gamepadButton == gamepadButton
+      ) || (
+        typeof gamepadButtonReleased != 'undefined' &&
+        m.gamepadButtonReleased == gamepadButtonReleased
+      ) || (
+        typeof gamepadAxis != 'undefined' &&
+        m.gamepadAxis == gamepadAxis
       )
-    ) &&
-    (
+    )) && (
       typeof m.inBattle == 'undefined' ||
       (m.inBattle === true && state.gameState.battle.active) ||
       (m.inBattle === false && !state.gameState.battle.active)

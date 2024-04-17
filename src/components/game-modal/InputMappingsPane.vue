@@ -4,10 +4,10 @@
     <NCollapse>
       <NCollapseItem title="Instructions" name="instructions">
         <p>
-          To map a new input, click the <span class="bold-yellow">Add</span> <NIcon style="{ height: '12px' }"><AddOutlined></AddOutlined></NIcon> button next to the input you want to map. Then press the key or button you want to map to that input. You can also select the modes that the input will be active in. If you want the input to only be active in battle, check the <span class="bold-red">Only In Battle</span> checkbox. If you want the input to only be active outside of battle, check the <span class="bold-green">Only Outside Battle</span> checkbox.
+          To map a new input, click the <span class="bold-yellow">Add</span> <NIcon :style="{ height: '12px' }"><AddOutlined></AddOutlined></NIcon> button next to the input you want to map. Then press the key or button you want to map to that input. You can also select the modes that the input will be active in. If you want the input to only be active in battle, check the <span class="bold-red">Only In Battle</span> checkbox. If you want the input to only be active outside of battle, check the <span class="bold-green">Only Outside Battle</span> checkbox.
         </p>
         <p>
-          To remove a binding, click the <span class="bold-red">Delete</span> <NIcon style="{ height: '12px' }"><DeleteOutlined></DeleteOutlined></NIcon> button next to the binding you want to remove.
+          To remove a binding, click the <span class="bold-red">Delete</span> <NIcon :style="{ height: '12px' }"><DeleteOutlined></DeleteOutlined></NIcon> button next to the binding you want to remove.
         </p>
         <p>
           To reset all input mappings, click the <span class="bold-yellow">Reset All Mappings</span> button at the bottom.
