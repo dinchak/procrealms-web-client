@@ -28,6 +28,7 @@ function renderMinimap () {
 <style lang="less">
 .minimap-container {
   display: flex;
+  margin-right: 10px;
   .minimap {
     user-select: none;
     white-space: pre;

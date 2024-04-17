@@ -52,5 +52,6 @@ function getRoomTitle () {
   height: 130px;
   min-width: 250px;
   width: 100%;
+  margin-right: 10px;
 }
 </style>

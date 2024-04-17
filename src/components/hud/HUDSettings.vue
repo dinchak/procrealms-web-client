@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-container">
+  <div class="hud-settings-container">
 
     <!-- top row -->
 
@@ -138,6 +138,8 @@ import { NButton, NIconWrapper, NIcon, NSlider } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
+import { useWindowHandler } from '@/composables/window_handler'
+
 
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'
@@ -154,6 +156,7 @@ import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
 import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
 const { send } = useWebSocket()
+const { triggerResize } = useWindowHandler()
 
 function getOptionType (option) {
   return state.options[option] ? 'success' : ''
@@ -177,11 +180,17 @@ function refreshMapSettings () {
     height,
     enabled: state.options.showSideMap
   })
+
+  triggerResize()
 }
 </script>
 
 <style scoped lang="less">
-.settings-container {
+.hud-settings-container {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  z-index: 5px;
   display: flex;
   flex-direction: column;
   padding-top: 5px;
@@ -202,7 +211,7 @@ function refreshMapSettings () {
     margin-left: 5px;
     margin-bottom: 5px;
     .n-button {
-      margin-right: 5px;
+      margin-right: 7px;
       &:last-child {
         margin-right: 0;
       }

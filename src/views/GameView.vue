@@ -10,16 +10,16 @@
       <GameModal></GameModal>
       <MercModal></MercModal>
 
-      <ButtonControls></ButtonControls>
       <div class="content-area">
         <LineOutput></LineOutput>
         <div class="side-area" :style="{ height: getSideAreaHeight() }">
-          <SideMap v-if="!state.gameState.battle.active"></SideMap>
+          <ButtonControls></ButtonControls>
+          <div class="row">
+            <SideMap v-if="!state.gameState.battle.active"></SideMap>
+            <GameModalShortcuts v-if="state.options.showGameModalShortcuts"></GameModalShortcuts>
+          </div>
           <SideAliases></SideAliases>
           <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
-        </div>
-        <div class="game-modal-shortcuts" v-if="state.options.showGameModalShortcuts">
-          <GameModalShortcuts></GameModalShortcuts>
         </div>
       </div>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
@@ -89,7 +89,7 @@ function openHelpModal () {
 }
 
 function getSideAreaHeight () {
-  let heightOffset = 84
+  let heightOffset = 50
   if (state.options.showQuickSlots) {
     heightOffset += 56
   }
@@ -173,12 +173,14 @@ onBeforeUnmount(() => {
     flex-direction: row;
     justify-content: space-between;
     .side-area {
-      margin-top: 36px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      flex: 0 0 auto;
-      align-items: flex-end;
+      margin-top: 10px;
+      margin-right: 10px;
+      overflow-y: scroll;
+      .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
     }
   }
 }

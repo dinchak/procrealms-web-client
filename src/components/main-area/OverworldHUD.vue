@@ -1,8 +1,7 @@
 <template>
   <div class="bottom-hud" v-if="showHUD()">
-    <MiniMap v-if="state.options.showMinimap"></MiniMap>
-
     <div class="center-hud">
+      <MiniMap v-if="state.options.showMinimap"></MiniMap>
       <HUDRoomInfo v-if="state.options.showRoomInfo"></HUDRoomInfo>
       <HUDAffects v-if="state.options.showAffects"></HUDAffects>
       <HUDQuests v-if="state.options.showQuests"></HUDQuests>
