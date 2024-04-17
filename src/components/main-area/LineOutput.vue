@@ -295,8 +295,12 @@ function getOutputHeight () {
     heightOffset += 33
   }
 
-  if (state.options.showQuickSlots && currentPane.value === 'output' && !state.options.showMobileMenu) {
+  if (state.options.showPartyStats) {
     heightOffset += 55
+  }
+
+  if (state.options.showQuickSlots && currentPane.value === 'output') {
+    heightOffset += 56
   }
 
   return `calc(100vh - ${heightOffset}px)`

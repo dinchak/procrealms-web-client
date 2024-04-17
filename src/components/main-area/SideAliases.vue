@@ -34,7 +34,11 @@ function getBottom () {
   }
 
   if (state.options.showQuickSlots) {
-    bottomOffset += 50
+    bottomOffset += 56
+  }
+
+  if (state.options.showPartyStats) {
+    bottomOffset += 55
   }
 
   return bottomOffset + 'px'

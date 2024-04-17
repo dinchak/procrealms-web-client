@@ -1,18 +1,11 @@
 <template>
   <div class="settings-container">
 
-    <!-- <h3>Bottom Area</h3> -->
+    <!-- top row -->
+
     <div class="settings">
       <NButton size="small"
-        title="Quick Slots"
-        :type="getOptionType('showQuickSlots')"
-        @click="toggleOption('showQuickSlots')"
-      >
-        <NIcon><BoltOutlined/></NIcon>
-      </NButton>
-
-      <NButton size="small"
-        title="Lower Minimap"
+        title="Minimap"
         :type="getOptionType('showMinimap')"
         @click="toggleOption('showMinimap')"
       >
@@ -20,37 +13,11 @@
       </NButton>
 
       <NButton size="small"
-        title="Lower Movement Controls"
-        :type="getOptionType('showMovementControls')"
-        @click="toggleOption('showMovementControls')"
-      >
-        <NIcon><OpenWithOutlined/></NIcon>
-      </NButton>
-
-      <NButton size="small"
-        title="Command Controls"
-        :type="getOptionType('textInputMobileButtons')"
-        @click="toggleOption('textInputMobileButtons')"
-      >
-        <NIcon><SmartButtonOutlined/></NIcon>
-      </NButton>
-    </div>
-
-    <div class="settings">
-      <NButton size="small"
         title="Room Info"
         :type="getOptionType('showRoomInfo')"
         @click="toggleOption('showRoomInfo')"
       >
         <NIcon><MeetingRoomOutlined/></NIcon>
-      </NButton>
-
-      <NButton size="small"
-        title="Allies"
-        :type="getOptionType('showAllies')"
-        @click="toggleOption('showAllies')"
-      >
-        <NIcon><GroupsOutlined/></NIcon>
       </NButton>
 
       <NButton size="small"
@@ -70,8 +37,9 @@
       </NButton>
     </div>
 
-    <!-- <h3>Side Area</h3> -->
+    <!-- middle row -->
     <div class="settings">
+
       <NButton size="small"
         title="Tabs"
         :type="getOptionType('showTabs')"
@@ -79,7 +47,35 @@
       >
         <NIcon><ChatOutlined/></NIcon>
       </NButton>
-      
+
+      <NButton size="small"
+        title="Quick Slots"
+        :type="getOptionType('showQuickSlots')"
+        @click="toggleOption('showQuickSlots')"
+      >
+        <NIcon><BoltOutlined/></NIcon>
+      </NButton>
+
+      <NButton size="small"
+        title="Allies"
+        :type="getOptionType('showPartyStats')"
+        @click="toggleOption('showPartyStats')"
+      >
+        <NIcon><GroupsOutlined/></NIcon>
+      </NButton>
+
+      <NButton size="small"
+        title="Command Controls"
+        :type="getOptionType('textInputMobileButtons')"
+        @click="toggleOption('textInputMobileButtons')"
+      >
+        <NIcon><SmartButtonOutlined/></NIcon>
+      </NButton>
+
+    </div>
+
+    <!-- bottom row -->
+    <div class="settings">
       <NButton size="small"
         title="Side Map"
         :type="getOptionType('showSideMap')"
@@ -104,8 +100,14 @@
         <NIcon><DynamicFormOutlined/></NIcon>
       </NButton>
 
+      <NButton size="small"
+        title="Game Modal Shortcuts"
+        :type="getOptionType('showGameModalShortcuts')"
+        @click="toggleOption('showGameModalShortcuts')"
+      >
+        <NIcon><DynamicFormOutlined/></NIcon>
+      </NButton>
     </div>
-
 
     <h3 v-if="state.options.showSideMap">Map Size</h3>
 

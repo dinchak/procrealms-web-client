@@ -55,8 +55,8 @@ import SettingsFilled from '@vicons/material/SettingsFilled'
 import { setMode, state } from '@/composables/state'
 
 function toggleHelp () {
+  state.modals.helpModal = !state.modals.helpModal
   setMode('modal')
-  state.modals.helpModal = true
 }
 
 function toggleSettings () {
@@ -81,20 +81,21 @@ function toggleGameModal() {
     justify-content: flex-end;
     .n-icon {
       padding: 5px 5px;
-      color: #aaa;
+      color: #fff;
       cursor: pointer;
       transition: all 0.2s;
       margin-right: 5px;
+      border: 1px solid #444;
       &:last-child {
         margin-right: 0;
       }
       &:hover {
-        color: #000;
-        background-color: #63e2b7;
+        border: 1px solid #0cc6c6;
       }
       &.active {
+        border: 1px solid #0cc6c6;
+        background-color: #0cc6c6;
         color: #000;
-        background-color: #63e2b7
       }
     }
   }
