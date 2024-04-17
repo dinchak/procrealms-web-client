@@ -64,6 +64,11 @@ handlers['out'] = (line) => {
   }
 }
 
+handlers['help.topics'] = ({ topics }) => {
+  state.help.topics = topics
+  state.help.topicsLoaded = true
+}
+
 handlers['room.describe'] = ({ desc, map }) => {
   let lines = strToLines(desc)
 
