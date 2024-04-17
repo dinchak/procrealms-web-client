@@ -128,16 +128,18 @@ export function resetGameState () {
       myTurn: false,
       participants: {}
     },
-    channels: [],
+
+    party: {},
+    charmies: {},
     skills: {},
     affects: {},
     equipment: {},
+
+    channels: [],
     inventory: [],
     aliases: [],
     radials: [],
     quests: [],
-    party: {},
-    charmies: {},
     room: {
       exits: [],
       entities: [],
