@@ -2,57 +2,73 @@
   <div :class="'quick-container' + getMobileLayoutClass()">
     <div :class="'quick-actions'  + getMobileLayoutClass()" v-show="state.activeTab == 'output'">
 
-      <div class="quick-slot battle" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('attack')">
-        <div class="slot-label">
+      <div :class="getAttackButtonClass()" v-if="state.gameState.battle.active" @click="cmd('attack')">
+        <div class="slot-label" v-if="getAttackButtonClass().includes('active')">
           <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
         </div>
+        <div class="slot-label" v-else>
+          <span class="white">A</span><span class="bold-black">ttack</span>
+        </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon" />
       </div>
 
-      <div class="quick-slot loot" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('defend')">
-        <div class="slot-label">
+      <div :class="getDefendButtonClass()" v-if="state.gameState.battle.active" @click="cmd('defend')">
+        <div class="slot-label" v-if="getDefendButtonClass().includes('active')">
           <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
         </div>
+        <div class="slot-label" v-else>
+          <span class="white">D</span><span class="bold-black">efend</span>
+        </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon" />
       </div>
 
-      <div class="quick-slot harvest" v-if="state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('flee')">
-        <div class="slot-label">
+      <div :class="getFleeButtonClass()" v-if="state.gameState.battle.active" @click="cmd('flee')">
+        <div class="slot-label" v-if="getFleeButtonClass().includes('active')">
           <span class="bold-yellow">F</span><span class="yellow">lee</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">F</span><span class="bold-black">lee</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon" />
       </div>
 
-      <div class="quick-slot battle" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('battle')">
-        <div class="slot-label">
+      <div :class="getBattleButtonClass()" v-if="!state.gameState.battle.active" @click="cmd('battle')">
+        <div class="slot-label" v-if="getBattleButtonClass().includes('active')">
           <span class="bold-yellow">B</span><span class="bold-red">attle</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">B</span><span class="bold-black">attle</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon" />
       </div>
 
-      <div class="quick-slot harvest" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('harvest')">
-        <div class="slot-label">
+      <div :class="getHarvestButtonClass()" v-if="!state.gameState.battle.active" @click="cmd('harvest')">
+        <div class="slot-label" v-if="getHarvestButtonClass().includes('active')">
           <span class="bold-yellow">H</span><span class="yellow">arvest</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">H</span><span class="bold-black">arvest</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon" />
       </div>
 
-      <div class="quick-slot loot" v-if="!state.gameState.battle.active && !state.options.showMobileMenu" @click="cmd('loot')">
-        <div class="slot-label">
+      <div :class="getLootButtonClass()" v-if="!state.gameState.battle.active" @click="cmd('loot')">
+        <div class="slot-label" v-if="getLootButtonClass().includes('active')">
           <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">L</span><span class="bold-black">oot</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon" />
       </div>
-    <!-- </div>
 
-    <div class="quick-slots" v-show="slots().length && state.activeTab == 'output'"> -->
       <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
         <n-progress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success" :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100" :show-indicator="false" />
         <div class="slot-label">{{ slot.label }}</div>
         <div class="slot-number">{{ slot.slot }}</div>
       </div>
-    </div>
 
+    </div>
   </div>
 </template>
 
@@ -75,12 +91,64 @@ const { layoutMode } = toRefs(props)
 
 let actionTimeout = null
 
-function getQuickContainerClass () {
-  let classes = ['quick-container']
-  if (layoutMode.value === 'mobile') {
-    classes.push('mobile-layout-mode')
+function getAttackButtonClass () {
+  let classes = ['quick-slot', 'attack']
+  if (state.gameState.battle.active && state.gameState.battle.myTurn) {
+    classes.push('active')
+    classes.push('selectable')
   }
-  return classes
+  return classes.join(' ')
+}
+
+function getDefendButtonClass () {
+  let classes = ['quick-slot', 'defend']
+  if (state.gameState.battle.active && state.gameState.battle.myTurn) {
+    classes.push('active')
+    classes.push('selectable')
+  }
+  return classes.join(' ')
+}
+
+function getFleeButtonClass () {
+  let classes = ['quick-slot', 'flee']
+  if (state.gameState.battle.active && state.gameState.battle.myTurn) {
+    classes.push('active')
+    classes.push('selectable')
+  }
+  return classes.join(' ')
+}
+
+function getBattleButtonClass () {
+  let classes = ['quick-slot', 'battle']
+  if (state.gameState.player.canBattle) {
+    classes.push('active')
+    classes.push('selectable')
+  }
+  return classes.join(' ')
+}
+
+function getHarvestButtonClass () {
+  let classes = ['quick-slot', 'harvest']
+  if (state.gameState.player.canHarvest) {
+    classes.push('active')
+    classes.push('selectable')
+  }
+  return classes.join(' ')
+}
+
+function getLootButtonClass () {
+  let classes = ['quick-slot', 'loot']
+  if (state.gameState.player.canLoot) {
+    classes.push('active')
+    classes.push('selectable')
+  }
+  return classes.join(' ')
+}
+
+function showCombatActions () {
+  return state.gameState.battle.active && 
+    state.gameState.battle.myTurn && 
+    !state.options.showMobileMenu
 }
 
 function slots () {
@@ -135,7 +203,7 @@ function getSlotClass (slot) {
     if (!skill.type.includes('combat') && state.gameState.battle.active) {
       return classes.join(' ')
     }
-    if (!skill.type.includes('overworld') && !state.gameState.battle.active) {
+    if (!skill.type.includes('overworld') && (!state.gameState.battle.active || !state.gameState.battle.myTurn)) {
       return classes.join(' ')
     }
   }
@@ -265,7 +333,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: row;
   margin-left: 8px;
-  justify-content: flex-start;
+  justify-content: space-between;
+  min-height: 56px;
   &.mobile-layout-mode {
     overflow-x: initial;
     flex-wrap: wrap;
@@ -350,54 +419,70 @@ onBeforeUnmount(() => {
         }
       }
 
-      &.battle {
-        background-color: #151111;
-        border: 1px solid #e88080;
+      &.battle, &.attack {
+        background-color: #111;
+        border: 1px solid #808080;
         justify-content: center;
-        &.selected {
-          border: 1px solid #f8ff25;
+        &.active {
+          background-color: #151111;
+          border: 1px solid #e88080;
+          &.selected {
+            border: 1px solid #f8ff25;
+          }
+          &:hover {
+            background-color: darken(#e88080, 60%);
+          }
         }
+
         .slot-label {
           font-size: 16px;
           line-height: 16px;
           text-align: center;
-        }
-        &:hover {
-          background-color: darken(#e88080, 60%);
         }
       }
 
-      &.harvest {
-        background-color: #151511;
-        border: 1px solid #c6c60c;
+      &.harvest, &.flee {
+        background-color: #111;
+        border: 1px solid #808080;
         justify-content: center;
-        &.selected {
-          border: 1px solid #f8ff25;
+        &.active {
+          background-color: #151511;
+          border: 1px solid #c6c60c;
+          &.selected {
+            border: 1px solid #f8ff25;
+          }
+          &:hover {
+            background-color: darken(#c6c60c, 33%);
+          }
         }
+
         .slot-label {
           font-size: 16px;
           line-height: 16px;
           text-align: center;
-        }
-        &:hover {
-          background-color: darken(#c6c60c, 33%);
         }
       }
 
-      &.loot {
-        background-color: #111515;
-        border: 1px solid #0cc6c6;
+      &.loot, &.defend {
+        background-color: #111;
+        border: 1px solid #808080;
         justify-content: center;
-        &.selected {
-          border: 1px solid #f8ff25;
+
+        &.active {
+          background-color: #111515;
+          border: 1px solid #0cc6c6;
+          &.selected {
+            border: 1px solid #f8ff25;
+          }
+          &:hover {
+            background-color: darken(#0cc6c6, 33%);
+          }
         }
+
         .slot-label {
           font-size: 16px;
           line-height: 16px;
           text-align: center;
-        }
-        &:hover {
-          background-color: darken(#0cc6c6, 33%);
         }
       }
 

@@ -59,9 +59,9 @@ function getTimeLeftColor (affect) {
   flex-direction: column;
   height: 130px;
   overflow-y: scroll;
-  margin-right: 15px;
-  width: 150px;
-
+  min-width: 200px;
+  width: 100%;
+  
   .affect {
     display: flex;
     flex-direction: column;

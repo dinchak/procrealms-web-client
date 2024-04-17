@@ -49,8 +49,8 @@ function getRoomTitle () {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  margin-right: 5px;
   height: 130px;
-  width: 250px;
+  min-width: 250px;
+  width: 100%;
 }
 </style>

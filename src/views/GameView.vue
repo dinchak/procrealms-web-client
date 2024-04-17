@@ -18,9 +18,13 @@
           <SideAliases></SideAliases>
           <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
         </div>
+        <div class="game-modal-shortcuts" v-if="state.options.showGameModalShortcuts">
+          <GameModalShortcuts></GameModalShortcuts>
+        </div>
       </div>
-      <QuickSlots v-if="state.options.showQuickSlots && !state.options.showMobileMenu"></QuickSlots>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
+      <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
+      <PartyStats v-if="state.options.showPartyStats"></PartyStats>
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
     </n-layout>
@@ -36,12 +40,14 @@ import { NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
+import GameModalShortcuts from '@/components/main-area/GameModalShortcuts.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
 import SideAliases from '@/components/main-area/SideAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
+import PartyStats from '@/components/hud/PartyStats.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
 import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
@@ -85,11 +91,17 @@ function openHelpModal () {
 function getSideAreaHeight () {
   let heightOffset = 84
   if (state.options.showQuickSlots) {
-    heightOffset += 50
+    heightOffset += 56
   }
+
+  if (state.options.showPartyStats) {
+    heightOffset += 55
+  }
+
   if (showHUD()) {
     heightOffset += 140
   }
+
   return `calc(100vh - ${heightOffset}px)`
 }
 
@@ -161,8 +173,7 @@ onBeforeUnmount(() => {
     flex-direction: row;
     justify-content: space-between;
     .side-area {
-      margin-top: 40px;
-      padding-top: 2px;
+      margin-top: 36px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
