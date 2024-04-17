@@ -11,7 +11,7 @@
 
     <div>
       <div class="modal-body">
-        <p class="close" @click="closeModal()">
+        <p class="close" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
           </NIcon>
@@ -111,20 +111,17 @@ const currentPane = ref("score")
 const miniOutputEnabled = ref(false)
 const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options', 'mappings'])
 
-function onCloseModal () {
-  closeModal()
-}
-
 function onOpenModal () {
   currentPane.value = state.gamepadTab || "score"
   scrollDown()
 }
 
-function closeModal () {
+function onCloseModal () {
   if (!state.modals.gameModal) {
     return
   }
   state.modals.gameModal = false
+  state.gamepadTab = currentPane.value
   if (state.mode == 'modal-input') {
     prevMode()
   }
@@ -207,7 +204,7 @@ function getGameModalTabsClass () {
 
 let watchers = []
 onMounted(() => {
-  state.inputEmitter.on('closeModal', closeModal)
+  state.inputEmitter.on('closeModal', onCloseModal)
   state.inputEmitter.on('prevModalTab', prevModalTab)
   state.inputEmitter.on('nextModalTab', nextModalTab)
   state.inputEmitter.on('selectModalAction', selectModalAction)
@@ -227,7 +224,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  state.inputEmitter.off('closeModal', closeModal)
+  state.inputEmitter.off('closeModal', onCloseModal)
   state.inputEmitter.off('prevModalTab', prevModalTab)
   state.inputEmitter.off('nextModalTab', nextModalTab)
   state.inputEmitter.off('selectModalAction', selectModalAction)

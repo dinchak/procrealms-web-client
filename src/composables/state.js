@@ -33,6 +33,7 @@ export const state = reactive({
   gamepadPrevStates: {},
   gamepads: {},
   gamepadTab: false,
+  gamepadHelpTab: false,
   suggestedCommands: [],
   selectedDirection: false,
 
@@ -77,7 +78,12 @@ export const state = reactive({
   },
 
   help: {
-    topics: [],
+    topics: {
+      skills: [],
+      general: [],
+      commands: []
+    },
+    topicsLoaded: false,
     matches: [],
     contents: {}
   }
@@ -146,9 +152,10 @@ export function resetGameState () {
 function resetOptions () {
   return {
     // general options
-    showTabs: true,
     chatInMain: true,
     roomDescriptionMinimap: false,
+    textInputAlwaysFocused: false,
+    keepSentCommands: false,
 
     // mobile menu options
     showMobileMenu: false,
@@ -156,24 +163,25 @@ function resetOptions () {
     fixedMobileMenuMap: false,
     swapMobileMenuSide: false,
 
-    // side options
-    showSideMap: false,
-    showSideMovement: false,
-    showSideAliases: false,
+    // map options
     sideMapWidth: 50,
     sideMapHeight: 50,
 
-    // bottom options
-    textInputAlwaysFocused: false,
-    textInputMobileButtons: true,
-    keepSentCommands: false,
-    showMovementControls: true,
-    showQuickSlots: true,
+    // interface options
     showMinimap: true,
-    showAllies: true,
-    showAffects: true,
-    showQuests: true,
-    showRoomInfo: true,
+    showRoomInfo: false,
+    showAffects: false,
+    showQuests: false,
+
+    showTabs: true,
+    showQuickSlots: true,
+    showPartyStats: true,
+    textInputMobileButtons: true,
+
+    showSideMap: false,
+    showSideMovement: false,
+    showSideAliases: false,
+    showGameModalShortcuts: true,
 
     // font options
     fontFamily: 'Ubuntu Mono, monospace',
@@ -223,13 +231,11 @@ export function prevMode () {
 
 export function showHUD () {
   const {
-    showMinimap, showMovementControls, showRoomInfo,
-    showAllies, showAffects, showQuests,
+    showMinimap, showRoomInfo, showAffects, showQuests,
   } = state.options
 
   return (
-    showMinimap || showMovementControls || showRoomInfo ||
-    showAllies || showAffects || showQuests
+    showMinimap || showRoomInfo || showAffects || showQuests
   )
 }
 
@@ -444,6 +450,10 @@ export function resetInputMappings () {
       event: 'sendCommand',
       bindings: [{
         keyCode: 'Enter',
+        modes: ['input', 'modal-input']
+      }, {
+        keyCode: 'Enter',
+        shift: true,
         modes: ['input', 'modal-input']
       }],
     },
