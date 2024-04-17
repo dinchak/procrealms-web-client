@@ -3,6 +3,10 @@
 
     <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
 
+    <div class="actions">
+      <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
+    </div>
+
     <div class="tags">
       <div class="tag black">[<span class="bold-cyan">{{ ucfirst(item.type) }}</span>]</div>
       <div v-if="item.subtype && item.type != item.subtype" class="tag black">[<span class="bold-blue">{{ ucfirst(item.subtype) }}</span>]</div>
@@ -53,10 +57,6 @@
         <div class="label">Skills Needed:</div>
         <div class="value" v-html-safe="renderSkillsRequired()"></div>
       </div>
-    </div>
-
-    <div class="actions">
-      <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
 
   </div>
