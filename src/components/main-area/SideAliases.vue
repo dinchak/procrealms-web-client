@@ -38,7 +38,7 @@ function getBottom () {
   }
 
   if (state.options.showPartyStats) {
-    bottomOffset += 55
+    bottomOffset += 65
   }
 
   return bottomOffset + 'px'

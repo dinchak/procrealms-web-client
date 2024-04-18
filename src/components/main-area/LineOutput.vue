@@ -296,7 +296,7 @@ function getOutputHeight () {
   }
 
   if (state.options.showPartyStats) {
-    heightOffset += 55
+    heightOffset += 65
   }
 
   if (state.options.showQuickSlots && currentPane.value === 'output') {

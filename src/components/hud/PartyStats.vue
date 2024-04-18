@@ -1,6 +1,9 @@
 <template>
   <div class="party-health-container">
     <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
+
+      <div class="name" v-html-safe="ansiToHtml(member.colorName)"></div>
+
       <div class="health-bar">
         <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
         <div class="health-bar-content">
@@ -23,14 +26,25 @@
         </div>
       </div>
 
-      <div class="name">{{ member.name }}</div>
+      <div class="shortflags" v-html-safe="getShortFlags(member)"></div>
     </div>
   </div>
 </template>
 <script setup>
 import { state } from '@/composables/state'
+import { useHelpers } from '@/composables/helpers'
 
-const getPartyMembers = () => {
+const { ansiToHtml } = useHelpers()
+
+function getShortFlags (member) {
+  return ansiToHtml(
+    Object.values(member.affects)
+      .map(affect => affect.shortFlag)
+      .join(' ')
+  )
+}
+
+function getPartyMembers () {
   let members = Object.values(state.gameState.party)
   members.sort((a, b) => a.traits.includes('player') ? -1 : a.name.localeCompare(b.name))
   return members
@@ -42,7 +56,8 @@ const getPartyMembers = () => {
   flex-direction: row;
   flex-wrap: nowrap;
   padding: 0 10px;
-  height: 55px;
+  height: 65px;
+  overflow-x: scroll;
 
   .party-member {
     display: flex;
@@ -53,7 +68,7 @@ const getPartyMembers = () => {
 
     .health-bar {
       width: 201px;
-      height: 16px;
+      height: 12px;
       background-color: #333;
       overflow: hidden;
       position: relative;
@@ -70,8 +85,8 @@ const getPartyMembers = () => {
 
       .health-bar-content {
         width: 100%;
-        font-size: 0.9rem;
-        line-height: 16px;
+        line-height: 0.9;
+        font-size: 0.8rem;
         color: white;
         text-align: center;
         position: absolute;
@@ -86,7 +101,7 @@ const getPartyMembers = () => {
       
       .energy-bar, .stamina-bar {
         width: 99px;
-        height: 16px;
+        height: 12px;
         background-color: #333;
         overflow: hidden;
         position: relative;
@@ -108,8 +123,8 @@ const getPartyMembers = () => {
 
         .energy-bar-content, .stamina-bar-content {
           width: 100%;
-          font-size: 0.9rem;
-          line-height: 16px;
+          line-height: 0.9;
+          font-size: 0.8rem;
           color: #fff;
           text-align: center;
           position: absolute;
@@ -128,8 +143,15 @@ const getPartyMembers = () => {
       }
     }
 
+    .shortflags {
+      font-size: 0.8rem;
+      line-height: 0.9;
+      text-align: left;
+      width: 100%;
+    }
+
     .name {
-      line-height: 18px;
+      font-size: 0.9rem;
     }
   }
 }

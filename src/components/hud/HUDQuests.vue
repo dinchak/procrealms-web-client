@@ -116,8 +116,9 @@ function questHasObjectives (quest) {
       .objectives {
         display: flex;
         flex-direction: column;
+        max-width: 300px;
         .objective {
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           line-height: 0.9;
         }
       }
