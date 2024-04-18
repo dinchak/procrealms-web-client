@@ -1,5 +1,5 @@
 <template>
-  <div class="room-info">
+  <div class="room-info" :style="{ height: getHUDHeight() + 'px' }">
     <div class="room-title" v-html-safe="getRoomTitle()"></div>
     <div class="area-title yellow">{{ state.gameState.room.area }}</div>
     <div class="entities">
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, ansi } = useHelpers()
@@ -49,7 +49,6 @@ function getRoomTitle () {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  height: 130px;
   min-width: 250px;
   width: 100%;
   margin-right: 10px;

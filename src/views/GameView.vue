@@ -37,7 +37,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { state, setMode, showHUD } from '@/composables/state'
+import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/composables/state'
 import { NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
@@ -97,11 +97,11 @@ function getSideAreaHeight () {
   }
 
   if (state.options.showPartyStats) {
-    heightOffset += 65
+    heightOffset += getPartyStatsHeight()
   }
 
   if (showHUD()) {
-    heightOffset += 140
+    heightOffset += getHUDHeight()
   }
 
   return `calc(100vh - ${heightOffset}px)`

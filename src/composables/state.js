@@ -241,6 +241,27 @@ export function showHUD () {
   )
 }
 
+export function getHUDHeight () {
+  if (state.options.fontSize == '14px') {
+    return 115
+  } else if (state.options.fontSize == '16px') {
+    return 130
+  } else if (state.options.fontSize == '18px') {
+    return 145
+  }
+}
+
+export function getPartyStatsHeight () {
+  if (state.options.fontSize == '14px') {
+    return 60
+  } else if (state.options.fontSize == '16px') {
+    return 67
+  } else if (state.options.fontSize == '18px') {
+    return 75
+  }
+
+}
+
 export function addLine (line, bufferName) {
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)

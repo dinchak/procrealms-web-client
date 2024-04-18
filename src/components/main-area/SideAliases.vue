@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup>
-import { state, showHUD } from '@/composables/state'
+import { state, showHUD, getHUDHeight, getPartyStatsHeight } from '@/composables/state'
 import { NButton } from 'naive-ui'
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -30,7 +30,7 @@ function getBottom () {
   }
 
   if (showHUD()) {
-    bottomOffset += 140
+    bottomOffset += getHUDHeight()
   }
 
   if (state.options.showQuickSlots) {
@@ -38,7 +38,7 @@ function getBottom () {
   }
 
   if (state.options.showPartyStats) {
-    bottomOffset += 65
+    bottomOffset += getPartyStatsHeight()
   }
 
   return bottomOffset + 'px'
