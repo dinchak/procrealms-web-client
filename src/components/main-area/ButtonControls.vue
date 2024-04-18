@@ -71,6 +71,9 @@ function toggleGameModal() {
 </script>
 <style scoped lang="less">
 .interface-overlay {
+  position: absolute;
+  top: 5px;
+  right: 10px;
   .interface {
     display: flex;
     flex-direction: row;

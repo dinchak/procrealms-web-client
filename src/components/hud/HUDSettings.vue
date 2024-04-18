@@ -188,8 +188,8 @@ function refreshMapSettings () {
 <style scoped lang="less">
 .hud-settings-container {
   position: absolute;
-  top: 50px;
-  right: 10px;
+  top: 40px;
+  right: 0px;
   z-index: 5px;
   display: flex;
   flex-direction: column;

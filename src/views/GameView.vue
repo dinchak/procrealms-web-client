@@ -12,14 +12,16 @@
 
       <div class="content-area">
         <LineOutput></LineOutput>
+        <ButtonControls></ButtonControls>
         <div class="side-area" :style="{ height: getSideAreaHeight() }">
-          <ButtonControls></ButtonControls>
           <div class="row">
             <SideMap v-if="!state.gameState.battle.active"></SideMap>
             <GameModalShortcuts v-if="state.options.showGameModalShortcuts"></GameModalShortcuts>
           </div>
-          <SideAliases></SideAliases>
-          <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
+          <div class="row" :style="{ marginTop: '10px' }">
+            <SideAliases></SideAliases>
+            <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
+          </div>
         </div>
       </div>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
@@ -89,7 +91,7 @@ function openHelpModal () {
 }
 
 function getSideAreaHeight () {
-  let heightOffset = 50
+  let heightOffset = 90
   if (state.options.showQuickSlots) {
     heightOffset += 56
   }
@@ -173,7 +175,7 @@ onBeforeUnmount(() => {
     flex-direction: row;
     justify-content: space-between;
     .side-area {
-      margin-top: 10px;
+      margin-top: 40px;
       margin-right: 10px;
       overflow-y: scroll;
       .row {

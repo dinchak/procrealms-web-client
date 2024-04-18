@@ -47,13 +47,11 @@ function getBottom () {
 </script>
 <style lang="less">
 .aliases {
-  z-index: 4;
-  max-width: 200px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-end;
-  margin-right: 8px;
+  max-width: 200px;
   .n-button {
     margin-left: 5px;
     margin-bottom: 5px;

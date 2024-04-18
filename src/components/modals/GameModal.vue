@@ -112,7 +112,7 @@ const miniOutputEnabled = ref(false)
 const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options', 'mappings'])
 
 function onOpenModal () {
-  currentPane.value = state.gamepadTab || "score"
+  // currentPane.value = state.gamepadTab || "score"
   scrollDown()
 }
 
@@ -202,6 +202,10 @@ function getGameModalTabsClass () {
   }
 }
 
+watch(() => state.gamepadTab, () => {
+  currentPane.value = state.gamepadTab
+})
+
 let watchers = []
 onMounted(() => {
   state.inputEmitter.on('closeModal', onCloseModal)
@@ -235,7 +239,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
-
 .game-modal {
   min-height: 100vh;
   width: 100vw;

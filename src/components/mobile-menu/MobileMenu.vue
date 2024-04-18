@@ -3,15 +3,15 @@
     <div class="stats-area">
       <PlayerStats></PlayerStats>
       <div class="bottom-area" >
-        <div class="quick-slots" v-show="state.options.showQuickSlots">
+        <div class="quick-slots">
           <QuickSlots :layout-mode="'mobile'"></QuickSlots>
         </div>
         <div class="battle-area" v-show="state.gameState.battle.active">
           <BattleControls></BattleControls>
         </div>
-        <div class="map-actions">
+        <!-- <div class="map-actions">
           <MapActions v-show="!state.gameState.battle.active"></MapActions>
-        </div>
+        </div> -->
         <div class="map-area" v-show="!state.gameState.battle.active">
           <MoveControls></MoveControls>
           <MiniMap v-if="state.options.showMobileMenuMap"></MiniMap>

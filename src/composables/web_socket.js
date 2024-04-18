@@ -6,6 +6,7 @@ let moveTimeout = null
 
 export function useWebSocket () {
   function initConnection ({ onConnect, onClose, onEvent, url }) {
+    console.log(`mode=${import.meta.env.MODE}`)
     try {
       ws = new window.WebSocket(url)
 
@@ -22,7 +23,7 @@ export function useWebSocket () {
         if (id) {
           state.cache.commandCache[id] = msg
         }
-        if (import.meta.env.MODE != 'production') {
+        if (import.meta.env.MODE == 'development') {
           console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
@@ -41,7 +42,7 @@ export function useWebSocket () {
   }
 
   function send (cmd, msg, id = false) {
-    if (import.meta.env.MODE != 'production') {
+    if (import.meta.env.MODE == 'development') {
       console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
     }
     let out = { cmd, msg }

@@ -89,7 +89,7 @@ function getEnterClass () {
       height: 41px;
       background-color: #333;
       transition: all 0.3s;
-      margin-right: 5px;
+      margin-left: 5px;
       &.active {
         opacity: 0.3;
         background-color: #222;
