@@ -86,7 +86,7 @@ function questHasObjectives (quest) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      min-height: 28px;
+      min-height: 30px;
       .name {
         margin-right: 5px;
         min-width: 150px;
@@ -117,7 +117,8 @@ function questHasObjectives (quest) {
         display: flex;
         flex-direction: column;
         .objective {
-          font-size: 0.8rem;
+          font-size: 0.9rem;
+          line-height: 0.9;
         }
       }
     }

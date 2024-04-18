@@ -14,6 +14,6 @@ import MovementControls from '@/components/common/MovementControls.vue'
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  margin-right: 3px;
+  margin-left: 10px;
 }
 </style>
