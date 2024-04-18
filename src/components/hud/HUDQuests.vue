@@ -1,5 +1,5 @@
 <template>
-  <div class="quests">
+  <div class="quests" :style="{ height: getHUDHeight() }">
     <div v-if="state.gameState.quests.length == 0">
       No quests
     </div>
@@ -35,7 +35,7 @@
 </template>
 <script setup>
 import { NProgress } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, ansi } = useHelpers()
@@ -66,7 +66,6 @@ function questHasObjectives (quest) {
 
 <style lang="less" scoped>
 .quests {
-  height: 130px;
   overflow-y: scroll;
   min-width: 600px;
   width: 100%;

@@ -1,5 +1,5 @@
 <template>
-  <div class="affects">
+  <div class="affects" :style="{ height: getHUDHeight() + 'px' }">
     <div class="affect" v-if="Object.values(state.gameState.affects).length == 0">
       <div class="name">No affects</div>
     </div>
@@ -31,7 +31,7 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { ansi } from '@/composables/constants/ansi'
 const { ansiToHtml } = useHelpers()
@@ -57,7 +57,6 @@ function getTimeLeftColor (affect) {
 .affects {
   display: flex;
   flex-direction: column;
-  height: 130px;
   overflow-y: scroll;
   min-width: 200px;
   width: 100%;

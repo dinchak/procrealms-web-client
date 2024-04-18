@@ -1,24 +1,24 @@
 <template>
-  <div class="party-health-container">
+  <div class="party-health-container" :style="{ height: getPartyStatsHeight() + 'px' }">
     <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
       <div class="name" v-html-safe="ansiToHtml(member.colorName)"></div>
 
-      <div class="health-bar">
+      <div class="health-bar" :style="{ height: `calc(${state.options.fontSize} - 2px)` }">
         <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
         <div class="health-bar-content">
           {{ member.hp }} HP
         </div>
       </div>
       <div class="energy-stamina-bars">
-        <div class="energy-bar">
+        <div class="energy-bar" :style="{ height: `calc(${state.options.fontSize} - 2px)` }">
           <div class="energy-bar-fill" :style="{ width: (member.energy / member.maxEnergy) * 100 + '%' }"></div>
           <div class="energy-bar-content">
             {{ member.energy }} EN
           </div>
         </div>
 
-        <div class="stamina-bar">
+        <div class="stamina-bar" :style="{ height: `calc(${state.options.fontSize} - 2px)` }">
           <div class="stamina-bar-fill" :style="{ width: (member.stamina / member.maxStamina) * 100 + '%' }"></div>
           <div class="stamina-bar-content">
             {{ member.stamina }} ST
@@ -31,7 +31,7 @@
   </div>
 </template>
 <script setup>
-import { state } from '@/composables/state'
+import { state, getPartyStatsHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()
@@ -56,7 +56,6 @@ function getPartyMembers () {
   flex-direction: row;
   flex-wrap: nowrap;
   padding: 0 10px;
-  height: 65px;
   overflow-x: scroll;
 
   .party-member {
@@ -68,7 +67,6 @@ function getPartyMembers () {
 
     .health-bar {
       width: 201px;
-      height: 12px;
       background-color: #333;
       overflow: hidden;
       position: relative;
@@ -85,8 +83,7 @@ function getPartyMembers () {
 
       .health-bar-content {
         width: 100%;
-        line-height: 0.9;
-        font-size: 0.8rem;
+        line-height: 0.8;
         color: white;
         text-align: center;
         position: absolute;
@@ -101,7 +98,6 @@ function getPartyMembers () {
       
       .energy-bar, .stamina-bar {
         width: 99px;
-        height: 12px;
         background-color: #333;
         overflow: hidden;
         position: relative;
@@ -123,8 +119,7 @@ function getPartyMembers () {
 
         .energy-bar-content, .stamina-bar-content {
           width: 100%;
-          line-height: 0.9;
-          font-size: 0.8rem;
+          line-height: 0.8;
           color: #fff;
           text-align: center;
           position: absolute;
@@ -144,14 +139,11 @@ function getPartyMembers () {
     }
 
     .shortflags {
-      font-size: 0.8rem;
-      line-height: 0.9;
       text-align: left;
       width: 100%;
     }
 
     .name {
-      font-size: 0.9rem;
     }
   }
 }
