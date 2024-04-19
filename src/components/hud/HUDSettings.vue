@@ -131,6 +131,17 @@
       </NSlider>
     </div>
 
+    <NRadioGroup v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
+      <NRadioButton
+        v-for="fontSize in FONT_SIZES"
+        :key="fontSize.value"
+        :value="fontSize.value"
+        :label="fontSize.label"
+        @change="changeFontSize"
+        class="selectable"
+      />
+    </NRadioGroup>
+
   </div>
 </template>
 <script setup>
@@ -139,7 +150,7 @@ import { NButton, NIconWrapper, NIcon, NSlider } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
-
+import { FONT_SIZES } from '@/composables/constants'
 
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'

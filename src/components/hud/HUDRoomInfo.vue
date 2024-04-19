@@ -24,8 +24,9 @@
 <script setup>
 import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
+import { ANSI } from '@/composables/constants'
 
-const { ansiToHtml, ansi } = useHelpers()
+const { ansiToHtml } = useHelpers()
 
 function getRoomEntities () {
   return state.gameState.room.entities.filter(en => 
@@ -39,7 +40,7 @@ function getRoomItems () {
 
 function getRoomTitle () {
   const { room } = state.gameState
-  return ansiToHtml(`${ansi.reset}L${ansi.boldWhite}${room.level} ${ansi.boldMagenta}${room.x}${ansi.reset}, ${ansi.boldMagenta}${room.y} ${ansi.boldBlack}| ${room.name}`)
+  return ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${room.level} ${ANSI.boldMagenta}${room.x}${ANSI.reset}, ${ANSI.boldMagenta}${room.y} ${ANSI.boldBlack}| ${room.name}`)
 }
 
 </script>

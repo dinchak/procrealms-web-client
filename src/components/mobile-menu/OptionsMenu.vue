@@ -46,14 +46,14 @@
       class="font-selector"
       v-model:value="state.options.fontFamily"
       placeholder="Select Font"
-      :options="fontOptions"
+      :options="FONT_OPTIONS"
       aria-label="Select Font"
       @update:value="setFont"
     />
 
     <n-radio-group v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
       <n-radio-button
-        v-for="fontSize in fontSizes"
+        v-for="fontSize in FONT_SIZES"
         :key="fontSize.value"
         :value="fontSize.value"
         :label="fontSize.label"
@@ -78,56 +78,11 @@ import { ref } from 'vue'
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
+import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
 
 const { triggerResize } = useWindowHandler()
 
-const fontSizes = [{
-  value: '14px',
-  label: 'Small'
-}, {
-  value: '16px',
-  label: 'Medium'
-}, {
-  value: '18px',
-  label: 'Large'
-}]
-
 const selectedFontSize = ref(state.options.fontSize)
-
-const fontOptions = [
-{
-  label: 'Big Blue Terminal',
-  value: 'Big Blue Terminal, monospace'
-},
-{
-  label: 'Consola Mono',
-  value: 'Consola Mono, monospace'
-},
-{
-  label: 'DOS',
-  value: 'DOS, monospace'
-},
-{
-  label: 'Inconsolata',
-  value: 'Inconsolata, monospace'
-},
-{
-  label: 'Monofonto',
-  value: 'Monofonto, monospace'
-},
-{
-  label: 'Source Code Pro',
-  value: 'Source Code Pro, monospace'
-},
-{
-  label: 'Ubuntu Mono',
-  value: 'Ubuntu Mono, monospace'
-},
-{
-  label: 'VT323',
-  value: '"VT323", monospace'
-}
-]
 
 async function goFullscreen () {
   let app = document.getElementById('app')

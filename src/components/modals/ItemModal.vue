@@ -58,12 +58,13 @@
 </template>
 
 <script setup>
-import { NCard, NTabs, NTabPane, NButton, NInputNumber } from 'naive-ui'
 import { defineProps, ref, watch} from 'vue'
+import { NCard, NTabs, NTabPane, NButton, NInputNumber } from 'naive-ui'
+
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, addLine } from '@/composables/state'
-import { command_ids } from '@/composables/constants/command_ids'
+import { COMMAND_IDS } from '@/composables/constants'
 
 const { ansiToHtml, getActions } = useHelpers()
 const { cmd } = useWebSocket()
@@ -83,10 +84,10 @@ const mercOrder = props.isPlayer ? "" : `order eid:${props.charEId.toString()} `
 
 watch(() => props.item, () => {
   if (isVisible.value) {
-    const examineCommandCacheKey = command_ids.EXAMINE + props.item.iid.toString()
+    const examineCommandCacheKey = COMMAND_IDS.EXAMINE + props.item.iid.toString()
     cmd(`${mercOrder}examine iid:${props.item.iid}`, examineCommandCacheKey)
 
-    const compareCommandCacheKey = command_ids.COMPARE + props.item.iid.toString()
+    const compareCommandCacheKey = COMMAND_IDS.COMPARE + props.item.iid.toString()
     cmd(`${mercOrder}compare iid:${props.item.iid}`, compareCommandCacheKey)
 
     setActions()
@@ -133,11 +134,11 @@ watch(() => state.modals.inventoryModals.mercItemModal, () => {
   }
 })
 
-watch(() => state.cache.commandCache[command_ids.MERC_ACTION], () => {
-  if (state.cache.commandCache[command_ids.MERC_ACTION] && !state.cache.commandCache[command_ids.MERC_ACTION].includes("iid:")) {
-    addLine(ansiToHtml(state.cache.commandCache[command_ids.MERC_ACTION]), 'output')
+watch(() => state.cache.commandCache[COMMAND_IDS.MERC_ACTION], () => {
+  if (state.cache.commandCache[COMMAND_IDS.MERC_ACTION] && !state.cache.commandCache[COMMAND_IDS.MERC_ACTION].includes("iid:")) {
+    addLine(ansiToHtml(state.cache.commandCache[COMMAND_IDS.MERC_ACTION]), 'output')
   }
-  state.cache.commandCache[command_ids.MERC_ACTION] = null
+  state.cache.commandCache[COMMAND_IDS.MERC_ACTION] = null
 })
 
 // Setters
@@ -193,7 +194,7 @@ function closeModal() {
 
 function dropAll() {
   props.isPlayer ? cmd(`drop all iid:${props.item.iid}`)
-      : cmd(`${mercOrder}drop all iid:${props.item.iid}`, command_ids.MERC_ACTION)
+      : cmd(`${mercOrder}drop all iid:${props.item.iid}`, COMMAND_IDS.MERC_ACTION)
   closeModal()
 }
 
@@ -202,13 +203,13 @@ function dropItems() {
     closeModal()
   }
   props.isPlayer ? cmd(`drop ${dropValue.value}x iid:${props.item.iid}`)
-      : cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`, command_ids.MERC_ACTION)
+      : cmd(`${mercOrder}drop ${dropValue.value}x iid:${props.item.iid}`, COMMAND_IDS.MERC_ACTION)
 }
 
 function giveAll() {
   if (state.mercEid !== -1) {
     props.isPlayer ? cmd(`give all iid:${props.item.iid} eid:${otherChar}`)
-        : cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, command_ids.MERC_ACTION)
+        : cmd(`${mercOrder}give all iid:${props.item.iid} eid:${otherChar}`, COMMAND_IDS.MERC_ACTION)
     closeModal()
   }
 }
@@ -219,12 +220,12 @@ function giveItems() {
       closeModal()
     }
     props.isPlayer ? cmd(`give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`)
-        : cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`, command_ids.MERC_ACTION)
+        : cmd(`${mercOrder}give ${giveValue.value}x iid:${props.item.iid} eid:${otherChar}`, COMMAND_IDS.MERC_ACTION)
   }
 }
 
 function rawExamine () {
-  const str = state.cache.commandCache[`${command_ids.EXAMINE}${props.item.iid}`]
+  const str = state.cache.commandCache[`${COMMAND_IDS.EXAMINE}${props.item.iid}`]
   if (str) {
     return str
   } else {
@@ -233,7 +234,7 @@ function rawExamine () {
 }
 
 function rawCompare () {
-  const str = state.cache.commandCache[`${command_ids.COMPARE}${props.item.iid}`]
+  const str = state.cache.commandCache[`${COMMAND_IDS.COMPARE}${props.item.iid}`]
   if (str) {
     return str
   } else {
@@ -253,7 +254,7 @@ function clickedAction(action) {
   }
 
   props.isPlayer ? cmd(`${action} iid:${props.item.iid}`)
-      : cmd(`${mercOrder}${action} iid:${props.item.iid}`, command_ids.MERC_ACTION)
+      : cmd(`${mercOrder}${action} iid:${props.item.iid}`, COMMAND_IDS.MERC_ACTION)
 }
 
 </script>

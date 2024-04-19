@@ -66,9 +66,9 @@
 import { defineProps, toRefs } from 'vue'
 import { NButton } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
-import { constants } from '@/composables/constants/constants'
+import { ANSI, ITEM_EFFECTS } from '@/composables/constants'
 
-const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, ansi, listToString } = useHelpers()
+const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, listToString } = useHelpers()
 
 const props = defineProps({
   item: {
@@ -165,7 +165,7 @@ function getItemBonuses () {
   let bonusKeys = Object.keys(item.value)
 
   for (let key of bonusKeys) {
-    let itemEffect = constants.ITEM_EFFECTS.find(effect => effect.bonus == key)
+    let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == key)
     if (!itemEffect) {
       continue
     }
@@ -183,7 +183,7 @@ function getItemBonuses () {
   if (item.value.flags) {
     for (let flag of item.value.flags) {
       for (let bonus of flag.bonuses) {
-        let itemEffect = constants.ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
+        let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
         let row = bonuses.find(b => b.label == (itemEffect ? itemEffect.label : bonus.name))
         if (row) {
           row.amount += bonus.amount
@@ -204,7 +204,7 @@ function getItemBonuses () {
 
   if (item.value.bonuses) {
     for (let bonus of item.value.bonuses) {
-      let itemEffect = constants.ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
+      let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
       let row = bonuses.find(b => b.label == (itemEffect ? itemEffect.label : bonus.name))
 
       if (row) {
@@ -259,12 +259,12 @@ function renderGemSlotBonus (slotNum) {
   }
 
   let bonus = flag.bonuses[0]
-  let itemEffect = constants.ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
+  let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
   if (!itemEffect) {
     return ''
   }
 
-  return `${ansi.boldBlack}[${ansi.green}+${ansi.boldGreen}${bonus.amount} ${ansi.boldWhite}${itemEffect.label}${ansi.boldBlack}]`
+  return `${ANSI.boldBlack}[${ANSI.green}+${ANSI.boldGreen}${bonus.amount} ${ANSI.boldWhite}${itemEffect.label}${ANSI.boldBlack}]`
 }
 
 function renderIngredients () {

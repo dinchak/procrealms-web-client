@@ -5,13 +5,13 @@
     </div>
 
     <div class="affect" v-for="affect in Object.values(state.gameState.affects)" :key="affect.name">
-      <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ansi.reset + affect.longFlag) : ansiToHtml(ansi.reset + affect.name)"></div>
+      <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ANSI.reset + affect.longFlag) : ansiToHtml(ANSI.reset + affect.name)"></div>
 
       <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
       v-show="typeof affect.timeLeft == 'number'"
       :status="getTimeLeftColor(affect)" :percentage="getTimeLeftPercentage(affect)" />
 
-      <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ansi.reset + affect.desc)"></div>
+      <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ANSI.reset + affect.desc)"></div>
 
       <div class="bonuses">
 
@@ -31,9 +31,11 @@
 
 <script setup>
 import { NProgress } from 'naive-ui'
+
 import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
-import { ansi } from '@/composables/constants/ansi'
+import { ANSI } from '@/composables/constants'
+
 const { ansiToHtml } = useHelpers()
 
 function getTimeLeftPercentage (affect) {
