@@ -77,7 +77,7 @@
             placeholder="Select Font"
             :options="FONT_OPTIONS"
             aria-label="Select Font"
-            @update:value="setFont"
+            @update:value="onSetFontFamily"
           />
         </NGi>
         <NGi style="text-align: center">
@@ -87,7 +87,7 @@
               :key="fontSize.value"
               :value="fontSize.value"
               :label="fontSize.label"
-              @change="changeFontSize"
+              @change="onSetFontSize"
               class="selectable"
             />
           </NRadioGroup>
@@ -137,24 +137,22 @@ import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
-const { triggerResize } = useWindowHandler()
+const { triggerResize, setFontFamily, setFontSize } = useWindowHandler()
 
 const selectedFontSize = ref(state.options.fontSize)
+const selectedFontFamily = ref(state.options.fontFamily)
+
+function onSetFontSize () {
+  setFontSize(selectedFontSize.value)
+}
+
+function onSetFontFamily () {
+  setFontFamily(selectedFontFamily.value)
+}
 
 async function goFullscreen () {
   let app = document.getElementById('app')
   await app.requestFullscreen()
-  triggerResize()
-}
-
-function setFont () {
-  document.getElementById('app').style.fontFamily = state.options.fontFamily
-  triggerResize()
-}
-
-function changeFontSize () {
-  state.options.fontSize = selectedFontSize.value
-  document.getElementById('app').style.fontSize = selectedFontSize.value
   triggerResize()
 }
 

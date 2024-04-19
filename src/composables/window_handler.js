@@ -42,6 +42,18 @@ export function useWindowHandler () {
     state.metaKeyState.alt = state.metaKeyState.ctrl = state.metaKeyState.shift = false
   }
 
+  function setFontSize (fontSize) {
+    state.options.fontSize = fontSize
+    document.getElementById('app').style.fontSize = fontSize
+    triggerResize()
+  }
+
+  function setFontFamily (fontFamily) {
+    state.options.fontFamily = fontFamily
+    document.getElementById('app').style.fontFamily = fontFamily
+    triggerResize()
+  }
+
   onMounted(() => {
     window.addEventListener('resize', triggerResize)
     window.addEventListener('focus', onWindowFocusBlur)
@@ -54,5 +66,5 @@ export function useWindowHandler () {
     window.removeEventListener('blur', onWindowFocusBlur)
   })
 
-  return { onResize, triggerResize, calcTerminalSize }
+  return { onResize, triggerResize, calcTerminalSize, setFontSize, setFontFamily }
 }
