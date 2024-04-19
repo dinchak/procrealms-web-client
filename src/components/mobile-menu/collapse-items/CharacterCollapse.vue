@@ -499,7 +499,7 @@ import { defineProps, ref, onMounted, watch } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
-import { constants } from '@/composables/constants/constants'
+import { DAMAGE_TYPE_COLORS } from '@/composables/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
@@ -544,7 +544,7 @@ function getDamageBonus () {
 }
 
 function getDamageColor () {
-  return constants.DAMAGE_TYPE_COLORS[getDamageType()]
+  return DAMAGE_TYPE_COLORS[getDamageType()]
 }
 
 function getDamageType () {

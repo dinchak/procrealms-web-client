@@ -46,13 +46,10 @@
 
 <script setup>
 import { defineProps, toRefs } from 'vue'
-// import { NProgress } from 'naive-ui'
-
-// import { state } from '@/composables/state'
-
 import { useHelpers } from '@/composables/helpers'
+import { ANSI } from '@/composables/constants'
 
-const { ansiToHtml, ansi } = useHelpers()
+const { ansiToHtml } = useHelpers()
 
 const props = defineProps({
   entity: Object,
@@ -62,11 +59,11 @@ const props = defineProps({
 const { entity, affects } = toRefs(props)
 
 function getName() {
-  return ansiToHtml(`${ansi.reset}L${ansi.boldWhite}${entity.value.level} ${entity.value.colorName}`)
+  return ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${entity.value.level} ${entity.value.colorName}`)
 }
 
 function getShortAffects () {
-  return ansi.reset + affects.value.join(' ')
+  return ANSI.reset + affects.value.join(' ')
 }
 
 function getHungerPercentage () {

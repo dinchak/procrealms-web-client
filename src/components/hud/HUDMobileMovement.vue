@@ -36,11 +36,12 @@ import { NIcon } from 'naive-ui'
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/composables/state'
 
+import { DIRECTION_MAP } from '@/composables/constants'
+
 const { cmd } = useWebSocket()
 
 let moveTimeout = null
 let selectedDirection = ref('enter')
-
 
 function getMovementClass (dir) {
   let { room } = state.gameState
@@ -80,7 +81,7 @@ function selectMovementDirection (degree) {
   }
 
   if (degree == false) {
-    selectedDirection.value = directionMap[0]
+    selectedDirection.value = DIRECTION_MAP[0]
     return
   }
 
@@ -90,7 +91,7 @@ function selectMovementDirection (degree) {
   }
 
   let itemNumber = Math.ceil(offsetDegree / 360 * 8)
-  selectedDirection.value = directionMap[itemNumber]
+  selectedDirection.value = DIRECTION_MAP[itemNumber]
 }
 
 function moveInSelectedDirection () {

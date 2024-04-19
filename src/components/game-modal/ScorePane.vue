@@ -418,7 +418,7 @@ import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
 import AddFilled from '@vicons/material/AddFilled'
 
-import { constants } from '@/composables/constants/constants'
+import { DAMAGE_TYPE_COLORS } from '@/composables/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
@@ -471,7 +471,7 @@ function getDamageBonus () {
 }
 
 function getDamageColor () {
-  return constants.DAMAGE_TYPE_COLORS[getDamageType()]
+  return DAMAGE_TYPE_COLORS[getDamageType()]
 }
 
 function getDamageType () {

@@ -2,7 +2,7 @@
   <div :class="getClass(participant)" @click="target(participant)">
     <div class="name-row">
       <div class="name">
-        <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ansi.boldWhite}${participant.level} ${participant.name}`)"></div>
+        <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
         <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
       </div>
 
@@ -70,8 +70,9 @@ import stripAnsi from 'strip-ansi'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
+import { ANSI } from '@/composables/constants'
 
-const { ansiToHtml, ansi } = useHelpers()
+const { ansiToHtml } = useHelpers()
 const { cmd } = useWebSocket()
 
 const props = defineProps({
@@ -98,7 +99,7 @@ function getClass (participant) {
 
 function getAffects (participant) {
   if (participant.hpPercent == 0) {
-    return ansi.boldRed + 'DEAD' + ansi.reset
+    return ANSI.boldRed + 'DEAD' + ANSI.reset
   }
   if (participant.affects.length == 0) {
     return ''

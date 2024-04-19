@@ -2,11 +2,7 @@ import { AnsiUp } from 'ansi_up'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
-
-import { action_mapper } from '@/composables/constants/action_mapper'
-import { ansi } from '@/composables/constants/ansi'
-import { ansi_replacements } from '@/composables/constants/ansi_replacements'
-import { directionMap } from '@/composables/constants/direction_map'
+import { ACTION_MAP, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/composables/constants'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
@@ -44,13 +40,13 @@ export function useHelpers () {
   function getActions (item, isPlayer) {
     const playerActions = []
     const mercActions = []
-    action_mapper.map(action => {
+    ACTION_MAP.map(action => {
       if (action.condition(item)) {
         playerActions.push(action.action)
       }
     })
 
-    action_mapper.map(action => {
+    ACTION_MAP.map(action => {
       if (action.condition(item) && !action.crafting) {
         mercActions.push(action.action)
       }
@@ -64,7 +60,7 @@ export function useHelpers () {
       return ''
     }
 
-    for (let { from, to } of ansi_replacements) {
+    for (let { from, to } of ANSI_REPLACEMENTS) {
       str = str.replace(new RegExp(from, 'g'), to)
     }
 
@@ -328,7 +324,7 @@ export function useHelpers () {
     }
   
     if (degree == false) {
-      state.selectedDirection = directionMap[0]
+      state.selectedDirection = DIRECTION_MAP[0]
       return
     }
   
@@ -338,7 +334,7 @@ export function useHelpers () {
     }
   
     let itemNumber = Math.ceil(offsetDegree / 360 * 8)
-    state.selectedDirection = directionMap[itemNumber]
+    state.selectedDirection = DIRECTION_MAP[itemNumber]
   }
   
   function moveInSelectedDirection () {
@@ -354,7 +350,9 @@ export function useHelpers () {
   }  
 
   return {
-    copperToMoneyString, getActions, ansiToHtml, getMerc, ansi, selectNearestElement, ucfirst, renderNumber, listToString, isGamepadConnected,
+    ucfirst, renderNumber, listToString, ansiToHtml,
+    copperToMoneyString, getActions, getMerc,
+    selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection
   }
 }

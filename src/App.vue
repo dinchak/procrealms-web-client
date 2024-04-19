@@ -13,16 +13,15 @@ import { onMounted, onBeforeUnmount } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
 
+import { state, resetState, resetMode } from './composables/state'
 import { useEventHandler } from '@/composables/event_handler'
 import { useWebSocket } from '@/composables/web_socket'
-import { constants } from '@/composables/constants/constants'
+import { CACHE_DELETE_TIME, CACHE_DELETE_INTERVAL } from '@/composables/constants'
 
 import InputHandler from '@/components/InputHandler.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from '@/components/modals/LoginModal.vue'
 import NewPlayerModal from '@/components/modals/NewPlayerModal.vue'
-
-import { state, resetState, resetMode } from './composables/state'
 
 const themeOverrides = {
   Button: {
@@ -63,7 +62,7 @@ function clearCache(object) {
     const date = object[key].date
     const difference = now - date
 
-    if (difference > constants.CACHE_DELETE_TIME) {
+    if (difference > CACHE_DELETE_TIME) {
       delete object[key]
     }
   })
@@ -75,7 +74,7 @@ onMounted(() => {
   cacheClearInterval = setInterval(() => {
     clearCache(state.cache.itemCache)
     clearCache(state.cache.entityCache)
-  }, constants.CACHE_DELETE_INTERVAL)
+  }, CACHE_DELETE_INTERVAL)
 })
 
 onBeforeUnmount(() => {

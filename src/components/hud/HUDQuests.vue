@@ -37,22 +37,23 @@
 import { NProgress } from 'naive-ui'
 import { state, getHUDHeight } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
+import { ANSI } from '@/composables/constants'
 
-const { ansiToHtml, ansi } = useHelpers()
+const { ansiToHtml } = useHelpers()
 
 function getQuestName (quest) {
-  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(ansi.reset + quest.name)}</span>`
+  return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(ANSI.reset + quest.name)}</span>`
 }
 
 function getQuestObjectives (quest) {
   let objectives = []
 
   if (quest.objective && quest.type != 'generated') {
-    objectives.push(ansiToHtml(`${ansi.reset}${quest.objective}`))
+    objectives.push(ansiToHtml(`${ANSI.reset}${quest.objective}`))
   }
 
   if (quest.extra && !quest.activity.startsWith('kill')) {
-    objectives.push(ansiToHtml(`${ansi.reset}${quest.extra}`))
+    objectives.push(ansiToHtml(`${ANSI.reset}${quest.extra}`))
   }
 
   return objectives

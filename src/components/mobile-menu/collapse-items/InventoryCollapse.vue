@@ -31,17 +31,20 @@
 </template>
 
 <script setup>
+import { ref, watch, onMounted, defineProps } from 'vue'
+import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
+
 import { state, setMode, prevMode } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
-import { ref, watch, onMounted, defineProps } from 'vue'
 import { useHelpers } from '@/composables/helpers'
-import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
+import { COMMAND_IDS } from '@/composables/constants'
+
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
-import { command_ids } from '@/composables/constants/command_ids'
-import ItemModal from '@/components/modals/ItemModal.vue';
+import ItemModal from '@/components/modals/ItemModal.vue'
 
 const { fetchItems, cmd } = useWebSocket()
 const { copperToMoneyString } = useHelpers()
+
 const props = defineProps(['inventory', 'isPlayer', 'character', 'affects', 'menu'])
 
 const items = ref([])
@@ -50,6 +53,8 @@ const filteredItems = ref([])
 const searchInput = ref(null)
 const clickedItem = ref({})
 const isModalOpen = ref(0)
+const value = ref('name')
+
 const options = [
   {
     label: 'Name',
@@ -76,9 +81,7 @@ const options = [
     value: 'value'
   }
 ]
-const value = ref('name')
 
-// Watchers
 onMounted(() => {
   setItems(props.inventory)
 
@@ -95,7 +98,6 @@ onMounted(() => {
   })
 })
 
-// Methods
 async function setItems (itemIIDs) {
   items.value = await fetchItems(itemIIDs)
 
@@ -120,7 +122,7 @@ function clickHandler(item) {
   isModalOpen.value++
   props.isPlayer ? state.modals.inventoryModals.playerItemModal = "inventory" : state.modals.inventoryModals.mercItemModal = "inventory"
 
-  const commandCacheKey = command_ids.EXAMINE + item.iid.toString()
+  const commandCacheKey = COMMAND_IDS.EXAMINE + item.iid.toString()
 
   const mercOrder = props.isPlayer ? '' : `order eid:${props.character.eid} `
   cmd(`${mercOrder}examine iid:${item.iid}`, commandCacheKey)
