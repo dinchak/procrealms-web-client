@@ -44,11 +44,11 @@
 
     <n-select
       class="font-selector"
-      v-model:value="state.options.fontFamily"
+      v-model:value="selectedFontFamily"
       placeholder="Select Font"
       :options="FONT_OPTIONS"
       aria-label="Select Font"
-      @update:value="setFont"
+      @update:value="onSetFontFamily"
     />
 
     <n-radio-group v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
@@ -57,7 +57,7 @@
         :key="fontSize.value"
         :value="fontSize.value"
         :label="fontSize.label"
-        @change="changeFontSize"
+        @change="onSetFontSize"
       />
     </n-radio-group>
 
@@ -80,24 +80,22 @@ import { state, setMode } from '@/composables/state'
 import { useWindowHandler } from '@/composables/window_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
 
-const { triggerResize } = useWindowHandler()
+const { triggerResize, setFontSize, setFontFamily } = useWindowHandler()
 
 const selectedFontSize = ref(state.options.fontSize)
+const selectedFontFamily = ref(state.options.fontFamily)
+
+function onSetFontSize () {
+  setFontSize(selectedFontSize.value)
+}
+
+function onSetFontFamily () {
+  setFontFamily(selectedFontFamily.value)
+}
 
 async function goFullscreen () {
   let app = document.getElementById('app')
   await app.requestFullscreen()
-  triggerResize()
-}
-
-function setFont () {
-  document.getElementById('app').style.fontFamily = state.options.fontFamily
-  triggerResize()
-}
-
-function changeFontSize () {
-  state.options.fontSize = selectedFontSize.value
-  document.getElementById('app').style.fontSize = selectedFontSize.value
   triggerResize()
 }
 

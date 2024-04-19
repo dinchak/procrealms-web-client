@@ -131,13 +131,22 @@
       </NSlider>
     </div>
 
+    <NSelect
+      class="font-selector"
+      v-model:value="selectedFontFamily"
+      placeholder="Select Font"
+      :options="FONT_OPTIONS"
+      aria-label="Select Font"
+      @update:value="onSetFontFamily"
+    />
+
     <NRadioGroup v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
       <NRadioButton
         v-for="fontSize in FONT_SIZES"
         :key="fontSize.value"
         :value="fontSize.value"
         :label="fontSize.label"
-        @change="changeFontSize"
+        @change="onSetFontSize"
         class="selectable"
       />
     </NRadioGroup>
@@ -145,12 +154,13 @@
   </div>
 </template>
 <script setup>
-import { NButton, NIconWrapper, NIcon, NSlider } from 'naive-ui'
+import { ref } from 'vue'
+import { NButton, NIconWrapper, NIcon, NSlider, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 
 import { state } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
-import { FONT_SIZES } from '@/composables/constants'
+import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
 
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'
@@ -167,7 +177,18 @@ import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
 import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
 const { send } = useWebSocket()
-const { triggerResize } = useWindowHandler()
+const { triggerResize, setFontFamily, setFontSize } = useWindowHandler()
+
+const selectedFontSize = ref(state.options.fontSize)
+const selectedFontFamily = ref(state.options.fontFamily)
+
+function onSetFontFamily () {
+  setFontFamily(selectedFontFamily.value)
+}
+
+function onSetFontSize () {
+  setFontSize(selectedFontSize.value)
+}
 
 function getOptionType (option) {
   return state.options[option] ? 'success' : ''
