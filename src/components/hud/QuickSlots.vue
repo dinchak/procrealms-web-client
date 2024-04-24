@@ -1,6 +1,6 @@
 <template>
   <div :class="'quick-container' + getMobileLayoutClass()">
-    <div :class="'quick-actions'  + getMobileLayoutClass()" v-show="state.activeTab == 'output'">
+    <div :class="'quick-actions'  + getMobileLayoutClass()">
 
       <div :class="getAttackButtonClass()" v-if="state.gameState.battle.active" @click="cmd('attack')">
         <div class="slot-label" v-if="getAttackButtonClass().includes('active')">

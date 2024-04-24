@@ -85,7 +85,8 @@ export const state = reactive({
     },
     topicsLoaded: false,
     matches: [],
-    contents: {}
+    contents: [],
+    openEntries: []
   }
 })
 

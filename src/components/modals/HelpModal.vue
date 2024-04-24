@@ -24,25 +24,53 @@
         <NTabs
           v-model:value="currentPane"
           :class="getTabsClass()"
+          :closable="true"
           type="card"
           tab-style="min-width: 80px;"
           ref="tabs"
+          @close="handleCloseTab"
         >
           
-          <NTabPane name="topics" tab="Topics">
+          <NTabPane name="topics" tab="Topics" :closable="false">
             <div :class="getScrollContainerClass()">
+              <h1>New Players</h1>
+              <div class="help-topics">
+                <div v-for="topic in state.help.topics.newbie" @click="loadHelpEntry(topic)">{{ topic }}</div>
+              </div>
               <h1>General</h1>
               <div class="help-topics">
-                <div v-for="topic in state.help.topics.general">{{ topic }}</div>
+                <div v-for="topic in state.help.topics.general" @click="loadHelpEntry(topic)">{{ topic }}</div>
               </div>
               <h1>Skills</h1>
               <div class="help-topics">
-                <div v-for="topic in state.help.topics.skills">{{ topic }}</div>
+                <div v-for="topic in state.help.topics.skills" @click="loadHelpEntry(topic)">{{ topic }}</div>
               </div>
               <h1>Commands</h1>
               <div class="help-topics">
-                <div v-for="topic in state.help.topics.commands">{{ topic }}</div>
+                <div v-for="topic in state.help.topics.commands" @click="loadHelpEntry(topic)">{{ topic }}</div>
               </div>
+            </div>
+          </NTabPane>
+
+          <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry" :tab="stripAnsi(content.title || entry)">
+            <div :class="getScrollContainerClass()">
+              <h1 v-html-safe="getTitle(content)"></h1>
+              <div class="help-section"
+                v-for="key in Object.keys(content.body)" :key="key"
+              >
+                <h3 v-if="key">{{ key }}</h3>
+                <div class="help-text related"
+                  v-if="key == 'Related' && content.body[key].length"
+                  v-html-safe="ansiToHtml(content.body[key])"
+                  @click="lineClickRelated"
+                ></div>
+                <div class="help-text"
+                  v-else
+                  v-html-safe="ansiToHtml(content.body[key])"
+                  @click="lineClick"
+                ></div>
+              </div>
+              <pre>{{ content }}</pre>
             </div>
           </NTabPane>
 
@@ -60,14 +88,17 @@
 <script setup>
 import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
+import stripAnsi from 'strip-ansi'
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
 
 import { state, prevMode } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
+import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 
-const { send } = useWebSocket()
+const { cmd, send } = useWebSocket()
+const { ansiToHtml } = useHelpers()
 
 const tabs = ref(null)
 const currentPane = ref("topics")
@@ -78,6 +109,39 @@ function loadHelpTopics () {
   if (!state.help.topicsLoaded) {
     send('help', { cmd: 'topics'})
   }
+}
+
+function loadHelpEntry (entry) {
+  send('help', { cmd: 'entry', entry })
+}
+
+function getTitle (content) {
+  if (content.title) {
+    return ansiToHtml(content.title)
+  }
+  
+  if (content.skill) {
+    return `Skill: ${content.skill}`
+  }
+}
+
+function lineClick (ev) {
+  const el = ev.srcElement
+  if (el.style['text-decoration-line']) {
+    cmd(el.innerText)
+  }
+}
+
+function lineClickRelated (ev) {
+  console.log(ev.srcElement)
+  cmd(`help ${ev.srcElement.innerText}`)
+}
+
+function handleCloseTab (name) {
+  if (name == 'topics') {
+    return
+  }
+  state.help.openEntries = state.help.openEntries.filter(e => e.entry != name)
 }
 
 function getRecentOutput () {
@@ -187,9 +251,17 @@ onMounted(() => {
   state.inputEmitter.on('prevModalTab', prevModalTab)
   state.inputEmitter.on('nextModalTab', nextModalTab)
 
+  currentPane.value = state.gamepadHelpTab
+
   watchers.push(
     watch(state.output, () => onOutputChanged())
   )
+
+  watchers.push(
+    watch(() => state.help.openEntries.length, () => {
+      currentPane.value = state.help.openEntries[state.help.openEntries.length - 1]?.entry || "topics"
+    }
+  ))
 })
 
 onBeforeUnmount(() => {
@@ -226,6 +298,34 @@ onBeforeUnmount(() => {
 
           &.mini-output-enabled {
             height: calc(100vh - 225px);
+          }
+
+          .help-section {
+            h3 {
+              color: #16c60c;
+            }
+            .help-text {
+              font-size: 16px;
+              line-height: 20px;
+              color: #fff;
+              margin-bottom: 15px;
+              padding: 0 20px;
+              .ansi-bright-white-fg {
+                cursor: pointer;
+                &:hover {
+                  color: #f9f1a5;
+                }
+              }
+              &.related {
+                span {
+                  cursor: pointer;
+                  text-decoration: underline;
+                  &:hover {
+                    color: #f9f1a5;
+                  }
+                }
+              }
+            }
           }
 
           .help-topics {
