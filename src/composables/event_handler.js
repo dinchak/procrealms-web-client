@@ -1,7 +1,7 @@
 import jiff from 'jiff'
 
 import { processTriggers } from "@/composables/triggers"
-import { addLine, resetInputMappings, state } from '@/composables/state'
+import { addLine, resetInputMappings, state, setMode } from '@/composables/state'
 
 import { useHelpers } from '@/composables/helpers'
 import { useTokenHandler } from '@/composables/token_handler'
@@ -62,11 +62,6 @@ handlers['out'] = (line) => {
     addLine(line, 'output')
     processTriggers(line)
   }
-}
-
-handlers['help.topics'] = ({ topics }) => {
-  state.help.topics = topics
-  state.help.topicsLoaded = true
 }
 
 handlers['room.describe'] = ({ desc, map }) => {
@@ -223,28 +218,29 @@ handlers['state.patch'] = ({ patch }) => {
 
 handlers['help.topics'] = ({ topics }) => {
   state.help.topics = topics
+  state.help.topicsLoaded = true
+}
+
+handlers['help.entry'] = ({ entry, content }) => {
+  let helpFile = { entry, content }
+  state.help.contents.push(helpFile)
+  state.help.openEntries.push(helpFile)
+  state.gamepadHelpTab = entry
+  if (!state.modals.helpModal) {
+    state.modals.helpModal = !state.modals.helpModal
+    setMode('modal')
+  }
 }
 
 handlers['help.search'] = ({ matches }) => {
   state.help.matches = matches
 }
 
-handlers['help.entry'] = ({ contents, error }) => {
-  if (error) {
-    state.help.contents = error
-    return
-  }
-
-  state.help.contents = contents
-}
-
 function loadOptions () {
   try {
     const options = JSON.parse(localStorage.getItem('options'))
     if (options !== null) {
-      console.log(options)
       state.options = Object.assign(state.options, options)
-      console.log(state.options)
     }
 
     if (state.options.fontFamily) {

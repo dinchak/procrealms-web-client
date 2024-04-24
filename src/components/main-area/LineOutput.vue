@@ -300,7 +300,7 @@ function getOutputHeight () {
     heightOffset += getPartyStatsHeight()
   }
 
-  if (state.options.showQuickSlots && currentPane.value === 'output') {
+  if (state.options.showQuickSlots) {
     heightOffset += 56
   }
 
