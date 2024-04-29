@@ -23,7 +23,12 @@ export function useWindowHandler () {
       return { width: 80, height: 25 }
     }
 
-    let outputStyle = getComputedStyle(output.querySelector('.line'))
+    let outputLine = output.querySelector('.line')
+    if (!outputLine) {
+      return { width: 80, height: 25 }
+    }
+
+    let outputStyle = getComputedStyle(outputLine)
 
     let canvas = calcTerminalSize.canvas || (calcTerminalSize.canvas = document.createElement("canvas"))
     let context = canvas.getContext("2d")

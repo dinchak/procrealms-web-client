@@ -227,6 +227,7 @@ handlers['help.entry'] = ({ entry, content }) => {
   state.help.openEntries.push(helpFile)
   state.gamepadHelpTab = entry
   if (!state.modals.helpModal) {
+    console.log(`opening help modal`)
     state.modals.helpModal = !state.modals.helpModal
     setMode('modal')
   }
