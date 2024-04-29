@@ -61,12 +61,12 @@
                 <h3 v-if="key">{{ key }}</h3>
                 <div class="help-text related"
                   v-if="key == 'Related' && content.body[key].length"
-                  v-html-safe="ansiToHtml(content.body[key])"
+                  v-html-safe="addLinks(ansiToHtml(content.body[key]))"
                   @click="lineClickRelated"
                 ></div>
                 <div class="help-text"
                   v-else
-                  v-html-safe="ansiToHtml(content.body[key])"
+                  v-html-safe="addLinks(ansiToHtml(content.body[key]))"
                   @click="lineClick"
                 ></div>
               </div>
@@ -104,6 +104,10 @@ const tabs = ref(null)
 const currentPane = ref("topics")
 const miniOutputEnabled = ref(false)
 const panes = ref(['topics'])
+
+function addLinks (text) {
+  return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+}
 
 function loadHelpTopics () {
   if (!state.help.topicsLoaded) {
@@ -302,12 +306,13 @@ onBeforeUnmount(() => {
 
           .help-section {
             h3 {
+              font-size: 20px;
               color: #16c60c;
             }
             .help-text {
-              font-size: 16px;
+              font-size: 18px;
               line-height: 20px;
-              color: #fff;
+              color: #ccc;
               margin-bottom: 15px;
               padding: 0 20px;
               .ansi-bright-white-fg {
