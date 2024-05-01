@@ -37,10 +37,11 @@
         </p>
       </NCollapseItem>
     </NCollapse>
+    <input placeholder="Filter Mappings" class="filter-input" v-model="filterMappings"/>
   </div>
   <NGrid class="input-mappings-grid" cols="1 350:2 700:3 1050:4">
     <NGi
-      v-for="mapping in state.inputMappings"
+      v-for="mapping in getFilteredMappings()"
       :key="mapping.event"
       class="mapping-cell"
     >
@@ -244,6 +245,13 @@ const onlyInBattle = ref(false)
 const onlyOutsideBattle = ref(false)
 const bindingToRemove = ref(false)
 const confirmResetInputMappings = ref(false)
+const filterMappings = ref('')
+
+function getFilteredMappings () {
+  return state.inputMappings.filter(m => {
+    return m.label.toLowerCase().includes(filterMappings.value.toLowerCase())
+  })
+}
 
 function hasBindingType (binding, type) {
   return typeof binding[type] != 'undefined'
@@ -368,6 +376,7 @@ function confirmRemoveBinding (binding, mapping) {
     return m
   })
   bindingToRemove.value = false
+  localStorage.setItem('inputMappings', JSON.stringify(state.inputMappings))
 }
 
 function saveNewBinding () {
@@ -415,6 +424,15 @@ onBeforeUnmount(() => {
     padding: 0 20px;
     margin-top: 20px;
     margin-bottom: 10px;
+
+    input {
+      background-color: #222;
+      border: 0;
+      border-radius: 4px;
+      padding: 1px 10px 0 10px;
+      margin: 0 8px 0 8px;
+      height: 27px;
+    }
 
     .n-collapse {
       .n-collapse-item {
