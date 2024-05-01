@@ -26,6 +26,7 @@
       </div>
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
+      <QuickSlotHandlers></QuickSlotHandlers>
       <PartyStats v-if="state.options.showPartyStats"></PartyStats>
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
@@ -51,6 +52,7 @@ import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
 import PartyStats from '@/components/hud/PartyStats.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
+import QuickSlotHandlers from '@/components/main-area/QuickSlotHandlers.vue'
 import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import SideMap from '@/components/main-area/SideMap.vue'
