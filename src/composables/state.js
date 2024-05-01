@@ -181,7 +181,7 @@ function resetOptions () {
     showPartyStats: true,
     textInputMobileButtons: true,
 
-    showSideMap: false,
+    showSideMap: true,
     showSideMovement: false,
     showSideAliases: false,
     showGameModalShortcuts: true,
