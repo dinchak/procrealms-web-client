@@ -54,12 +54,12 @@ function openGameModal (pane) {
 .game-modal-shortcuts {
   display: flex;
   flex-direction: column;
-  margin-top: 5px;
+  margin-top: 2px;
   .shortcut {
     cursor: pointer;
     height: 34px;
     width: 34px;
-    border: 1px solid #444;
+    border: 1px solid #111511;
     display: flex;
     flex-direction: column;
     align-items: center;

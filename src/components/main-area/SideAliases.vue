@@ -1,7 +1,7 @@
 <template>
   <div class="aliases" v-if="state.options.showSideAliases" :style="{ bottom: getBottom() }">
     <div v-if="getAliases().length == 0">
-      No aliases defined
+      No aliases
     </div>
     <div v-for="alias in getAliases()" :key="alias.alias">
       <n-button size="small" @click="runAlias(alias.alias)">{{ alias.alias }}</n-button>
@@ -48,9 +48,8 @@ function getBottom () {
 <style lang="less">
 .aliases {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
-  justify-content: flex-end;
   max-width: 200px;
   .n-button {
     margin-left: 5px;
