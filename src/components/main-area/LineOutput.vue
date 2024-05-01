@@ -151,11 +151,6 @@ function onBeforeChangeTab (activeName) {
     state[activeName].forEach(msg => msg.unread = false)
   }
   state.activeTab = activeName
-  // Hide Map Modal on chat tabs
-  if (activeName !== "output" && state.options.showSideMap == true) {
-    mapWasOpen = true
-    state.options.showSideMap = false
-  }
   return true
 }
 
@@ -163,11 +158,6 @@ function onAfterChangeTab (activeName) {
   setTimeout(() => {
     scrollDownTab(activeName)
   })
-  // Show Map Modal on output tab if it was open before
-  if (activeName == "output" && mapWasOpen == true) {
-    mapWasOpen = false
-    state.options.showSideMap = true
-  }
 }
 
 function getTab (name) {
