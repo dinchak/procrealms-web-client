@@ -4,108 +4,108 @@
     <!-- top row -->
 
     <div class="settings">
-      <NButton size="small"
+      <NButton size="medium"
         title="Minimap"
         :type="getOptionType('showMinimap')"
         @click="toggleOption('showMinimap')"
       >
-        <NIcon><ExploreOutlined/></NIcon>
+        <NIcon size="24"><ExploreOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Room Info"
         :type="getOptionType('showRoomInfo')"
         @click="toggleOption('showRoomInfo')"
       >
-        <NIcon><MeetingRoomOutlined/></NIcon>
+        <NIcon size="24"><MeetingRoomOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Affects"
         :type="getOptionType('showAffects')"
         @click="toggleOption('showAffects')"
       >
-        <NIcon><AlignHorizontalLeftOutlined/></NIcon>
+        <NIcon size="24"><AlignHorizontalLeftOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Quests"
         :type="getOptionType('showQuests')"
         @click="toggleOption('showQuests')"
       >
-        <NIcon><AnnouncementOutlined/></NIcon>
+        <NIcon size="24"><AnnouncementOutlined/></NIcon>
       </NButton>
     </div>
 
     <!-- middle row -->
     <div class="settings">
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Tabs"
         :type="getOptionType('showTabs')"
         @click="toggleOption('showTabs')"
       >
-        <NIcon><ChatOutlined/></NIcon>
+        <NIcon size="24"><ChatOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Quick Slots"
         :type="getOptionType('showQuickSlots')"
         @click="toggleOption('showQuickSlots')"
       >
-        <NIcon><BoltOutlined/></NIcon>
+        <NIcon size="24"><BoltOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Allies"
         :type="getOptionType('showPartyStats')"
         @click="toggleOption('showPartyStats')"
       >
-        <NIcon><GroupsOutlined/></NIcon>
+        <NIcon size="24"><GroupsOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Command Controls"
         :type="getOptionType('textInputMobileButtons')"
         @click="toggleOption('textInputMobileButtons')"
       >
-        <NIcon><SmartButtonOutlined/></NIcon>
+        <NIcon size="24"><SmartButtonOutlined/></NIcon>
       </NButton>
 
     </div>
 
     <!-- bottom row -->
     <div class="settings">
-      <NButton size="small"
+      <NButton size="medium"
         title="Side Map"
         :type="getOptionType('showSideMap')"
         @click="toggleOption('showSideMap'); refreshMapSettings();"
       >
-        <NIcon><MapOutlined/></NIcon>
+        <NIcon size="24"><MapOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Side Movement"
         :type="getOptionType('showSideMovement')"
         @click="toggleOption('showSideMovement')"
       >
-        <NIcon><OpenWithOutlined/></NIcon>
+        <NIcon size="24"><OpenWithOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Aliases"
         :type="getOptionType('showSideAliases')"
         @click="toggleOption('showSideAliases')"
       >
-        <NIcon><DynamicFormOutlined/></NIcon>
+        <NIcon size="24"><DynamicFormOutlined/></NIcon>
       </NButton>
 
-      <NButton size="small"
+      <NButton size="medium"
         title="Game Modal Shortcuts"
         :type="getOptionType('showGameModalShortcuts')"
         @click="toggleOption('showGameModalShortcuts')"
       >
-        <NIcon><DynamicFormOutlined/></NIcon>
+        <NIcon size="24"><SplitscreenOutlined/></NIcon>
       </NButton>
     </div>
 
@@ -173,6 +173,7 @@ import MapOutlined from '@vicons/material/MapOutlined'
 import MeetingRoomOutlined from '@vicons/material/MeetingRoomOutlined'
 import OpenWithOutlined from '@vicons/material/OpenWithOutlined'
 import SmartButtonOutlined from '@vicons/material/SmartButtonOutlined'
+import SplitscreenOutlined from '@vicons/material/SplitscreenOutlined'
 import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
 import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
@@ -239,11 +240,14 @@ function refreshMapSettings () {
   .settings {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     margin-left: 5px;
     margin-bottom: 5px;
+    justify-content: space-evenly;
     .n-button {
       margin-right: 7px;
+      border-radius: 0;
+      padding: 0;
+      width: 40px;
       &:last-child {
         margin-right: 0;
       }
