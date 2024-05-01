@@ -70,7 +70,6 @@
                   @click="lineClick"
                 ></div>
               </div>
-              <pre>{{ content }}</pre>
             </div>
           </NTabPane>
 
