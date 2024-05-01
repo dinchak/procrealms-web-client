@@ -72,7 +72,7 @@ function toggleGameModal() {
 <style scoped lang="less">
 .interface-overlay {
   position: absolute;
-  top: 5px;
+  top: 2px;
   right: 10px;
   .interface {
     display: flex;
@@ -84,7 +84,7 @@ function toggleGameModal() {
       cursor: pointer;
       transition: all 0.2s;
       margin-right: 5px;
-      border: 1px solid #444;
+      border: 1px solid #181818;
       &:last-child {
         margin-right: 0;
       }
