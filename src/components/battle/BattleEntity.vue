@@ -1,63 +1,65 @@
 <template>
   <div :class="getClass(participant)" @click="target(participant)">
-    <div class="name-row">
-      <div class="name">
-        <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
-        <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
+    <NProgress class="next-action" type="line" status="error"
+      :stroke-width="16" :percentage="100 - participant.nextAction / 40 * 100"
+      :show-indicator="false" :border-radius="0" :height="4" aria-label="Next Action"
+    ></NProgress>
+
+    <div class="name">
+      <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
+    </div>
+    
+    <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
+
+    <div class="vitals">
+      <div class="vital" v-if="side == 'good' && entity.combo > 0">
+        <div class="amount bold-yellow">{{ entity.combo }}</div>
+        <div class="label yellow">Combo</div>
+      </div>
+      <div class="vital" v-if="side == 'good' && entity.rage > 0">
+        <div class="amount bold-red">{{ entity.rage }}</div>
+        <div class="label red">Rage</div>
       </div>
 
-      <div class="rage-combo">
-        <div class="vital" v-if="side == 'good' && entity.combo > 0">
-          <div class="amount bold-yellow">{{ entity.combo }}</div>
-          <div class="label yellow">Combo</div>
-        </div>
-        <div class="vital" v-if="side == 'good' && entity.rage > 0">
-          <div class="amount bold-red">{{ entity.rage }}</div>
-          <div class="label red">Rage</div>
-        </div>
+      <div class="vital" v-if="side == 'good'">
+        <div class="amount bold-green">{{ entity.hp }}</div>
+        <n-progress
+          type="line" status="success" aria-label="Health" :height="4" :show-indicator="false" :border-radius="0"
+          :percentage="entity.hp / entity.maxHp * 100"
+        ></n-progress>
+      </div>
+
+      <div class="vital" v-if="side == 'good'">
+        <div class="amount bold-cyan">{{ entity.energy }}</div>
+        <n-progress
+          type="line" status="default" aria-label="Energy" :height="4" :show-indicator="false" :border-radius="0"
+          :percentage="entity.energy / entity.maxEnergy * 100"
+        ></n-progress>
+      </div>
+
+      <div class="vital" v-if="side == 'good'">
+        <div class="amount bold-yellow">{{ entity.stamina }}</div>
+        <n-progress
+          type="line" status="warning" aria-label="Stamina" :height="4" :show-indicator="false" :border-radius="0"
+          :percentage="entity.stamina / entity.maxStamina * 100" 
+        ></n-progress>
+      </div>
+
+      <div class="vital" v-if="side == 'evil'">
+        <div class="amount bold-green">{{ participant.hpPercent }}%</div>
+        <n-progress v-if="participant.hpPercent > 0" class="hp" type="line" status="success" aria-label="Health" :percentage="participant.hpPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
+      </div>
+
+      <div class="vital" v-if="side == 'evil'">
+        <div class="amount bold-cyan">{{ participant.energyPercent }}%</div>
+        <n-progress v-if="participant.energyPercent > 0" type="line" status="default" aria-label="Energy" :percentage="participant.energyPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
+      </div>
+
+      <div class="vital" v-if="side == 'evil'">
+        <div class="amount bold-yellow">{{ participant.staminaPercent }}%</div>
+        <n-progress v-if="participant.staminaPercent > 0" type="line" status="warning" aria-label="Stamina" :percentage="participant.staminaPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
       </div>
     </div>
-
-    <div class="vital" v-if="side == 'good'">
-      <div class="amount bold-green">{{ entity.hp }}</div>
-      <n-progress
-        type="line" status="success" aria-label="Health" :height="4" :show-indicator="false" :border-radius="0"
-        :percentage="entity.hp / entity.maxHp * 100"
-      ></n-progress>
-    </div>
-
-    <div class="vital" v-if="side == 'good'">
-      <div class="amount bold-cyan">{{ entity.energy }}</div>
-      <n-progress
-        type="line" status="default" aria-label="Energy" :height="4" :show-indicator="false" :border-radius="0"
-        :percentage="entity.energy / entity.maxEnergy * 100"
-      ></n-progress>
-    </div>
-
-    <div class="vital" v-if="side == 'good'">
-      <div class="amount bold-yellow">{{ entity.stamina }}</div>
-      <n-progress
-        type="line" status="warning" aria-label="Stamina" :height="4" :show-indicator="false" :border-radius="0"
-        :percentage="entity.stamina / entity.maxStamina * 100" 
-      ></n-progress>
-    </div>
-
-    <div class="vital" v-if="side == 'evil'">
-      <div class="amount bold-green">{{ participant.hpPercent }}%</div>
-      <n-progress v-if="participant.hpPercent > 0" class="hp" type="line" status="success" aria-label="Health" :percentage="participant.hpPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
-    </div>
-
-    <div class="vital" v-if="side == 'evil'">
-      <div class="amount bold-cyan">{{ participant.energyPercent }}%</div>
-      <n-progress v-if="participant.energyPercent > 0" type="line" status="default" aria-label="Energy" :percentage="participant.energyPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
-    </div>
-
-    <div class="vital" v-if="side == 'evil'">
-      <div class="amount bold-yellow">{{ participant.staminaPercent }}%</div>
-      <n-progress v-if="participant.staminaPercent > 0" type="line" status="warning" aria-label="Stamina" :percentage="participant.staminaPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
-    </div>
-
-    <n-progress class="next-action" type="circle" status="error" :stroke-width="16" :percentage="100 - participant.nextAction / 40 * 100" :show-indicator="false"></n-progress>
 
   </div>
 
@@ -124,13 +126,12 @@ function getAffects (participant) {
 <style lang="less" scoped>
 .battle-entity {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   background-color: #462233;
   padding: 5px;
   border: 1px solid #333;
-  width: 500px;
+  width: 250px;
   
   &.selected {
     // border: 1px solid #f8ff25;
@@ -172,52 +173,25 @@ function getAffects (participant) {
       box-shadow: 0 0 5px #ff5050;
     }
   }
-
-  .name-row {
-    width: 316px;
+    
+  .vitals {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    .name {
-      font-size: 16px;
+    .vital {
+      width: 40px;
+      padding: 0 5px 0 0;
       line-height: 16px;
-      display: flex;
-      flex-direction: column;
-      .affects {
-        font-size: 14px;
-        line-height: 14px;
-        min-height: 14px;
+      text-align: center;
+      .label {
+        font-size: 10px;
+        line-height: 4px;
       }
-    }
-    
-    .rage-combo {
-      display: flex;
-      flex-direction: row;
-      .vital {
-        width: 30px;
-        padding: 0;
-      }
-    }
-  }
-
-  .vital {
-    width: 40px;
-    padding: 0 5px;
-    font-size: 20px;
-    line-height: 16px;
-    text-align: center;
-    .label {
-      font-size: 10px;
-      line-height: 4px;
     }
   }
 
   .next-action {
-    padding: 0 5px;
-    width: 24px;
+    margin-bottom: 5px;
   }
-
 
 }
 
