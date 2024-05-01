@@ -107,7 +107,6 @@ onBeforeUnmount(() => {
 }
 
 body, html {
-  background-color: #181818;
   margin: 0;
   padding: 0;
   font-family: 'Ubuntu Mono', monospace;

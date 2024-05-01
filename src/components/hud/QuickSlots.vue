@@ -222,6 +222,8 @@ function getSlotClass (slot) {
   margin-left: 8px;
   justify-content: space-between;
   min-height: 56px;
+  background-color: rgb(16, 18, 22);
+  
   &.mobile-layout-mode {
     overflow-x: initial;
     flex-wrap: wrap;
