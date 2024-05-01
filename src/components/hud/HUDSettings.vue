@@ -151,6 +151,8 @@
       />
     </NRadioGroup>
 
+    <NButton :key="fullscreenRedraw" class="fullscreen-button selectable" type="success" @click="toggleFullscreen()" :ghost="!isFullScreen()">Full Screen</NButton>
+
   </div>
 </template>
 <script setup>
@@ -182,6 +184,22 @@ const { triggerResize, setFontFamily, setFontSize } = useWindowHandler()
 
 const selectedFontSize = ref(state.options.fontSize)
 const selectedFontFamily = ref(state.options.fontFamily)
+const fullscreenRedraw = ref(0)
+
+function isFullScreen() {
+  return document.fullscreenElement ? true : false
+}
+
+async function toggleFullscreen() {
+  let app = document.getElementById('app')
+  if (!document.fullscreenElement) {
+    await app.requestFullscreen()
+  } else if (document.exitFullscreen) {
+    await document.exitFullscreen()
+  }
+  triggerResize()
+  fullscreenRedraw.value++
+}
 
 function onSetFontFamily () {
   setFontFamily(selectedFontFamily.value)
@@ -237,6 +255,7 @@ function refreshMapSettings () {
     font-size: 16px;
     color: #fff;
   }
+
   .settings {
     display: flex;
     flex-direction: row;
@@ -257,6 +276,15 @@ function refreshMapSettings () {
       margin-top: 10px;
       margin-bottom: 3px;
     }
+  }
+
+  .n-select {
+    margin-bottom: 5px;
+  }
+
+  .fullscreen-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
 }
 </style>
