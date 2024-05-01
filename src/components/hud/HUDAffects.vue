@@ -8,10 +8,10 @@
       <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ANSI.reset + affect.longFlag) : ansiToHtml(ANSI.reset + affect.name)"></div>
 
       <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
-      v-show="typeof affect.timeLeft == 'number'"
-      :status="getTimeLeftColor(affect)" :percentage="getTimeLeftPercentage(affect)" />
+        v-show="typeof affect.timeLeft == 'number'"
+        :status="getTimeLeftColor(affect)" :percentage="getTimeLeftPercentage(affect)" />
 
-      <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ANSI.reset + affect.desc)"></div>
+      <!-- <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ANSI.reset + affect.desc)"></div> -->
 
       <div class="bonuses">
 
