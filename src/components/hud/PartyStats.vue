@@ -141,6 +141,7 @@ function getPartyMembers () {
     .shortflags {
       text-align: left;
       width: 100%;
+      height: 18px;
     }
 
     .name {
