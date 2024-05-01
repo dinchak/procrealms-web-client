@@ -26,7 +26,9 @@ import MiniMap from '@/components/common/MiniMap.vue'
   width: calc(100% - 20px);
   padding-left: 10px;
   padding-right: 10px;
-  border-top: 1px solid #333;
+  padding-top: 5px;
+  border-top: 1px solid #181818;
+  background-color: rgb(16, 18, 22);
 
   .movement-controls-container {
     margin-right: 3px;

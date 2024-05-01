@@ -244,11 +244,11 @@ export function showHUD () {
 
 export function getHUDHeight () {
   if (state.options.fontSize == '14px') {
-    return 115
+    return 120
   } else if (state.options.fontSize == '16px') {
-    return 130
+    return 135
   } else if (state.options.fontSize == '18px') {
-    return 145
+    return 150
   }
 }
 

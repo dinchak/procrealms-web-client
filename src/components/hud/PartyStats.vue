@@ -57,6 +57,7 @@ function getPartyMembers () {
   flex-wrap: nowrap;
   padding: 0 10px;
   overflow-x: scroll;
+  background-color: rgb(16, 18, 22);
 
   .party-member {
     display: flex;

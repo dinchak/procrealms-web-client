@@ -146,7 +146,6 @@ onBeforeUnmount(() => {
 
 <style lang="less">
 .game {
-  background-color: #181818;
   height: 100vh;
   .stats-area {
     display: flex;

@@ -130,7 +130,8 @@ function getAffects (participant) {
   justify-content: space-between;
   background-color: #462233;
   padding: 5px;
-  border: 1px solid #333;
+  border: 2px solid #333;
+  margin: 2px;
   width: 250px;
   
   &.selected {

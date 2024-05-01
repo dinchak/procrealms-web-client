@@ -275,7 +275,7 @@ function getOutputHeight () {
   let heightOffset = 47
 
   if (showHUD()) {
-    heightOffset += getHUDHeight()
+    heightOffset += getHUDHeight() + 6
   }
 
   if (state.gameState.battle.active) {
