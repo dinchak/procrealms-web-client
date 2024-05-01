@@ -241,7 +241,7 @@ function refreshMapSettings () {
   position: absolute;
   top: 40px;
   right: 0px;
-  z-index: 5px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   padding-top: 5px;
