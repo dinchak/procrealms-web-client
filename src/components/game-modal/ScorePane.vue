@@ -1,5 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
+    <SelectGameModalAs></SelectGameModalAs>
     <NGrid cols="1 800:2">
       <NGi class="grid-item">
         <div class="name">{{ player().name }}</div>
@@ -417,6 +418,8 @@ import { state } from '@/composables/state'
 import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
 import AddFilled from '@vicons/material/AddFilled'
+
+import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
 
 import { DAMAGE_TYPE_COLORS } from '@/composables/constants'
 import { useWebSocket } from '@/composables/web_socket'

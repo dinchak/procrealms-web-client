@@ -1,12 +1,10 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <NGrid class="inventory-summary" cols="1 600:3">
-      <NGi class="cell">
-        <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
-      </NGi>
+    <SelectGameModalAs></SelectGameModalAs>
 
+    <NGrid class="inventory-summary" cols="1 600:2">
       <NGi class="cell search">
-        <NInput placeholder="Search" v-model:value="search" clearable></NInput>
+        <NInput placeholder="Filter Items" v-model:value="search" clearable></NInput>
       </NGi>
 
       <NGi class="cell summary">
@@ -34,7 +32,7 @@
         <div class="item">
           <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
 
-          <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedItem == item"></ItemDetails>
+          <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
 
         </div>
       </NGi>
@@ -45,12 +43,13 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NInput, NSelect } from 'naive-ui'
-import { state, getGameModalAsOptions } from '@/composables/state'
+import { NGrid, NGi, NInput } from 'naive-ui'
+import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
+import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
 
 const { ansiToHtml, copperToMoneyString } = useHelpers()
 const { fetchItems, fetchItem, cmd } = useWebSocket()
@@ -59,7 +58,7 @@ const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 const items = ref([])
-const selectedItem = ref({})
+const selectedIid = ref({})
 const search = ref('')
 
 function getItems () {
@@ -71,15 +70,15 @@ function getItems () {
 }
 
 function getItemNameClass (item) {
-  return selectedItem.value == item ? 'selected' : ''
+  return selectedIid.value == item.iid ? 'selected' : ''
 }
 
 function selectItem (item) {
-  if (selectedItem.value == item) {
-    selectedItem.value = {}
+  if (selectedIid.value == item.iid) {
+    selectedIid.value = {}
     return
   }
-  selectedItem.value = item
+  selectedIid.value = item.iid
 }
 
 async function updateItem (iid) {
@@ -87,8 +86,8 @@ async function updateItem (iid) {
   let oldItem = items.value[items.value.findIndex(i => i.iid == iid)]
   let newItem = await fetchItem(iid)
   items.value[items.value.findIndex(i => i.iid == iid)] = newItem
-  if (selectedItem.value == oldItem) {
-    selectedItem.value = newItem
+  if (selectedIid.value == oldItem.iid) {
+    selectedIid.value = newItem.iid
   }
 }
 
@@ -348,7 +347,6 @@ function watchCharmieInventory () {
   charmieInventoryWatcher = watch(() => {
     return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
   }, async () => {
-    console.log(`charmie inventory changed`)
     items.value = await fetchItems(getInventory())
   })
 }
@@ -432,7 +430,6 @@ onBeforeUnmount(() => {
   .inventory {
     .item {
       .name {
-        font-size: 16px;
         padding: 5px 10px;
         cursor: pointer;
         &.selected {

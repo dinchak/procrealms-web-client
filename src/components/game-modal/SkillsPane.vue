@@ -1,5 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
+    <SelectGameModalAs></SelectGameModalAs>
 
     <NGrid class="skills" cols="1 800:2">
 
@@ -70,8 +71,10 @@
 
 <script setup>
 import { defineProps, toRefs } from 'vue'
-import { state } from '@/composables/state'
 import { NGrid, NGi, NProgress } from 'naive-ui'
+
+import SelectGameModalAs from './SelectGameModalAs.vue'
+import { state } from '@/composables/state'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)

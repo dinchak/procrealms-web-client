@@ -1,5 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
+    <SelectGameModalAs></SelectGameModalAs>
     <NGrid class="equipment" cols="1">
       <NGi v-for="(iid, slot) in state.gameState.equipment" :key="slot">
         <div class="slot">
@@ -24,6 +25,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
+import SelectGameModalAs from './SelectGameModalAs.vue'
 
 const { ansiToHtml } = useHelpers()
 const { cmd, fetchItems, fetchItem } = useWebSocket()
