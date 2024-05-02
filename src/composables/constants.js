@@ -549,6 +549,70 @@ export const ANSI = {
   reset: String.fromCharCode(27) + '[0m'
 }
 
+export const equipmentLabels = [{
+  slot: 'weapon',
+  label: 'Weapon',
+  color: 'bold-red'
+}, {
+  slot: 'offhand',
+  label: 'Offhand',
+  color: 'bold-magenta'
+}, {
+  slot: 'neck',
+  label: 'Neck',
+  color: 'bold-cyan'
+}, {
+  slot: 'ring1',
+  label: 'Ring',
+  color: 'bold-cyan'
+}, {
+  slot: 'ring2',
+  label: 'Ring',
+  color: 'bold-cyan'
+}, {
+  slot: 'head',
+  label: 'Head',
+  color: 'bold-white'
+}, {
+  slot: 'shoulders',
+  label: 'Shoulders',
+  color: 'bold-white'
+}, {
+  slot: 'body',
+  label: 'Body',
+  color: 'bold-white'
+}, {
+  slot: 'hands',
+  label: 'Hands',
+  color: 'bold-white'
+}, {
+  slot: 'waist',
+  label: 'Waist',
+  color: 'bold-white'
+}, {
+  slot: 'legs',
+  label: 'Legs',
+  color: 'bold-white'
+}, {
+  slot: 'feet',
+  label: 'Feet',
+  color: 'bold-white'
+}]
+
+export const petEquipmentLabels = [{
+  slot: 'collar',
+  label: 'Collar',
+  color: 'bold-green'
+}, {
+  slot: 'charm1',
+  label: 'Charm',
+  color: 'bold-green'
+}, {
+  slot: 'charm2',
+  label: 'Charm',
+  color: 'bold-green'
+}]
+
 export const ANSI_REPLACEMENTS = [
   { from: '1;30m', to: '90m' },
   { from: '1;31m', to: '91m' },

@@ -9,7 +9,7 @@
           <div class="header bold-yellow">Weapon Skills</div>
           <div v-for="skill of getWeaponSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name bold-yellow">{{ skill.name }}</div>
+              <div class="name">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
             <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
@@ -26,7 +26,7 @@
           <div class="info" v-if="getCraftingSkills().length == 0">You haven't learned any crafting skills yet.</div>
           <div v-for="skill of getCraftingSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name bold-yellow">{{ skill.name }}</div>
+              <div class="name">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
             <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
@@ -43,7 +43,7 @@
           <div class="info" v-if="getCombatSkills().length == 0">You haven't learned any combat skills yet.</div>
           <div v-for="skill of getCombatSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name bold-yellow">{{ skill.name }}</div>
+              <div class="name">{{ skill.name }}</div>
               <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
           </div>
@@ -59,7 +59,7 @@
           <div class="info" v-if="getArtisanSkills().length == 0">You haven't learned any artisan skills yet.</div>
           <div v-for="skill of getArtisanSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name bold-yellow">{{ skill.name }}</div>
+              <div class="name">{{ skill.name }}</div>
               <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
           </div>
@@ -155,11 +155,17 @@ function getScrollContainerClass () {
       flex-direction: column;
       align-items: center;
       .header {
-        font-size: 18px;
+        font-size: 24px;
         text-align: center;
         padding: 10px;
       }
-      .skill-points, .info {
+      .skill-points {
+        background-color: #121;
+        margin-bottom: 10px;
+        padding: 5px 10px;
+      }
+
+      .info {
         margin-bottom: 10px;
       }
       .skill {

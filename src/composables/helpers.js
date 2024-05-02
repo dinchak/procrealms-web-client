@@ -67,6 +67,15 @@ export function useHelpers () {
     return ansi_up.ansi_to_html(str)
   }
 
+  function getPetEid () {
+    for (let eid in state.gameState.charmies) {
+      let charmie = state.gameState.charmies[eid]
+      if (charmie && charmie.traits && charmie.traits.includes('pet')) {
+        return eid
+      }
+    }
+  }
+
   function getMerc () {
     let charmies = Object.values(state.gameState.charmies)
 
@@ -351,7 +360,7 @@ export function useHelpers () {
 
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
-    copperToMoneyString, getActions, getMerc,
+    copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection
   }

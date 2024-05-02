@@ -2,11 +2,27 @@
   <div :class="getScrollContainerClass()">
     <SelectGameModalAs></SelectGameModalAs>
     <NGrid class="equipment" cols="1">
-      <NGi v-for="(iid, slot) in state.gameState.equipment" :key="slot">
+      <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
         <div class="slot">
-          <div :class="'row' + (iid ? ' selectable' : '')" @click="selectIid(iid)">
-            <div class="label">{{ slot }}</div>
-            <div class="item" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
+          <div class="row" @click="selectIid(iid)">
+            <div :class="'label ' + color">{{ label }}</div>
+            <div :class="getItemClass(slot)" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
+          </div>
+          <div class="row details">
+            <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+          </div>
+        </div>
+      </NGi>
+    </NGrid>
+
+    <h3 v-if="state.gameModalAs == '' && getPetEid()">Pet Equipment</h3>
+
+    <NGrid class="equipment" cols="1" v-if="state.gameModalAs == '' && getPetEid()">
+      <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="slot">
+        <div class="slot">
+          <div class="row" @click="selectIid(iid)">
+            <div :class="'label ' + color">{{ label }}</div>
+            <div :class="getItemClass(slot)" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
           </div>
           <div class="row details">
             <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
@@ -20,14 +36,15 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state, getOrderCmd } from '@/composables/state'
+import { equipmentLabels, petEquipmentLabels } from '@/composables/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectGameModalAs from './SelectGameModalAs.vue'
 
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, getPetEid } = useHelpers()
 const { cmd, fetchItems, fetchItem } = useWebSocket()
 
 const props = defineProps(['miniOutputEnabled'])
@@ -36,6 +53,41 @@ const { miniOutputEnabled } = toRefs(props)
 const selectedIid = ref(0)
 const selectedItem = ref({})
 const equipment = ref([])
+
+function getItemClass (slot) {
+  let iid = getEquipmentIid(slot)
+  let classes = ['item']
+  if (iid) {
+    classes.push('selectable')
+  }
+  if (iid && selectedIid.value == iid) {
+    classes.push('selected')
+  }
+  return classes.join(' ')
+}
+
+function getEquipmentIid (slot) {
+  return getEquipment()[slot]
+}
+
+function getEquipment () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].equipment
+  }
+  return state.gameState.equipment
+}
+
+function getEquipmentLabels () {
+  return equipmentLabels.map(({ label, slot, color }) => {
+    return { slot, label, color, iid: getEquipmentIid(slot) }
+  })
+}
+
+function getPetEquipmentLabels () {
+  return petEquipmentLabels.map(({ label, slot, color }) => {
+    return { slot, label, color, iid: getEquipmentIid(slot) }
+  })
+}
 
 async function selectIid (iid) {
   if (!iid) {
@@ -62,7 +114,7 @@ function getItemFullName (iid) {
 function getActions (iid) {
   return [{
     label: 'Remove',
-    onClick: () => cmd(`remove iid:${iid}`),
+    onClick: () => cmd(`${getOrderCmd()}remove iid:${iid}`),
     class: 'bold-red',
     disabled: false
   }]
@@ -77,10 +129,16 @@ function getScrollContainerClass () {
 
 let watchers = []
 onMounted(async () => {
-  equipment.value = await fetchItems(Object.values(state.gameState.equipment))
+  equipment.value = await fetchItems(Object.values(getEquipment()))
   
   watchers.push(
-    watch(state.gameState, async (newVal) => equipment.value = await fetchItems(Object.values(newVal.equipment)))
+    watch(state.gameState, async (newVal) => {
+      equipment.value = await fetchItems(Object.values(getEquipment()))
+    }),
+
+    watch(() => state.gameModalAs, async (newVal) => {
+      equipment.value = await fetchItems(Object.values(getEquipment()))
+    })
   )
 })
 
@@ -106,32 +164,28 @@ onBeforeUnmount(() => {
     .slot {
       display: flex;
       flex-direction: column;
-      font-size: 16px;
-      padding: 5px 10px;
       cursor: pointer;
       .row {
         display: flex;
         flex-direction: row;
 
-        &.selectable {
-          &:hover, &.selected {
-            background: #121;
-          }
-        }
-
         &.details {
-          padding-left: 105px;
+          padding-left: 100px;
         }
 
         .label {
           width: 75px;
           text-align: right;
-          padding: 0 10px;
+          padding: 5px 10px;
         }
         .item {
-          flex: 1;
           text-align: left;
-          padding: 0 10px;
+          padding: 5px 10px;
+          &.selectable {
+            &:hover, &.selected {
+              background: #121;
+            }
+          }
         }
       }
     }
