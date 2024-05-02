@@ -96,13 +96,15 @@ function getEnterClass () {
         &:hover {
           cursor: pointer;
           opacity: 1;
-          background-color: darken(#16c60c, 30%);
+          background-color: #63e2b7;
+          color: #000;
         }
       }
 
       &.selected {
         opacity: 1;
-        background-color: darken(#16c60c, 30%);
+        background-color: #63e2b7;
+        color: #000;
       }
     }
     &:last-child {

@@ -121,7 +121,6 @@ onMounted(() => {
 
   watchers.push(watch(state.options, () => {
     localStorage.setItem('options', JSON.stringify(state.options))
-    console.log(state.options)
   }))
 
   watchers.push(watch(() => state.options.textInputAlwaysFocused, () => {

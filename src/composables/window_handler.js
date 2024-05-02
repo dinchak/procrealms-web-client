@@ -50,12 +50,25 @@ export function useWindowHandler () {
   function setFontSize (fontSize) {
     state.options.fontSize = fontSize
     document.getElementById('app').style.fontSize = fontSize
+
+    let modalContainers = document.getElementsByClassName('n-modal-container')
+    console.log(modalContainers)
+    for (let modalContainer of modalContainers) {
+      modalContainer.style.fontSize = fontSize
+    }
+
     triggerResize()
   }
 
   function setFontFamily (fontFamily) {
     state.options.fontFamily = fontFamily
     document.getElementById('app').style.fontFamily = fontFamily
+
+    let modalContainers = document.getElementsByClassName('n-modal-container')
+    for (let modalContainer of modalContainers) {
+      modalContainer.style.fontFamily = fontFamily
+    }
+
     triggerResize()
   }
 

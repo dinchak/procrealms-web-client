@@ -59,13 +59,14 @@ function openGameModal (pane) {
     cursor: pointer;
     height: 34px;
     width: 34px;
-    border: 1px solid #111511;
+    border: 1px solid #222;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-bottom: 4px;
     transition: all 0.3s;
+    background: rgb(16, 16, 20);
     &:last-child {
       margin-right: 0;
     }

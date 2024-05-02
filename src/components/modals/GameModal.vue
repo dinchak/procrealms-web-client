@@ -31,17 +31,11 @@
         >
           
           <NTabPane name="score" tab="Score">
-            <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
             <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
           </NTabPane>
 
           <NTabPane name="skills" tab="Skills">
-            <NSelect v-if="getGameModalAsOptions().length > 1" v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
             <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
-          </NTabPane>
-
-          <NTabPane name="quests" tab="Quests">
-            <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
           </NTabPane>
           
           <NTabPane name="inventory" tab="Inventory">
@@ -50,6 +44,10 @@
           
           <NTabPane name="equipment" tab="Equipment">
             <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
+          </NTabPane>
+
+          <NTabPane name="quests" tab="Quests">
+            <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
           </NTabPane>
           
           <NTabPane name="options" tab="Options">
@@ -74,9 +72,10 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon, NSelect } from 'naive-ui'
-import { state, prevMode, getGameModalAsOptions } from '@/composables/state'
+import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
+import { state, prevMode } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
+import { useWindowHandler } from '@/composables/window_handler'
 
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
@@ -91,6 +90,7 @@ import ScorePane from '@/components/game-modal/ScorePane.vue'
 import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
 const { selectNearestElement } = useHelpers()
+const { setFontSize, setFontFamily } = useWindowHandler()
 
 let selectedElement = null
 function selectModalAction (degree) {
@@ -113,6 +113,8 @@ const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'optio
 
 function onOpenModal () {
   // currentPane.value = state.gamepadTab || "score"
+  setFontSize(state.options.fontSize)
+  setFontFamily(state.options.fontFamily)
   scrollDown()
 }
 
@@ -225,6 +227,9 @@ onMounted(() => {
       }
     })
   )
+
+  setFontSize(state.options.fontSize)
+  setFontFamily(state.options.fontFamily)
 })
 
 onBeforeUnmount(() => {
@@ -242,7 +247,7 @@ onBeforeUnmount(() => {
 .game-modal {
   min-height: 100vh;
   width: 100vw;
-  background: rgba(0, 0, 0, 1);
+  background: rgb(14, 20, 20);
   padding-bottom: 0px;
 
   .modal-body {
@@ -258,7 +263,7 @@ onBeforeUnmount(() => {
           // max-width: 200px;
         }
       }
-      height: calc(100vh - 170px);
+      height: calc(100vh - 270px);
       overflow-y: hidden;
       &.mini-output-hidden {
         height: calc(100vh - 20px);
@@ -266,12 +271,11 @@ onBeforeUnmount(() => {
     }
 
     .mini-output {
-      height: 100px;
+      height: 200px;
       overflow-y: scroll;
       padding: 10px 10px 0 10px;
-      margin-bottom: 10px;
-      background-color: #000;
-      border-top: 1px solid rgba(255, 255, 255, 0.09);
+      margin: 0 8px 10px 8px;
+      background-color: rgb(16, 16, 20);
       .line {
         font-size: 16px;
         line-height: 14px;

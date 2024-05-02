@@ -305,7 +305,7 @@ function renderSkillsRequired () {
 </script>
 <style lang="less" scoped>
 .details {
-  background: #111;
+  background: rgb(16, 18, 22);
   padding-top: 10px;
   .tags {
     font-size: 16px;
@@ -313,7 +313,6 @@ function renderSkillsRequired () {
     flex-direction: row;
     padding: 0 10px 0px 10px;
     line-height: 18px;
-    background: #111;
     margin-bottom: 10px;
     .tag {
       margin-right: 10px;
@@ -323,7 +322,6 @@ function renderSkillsRequired () {
   .desc {
     padding: 0 10px 10px 10px;
     line-height: 18px;
-    background: #111;
     white-space: pre-line;
   }
 
@@ -332,7 +330,6 @@ function renderSkillsRequired () {
     flex-direction: row;
     padding: 0 10px 10px 10px;
     max-width: 450px;
-    background: #111;
     flex-wrap: wrap;
 
     .stat {
@@ -358,7 +355,6 @@ function renderSkillsRequired () {
     display: flex;
     flex-direction: column;
     padding: 0 10px 10px 10px;
-    background: #111;
     flex-wrap: wrap;
 
     .header {
@@ -384,7 +380,6 @@ function renderSkillsRequired () {
     display: flex;
     flex-direction: column;
     padding: 0 10px 10px 10px;
-    background: #111;
     flex-wrap: wrap;
 
     .header {
@@ -415,7 +410,6 @@ function renderSkillsRequired () {
     display: flex;
     flex-direction: column;
     padding: 0 10px 10px 10px;
-    background: #111;
     flex-wrap: wrap;
 
     .header {
@@ -442,7 +436,6 @@ function renderSkillsRequired () {
     display: flex;
     flex-direction: row;
     padding: 0 10px 0px 10px;
-    background: #111;
     flex-wrap: wrap;
 
     .n-button {
