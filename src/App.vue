@@ -133,15 +133,15 @@ body, html {
 .green, .ansi-green-fg { color: #13a10e }
 .yellow, .ansi-yellow-fg { color: #c19c00 }
 .blue, .ansi-blue-fg { color: #0037da }
-.magenta, .ansi-magenta-fg { color: #881798 }
+.magenta, .ansi-magenta-fg { color: #c14cd2 }
 .cyan, .ansi-cyan-fg { color: #3a96dd }
 .white, .ansi-white-fg { color: #cccccc }
 .black, .ansi-bright-black-fg { color: #767676 }
 .bold-red, .ansi-bright-red-fg { color: #e74856 }
-.bold-green, .ansi-bright-green-fg { color: #16c60c }
+.bold-green, .ansi-bright-green-fg { color: #2aeb1f }
 .bold-yellow, .ansi-bright-yellow-fg { color: #f9f1a5 }
 .bold-blue, .ansi-bright-blue-fg { color: #3b78ff }
-.bold-magenta, .ansi-bright-magenta-fg { color: #b4009e }
+.bold-magenta, .ansi-bright-magenta-fg { color: #e66ff3 }
 .bold-cyan, .ansi-bright-cyan-fg { color: #61d6d6 }
 .bold-white, .ansi-bright-white-fg { color: #f2f2f2 }
 
