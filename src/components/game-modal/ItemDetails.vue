@@ -1,11 +1,11 @@
 <template>
   <div class="details">
 
-    <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
-
     <div class="actions">
       <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
+
+    <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
 
     <div class="tags">
       <div class="tag black">[<span class="bold-cyan">{{ ucfirst(item.type) }}</span>]</div>
@@ -308,11 +308,9 @@ function renderSkillsRequired () {
   background: rgb(16, 18, 22);
   padding-top: 10px;
   .tags {
-    font-size: 16px;
     display: flex;
     flex-direction: row;
     padding: 0 10px 0px 10px;
-    line-height: 18px;
     margin-bottom: 10px;
     .tag {
       margin-right: 10px;
@@ -321,7 +319,6 @@ function renderSkillsRequired () {
 
   .desc {
     padding: 0 10px 10px 10px;
-    line-height: 18px;
     white-space: pre-line;
   }
 
@@ -336,7 +333,6 @@ function renderSkillsRequired () {
       display: flex;
       flex-direction: row;
       width: 33%;
-      line-height: 18px;
       .value {
         margin-right: 10px;
         // text-align: right;
@@ -357,12 +353,7 @@ function renderSkillsRequired () {
     padding: 0 10px 10px 10px;
     flex-wrap: wrap;
 
-    .header {
-      line-height: 18px;
-    }
-
     .no-gems {
-      line-height: 18px;
       margin-left: 10px;
     }
 
@@ -382,15 +373,10 @@ function renderSkillsRequired () {
     padding: 0 10px 10px 10px;
     flex-wrap: wrap;
 
-    .header {
-      line-height: 18px;
-    }
-
     .bonus {
       display: flex;
       flex-direction: row;
       width: 100%;
-      line-height: 18px;
       margin-left: 10px;
       .value {
         margin-right: 10px;
@@ -412,15 +398,10 @@ function renderSkillsRequired () {
     padding: 0 10px 10px 10px;
     flex-wrap: wrap;
 
-    .header {
-      line-height: 18px;
-    }
-
     .row {
       display: flex;
       flex-direction: row;
       width: 100%;
-      line-height: 18px;
       margin-left: 10px;
       .label {
         margin-right: 10px;

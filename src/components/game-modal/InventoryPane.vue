@@ -44,7 +44,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NInput } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state, getOrderCmd } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -276,13 +276,6 @@ function getActions (item) {
   }
 
   return actions
-}
-
-function getOrderCmd () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return `order eid:${state.gameModalAs} `
-  }
-  return ''
 }
 
 function hasSkillsRequired (item) {

@@ -7,7 +7,25 @@
 
 <script setup>
 import { NSelect } from 'naive-ui'
-import { state, getGameModalAsOptions } from '@/composables/state'
+import { state } from '@/composables/state'
+
+function getGameModalAsOptions () {
+  let values = [{
+    label: state.gameState.player.name,
+    value: ''
+  }]
+  .concat(Object.values(state.gameState.charmies)
+    .filter(charmie => charmie.traits.includes('mercenary'))
+    .map(merc => {
+      return {
+        label: merc.stats.name,
+        value: merc.stats.eid
+      }
+    })
+  )
+
+  return values
+}
 </script>
 
 <style lang="less">

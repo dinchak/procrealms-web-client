@@ -32,7 +32,7 @@
             <span class="black">/</span>
             <span class="bold-green">{{ player().maxHp }}</span>
           </div>
-          <div class="label green">
+          <div class="label bold-green">
             HP (Health)
           </div>
           <div class="progress">
@@ -52,7 +52,7 @@
             <span class="black">/</span>
             <span class="bold-cyan">{{ player().maxEnergy }}</span>
           </div>
-          <div class="label cyan">
+          <div class="label bold-cyan">
             EN (Energy)
           </div>
           <div class="progress">
@@ -72,7 +72,7 @@
             <span class="black">/</span>
             <span class="bold-yellow">{{ player().maxStamina }}</span>
           </div>
-          <div class="label yellow">
+          <div class="label bold-yellow">
             ST (Stamina)
           </div>
           <div class="progress">
@@ -92,7 +92,7 @@
             <span class="black">/</span>
             <span class="bold-magenta">{{ player().maxFood }}</span>
           </div>
-          <div class="label magenta">
+          <div class="label bold-magenta">
             Food
           </div>
           <div class="progress">
@@ -108,9 +108,7 @@
       </NGi>
     </NGrid>
 
-    <div class="points-available" v-if="player().abilityPoints > 0">
-      You have {{ player().abilityPoints }} ability point{{ player().abilityPoints > 1 ? 's' : '' }} available to spend.
-    </div>
+    <div class="space"></div>
 
     <NGrid cols="2 800:4">
       <NGi class="grid-item">
@@ -122,8 +120,12 @@
           <div class="ability-point-label bold-red">Strength</div>
 
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point strength')">
-              <NIcon><AddFilled></AddFilled></NIcon>
+            <NButton ghost size="tiny" class="spend-point-button selectable" @click="spendPoint('strength')">
+              <div class="column">
+                <NIcon><AddFilled></AddFilled></NIcon>
+                <div class="spend-point">Spend Point</div>
+                <div class="points-remaining">{{ player().abilityPoints }} remaining</div>
+              </div>
             </NButton>
           </div>
 
@@ -154,8 +156,12 @@
           </div>
           <div class="ability-point-label bold-yellow">Agility</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point agility')">
-              <NIcon><AddFilled></AddFilled></NIcon>
+            <NButton ghost size="tiny" class="spend-point-button selectable" @click="spendPoint('agility')">
+              <div class="column">
+                <NIcon><AddFilled></AddFilled></NIcon>
+                <div class="spend-point">Spend Point</div>
+                <div class="points-remaining">{{ player().abilityPoints }} remaining</div>
+              </div>
             </NButton>
           </div>
           <div class="ability-bonus">
@@ -185,8 +191,12 @@
           </div>
           <div class="ability-point-label bold-cyan">Magic</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point magic')">
-              <NIcon><AddFilled></AddFilled></NIcon>
+            <NButton ghost size="tiny" class="spend-point-button selectable" @click="spendPoint('magic')">
+              <div class="column">
+                <NIcon><AddFilled></AddFilled></NIcon>
+                <div class="spend-point">Spend Point</div>
+                <div class="points-remaining">{{ player().abilityPoints }} remaining</div>
+              </div>
             </NButton>
           </div>
           <div class="ability-bonus">
@@ -216,8 +226,12 @@
           </div>
           <div class="ability-point-label bold-green">Spirit</div>
           <div class="add-point-button" v-if="player().abilityPoints > 0">
-            <NButton ghost size="tiny" class="ability-point-button selectable" @click="cmd('point spirit')">
-              <NIcon><AddFilled></AddFilled></NIcon>
+            <NButton ghost size="tiny" class="spend-point-button selectable" @click="spendPoint('spirit')">
+              <div class="column">
+                <NIcon><AddFilled></AddFilled></NIcon>
+                <div class="spend-point">Spend Point</div>
+                <div class="points-remaining">{{ player().abilityPoints }} remaining</div>
+              </div>
             </NButton>
           </div>
           <div class="ability-bonus">
@@ -241,8 +255,9 @@
 
     </NGrid>
 
-    <h3>Combat</h3>
+    <div class="space"></div>
 
+    <h3 class="bold-white">Statistics</h3>
     <NGrid cols="1 600:2 800:3">
       <NGi class="grid-item">
         <div class="combat-stat">
@@ -346,8 +361,9 @@
           </div>
         </div>
       </NGi>
-
     </NGrid>
+
+    <div class="space"></div>
 
     <NGrid cols="1 600:3">
       <NGi class="grid-item">
@@ -433,6 +449,14 @@ const weapon = ref({})
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
+function spendPoint (stat) {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    cmd(`order eid:${state.gameModalAs} point ${stat}`)
+  } else {
+    cmd(`point ${stat}`)
+  }
+}
+
 function player () {
   if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
     return state.gameState.charmies[state.gameModalAs].stats || {}
@@ -512,11 +536,9 @@ watch(state.gameState.equipment, () => {
     height: calc(100vh - 225px);
   }
 
-  .points-available {
-    font-size: 16px;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
+  .space {
+    width: 100%;
+    height: 20px;
   }
 
   .name {
@@ -534,15 +556,6 @@ watch(state.gameState.equipment, () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .level {
-      font-size: 16px;
-    }
-    .exp {
-      font-size: 16px;
-    }
-    .tnl {
-      font-size: 16px;
-    }
   }
 
   .vital {
@@ -550,17 +563,14 @@ watch(state.gameState.equipment, () => {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    font-size: 16px;
     height: 18px;
     .amount {
-      font-size: 16px;
       width: 160px;
       text-align: right;
       padding-right: 10px;
     }
     .label {
       width: 220px;
-      font-size: 14px;
     }
     .progress {
       width: 100%;
@@ -573,7 +583,7 @@ watch(state.gameState.equipment, () => {
     justify-content: flex-start;
     align-items: flex-start;
     .ability-point-value {
-      font-size: 32px;
+      font-size: 24px;
       line-height: 32px;
       width: 100%;
       text-align: center;
@@ -584,16 +594,31 @@ watch(state.gameState.equipment, () => {
     .ability-point-label {
       width: 100%;
       text-align: center;
-      font-size: 20px;
-      text-decoration: underline;
-      text-decoration-color: #333;
+      font-size: 24px;
       padding-bottom: 5px;
     }
     .add-point-button {
       width: 100%;
       text-align: center;
       padding-bottom: 5px;
-
+      .spend-point-button {
+        height: initial;
+        padding: 5px 10px;
+        .column {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .n-icon {
+            font-size: 24px;
+          }
+          .spend-point {
+            margin-top: 5px;
+          }
+          .points-remaining {
+            margin-top: 5px;
+          }
+        }
+      }
       &.selected {
         box-shadow: 0 0 5px #f8ff25;
         color: #f8ff25;
@@ -605,30 +630,23 @@ watch(state.gameState.equipment, () => {
       justify-content: space-around;
       align-items: center;
       width: 100%;
-      line-height: 16px;
       .value {
-        font-size: 16px;
         text-align: right;
         padding-right: 10px;
-        line-height: 16px;
         width: 50%;
       }
       .label {
         width: 100%;
-        font-size: 14px;
         text-align: left;
-        text-decoration: none;
       }
     }
   }
 
   h3 {
     font-weight: normal;
-    font-size: 20px;
+    font-size: 24px;
     text-align: center;
     margin: 0;
-    text-decoration: underline;
-    text-decoration-color: #333;
   }
 
   .combat-stat {
@@ -640,18 +658,13 @@ watch(state.gameState.equipment, () => {
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
-      font-size: 16px;
-      line-height: 16px;
       width: 100%;
       .value {
-        font-size: 16px;
         text-align: right;
         padding-right: 10px;
-        line-height: 16px;
         width: 40%;
       }
       .label {
-        font-size: 14px;
         text-align: left;
         color: #cccccc;
       }
@@ -667,9 +680,7 @@ watch(state.gameState.equipment, () => {
     .resistance-label {
       width: 100%;
       text-align: center;
-      font-size: 20px;
-      text-decoration: underline;
-      text-decoration-color: #333;
+      font-size: 24px;
       padding-bottom: 5px;
     }
     .resistance-row {
@@ -677,21 +688,15 @@ watch(state.gameState.equipment, () => {
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
-      font-size: 16px;
       width: 100%;
-      height: 16px;
       .value {
-        font-size: 16px;
         text-align: right;
         padding-right: 10px;
-        line-height: 16px;
         width: 75%;
       }
       .label {
         width: 100%;
-        font-size: 14px;
         text-align: left;
-        text-decoration: none;
       }
     }
   }
