@@ -27,23 +27,21 @@
 
         <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
 
-        <div
-          class="expand-link"
+        <NButton ghost size="tiny"
           v-if="quest.desc && !questsExpanded[quest.name]"
           @click="questsExpanded[quest.name] = true"
         >
           More Info
-        </div>
+        </NButton>
         
         <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
 
-        <div
-          class="expand-link"
+        <NButton ghost size="tiny"
           v-if="quest.desc && questsExpanded[quest.name] && questsExpanded[quest.name]"
           @click="questsExpanded[quest.name] = false"
         >
           Less Info
-        </div>
+        </NButton>
 
       </NGi>
     </NGrid>
@@ -52,7 +50,7 @@
 
 <script setup>
 import { ref, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NProgress } from 'naive-ui'
+import { NGrid, NGi, NProgress, NButton } from 'naive-ui'
 import { state } from '@/composables/state'
 import { useHelpers } from '@/composables/helpers'
 
@@ -98,23 +96,13 @@ function getScrollContainerClass () {
       margin: 10px 5px;
       .name {
         font-size: 20px;
-        line-height: 22px;
-        text-decoration: underline;
-        text-decoration-color: #333;
-      }
-      .giver {
-        font-size: 14px;
-        line-height: 16px;
       }
       .objective {
         white-space: pre-wrap;
-        font-size: 16px;
-        line-height: 18px;
+        margin-bottom: 5px;
       }
       .desc {
         white-space: pre-wrap;
-        font-size: 16px;
-        line-height: 18px;
         margin-top: 10px;
       }
       .n-progress {
