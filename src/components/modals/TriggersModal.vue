@@ -2,12 +2,11 @@
   <n-modal
     v-model:show="state.modals.triggersModal"
     title="Triggers"
-    @after-leave="closeModal"
   >    
     <n-card
       title="Automation"
       closable
-      @close="closeModal"
+      @close="onCloseModal"
     >
     <n-tabs
       type="line"
@@ -351,7 +350,7 @@ function updateVariableTree () {
   selectedVariableKeys.value = [variableModel.value.key]
 }
 
-function closeModal () {
+function onCloseModal () {
   if (!state.modals.triggersModal) {
     return
   }
@@ -380,12 +379,12 @@ onMounted(() => {
   updateVariableTree()
   selectedVariableKeys.value = []
 
-  state.inputEmitter.on('closeModal', closeModal)
+  state.inputEmitter.on('closeModal', onCloseModal)
   window.addEventListener('storage', onStorage)
 })
 
 onBeforeUnmount(() => {
-  state.inputEmitter.off('closeModal', closeModal)
+  state.inputEmitter.off('closeModal', onCloseModal)
   window.removeEventListener('storage', onStorage)
 })
 

@@ -2,10 +2,11 @@
   <div class="side-map" v-if="state.options.showSideMap">
     <div class="map-container">
       <div 
-        class="ansi"
+        class="map-line"
         v-for="(line, id) in state.gameState.sidemap"
         :key="id"
         v-html-safe="ansiToHtml(line)"
+        :style="{ height: state.options.fontSize }"
       ></div>
     </div>
   </div>
@@ -28,7 +29,7 @@ const { ansiToHtml } = useHelpers()
   margin-right: 8px;
   .map-container {
     padding-top: 5px;
-    .ansi {
+    .map-line {
       white-space: pre;
     }
   }

@@ -59,7 +59,7 @@ function openGameModal (pane) {
     cursor: pointer;
     height: 34px;
     width: 34px;
-    border: 1px solid #222;
+    border: 1px solid rgba(255, 255, 255, 0.24);
     display: flex;
     flex-direction: column;
     align-items: center;

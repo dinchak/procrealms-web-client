@@ -151,7 +151,9 @@
       />
     </NRadioGroup>
 
-    <NButton class="fullscreen-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
+    <NButton class="settings-button selectable" type="info" @click="openTriggersModal()" ghost>Triggers</NButton>
+    <NButton class="settings-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
+    <NButton class="settings-button selectable" type="error" @click="openLogoutModal()" ghost>Logout</NButton>
 
   </div>
 </template>
@@ -159,7 +161,7 @@
 import { ref } from 'vue'
 import { NButton, NIconWrapper, NIcon, NSlider, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 
-import { state } from '@/composables/state'
+import { state, setMode } from '@/composables/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
@@ -218,6 +220,16 @@ function refreshMapSettings () {
 
   triggerResize()
 }
+
+function openTriggersModal () {
+  setMode('modal')
+  state.modals.triggersModal = true
+}
+
+function openLogoutModal () {
+  setMode('modal')
+  state.modals.logoutModal = true
+}
 </script>
 
 <style scoped lang="less">
@@ -266,9 +278,8 @@ function refreshMapSettings () {
     margin-bottom: 5px;
   }
 
-  .fullscreen-button {
+  .settings-button {
     margin-top: 5px;
-    margin-bottom: 5px;
   }
 }
 </style>

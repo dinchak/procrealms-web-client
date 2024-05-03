@@ -75,7 +75,6 @@ function questHasObjectives (quest) {
     flex-direction: column;
     margin: 0px 0;
     padding: 0px 0;
-    border-bottom: 1px solid #222;
     &:last-child {
       margin-bottom: 0;
       padding-bottom: 0;
@@ -86,7 +85,7 @@ function questHasObjectives (quest) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      min-height: 30px;
+      margin-bottom: 5px;
       .name {
         margin-right: 5px;
         min-width: 150px;

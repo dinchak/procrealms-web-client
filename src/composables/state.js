@@ -218,10 +218,6 @@ export function resetMode () {
 }
 
 export function setMode (newMode) {
-  if (state.mode == newMode) {
-    console.log('state.mode already set to', newMode)
-    return
-  }
   state.prevModes.push(state.mode)
   state.mode = newMode
   console.log(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
@@ -246,11 +242,11 @@ export function showHUD () {
 
 export function getHUDHeight () {
   if (state.options.fontSize == '14px') {
-    return 120
+    return 105
   } else if (state.options.fontSize == '16px') {
-    return 135
+    return 120
   } else if (state.options.fontSize == '18px') {
-    return 150
+    return 135
   }
 }
 

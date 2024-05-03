@@ -134,8 +134,8 @@
           Only Outside Battle
         </NCheckbox>
 
-        <div class="button-container" v-if="newBinding.modes.length > 0">
-          <NButton type="success" ghost @click="saveNewBinding()">Save</NButton>
+        <div class="button-container">
+          <NButton type="success" ghost @click="saveNewBinding()" v-if="newBinding.modes.length > 0">Save</NButton>
           <NButton type="warning" ghost @click="newBinding = false">Cancel</NButton>
         </div>
       </div>
@@ -490,8 +490,8 @@ onBeforeUnmount(() => {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding: 3px 0px 3px 10px;
-        background-color: #222;
+        padding-left: 10px;
+        background-color: #121;
       }
       .new-binding {
         display: flex;
