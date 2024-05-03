@@ -113,10 +113,7 @@
           <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()" ghost>Triggers</NButton>
         </NGi>
         <NGi style="text-align: center">
-          <NButton :key="fullscreenRedraw" class="menu-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
-        </NGi>
-        <NGi style="text-align: center">
-          <NButton class="menu-button selectable" type="warning" @click="openHelpModal()" ghost>Help</NButton>
+          <NButton class="menu-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
         </NGi>
         <NGi style="text-align: center">
           <NButton class="menu-button selectable" type="error" @click="openLogoutModal()" ghost>Logout</NButton>
@@ -153,11 +150,6 @@ function onSetFontFamily () {
 function openTriggersModal () {
   setMode('modal')
   state.modals.triggersModal = true
-}
-
-function openHelpModal () {
-  setMode('modal')
-  state.modals.helpModal = true
 }
 
 function openLogoutModal () {

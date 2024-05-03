@@ -1,7 +1,12 @@
 <template>
   <div class="minimap-container">
     <div class="minimap">
-      <div class="line" v-for="(line, i) in renderMinimap()" :key="'line-' + i" v-html-safe="line"></div>
+      <div class="line"
+        :style="{ height: state.options.fontSize }"
+        v-for="(line, i) in renderMinimap()" 
+        :key="'line-' + i"
+        v-html-safe="line"
+      ></div>
     </div>
   </div>
 </template>

@@ -74,6 +74,10 @@ function getTimeLeftColor (affect) {
       border-bottom: 0;
     }
 
+    .n-progress {
+      max-width: 200px;
+    }
+
     .bonuses {
       display: flex;
       flex-direction: row;

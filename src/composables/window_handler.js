@@ -52,7 +52,6 @@ export function useWindowHandler () {
     document.getElementById('app').style.fontSize = fontSize
 
     let modalContainers = document.getElementsByClassName('n-modal-container')
-    console.log(modalContainers)
     for (let modalContainer of modalContainers) {
       modalContainer.style.fontSize = fontSize
     }
