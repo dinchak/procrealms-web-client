@@ -27,6 +27,8 @@ export const state = reactive({
     alt: false
   },
 
+  isFullscreen: false,
+
   gameModalAs: '',
   mercEid: -1,
 

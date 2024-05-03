@@ -113,7 +113,7 @@
           <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()" ghost>Triggers</NButton>
         </NGi>
         <NGi style="text-align: center">
-          <NButton class="menu-button selectable" type="success" @click="goFullscreen()" ghost>Full Screen</NButton>
+          <NButton :key="fullscreenRedraw" class="menu-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
         </NGi>
         <NGi style="text-align: center">
           <NButton class="menu-button selectable" type="warning" @click="openHelpModal()" ghost>Help</NButton>
@@ -137,7 +137,7 @@ import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
-const { triggerResize, setFontFamily, setFontSize } = useWindowHandler()
+const { setFontFamily, setFontSize, toggleFullscreen } = useWindowHandler()
 
 const selectedFontSize = ref(state.options.fontSize)
 const selectedFontFamily = ref(state.options.fontFamily)
@@ -148,12 +148,6 @@ function onSetFontSize () {
 
 function onSetFontFamily () {
   setFontFamily(selectedFontFamily.value)
-}
-
-async function goFullscreen () {
-  let app = document.getElementById('app')
-  await app.requestFullscreen()
-  triggerResize()
 }
 
 function openTriggersModal () {
