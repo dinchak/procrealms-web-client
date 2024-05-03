@@ -72,17 +72,37 @@ export function useWindowHandler () {
     triggerResize()
   }
 
+  async function toggleFullscreen () {
+    let body = document.querySelector('body')
+    if (!document.fullscreenElement) {
+      await body.requestFullscreen()
+    } else if (document.exitFullscreen) {
+      await document.exitFullscreen()
+    }
+  }
+
+  function onFullscreenChange () {
+    if (document.fullscreenElement) {
+      state.isFullscreen = true
+    } else {
+      state.isFullscreen = false
+    }
+    triggerResize()
+  }
+
   onMounted(() => {
     window.addEventListener('resize', triggerResize)
     window.addEventListener('focus', onWindowFocusBlur)
     window.addEventListener('blur', onWindowFocusBlur)
+    document.addEventListener('fullscreenchange', onFullscreenChange)
   })
 
   onBeforeUnmount(() => {
     window.removeEventListener('resize', triggerResize)
     window.removeEventListener('focus', onWindowFocusBlur)
     window.removeEventListener('blur', onWindowFocusBlur)
+    document.removeEventListener('fullscreenchange', onFullscreenChange)
   })
 
-  return { onResize, triggerResize, calcTerminalSize, setFontSize, setFontFamily }
+  return { onResize, triggerResize, calcTerminalSize, setFontSize, setFontFamily, toggleFullscreen }
 }

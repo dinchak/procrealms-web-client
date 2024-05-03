@@ -151,7 +151,7 @@
       />
     </NRadioGroup>
 
-    <NButton :key="fullscreenRedraw" class="fullscreen-button selectable" type="success" @click="toggleFullscreen()" :ghost="!isFullScreen()">Full Screen</NButton>
+    <NButton class="fullscreen-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
 
   </div>
 </template>
@@ -180,26 +180,10 @@ import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
 import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
 const { send } = useWebSocket()
-const { triggerResize, setFontFamily, setFontSize } = useWindowHandler()
+const { triggerResize, setFontFamily, setFontSize, toggleFullscreen } = useWindowHandler()
 
 const selectedFontSize = ref(state.options.fontSize)
 const selectedFontFamily = ref(state.options.fontFamily)
-const fullscreenRedraw = ref(0)
-
-function isFullScreen() {
-  return document.fullscreenElement ? true : false
-}
-
-async function toggleFullscreen() {
-  let app = document.getElementById('app')
-  if (!document.fullscreenElement) {
-    await app.requestFullscreen()
-  } else if (document.exitFullscreen) {
-    await document.exitFullscreen()
-  }
-  triggerResize()
-  fullscreenRedraw.value++
-}
 
 function onSetFontFamily () {
   setFontFamily(selectedFontFamily.value)
