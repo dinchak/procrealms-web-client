@@ -72,7 +72,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
-import { state, addLine, showHUD, getHUDHeight, getPartyStatsHeight } from '@/composables/state'
+import { state, addLine, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 

@@ -91,7 +91,7 @@ import stripAnsi from 'strip-ansi'
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
 
-import { state, prevMode } from '@/composables/state'
+import { state, prevMode } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'

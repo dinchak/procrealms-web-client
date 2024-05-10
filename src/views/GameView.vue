@@ -38,7 +38,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/composables/state'
+import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
 import { NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
@@ -61,8 +61,10 @@ import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
 
 import { useHelpers } from '@/composables/helpers'
+import { useWindowHandler } from '@/composables/window_handler'
 
 const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
+const { triggerResize } = useWindowHandler()
 
 function openGameModal () {
   setMode('modal')
@@ -109,6 +111,20 @@ function getSideAreaHeight () {
   return `calc(100vh - ${heightOffset}px)`
 }
 
+function onWindowFocusBlur () {
+  state.metaKeyState.alt = state.metaKeyState.ctrl = state.metaKeyState.shift = false
+}
+
+function onFullscreenChange () {
+  if (document.fullscreenElement) {
+    state.isFullscreen = true
+  } else {
+    state.isFullscreen = false
+  }
+  triggerResize()
+}
+
+
 let watchers = []
 onMounted(() => {
   state.inputEmitter.on('openGameModal', openGameModal)
@@ -118,6 +134,12 @@ onMounted(() => {
   state.inputEmitter.on('openInventory', openInventory)
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
+
+  window.addEventListener('resize', triggerResize)
+  window.addEventListener('focus', onWindowFocusBlur)
+  window.addEventListener('blur', onWindowFocusBlur)
+
+  document.addEventListener('fullscreenchange', onFullscreenChange)
 
   watchers.push(watch(state.options, () => {
     localStorage.setItem('options', JSON.stringify(state.options))
@@ -138,6 +160,12 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  window.removeEventListener('resize', triggerResize)
+  window.removeEventListener('focus', onWindowFocusBlur)
+  window.removeEventListener('blur', onWindowFocusBlur)
+
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
 
   watchers.forEach(w => w())
 })

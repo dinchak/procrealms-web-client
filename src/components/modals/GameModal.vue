@@ -73,7 +73,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
-import { state, prevMode } from '@/composables/state'
+import { state, prevMode } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWindowHandler } from '@/composables/window_handler'
 

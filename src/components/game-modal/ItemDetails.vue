@@ -66,7 +66,7 @@
 import { defineProps, toRefs } from 'vue'
 import { NButton } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
-import { ANSI, ITEM_EFFECTS } from '@/composables/constants'
+import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
 const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, listToString } = useHelpers()
 

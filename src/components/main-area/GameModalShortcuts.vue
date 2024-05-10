@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { state, setMode } from '@/composables/state'
+import { state, setMode } from '@/static/state'
 
 function openGameModal (pane) {
   state.gamepadTab = pane
@@ -59,6 +59,7 @@ function openGameModal (pane) {
     cursor: pointer;
     height: 34px;
     width: 34px;
+    user-select: none;
     border: 1px solid rgba(255, 255, 255, 0.24);
     display: flex;
     flex-direction: column;

@@ -69,7 +69,7 @@ import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollap
 import EffectsCollapse from '@/components/mobile-menu/collapse-items/EffectsCollapse.vue'
 import InventoryCollapse from '@/components/mobile-menu/collapse-items/InventoryCollapse.vue'
 import EquipmentCollapse from '@/components/mobile-menu/collapse-items/EquipmentCollapse.vue'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 function player () {
   return state.gameState.player || {}

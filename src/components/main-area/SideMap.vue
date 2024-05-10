@@ -14,7 +14,7 @@
 
 <script setup>
 import { useHelpers } from '@/composables/helpers'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 const { ansiToHtml } = useHelpers()
 </script>
@@ -27,6 +27,7 @@ const { ansiToHtml } = useHelpers()
   overflow: hidden;
   margin-bottom: auto;
   margin-right: 8px;
+  user-select: none;
   .map-container {
     padding-top: 5px;
     .map-line {

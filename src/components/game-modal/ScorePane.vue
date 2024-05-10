@@ -430,14 +430,14 @@
 
 <script setup>
 import { onMounted, watch, ref, defineProps, toRefs } from 'vue'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
 import AddFilled from '@vicons/material/AddFilled'
 
 import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
 
-import { DAMAGE_TYPE_COLORS } from '@/composables/constants'
+import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 

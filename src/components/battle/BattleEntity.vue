@@ -69,10 +69,10 @@ import { defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
-import { ANSI } from '@/composables/constants'
+import { ANSI } from '@/static/constants'
 
 const { ansiToHtml } = useHelpers()
 const { cmd } = useWebSocket()

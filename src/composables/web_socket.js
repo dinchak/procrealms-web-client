@@ -1,23 +1,21 @@
-import { addLine, state } from './state'
-import { loadSettingsByNameAndType } from "@/composables/triggers"
-
-let ws
-let moveTimeout = null
+import { addLine, state } from '@/static/state'
+import { loadSettingsByNameAndType } from '@/static/triggers'
+import { onWebSocketEvent } from '@/static/web_socket_handlers'
 
 export function useWebSocket () {
-  function initConnection ({ onConnect, onClose, onEvent, url }) {
+  function initConnection ({ onConnect, onClose, url }) {
     console.log(`mode=${import.meta.env.MODE}`)
     try {
-      ws = new window.WebSocket(url)
+      state.websocketConnection = new window.WebSocket(url)
 
-      ws.onopen = onConnect
-      ws.onclose = onClose
-      ws.onmessage = ({ data }) => _onMessage(data, onEvent)
+      state.websocketConnection.onopen = onConnect
+      state.websocketConnection.onclose = onClose
+      state.websocketConnection.onmessage = ({ data }) => _onMessage(data)
     } catch (err) {
       console.log(err.stack)
     }
 
-    const _onMessage = (json, onEvent) => {
+    const _onMessage = (json) => {
       try {
         let { cmd, msg, id } = JSON.parse(json)
         if (id) {
@@ -27,7 +25,7 @@ export function useWebSocket () {
           console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
-        id ? onEvent(cmd, msg, id) : onEvent(cmd, msg)
+        id ? onWebSocketEvent(cmd, msg, id) : onWebSocketEvent(cmd, msg)
       } catch (err) {
         console.log('error parsing message: %s', json)
         console.log(err.stack)
@@ -49,7 +47,7 @@ export function useWebSocket () {
     if (id) {
       out.id = id
     }
-    ws.send(JSON.stringify(out))
+    state.websocketConnection.send(JSON.stringify(out))
   }
 
   function cmd (command, id, fromTrigger) {
@@ -73,7 +71,7 @@ export function useWebSocket () {
   }
 
   function move (dir) {
-    if (moveTimeout) {
+    if (state.moveTimeout) {
       return
     }
   
@@ -84,13 +82,13 @@ export function useWebSocket () {
   
     cmd(dir)
   
-    moveTimeout = setTimeout(() => {
-      moveTimeout = null
+    state.moveTimeout = setTimeout(() => {
+      state.moveTimeout = null
     }, 100)
   }
   
   function enter () {
-    if (moveTimeout) {
+    if (state.moveTimeout) {
       return
     }
   
@@ -100,8 +98,8 @@ export function useWebSocket () {
     }
     cmd('enter')
   
-    moveTimeout = setTimeout(() => {
-      moveTimeout = null
+    state.moveTimeout = setTimeout(() => {
+      state.moveTimeout = null
     }, 100)
   }  
 

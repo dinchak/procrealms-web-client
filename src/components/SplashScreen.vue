@@ -58,7 +58,7 @@ import { NButton, NIcon } from 'naive-ui'
 
 import DeleteFilled from '@vicons/material/DeleteFilled'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 import { useTokenHandler } from '@/composables/token_handler'
 import { useWebSocket } from '@/composables/web_socket'

@@ -51,7 +51,7 @@
 <script setup>
 import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NProgress, NButton } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const props = defineProps(['miniOutputEnabled'])

@@ -78,7 +78,7 @@ import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 const { cmd } = useWebSocket()
 const { isGamepadConnected } = useHelpers()

@@ -229,7 +229,7 @@
 <script setup>
 import { defineProps, toRefs, onMounted, onBeforeUnmount, ref } from 'vue'
 import { NGrid, NGi, NButton, NIcon, NSelect, NCheckbox, NCollapse, NCollapseItem } from 'naive-ui'
-import { state, resetInputMappings } from '@/composables/state'
+import { state, resetInputMappings } from '@/static/state'
 
 import AddOutlined from '@vicons/material/AddCircleOutlined'
 import DeleteOutlined from '@vicons/material/DeleteOutlined'

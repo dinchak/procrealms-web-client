@@ -1,8 +1,9 @@
 import { AnsiUp } from 'ansi_up'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
+import { ACTION_MAP, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
+
 import { useWebSocket } from '@/composables/web_socket'
-import { ACTION_MAP, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/composables/constants'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
@@ -356,12 +357,24 @@ export function useHelpers () {
     } else {
       move(state.selectedDirection)
     }
-  }  
+  }
 
+  function calcMapSize () {
+    let width = Math.round(5 + (state.options.sideMapWidth / 2))
+    let height = Math.round(5 + (state.options.sideMapHeight / 2))
+    return { width, height }
+  }
+
+  function strToLines (str) {
+    let lines = str.trim().split('\n')
+    return lines.map((line) => ansiToHtml(line))
+  }
+  
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
-    selectMovementDirection, moveInSelectedDirection
+    selectMovementDirection, moveInSelectedDirection,
+    calcMapSize, strToLines
   }
 }

@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import MovementControls from '@/components/common/MovementControls.vue'
 </script>
 

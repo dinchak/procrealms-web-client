@@ -35,10 +35,10 @@
 import { ref, watch } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
-import { loadSettingsByNameAndType } from "@/composables/triggers"
+import { loadSettingsByNameAndType } from "@/static/triggers"
 
 const { send } = useWebSocket()
 

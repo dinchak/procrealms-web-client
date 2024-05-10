@@ -23,7 +23,7 @@
 import { ref, defineProps, toRefs, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NCollapseItem } from 'naive-ui'
 
-import { state } from "@/composables/state"
+import { state } from "@/static/state"
 
 import EquipmentRow from '@/components/mobile-menu/collapse-items/EquipmentRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'

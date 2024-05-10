@@ -19,7 +19,7 @@
 </template>
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue'
-import { state, setMode, prevMode } from '@/composables/state'
+import { state, setMode, prevMode } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import RadialMenu from '@/components/modals/RadialMenu.vue'
 

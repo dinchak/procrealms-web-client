@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { NLayoutSider } from 'naive-ui'
 
 import MiniMap from '@/components/common/MiniMap.vue'

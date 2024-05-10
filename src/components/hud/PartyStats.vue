@@ -31,7 +31,7 @@
   </div>
 </template>
 <script setup>
-import { state, getPartyStatsHeight } from '@/composables/state'
+import { state, getPartyStatsHeight } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()

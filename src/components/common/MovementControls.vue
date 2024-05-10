@@ -32,7 +32,7 @@ import SouthWestOutlined from '@vicons/material/SouthWestOutlined'
 import { NIcon } from 'naive-ui'
 
 import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 const { move, enter } = useWebSocket()
 

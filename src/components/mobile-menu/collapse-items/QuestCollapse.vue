@@ -47,7 +47,7 @@
 <script setup>
 import { ref } from 'vue'
 import { NProgress, NCollapseItem } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()

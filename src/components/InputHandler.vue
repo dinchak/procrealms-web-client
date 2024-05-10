@@ -4,7 +4,7 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 let gamepadStateLoopPaused = true
 
