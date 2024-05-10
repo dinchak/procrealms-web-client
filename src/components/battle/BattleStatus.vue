@@ -60,7 +60,7 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/battle/BattleEntity.vue'

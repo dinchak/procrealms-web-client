@@ -24,7 +24,7 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import { NModal, NButton } from 'naive-ui'
-import { state, prevMode } from '@/composables/state'
+import { state, prevMode } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useTokenHandler } from '@/composables/token_handler'

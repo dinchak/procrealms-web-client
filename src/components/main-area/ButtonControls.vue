@@ -1,6 +1,17 @@
 <template>
   <div class="interface-overlay">
     <div class="interface">
+      <MusicPlayer v-show="state.options.showMusicPlayer"></MusicPlayer>
+
+      <n-icon 
+        title="Music Player"
+        :class="state.options.showMusicPlayer ? 'active' : ''"
+        size="24"
+        @click="toggleMusicPlayer"
+      >
+        <MusicNoteOutlined/>
+      </n-icon>
+
       <n-icon 
         title="Game Menu"
         :class="state.modals.gameModal ? 'active' : ''"
@@ -38,21 +49,28 @@
       </n-icon>
     </div>
 
-    <HUDSettings v-if="state.settingsMode" />
+    <SettingsOverlay v-if="state.settingsMode" />
   </div>
 </template>
 
 <script setup>
 import { NIcon } from 'naive-ui'
 
-import HUDSettings from '@/components/hud/HUDSettings.vue'
+import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
+import MusicNoteOutlined from '@vicons/material/MusicNoteOutlined'
 import QuestionMarkOutlined from '@vicons/material/QuestionMarkOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
-import { setMode, state } from '@/composables/state'
+import MusicPlayer from '@/components/common/MusicPlayer.vue'
+
+import { setMode, state } from '@/static/state'
+
+function toggleMusicPlayer () {
+  state.options.showMusicPlayer = !state.options.showMusicPlayer
+}
 
 function toggleHelp () {
   state.modals.helpModal = !state.modals.helpModal
@@ -86,6 +104,7 @@ function toggleGameModal() {
       margin-right: 5px;
       background: rgb(16, 16, 20);
       border: 1px solid rgba(255, 255, 255, 0.24);
+      user-select: none;
       &:last-child {
         margin-right: 0;
       }

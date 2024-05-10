@@ -6,6 +6,9 @@ export const state = reactive({
   connected: false,
   disconnected: false,
 
+  websocketConnection: null,
+  moveTimeout: null,
+
   pendingRequests: {},
 
   gameState: resetGameState(),
@@ -57,6 +60,8 @@ export const state = reactive({
   newbie: [],
 
   animations: [],
+  nextAnimationDelay: 0,
+
   triggers: ref(new Map()),
   variables: ref(new Map()),
 
@@ -161,6 +166,7 @@ function resetOptions () {
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
     keepSentCommands: false,
+    showMusicPlayer: false,
 
     // mobile menu options
     showMobileMenu: false,

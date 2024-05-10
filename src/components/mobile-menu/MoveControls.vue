@@ -23,7 +23,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { NIcon } from 'naive-ui'
 
 import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 import NorthOutlined from '@vicons/material/NorthOutlined'
 import SouthOutlined from '@vicons/material/SouthOutlined'

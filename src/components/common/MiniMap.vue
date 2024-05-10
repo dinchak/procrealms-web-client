@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()

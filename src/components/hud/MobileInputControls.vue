@@ -8,7 +8,7 @@
 
 <script setup>
 import { NButton } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 </script>
 
 <style scoped lang="less">

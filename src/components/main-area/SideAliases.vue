@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup>
-import { state, showHUD, getHUDHeight, getPartyStatsHeight } from '@/composables/state'
+import { state, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
 import { NButton } from 'naive-ui'
 import { useWebSocket } from '@/composables/web_socket'
 

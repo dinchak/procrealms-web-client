@@ -35,9 +35,9 @@
 </template>
 <script setup>
 import { NProgress } from 'naive-ui'
-import { state, getHUDHeight } from '@/composables/state'
+import { state, getHUDHeight } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
-import { ANSI } from '@/composables/constants'
+import { ANSI } from '@/static/constants'
 
 const { ansiToHtml } = useHelpers()
 

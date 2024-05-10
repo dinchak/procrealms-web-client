@@ -34,10 +34,10 @@
 import { ref, watch, onMounted, defineProps } from 'vue'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 
-import { state, setMode, prevMode } from '@/composables/state'
+import { state, setMode, prevMode } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
-import { COMMAND_IDS } from '@/composables/constants'
+import { COMMAND_IDS } from '@/static/constants'
 
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'

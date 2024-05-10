@@ -127,9 +127,9 @@
 <script setup>
 import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NSwitch, NRadioGroup, NRadioButton, NSelect, NButton } from 'naive-ui'
-import { state, setMode } from '@/composables/state'
+import { state, setMode } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
-import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
+import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)

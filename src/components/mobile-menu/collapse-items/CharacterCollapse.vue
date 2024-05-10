@@ -499,7 +499,7 @@ import { defineProps, ref, onMounted, watch } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
-import { DAMAGE_TYPE_COLORS } from '@/composables/constants'
+import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 

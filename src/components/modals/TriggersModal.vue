@@ -142,9 +142,9 @@ import {
   NTree 
 } from 'naive-ui'
 
-import { state, prevMode } from '@/composables/state'
+import { state, prevMode } from '@/static/state'
 import { onMounted, onBeforeUnmount, ref } from "vue"
-import { getNextKey, loadSettingsByNameAndType, storeSettingsOfType } from "@/composables/triggers"
+import { getNextKey, loadSettingsByNameAndType, storeSettingsOfType } from "@/static/triggers"
 
 const triggerModel = ref({ key: '-1', name: "", pattern: "", commands: "", active: false, shared: false })
 const triggerTreeData = ref([])

@@ -63,8 +63,8 @@ import { NCard, NTabs, NTabPane, NButton, NInputNumber } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
-import { state, addLine } from '@/composables/state'
-import { COMMAND_IDS } from '@/composables/constants'
+import { state, addLine } from '@/static/state'
+import { COMMAND_IDS } from '@/static/constants'
 
 const { ansiToHtml, getActions } = useHelpers()
 const { cmd } = useWebSocket()

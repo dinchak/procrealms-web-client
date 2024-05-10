@@ -10,7 +10,7 @@ export const FONT_SIZES = [{
   label: 'Medium'
 }, {
   value: '18px',
-  label: 'Large'
+  label: 'Big'
 }]
 
 export const FONT_OPTIONS = [{
@@ -156,6 +156,12 @@ export const COMMAND_IDS = {
   COMPARE: '1001',
   MAP: '1002',
   MERC_ACTION: '1003'
+}
+
+export const CHANNEL_COLORS = {
+  chat: 'bold-yellow',
+  trade: 'bold-green',
+  newbie: 'bold-magenta'
 }
 
 export const TRAITS_MERCENARY = 'mercenary'
@@ -623,3 +629,92 @@ export const ANSI_REPLACEMENTS = [
   { from: '1;36m', to: '96m' },
   { from: '1;37m', to: '97m' },
 ]
+
+export const MUSIC_TRACKS = [{
+  name: 'Celestial Quest',
+  url: '/music/Celestial Quest.mp3',
+}, {
+  name: 'Dawn of Adventure',
+  url: '/music/Dawn of Adventure.mp3',
+}, {
+  name: 'Enchanted Forest',
+  url: '/music/Enchanted Forest.mp3',
+}, {
+  name: 'Enchanted Reverie',
+  url: '/music/Enchanted Reverie.mp3',
+}, {
+  name: 'Enchanted Serenity',
+  url: '/music/Enchanted Serenity.mp3',
+}, {
+  name: 'Ethereal Bit Quest',
+  url: '/music/Ethereal Bit Quest.mp3',
+}, {
+  name: 'Ethereal Epocs',
+  url: '/music/Ethereal Epocs.mp3',
+}, {
+  name: 'Ethereal Hamlet',
+  url: '/music/Ethereal Hamlet.mp3',
+}, {
+  name: 'Ethereal Homestead',
+  url: '/music/Ethereal Homestead.mp3',
+}, {
+  name: 'Ethereal Quests',
+  url: '/music/Ethereal Quests.mp3',
+}, {
+  name: 'Ethereal Reverie',
+  url: '/music/Ethereal Reverie.mp3',
+}, {
+  name: 'Forest Serenade',
+  url: '/music/Forest Serenade.mp3',
+}, {
+  name: 'Glacial Summit',
+  url: '/music/Glacial Summit.mp3',
+}, {
+  name: 'Haven of Tranquility',
+  url: '/music/Haven of Tranquility.mp3',
+}, {
+  name: 'Horizon\'s Embrace',
+  url: '/music/Horizon\'s Embrace.mp3',
+}, {
+  name: 'Labyrinth Echoes',
+  url: '/music/Labyrinth Echoes.mp3',
+}, {
+  name: 'Luminous Reverie',
+  url: '/music/Luminous Reverie.mp3',
+}, {
+  name: 'Mystic Overworld',
+  url: '/music/Mystic Overworld.mp3',
+}, {
+  name: 'Pixelated Dawn',
+  url: '/music/Pixelated Dawn.mp3',
+}, {
+  name: 'Pixelated Serenity',
+  url: '/music/Pixelated Serenity.mp3',
+}, {
+  name: 'Portals and Plowshares',
+  url: '/music/Portals and Plowshares.mp3',
+}, {
+  name: 'Quest\'s Lament',
+  url: '/music/Quest\'s Lament.mp3',
+}, {
+  name: 'Questing Horizons',
+  url: '/music/Questing Horizons.mp3',
+}, {
+  name: 'Sanctum Resonance',
+  url: '/music/Sanctum Resonance.mp3',
+}, {
+  name: 'Shadowed Glade',
+  url: '/music/Shadowed Glade.mp3',
+}, {
+  name: 'Solace in Shadows',
+  url: '/music/Solace in Shadows.mp3',
+}, {
+  name: 'Veil of the Enchanted Forest',
+  url: '/music/Veil of the Enchanted Forest.mp3',
+}, {
+  name: 'Whispering Shadows',
+  url: '/music/Whispering Shadows.mp3',
+}, {
+  name: 'Whispering Woods',
+  url: '/music/Whispering Woods.mp3',
+}]

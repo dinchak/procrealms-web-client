@@ -74,7 +74,7 @@ import { defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NProgress } from 'naive-ui'
 
 import SelectGameModalAs from './SelectGameModalAs.vue'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)

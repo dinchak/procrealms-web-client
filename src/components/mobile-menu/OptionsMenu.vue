@@ -76,9 +76,9 @@
 <script setup>
 import { ref } from 'vue'
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
-import { state, setMode } from '@/composables/state'
+import { state, setMode } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
-import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
+import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
 const { triggerResize, setFontSize, setFontFamily } = useWindowHandler()
 

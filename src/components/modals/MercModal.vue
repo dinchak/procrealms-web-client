@@ -59,7 +59,7 @@ import InventoryCollapse from '@/components/mobile-menu/collapse-items/Inventory
 import MiniStats from '@/components/mobile-menu/MiniStats.vue'
 import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollapse.vue'
 
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, getMerc } = useHelpers()

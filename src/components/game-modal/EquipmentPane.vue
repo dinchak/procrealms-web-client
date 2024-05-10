@@ -36,8 +36,8 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
-import { state, getOrderCmd } from '@/composables/state'
-import { equipmentLabels, petEquipmentLabels } from '@/composables/constants'
+import { state, getOrderCmd } from '@/static/state'
+import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 

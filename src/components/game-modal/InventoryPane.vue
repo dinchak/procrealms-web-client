@@ -44,7 +44,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NInput } from 'naive-ui'
-import { state, getOrderCmd } from '@/composables/state'
+import { state, getOrderCmd } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 

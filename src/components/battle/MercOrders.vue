@@ -21,7 +21,7 @@ import { NDropdown, NButton, NIcon } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { reactive, onMounted, watch } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 import AddCommentOutlined from '@vicons/material/AddCommentOutlined'
 

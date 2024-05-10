@@ -9,7 +9,7 @@ import { NCollapseItem } from 'naive-ui'
 
 import OptionsMenu from '@/components/mobile-menu/OptionsMenu.vue'
 
-// import { state } from '@/composables/state'
+// import { state } from '@/static/state'
 
 </script>
 

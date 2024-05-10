@@ -1,9 +1,6 @@
 <template>
-  <div class="hud-settings-container">
-
-    <!-- top row -->
-
-    <div class="settings">
+  <div class="interface-toggles">
+    <div class="toggles">
       <NButton size="medium"
         title="Minimap"
         :type="getOptionType('showMinimap')"
@@ -38,7 +35,7 @@
     </div>
 
     <!-- middle row -->
-    <div class="settings">
+    <div class="toggles">
 
       <NButton size="medium"
         title="Tabs"
@@ -75,7 +72,7 @@
     </div>
 
     <!-- bottom row -->
-    <div class="settings">
+    <div class="toggles">
       <NButton size="medium"
         title="Side Map"
         :type="getOptionType('showSideMap')"
@@ -108,63 +105,11 @@
         <NIcon size="24"><SplitscreenOutlined/></NIcon>
       </NButton>
     </div>
-
-    <h3 v-if="state.options.showSideMap">Map Size</h3>
-
-    <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.sideMapWidth" @update:value="refreshMapSettings" :step="2">
-        <template #thumb>
-          <NIconWrapper :size="24" :border-radius="12">
-            <NIcon :size="18" :component="SwapHorizOutlined" />
-          </NIconWrapper>
-        </template>
-      </NSlider>
-    </div>
-
-    <div v-if="state.options.showSideMap" class="settings">
-      <NSlider class="slider" v-model:value="state.options.sideMapHeight" @update:value="refreshMapSettings" :step="2">
-        <template #thumb>
-          <NIconWrapper :size="24" :border-radius="12">
-            <NIcon :size="18" :component="SwapVertOutlined" />
-          </NIconWrapper>
-        </template>
-      </NSlider>
-    </div>
-
-    <NSelect
-      class="font-selector"
-      v-model:value="selectedFontFamily"
-      placeholder="Select Font"
-      :options="FONT_OPTIONS"
-      aria-label="Select Font"
-      @update:value="onSetFontFamily"
-    />
-
-    <NRadioGroup v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
-      <NRadioButton
-        v-for="fontSize in FONT_SIZES"
-        :key="fontSize.value"
-        :value="fontSize.value"
-        :label="fontSize.label"
-        @change="onSetFontSize"
-        class="selectable"
-      />
-    </NRadioGroup>
-
-    <NButton class="settings-button selectable" type="info" @click="openTriggersModal()" ghost>Triggers</NButton>
-    <NButton class="settings-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
-    <NButton class="settings-button selectable" type="error" @click="openLogoutModal()" ghost>Logout</NButton>
-
   </div>
+
 </template>
 <script setup>
-import { ref } from 'vue'
-import { NButton, NIconWrapper, NIcon, NSlider, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
-
-import { state, setMode } from '@/composables/state'
-import { useWebSocket } from '@/composables/web_socket'
-import { useWindowHandler } from '@/composables/window_handler'
-import { FONT_OPTIONS, FONT_SIZES } from '@/composables/constants'
+import { NButton, NIcon } from 'naive-ui'
 
 import AlignHorizontalLeftOutlined from '@vicons/material/AlignHorizontalLeftOutlined'
 import AnnouncementOutlined from '@vicons/material/AnnouncementOutlined'
@@ -178,22 +123,15 @@ import MeetingRoomOutlined from '@vicons/material/MeetingRoomOutlined'
 import OpenWithOutlined from '@vicons/material/OpenWithOutlined'
 import SmartButtonOutlined from '@vicons/material/SmartButtonOutlined'
 import SplitscreenOutlined from '@vicons/material/SplitscreenOutlined'
-import SwapHorizOutlined from '@vicons/material/SwapHorizOutlined'
-import SwapVertOutlined from '@vicons/material/SwapVertOutlined'
 
+import { state } from '@/static/state'
+import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
+import { useWindowHandler } from '@/composables/window_handler'
+
+const { calcMapSize } = useHelpers()
 const { send } = useWebSocket()
-const { triggerResize, setFontFamily, setFontSize, toggleFullscreen } = useWindowHandler()
-
-const selectedFontSize = ref(state.options.fontSize)
-const selectedFontFamily = ref(state.options.fontFamily)
-
-function onSetFontFamily () {
-  setFontFamily(selectedFontFamily.value)
-}
-
-function onSetFontSize () {
-  setFontSize(selectedFontSize.value)
-}
+const { triggerResize } = useWindowHandler()
 
 function getOptionType (option) {
   return state.options[option] ? 'success' : ''
@@ -201,12 +139,6 @@ function getOptionType (option) {
 
 function toggleOption (option) {
   state.options[option] = !state.options[option]
-}
-
-function calcMapSize () {
-  let width = Math.round(5 + (state.options.sideMapWidth / 2))
-  let height = Math.round(5 + (state.options.sideMapHeight / 2))
-  return { width, height }
 }
 
 function refreshMapSettings () {
@@ -221,43 +153,14 @@ function refreshMapSettings () {
   triggerResize()
 }
 
-function openTriggersModal () {
-  setMode('modal')
-  state.modals.triggersModal = true
-}
-
-function openLogoutModal () {
-  setMode('modal')
-  state.modals.logoutModal = true
-}
 </script>
-
-<style scoped lang="less">
-.hud-settings-container {
-  position: absolute;
-  top: 40px;
-  right: 0px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  padding-top: 5px;
-  background-color: rgba(0, 0, 0, 0.9);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-
-  h3 {
-    padding: 0;
-    margin: 5px;
-    font-weight: normal;
-    font-size: 16px;
-    color: #fff;
-  }
-
-  .settings {
+<style lang="less">
+.interface-toggles {
+  .toggles {
     display: flex;
     flex-direction: row;
-    margin-left: 5px;
     margin-bottom: 5px;
-    justify-content: space-evenly;
+    justify-content: space-between;
     .n-button {
       margin-right: 7px;
       border-radius: 0;
@@ -267,19 +170,6 @@ function openLogoutModal () {
         margin-right: 0;
       }
     }
-
-    .slider {
-      margin-top: 10px;
-      margin-bottom: 3px;
-    }
-  }
-
-  .n-select {
-    margin-bottom: 5px;
-  }
-
-  .settings-button {
-    margin-top: 5px;
   }
 }
 </style>

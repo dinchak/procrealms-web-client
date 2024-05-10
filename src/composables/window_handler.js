@@ -1,5 +1,4 @@
-import { onMounted, onBeforeUnmount } from 'vue'
-import { state } from './state'
+import { state } from '@/static/state'
 
 let resizeHandlers = []
 
@@ -43,10 +42,6 @@ export function useWindowHandler () {
     return { width, height }
   }
 
-  function onWindowFocusBlur () {
-    state.metaKeyState.alt = state.metaKeyState.ctrl = state.metaKeyState.shift = false
-  }
-
   function setFontSize (fontSize) {
     state.options.fontSize = fontSize
     document.getElementById('app').style.fontSize = fontSize
@@ -80,28 +75,8 @@ export function useWindowHandler () {
     }
   }
 
-  function onFullscreenChange () {
-    if (document.fullscreenElement) {
-      state.isFullscreen = true
-    } else {
-      state.isFullscreen = false
-    }
-    triggerResize()
+  return {
+    onResize, triggerResize, calcTerminalSize,
+    setFontSize, setFontFamily, toggleFullscreen,
   }
-
-  onMounted(() => {
-    window.addEventListener('resize', triggerResize)
-    window.addEventListener('focus', onWindowFocusBlur)
-    window.addEventListener('blur', onWindowFocusBlur)
-    document.addEventListener('fullscreenchange', onFullscreenChange)
-  })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', triggerResize)
-    window.removeEventListener('focus', onWindowFocusBlur)
-    window.removeEventListener('blur', onWindowFocusBlur)
-    document.removeEventListener('fullscreenchange', onFullscreenChange)
-  })
-
-  return { onResize, triggerResize, calcTerminalSize, setFontSize, setFontFamily, toggleFullscreen }
 }

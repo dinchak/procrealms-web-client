@@ -7,7 +7,7 @@
 
 <script setup>
 import { NSelect } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 function getGameModalAsOptions () {
   let values = [{

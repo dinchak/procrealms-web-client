@@ -13,10 +13,9 @@ import { onMounted, onBeforeUnmount } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
 
-import { state, resetState, resetMode } from './composables/state'
-import { useEventHandler } from '@/composables/event_handler'
+import { state, resetState, resetMode } from './static/state'
 import { useWebSocket } from '@/composables/web_socket'
-import { CACHE_DELETE_TIME, CACHE_DELETE_INTERVAL } from '@/composables/constants'
+import { CACHE_DELETE_TIME, CACHE_DELETE_INTERVAL } from '@/static/constants'
 
 import InputHandler from '@/components/InputHandler.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
@@ -29,7 +28,6 @@ const themeOverrides = {
   }
 }
 
-const { onEvent } = useEventHandler()
 const { initConnection } = useWebSocket()
 
 let cacheClearInterval = null
@@ -43,7 +41,7 @@ function doConnect () {
     return
   }
 
-  initConnection({ onConnect, onClose, onEvent, url: import.meta.env.VITE_WEBSOCKET_URL })
+  initConnection({ onConnect, onClose, url: import.meta.env.VITE_WEBSOCKET_URL })
 }
 
 function onClose () {

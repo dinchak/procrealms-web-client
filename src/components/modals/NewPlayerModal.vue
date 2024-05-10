@@ -45,7 +45,7 @@
 import { ref, onMounted } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton, NSwitch } from 'naive-ui'
-import { state } from '@/composables/state'
+import { state } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 const { send } = useWebSocket()

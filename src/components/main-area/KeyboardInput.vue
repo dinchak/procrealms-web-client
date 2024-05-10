@@ -8,7 +8,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, defineProps, toRefs } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
-import { state, setMode, prevMode } from '@/composables/state'
+import { state, setMode, prevMode } from '@/static/state'
 
 import MobileInputControls from '@/components/hud/MobileInputControls.vue'
 
