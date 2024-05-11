@@ -105,6 +105,8 @@ function toggleGameModal() {
       background: rgb(16, 16, 20);
       border: 1px solid rgba(255, 255, 255, 0.24);
       user-select: none;
+      transition: all 0.3s;
+
       &:last-child {
         margin-right: 0;
       }
