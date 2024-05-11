@@ -176,7 +176,7 @@ function resetOptions () {
     textInputAlwaysFocused: false,
     keepSentCommands: false,
     showMusicPlayer: false,
-    volume: 65,
+    volume: 40,
 
     // mobile menu options
     showMobileMenu: false,

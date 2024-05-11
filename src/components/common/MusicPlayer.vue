@@ -38,7 +38,7 @@
   </div>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 import { NSlider, NIcon, NIconWrapper } from 'naive-ui'
 
 import PauseOutlined from '@vicons/material/PauseOutlined'
@@ -48,9 +48,11 @@ import VolumeDownOutlined from '@vicons/material/VolumeDownOutlined'
 
 import { MUSIC_TRACKS } from '@/static/constants'
 import { state } from '@/static/state'
+import { cons } from 'jiff/lib/array'
 
 let analyzerData = null
 let stopAnalysis = false
+let trackLoading = false
 
 let redCounter = Date.now() + 1000
 let greenCounter = Date.now() + 2000
@@ -95,7 +97,9 @@ async function playRandomTrack () {
 
 function loadTrack (track) {
   return new Promise((resolve, reject) => {
+    trackLoading = true
     if (track.buffer) {
+      trackLoading = false
       resolve()
       return
     }
@@ -105,9 +109,14 @@ function loadTrack (track) {
     request.responseType = 'arraybuffer'
 
     request.onload = () => {
+      if (!request.response) {
+        trackLoading = false
+        return
+      }
+
       state.music.audioContext.decodeAudioData(request.response, (buffer) => {
-        console.log('buffer decoded')
         track.buffer = buffer
+        trackLoading = false
         resolve()
       })
     }
@@ -118,7 +127,7 @@ function loadTrack (track) {
 
 function stopPlaying () {
   const { musicSource } = state.music
-  if (musicSource && musicSource.buffer) {
+  if (musicSource) {
     musicSource.stop()
     musicSource.disconnect()
     state.music.playing = false
@@ -132,18 +141,34 @@ async function startPlaying (track) {
     await audioContext.resume()
   }
 
-  stopPlaying()
+  if (trackLoading) {
+    return
+  }
+
+  if (!track.buffer) {
+    await loadTrack(track)
+  }
+
+  if (state.music.musicSource) {
+    state.music.musicSource.stop()
+    state.music.musicSource.disconnect()
+  }
 
   let musicSource = audioContext.createBufferSource()
-  await loadTrack(track)
   musicSource.buffer = track.buffer
   musicSource.connect(gainNode)
   musicSource.start()
 
   musicSource.addEventListener('ended', async () => {
-    if (state.music.playing) {
-      await playRandomTrack()
+    if (track.name != state.music.currentTrack.name) {
+      return
     }
+
+    if (trackLoading) {
+      return
+    }
+
+    await playRandomTrack()
   })
 
   state.music.musicSource = musicSource
@@ -240,6 +265,7 @@ onBeforeUnmount(() => {
       background-color: #101014;
       color: #fff;
       transition: all 0.3s;
+      user-select: none;
       &:hover {
         border: 1px solid #0cc6c6;
       }
@@ -247,9 +273,12 @@ onBeforeUnmount(() => {
   }
 
   .track-info {
+    width: 100%;
+    text-align: center;
     .track-name {
       margin-top: 5px;
-      margin-right: 10px;
+      margin-right: 5px;
+      margin-left: 5px;
       position: relative;
       z-index: 2;
     }
