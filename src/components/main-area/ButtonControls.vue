@@ -2,6 +2,15 @@
   <div class="interface-overlay">
     <div class="interface">
       <n-icon 
+        title="Settings"
+        :class="state.settingsMode ? 'active' : ''"
+        size="24"
+        @click="toggleSettings"
+      >
+        <SettingsFilled />
+      </n-icon>
+
+      <n-icon 
         title="Music Player"
         :class="state.options.showMusicPlayer ? 'active' : ''"
         size="24"
@@ -17,15 +26,6 @@
         @click="toggleGameModal"
       >
         <AssessmentOutlined/>
-      </n-icon>
-
-      <n-icon 
-        title="Settings"
-        :class="state.settingsMode ? 'active' : ''"
-        size="24"
-        @click="toggleSettings"
-      >
-        <SettingsFilled />
       </n-icon>
 
       <n-icon
@@ -63,8 +63,6 @@ import MenuOutlined from '@vicons/material/MenuOutlined'
 import MusicNoteOutlined from '@vicons/material/MusicNoteOutlined'
 import QuestionMarkOutlined from '@vicons/material/QuestionMarkOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
-
-import MusicPlayer from '@/components/common/MusicPlayer.vue'
 
 import { setMode, state } from '@/static/state'
 

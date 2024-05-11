@@ -20,8 +20,8 @@ import MusicPlayer from '@/components/common/MusicPlayer.vue'
   flex-wrap: nowrap;
   margin-left: 8px;
   margin-bottom: 4px;
-  margin-top: 4px;
+  padding-top: 4px;
   background-color: rgba(0, 0, 0, 0.9);
-  // box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
 }
 </style>
