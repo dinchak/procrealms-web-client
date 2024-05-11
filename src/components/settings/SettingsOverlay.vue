@@ -28,20 +28,15 @@ import SettingsActions from '@/components/settings/SettingsActions.vue'
   padding-left: 8px;
   padding-bottom: 3px;
   padding-top: 3px;
-  gap: 5px;
-  // background-color: pink;
+  gap: 20px;
   background-color: rgba(0, 0, 0, 0.9);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-  // .hud-settings-column {
-  //   display: flex;
-  //   flex-direction: column;
-  //   margin-right: 10px;
-  // }
 }
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 700px) {
   .hud-settings-container {
     flex-wrap: wrap;
+    gap: 5px;
   }
 }
 </style>

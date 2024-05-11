@@ -1,73 +1,80 @@
-<template>
-  <div class="music-player-container">
-    
-    <div class="music-player">
-      <canvas ref="analyzer" width="186" height="36"></canvas>
-
-      <div class="track-info">
-        <div class="track-name">
-          {{ currentTrack.name }}
-        </div>
-
-        <div class="play-pause">
-          <NIcon @click="play()" v-if="!playing">
-            <PlayArrowOutlined></PlayArrowOutlined>
-          </NIcon>
-
-          <NIcon @click="pause()" v-if="playing">
-            <PauseOutlined></PauseOutlined>
-          </NIcon>
-        </div>
-
-        <div class="skip-track">
-          <NIcon @click="skip()">
-            <SkipNextOutlined></SkipNextOutlined>
-          </NIcon>
-        </div>
-
+<template>    
+  <div class="music-player">
+    <div class="track-controls">
+      <div class="volume">
+        <NSlider class="slider" v-model:value="state.options.volume" @update:value="updateVolume" :step="1" :min="0" :max="100">
+          <template #thumb>
+            <NIconWrapper :size="24" :border-radius="12">
+              <NIcon :size="18" :component="VolumeDownOutlined" />
+            </NIconWrapper>
+          </template>
+        </NSlider>
       </div>
 
+      <div class="play-pause">
+        <NIcon @click="play()" v-if="!state.music.playing">
+          <PlayArrowOutlined></PlayArrowOutlined>
+        </NIcon>
+
+        <NIcon @click="pause()" v-if="state.music.playing">
+          <PauseOutlined></PauseOutlined>
+        </NIcon>
+      </div>
+
+      <div class="skip-track">
+        <NIcon @click="skip()">
+          <SkipNextOutlined></SkipNextOutlined>
+        </NIcon>
+      </div>
     </div>
+
+    <div class="track-info">
+      <div class="track-name">
+        {{ state.music.currentTrack.name }}
+      </div>
+      <canvas ref="analyzer" width="186" height="36"></canvas>
+    </div>
+
   </div>
 </template>
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue'
-import { NIcon } from 'naive-ui'
+import { NSlider, NIcon, NIconWrapper } from 'naive-ui'
 
 import PauseOutlined from '@vicons/material/PauseOutlined'
 import PlayArrowOutlined from '@vicons/material/PlayArrowOutlined'
 import SkipNextOutlined from '@vicons/material/SkipNextOutlined'
+import VolumeDownOutlined from '@vicons/material/VolumeDownOutlined'
 
 import { MUSIC_TRACKS } from '@/static/constants'
+import { state } from '@/static/state'
 
-let audioContext = null
-let musicSource = null
-let audioAnalyzer = null
 let analyzerData = null
 let stopAnalysis = false
 
-let redCounter = 0
-let greenCounter = 0
-let blueCounter = 0
-let gradientCounter = 0
+let redCounter = Date.now() / 21903
+let greenCounter = Date.now() / 30901
+let blueCounter = Date.now() / 38912
+let gradientCounter = Date.now() / 10283
 
-const currentTrack = ref(false)
-const playing = ref(false)
 const analyzer = ref(null)
 
 async function play () {
+  const { audioContext } = state.music
+
   if (audioContext.state === 'suspended') {
     await audioContext.resume()
-    playing.value = true
+    state.music.playing = true
   }
-  if (!currentTrack.value) {
+
+  if (!state.music.currentTrack) {
     await playRandomTrack()
   }
 }
 
 async function pause () {
-  audioContext.suspend()
-  playing.value = false
+  state.music.audioContext.suspend()
+  state.music.playing = false
 }
 
 async function skip () {
@@ -75,9 +82,13 @@ async function skip () {
   await playRandomTrack()
 }
 
+function updateVolume () {
+  state.music.gainNode.gain.value = state.options.volume / 100.0
+}
+
 async function playRandomTrack () {
   let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
-  currentTrack.value = track
+  state.music.currentTrack = track
   await startPlaying(track)
 }
 
@@ -93,7 +104,7 @@ function loadTrack (track) {
     request.responseType = 'arraybuffer'
 
     request.onload = () => {
-      audioContext.decodeAudioData(request.response, (buffer) => {
+      state.music.audioContext.decodeAudioData(request.response, (buffer) => {
         console.log('buffer decoded')
         track.buffer = buffer
         resolve()
@@ -105,30 +116,45 @@ function loadTrack (track) {
 }
 
 function stopPlaying () {
+  const { musicSource } = state.music
   if (musicSource && musicSource.buffer) {
     musicSource.stop()
     musicSource.disconnect()
-    playing.value = false
+    state.music.playing = false
   }
 }
 
 async function startPlaying (track) {
+  const { audioContext, gainNode } = state.music
+
   if (audioContext.state === 'suspended') {
     await audioContext.resume()
   }
 
-  playing.value = true
-  musicSource = audioContext.createBufferSource()
+  stopPlaying()
+
+  let musicSource = audioContext.createBufferSource()
   await loadTrack(track)
   musicSource.buffer = track.buffer
-  musicSource.connect(audioAnalyzer)
+  musicSource.connect(gainNode)
   musicSource.start()
+
+  musicSource.addEventListener('ended', async () => {
+    if (state.music.playing) {
+      await playRandomTrack()
+    }
+  })
+
+  state.music.musicSource = musicSource
+  state.music.playing = true
 }
 
 function drawAnalyzer () {
   if (stopAnalysis) {
     return
   }
+
+  const { audioAnalyzer } = state.music
 
   redCounter++
   greenCounter++
@@ -154,62 +180,64 @@ function drawAnalyzer () {
 }
 
 onMounted(() => {
-  redCounter = Math.random() * 10000
-  greenCounter = Math.random() * 10000
-  blueCounter = Math.random() * 10000
-  gradientCounter = Math.random() * 10000
-
-  audioContext = new AudioContext()
-  audioAnalyzer = audioContext.createAnalyser()
-  analyzerData = new Uint8Array(audioAnalyzer.frequencyBinCount)
-  audioAnalyzer.connect(audioContext.destination)
-
+  stopAnalysis = false
+  analyzerData = new Uint8Array(state.music.audioAnalyzer.frequencyBinCount)
   drawAnalyzer()
 })
 
 onBeforeUnmount(() => {
-  stopPlaying()
-  audioContext.close()
   stopAnalysis = true
 })
 
 </script>
 <style lang="less" scoped>
-.music-player-container {
-  .music-player {
+.music-player {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+  min-width: 190px;
+  min-height: 78px;
+
+  .track-controls {
     display: flex;
-    flex-direction: column;
-    position: relative;
+    flex-direction: row;
+    z-index: 2;
 
-    .track-info {
-      display: flex;
-      flex-direction: row;
-      z-index: 2;
-
-      .track-name {
-        margin-right: 10px;
-      }
-
-      .play-pause, .skip-track {
-        cursor: pointer;
-        border: 1px solid #333;
-        padding: 2px 5px;
-        font-size: 26px;
-        margin-right: 8px;
-        line-height: 26px;
-        background-color: rgba(0, 0, 0, 0.5);
-        &:hover {
-          border: 1px solid #0cc6c6;
-          background-color: #333;
-          color: #0cc6c6;
-        }
+    .volume {
+      margin-right: 10px;
+      margin-top: 10px;
+      .slider {
+        width: 85px;
       }
     }
 
+    .play-pause, .skip-track {
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-size: 34px;
+      margin-right: 5px;
+      line-height: 34px;
+      width: 34px;
+      height: 34px;
+      background-color: #101014;
+      color: #fff;
+      &:hover {
+        border: 1px solid #0cc6c6;
+      }
+    }
+  }
+
+  .track-info {
+    .track-name {
+      margin-top: 5px;
+      margin-right: 10px;
+    }
     canvas {
       position: absolute;
-      top: 0;
-      right: 95px;
+      top: 40px;
+      right: 5px;
       z-index: 1;
     }
   }
