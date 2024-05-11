@@ -29,7 +29,7 @@
     </div>
 
     <div class="track-info">
-      <div class="track-name">
+      <div ref="trackName" class="track-name">
         {{ state.music.currentTrack.name }}
       </div>
       <canvas ref="analyzer" width="186" height="36"></canvas>
@@ -52,12 +52,13 @@ import { state } from '@/static/state'
 let analyzerData = null
 let stopAnalysis = false
 
-let redCounter = Date.now() / 21903
-let greenCounter = Date.now() / 30901
-let blueCounter = Date.now() / 38912
-let gradientCounter = Date.now() / 10283
+let redCounter = Date.now() + 1000
+let greenCounter = Date.now() + 2000
+let blueCounter = Date.now() + 3000
+let gradientCounter = Date.now() + 4000
 
 const analyzer = ref(null)
+const trackName = ref(null)
 
 async function play () {
   const { audioContext } = state.music
@@ -177,12 +178,27 @@ function drawAnalyzer () {
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`
     ctx.fill()  
   }
+
+  if (redCounter % 10 === 0) {
+    updateTextShadow()
+  }
+}
+
+function updateTextShadow () {
+  let red = Math.round(Math.max(64, Math.abs(Math.cos(redCounter / 409)) * 255))
+  let green = Math.round(Math.max(64, Math.abs(Math.cos(greenCounter / 609)) * 255))
+  let blue = Math.round(Math.max(64, Math.abs(Math.cos(blueCounter / 709)) * 255))
+  let shadowSize = Math.round(Math.max(5, Math.abs(Math.cos(gradientCounter / 1023)) * 15))
+  trackName.value.style.textShadow = `0 0 ${shadowSize}px rgb(${red}, ${green}, ${blue})`
+
+  trackName.value.style.color = `rgb(${Math.max(220, green)}, ${Math.max(220, blue)}, ${Math.max(220, red)})`
 }
 
 onMounted(() => {
   stopAnalysis = false
   analyzerData = new Uint8Array(state.music.audioAnalyzer.frequencyBinCount)
   drawAnalyzer()
+  updateTextShadow()
 })
 
 onBeforeUnmount(() => {
@@ -223,6 +239,7 @@ onBeforeUnmount(() => {
       height: 34px;
       background-color: #101014;
       color: #fff;
+      transition: all 0.3s;
       &:hover {
         border: 1px solid #0cc6c6;
       }
@@ -233,6 +250,8 @@ onBeforeUnmount(() => {
     .track-name {
       margin-top: 5px;
       margin-right: 10px;
+      position: relative;
+      z-index: 2;
     }
     canvas {
       position: absolute;
