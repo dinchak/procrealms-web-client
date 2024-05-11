@@ -1,8 +1,6 @@
 <template>
   <div class="interface-overlay">
     <div class="interface">
-      <MusicPlayer v-show="state.options.showMusicPlayer"></MusicPlayer>
-
       <n-icon 
         title="Music Player"
         :class="state.options.showMusicPlayer ? 'active' : ''"
@@ -50,12 +48,14 @@
     </div>
 
     <SettingsOverlay v-if="state.settingsMode" />
+    <MusicPlayerOverlay v-if="state.options.showMusicPlayer" />
   </div>
 </template>
 
 <script setup>
 import { NIcon } from 'naive-ui'
 
+import MusicPlayerOverlay from '@/components/settings/MusicPlayerOverlay.vue'
 import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'

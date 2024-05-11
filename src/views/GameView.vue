@@ -135,6 +135,15 @@ onMounted(() => {
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
 
+  state.music.audioContext = new AudioContext()
+
+  state.music.audioAnalyzer = state.music.audioContext.createAnalyser()
+  state.music.audioAnalyzer.connect(state.music.audioContext.destination)
+
+  state.music.gainNode = state.music.audioContext.createGain()
+  state.music.gainNode.connect(state.music.audioAnalyzer)
+  state.music.gainNode.gain.value = state.options.volume / 100.0
+
   window.addEventListener('resize', triggerResize)
   window.addEventListener('focus', onWindowFocusBlur)
   window.addEventListener('blur', onWindowFocusBlur)
@@ -160,6 +169,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.music.audioContext.close()
 
   window.removeEventListener('resize', triggerResize)
   window.removeEventListener('focus', onWindowFocusBlur)

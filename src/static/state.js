@@ -94,6 +94,15 @@ export const state = reactive({
     matches: [],
     contents: [],
     openEntries: []
+  },
+
+  music: {
+    audioContext: null,
+    musicSource: null,
+    audioAnalyzer: null,
+    gainNode: null,
+    currentTrack: false,
+    playing: false
   }
 })
 
@@ -167,6 +176,7 @@ function resetOptions () {
     textInputAlwaysFocused: false,
     keepSentCommands: false,
     showMusicPlayer: false,
+    volume: 65,
 
     // mobile menu options
     showMobileMenu: false,
