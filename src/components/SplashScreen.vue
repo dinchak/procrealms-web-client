@@ -60,13 +60,13 @@ import DeleteFilled from '@vicons/material/DeleteFilled'
 
 import { state } from '@/static/state'
 
-import { useTokenHandler } from '@/composables/token_handler'
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { doTokenAuth } = useWebSocket()
 const { selectNearestElement } = useHelpers()
-const { getTokens, deleteToken } = useTokenHandler()
+const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
 

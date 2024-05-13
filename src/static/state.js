@@ -172,7 +172,7 @@ function resetOptions () {
   return {
     // general options
     chatInMain: true,
-    roomDescriptionMinimap: false,
+    roomDescriptionMinimap: true,
     textInputAlwaysFocused: false,
     keepSentCommands: false,
     showMusicPlayer: false,
@@ -189,7 +189,7 @@ function resetOptions () {
     sideMapHeight: 50,
 
     // interface options
-    showMinimap: true,
+    showMinimap: false,
     showRoomInfo: false,
     showAffects: false,
     showQuests: false,

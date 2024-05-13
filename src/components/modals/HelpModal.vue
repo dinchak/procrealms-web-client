@@ -54,11 +54,14 @@
 
           <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry" :tab="stripAnsi(content.title || entry)">
             <div :class="getScrollContainerClass()">
+              {{content}}
               <h1 v-html-safe="getTitle(content)"></h1>
+
               <div class="help-section"
+                v-if="content.body"
                 v-for="key in Object.keys(content.body)" :key="key"
               >
-                <h3 v-if="key">{{ key }}</h3>
+                <h3 class="bold-green" v-if="key">{{ key }}</h3>
                 <div class="help-text related"
                   v-if="key == 'Related' && content.body[key].length"
                   v-html-safe="addLinks(ansiToHtml(content.body[key]))"
@@ -70,6 +73,33 @@
                   @click="lineClick"
                 ></div>
               </div>
+
+              <div class="help-section"
+                v-if="content.desc"
+              >
+                <div class="help-text"
+                  v-html-safe="ansiToHtml(content.desc)"
+                ></div>
+              </div>
+
+              <div class="help-section"
+                v-if="content.rank2"
+              >
+                <h3 class="bold-yellow">Rank 2</h3>
+                <div class="help-text"
+                  v-html-safe="ansiToHtml(content.rank2)"
+                ></div>
+              </div>
+
+              <div class="help-section"
+                v-if="content.rank3"
+              >
+                <h3 class="bold-red">Rank 3</h3>
+                <div class="help-text"
+                  v-html-safe="ansiToHtml(content.rank3)"
+                ></div>
+              </div>
+
             </div>
           </NTabPane>
 
@@ -124,7 +154,11 @@ function getTitle (content) {
   }
   
   if (content.skill) {
-    return `Skill: ${content.skill}`
+    if (content.skillData.spell) {
+      return `<span class="bold-cyan">Spell:</span> <span class="bold-white">${content.skill}</span>`
+    } else {
+      return `<span class="bold-yellow">Skill:</span> <span class="bold-white">${content.skill}</span>`
+    }
   }
 }
 
@@ -306,7 +340,6 @@ onBeforeUnmount(() => {
           .help-section {
             h3 {
               font-size: 20px;
-              color: #16c60c;
             }
             .help-text {
               font-size: 18px;

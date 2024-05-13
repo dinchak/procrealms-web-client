@@ -631,90 +631,93 @@ export const ANSI_REPLACEMENTS = [
 ]
 
 export const MUSIC_TRACKS = [{
-  name: 'Celestial Quest',
-  url: '/music/Celestial Quest.mp3',
+  name: 'Ancient Temple',
+  url: '/music/Ancient Temple.mp3',
+}, {
+  name: 'Animal Friends',
+  url: '/music/Animal Friends.mp3',
+}, {
+  name: 'Artifact Bearer',
+  url: '/music/Artifact Bearer.mp3',
+}, {
+  name: 'Blasti\'s Embrace',
+  url: '/music/Blasti\'s Embrace.mp3',
+}, {
+  name: 'Blasti\'s Reverie',
+  url: '/music/Blasti\'s Reverie.mp3',
+}, {
+  name: 'Box of Crafts',
+  url: '/music/Box of Crafts.mp3',
+}, {
+  name: 'Brave Adventurer',
+  url: '/music/Brave Adventurer.mp3',
+}, {
+  name: 'Cathedral of the Devoted',
+  url: '/music/Cathedral of the Devoted.mp3',
 }, {
   name: 'Dawn of Adventure',
   url: '/music/Dawn of Adventure.mp3',
 }, {
-  name: 'Enchanted Forest',
-  url: '/music/Enchanted Forest.mp3',
+  name: 'Death of a Mercenary',
+  url: '/music/Death of a Mercenary.mp3',
 }, {
-  name: 'Enchanted Reverie',
-  url: '/music/Enchanted Reverie.mp3',
+  name: 'Dream of Motes',
+  url: '/music/Dream of Motes.mp3',
 }, {
-  name: 'Enchanted Serenity',
-  url: '/music/Enchanted Serenity.mp3',
+  name: 'Enchantment',
+  url: '/music/Enchantment.mp3',
 }, {
-  name: 'Ethereal Bit Quest',
-  url: '/music/Ethereal Bit Quest.mp3',
+  name: 'Exploration',
+  url: '/music/Exploration.mp3',
 }, {
-  name: 'Ethereal Epocs',
-  url: '/music/Ethereal Epocs.mp3',
+  name: 'Fragments',
+  url: '/music/Fragments.mp3',
 }, {
-  name: 'Ethereal Hamlet',
-  url: '/music/Ethereal Hamlet.mp3',
+  name: 'Harvest\'s Bounty',
+  url: '/music/Harvest\'s Bounty.mp3',
 }, {
-  name: 'Ethereal Homestead',
-  url: '/music/Ethereal Homestead.mp3',
+  name: 'Into the Wilds',
+  url: '/music/Into the Wilds.mp3',
 }, {
-  name: 'Ethereal Quests',
-  url: '/music/Ethereal Quests.mp3',
+  name: 'My Portal',
+  url: '/music/My Portal.mp3',
 }, {
-  name: 'Ethereal Reverie',
-  url: '/music/Ethereal Reverie.mp3',
+  name: 'Mysterious Shrine',
+  url: '/music/Mysterious Shrine.mp3',
 }, {
-  name: 'Forest Serenade',
-  url: '/music/Forest Serenade.mp3',
+  name: 'Mystic Glade',
+  url: '/music/Mystic Glade.mp3',
 }, {
-  name: 'Glacial Summit',
-  url: '/music/Glacial Summit.mp3',
+  name: 'Nexus Run',
+  url: '/music/Nexus Run.mp3',
 }, {
-  name: 'Haven of Tranquility',
-  url: '/music/Haven of Tranquility.mp3',
+  name: 'Portal Sunrise',
+  url: '/music/Portal Sunrise.mp3',
 }, {
-  name: 'Horizon\'s Embrace',
-  url: '/music/Horizon\'s Embrace.mp3',
+  name: 'Portal Sunset',
+  url: '/music/Portal Sunset.mp3',
 }, {
-  name: 'Labyrinth Echoes',
-  url: '/music/Labyrinth Echoes.mp3',
+  name: 'Spirit of the Shrine',
+  url: '/music/Spirit of the Shrine.mp3',
 }, {
-  name: 'Luminous Reverie',
-  url: '/music/Luminous Reverie.mp3',
+  name: 'The Endless Sands',
+  url: '/music/The Endless Sands.mp3',
 }, {
-  name: 'Mystic Overworld',
-  url: '/music/Mystic Overworld.mp3',
+  name: 'The Great Plains',
+  url: '/music/The Great Plains.mp3',
 }, {
-  name: 'Pixelated Dawn',
-  url: '/music/Pixelated Dawn.mp3',
+  name: 'The Hidden Grove',
+  url: '/music/The Hidden Grove.mp3',
 }, {
-  name: 'Pixelated Serenity',
-  url: '/music/Pixelated Serenity.mp3',
+  name: 'The Nexus',
+  url: '/music/The Nexus.mp3',
 }, {
-  name: 'Portals and Plowshares',
-  url: '/music/Portals and Plowshares.mp3',
+  name: 'The Shrine',
+  url: '/music/The Shrine.mp3',
 }, {
-  name: 'Quest\'s Lament',
-  url: '/music/Quest\'s Lament.mp3',
+  name: 'Tranquil Realms',
+  url: '/music/Tranquil Realms.mp3',
 }, {
-  name: 'Questing Horizons',
-  url: '/music/Questing Horizons.mp3',
-}, {
-  name: 'Sanctum Resonance',
-  url: '/music/Sanctum Resonance.mp3',
-}, {
-  name: 'Shadowed Glade',
-  url: '/music/Shadowed Glade.mp3',
-}, {
-  name: 'Solace in Shadows',
-  url: '/music/Solace in Shadows.mp3',
-}, {
-  name: 'Veil of the Enchanted Forest',
-  url: '/music/Veil of the Enchanted Forest.mp3',
-}, {
-  name: 'Whispering Shadows',
-  url: '/music/Whispering Shadows.mp3',
-}, {
-  name: 'Whispering Woods',
-  url: '/music/Whispering Woods.mp3',
+  name: 'Whispers of the Wild',
+  url: '/music/Whispers of the Wild.mp3',
 }]
