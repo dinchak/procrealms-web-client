@@ -2,7 +2,7 @@
   <div class="party-health-container" :style="{ height: getPartyStatsHeight() + 'px' }">
     <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
-      <div class="name" v-html-safe="ansiToHtml(member.colorName)"></div>
+      <div class="name" v-html-safe="ansiToHtml(`L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
 
       <div class="health-bar" :style="{ height: `calc(${state.options.fontSize})` }">
         <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
@@ -31,6 +31,7 @@
   </div>
 </template>
 <script setup>
+import { ANSI } from '@/static/constants'
 import { state, getPartyStatsHeight } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 

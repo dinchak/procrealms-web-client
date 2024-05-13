@@ -229,10 +229,15 @@
 <script setup>
 import { defineProps, toRefs, onMounted, onBeforeUnmount, ref } from 'vue'
 import { NGrid, NGi, NButton, NIcon, NSelect, NCheckbox, NCollapse, NCollapseItem } from 'naive-ui'
-import { state, resetInputMappings } from '@/static/state'
 
 import AddOutlined from '@vicons/material/AddCircleOutlined'
 import DeleteOutlined from '@vicons/material/DeleteOutlined'
+
+import { state, resetInputMappings } from '@/static/state'
+
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
+
+const { saveInputMappings } = useLocalStorageHandler()
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -376,7 +381,8 @@ function confirmRemoveBinding (binding, mapping) {
     return m
   })
   bindingToRemove.value = false
-  localStorage.setItem('inputMappings', JSON.stringify(state.inputMappings))
+  saveInputMappings()
+  
 }
 
 function saveNewBinding () {
@@ -388,14 +394,13 @@ function saveNewBinding () {
   newBinding.value = false
   onlyInBattle.value = false
   onlyOutsideBattle.value = false
-
-  localStorage.setItem('inputMappings', JSON.stringify(state.inputMappings))
+  saveInputMappings()
 }
 
 function doResetInputMappings () {
   state.inputMappings = resetInputMappings()
   confirmResetInputMappings.value = false
-  localStorage.setItem('inputMappings', JSON.stringify(state.inputMappings))
+  saveInputMappings()
 }
 
 onMounted(() => {

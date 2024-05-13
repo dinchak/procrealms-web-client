@@ -26,11 +26,11 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { NModal, NButton } from 'naive-ui'
 import { state, prevMode } from '@/static/state'
 
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
-import { useTokenHandler } from '@/composables/token_handler'
 
 const { cmd } = useWebSocket()
-const { deleteToken } = useTokenHandler()
+const { deleteToken } = useLocalStorageHandler()
 
 function closeModal () {
   if (!state.modals.logoutModal) {

@@ -6,11 +6,9 @@ import { processTriggers } from '@/static/triggers'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useHelpers } from '@/composables/helpers'
-import { useTokenHandler } from '@/composables/token_handler'
 
-const { loadOptions, loadInputMappings } = useLocalStorageHandler()
+const { loadOptions, loadInputMappings, addToken } = useLocalStorageHandler()
 const { ansiToHtml, strToLines } = useHelpers()
-const { addToken } = useTokenHandler()
 
 export function onWebSocketEvent (cmd, msg, id) {
   if (webSocketHandlers[cmd]) {

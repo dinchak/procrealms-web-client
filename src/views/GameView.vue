@@ -61,10 +61,12 @@ import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
 
 import { useHelpers } from '@/composables/helpers'
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWindowHandler } from '@/composables/window_handler'
 
 const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 const { triggerResize } = useWindowHandler()
+const { saveOptions } = useLocalStorageHandler()
 
 function openGameModal () {
   setMode('modal')
@@ -150,9 +152,7 @@ onMounted(() => {
 
   document.addEventListener('fullscreenchange', onFullscreenChange)
 
-  watchers.push(watch(state.options, () => {
-    localStorage.setItem('options', JSON.stringify(state.options))
-  }))
+  watchers.push(watch(state.options, saveOptions))
 
   watchers.push(watch(() => state.options.textInputAlwaysFocused, () => {
     if (state.options.textInputAlwaysFocused) {
