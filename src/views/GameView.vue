@@ -38,7 +38,6 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
 import { NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
@@ -59,6 +58,9 @@ import SideMap from '@/components/main-area/SideMap.vue'
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
 import TriggersModal from "@/components/modals/TriggersModal.vue"
+
+import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
+import { USER_GESTURE_EVENTS } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
@@ -126,6 +128,24 @@ function onFullscreenChange () {
   triggerResize()
 }
 
+function startAudioContext (ev) {
+  if (state.music.audioContext) {
+    return
+  }
+
+  state.music.audioContext = new AudioContext()
+
+  state.music.audioAnalyzer = state.music.audioContext.createAnalyser()
+  state.music.audioAnalyzer.connect(state.music.audioContext.destination)
+
+  state.music.gainNode = state.music.audioContext.createGain()
+  state.music.gainNode.connect(state.music.audioAnalyzer)
+  state.music.gainNode.gain.value = state.options.volume / 100.0  
+
+  for (let eventName of USER_GESTURE_EVENTS) {
+    window.removeEventListener(eventName, startAudioContext)
+  }
+}
 
 let watchers = []
 onMounted(() => {
@@ -137,18 +157,13 @@ onMounted(() => {
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
 
-  state.music.audioContext = new AudioContext()
-
-  state.music.audioAnalyzer = state.music.audioContext.createAnalyser()
-  state.music.audioAnalyzer.connect(state.music.audioContext.destination)
-
-  state.music.gainNode = state.music.audioContext.createGain()
-  state.music.gainNode.connect(state.music.audioAnalyzer)
-  state.music.gainNode.gain.value = state.options.volume / 100.0
-
   window.addEventListener('resize', triggerResize)
   window.addEventListener('focus', onWindowFocusBlur)
   window.addEventListener('blur', onWindowFocusBlur)
+
+  for (let eventName of USER_GESTURE_EVENTS) {
+    window.addEventListener(eventName, startAudioContext)
+  }
 
   document.addEventListener('fullscreenchange', onFullscreenChange)
 
@@ -169,6 +184,10 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  for (let eventName of USER_GESTURE_EVENTS) {
+    window.removeEventListener(eventName, startAudioContext)
+  }
 
   state.music.audioContext.close()
 
