@@ -535,6 +535,10 @@ export const ITEM_EFFECTS = [
   },
 ]
 
+export const USER_GESTURE_EVENTS = [
+  'click', 'dblclick', 'mousedown', 'mouseup', 'keydown', 'keyup', 'touchstart', 'touchend'
+]
+
 export const ANSI = {
   black: String.fromCharCode(27) + '[30m',
   red: String.fromCharCode(27) + '[31m',
