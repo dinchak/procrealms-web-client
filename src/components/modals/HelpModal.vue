@@ -22,6 +22,7 @@
         </p>
 
         <NTabs
+          v-if="state.help.topicsLoaded"
           v-model:value="currentPane"
           :class="getTabsClass()"
           :closable="true"
@@ -54,7 +55,6 @@
 
           <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry" :tab="stripAnsi(content.title || entry)">
             <div :class="getScrollContainerClass()">
-              {{content}}
               <h1 v-html-safe="getTitle(content)"></h1>
 
               <div class="help-section"
@@ -100,6 +100,69 @@
                 ></div>
               </div>
 
+              <div class="help-section"
+                v-if="content.skillData"
+              >
+                <h3>Skill Overview</h3>
+                <div class="skill-info" v-if="content.skillData.requirements">
+                  <div class="label">Requirements</div>
+                  <div class="value" v-html-safe="getRequirements(content.skillData)"></div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.pointCost">
+                  <div class="label">Point Cost</div>
+                  <div class="value bold-white">{{ content.skillData.pointCost }}</div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.castingTime">
+                  <div class="label">Casting Time</div>
+                  <div class="value">
+                    <span class="bold-white">{{ content.skillData.castingTime }}</span> seconds
+                  </div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.cooldownTime">
+                  <div class="label">Cooldown Time</div>
+                  <div class="value">
+                    <span class="bold-white">{{ content.skillData.cooldownTime }}</span> seconds
+                  </div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.recoveryTime">
+                  <div class="label">Recovery</div>
+                  <div class="value">
+                    +<span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.spell">
+                  <div class="label">Multicast</div>
+                  <div class="value">
+                    <span class="bold-white">{{ content.skillData.multicastable ? 'Yes' : 'No' }}</span>
+                  </div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.priority">
+                  <div class="label">Priority</div>
+                  <div class="value bold-white">{{ content.skillData.priority }}</div>
+                </div>
+
+                <div class="skill-info" v-if="content.skillData.target">
+                  <div class="label">Target</div>
+                  <div class="value bold-white">{{ ucfirst(content.skillData.target) }}</div>
+                </div>
+
+                <div class="skill-info">
+                  <div class="label">Type</div>
+                  <div class="value" v-html-safe="getSkillType(content.skillData)"></div>
+                </div>
+
+                <div class="skill-info">
+                  <div class="label">Cost</div>
+                  <div class="value" v-html-safe="getCosts(content.skillData)"></div>
+                </div>
+
+              </div>
+
             </div>
           </NTabPane>
 
@@ -127,12 +190,41 @@ import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 
 const { cmd, send } = useWebSocket()
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, renderNumber, ucfirst } = useHelpers()
 
 const tabs = ref(null)
 const currentPane = ref("topics")
 const miniOutputEnabled = ref(false)
 const panes = ref(['topics'])
+
+function getRequirements (skillData) {
+  return skillData.requirements
+    .map(req => `<span class="bold-white">${req.amount}</span> <span class="bold-magenta">${ucfirst(req.stat)}</span>`)
+    .join(', ')
+}
+
+function getSkillType (skillData) {
+  return skillData.type
+    .map(type => `<span class="bold-white">${ucfirst(type)}</span>`)
+    .join(', ')
+}
+
+function getCosts (skillData) {
+  let costs = []
+  if (skillData.staminaCost) {
+    costs.push(`<span class="bold-yellow">${skillData.staminaCost}</span> stamina`)
+  }
+  if (skillData.energyCost) {
+    costs.push(`<span class="bold-cyan">${skillData.energyCost}</span> energy`)
+  }
+  if (skillData.rageCost) {
+    costs.push(`<span class="bold-red">${skillData.rageCost}</span> rage points`)
+  }
+  if (skillData.comboCost) {
+    costs.push(`<span class="bold-yellow">${skillData.comboCost}</span> combo points`)
+  }
+  return costs.join(', ')
+}
 
 function addLinks (text) {
   return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
@@ -288,7 +380,7 @@ onMounted(() => {
   state.inputEmitter.on('prevModalTab', prevModalTab)
   state.inputEmitter.on('nextModalTab', nextModalTab)
 
-  currentPane.value = state.gamepadHelpTab
+  currentPane.value = state.gamepadHelpTab || "topics"
 
   watchers.push(
     watch(state.output, () => onOutputChanged())
@@ -347,6 +439,7 @@ onBeforeUnmount(() => {
               color: #ccc;
               margin-bottom: 15px;
               padding: 0 20px;
+              white-space: pre-wrap;
               .ansi-bright-white-fg {
                 cursor: pointer;
                 &:hover {
@@ -361,6 +454,21 @@ onBeforeUnmount(() => {
                     color: #f9f1a5;
                   }
                 }
+              }
+            }
+
+            .skill-info {
+              display: flex;
+              flex-direction: row;
+              font-size: 18px;
+              padding: 0 20px;
+              .label {
+                width: 120px;
+                padding-right: 15px;
+                text-align: right;
+              }
+              .value {
+
               }
             }
           }
