@@ -1,29 +1,39 @@
 <template>
   <div :class="getClass(participant)" @click="target(participant)">
     <div class="name-area">
-      <div class="name">
-        <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
-      </div>
-      
-      <div class="affects-row">
-        <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
+      <div class="name-affects">
+        <div class="name">
+          <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
+        </div>
+        
+        <div class="affects-row">
+          <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
+        </div>
 
-        <div class="combo-rage" v-if="side == 'good'">
-          <div class="affect" v-if="entity.combo > 0">
-            <div class="amount bold-yellow">{{ entity.combo }}</div>
-            <div class="label yellow">Combo</div>
+        <div class="affects-row">
+          <div class="target">
+            <div v-if="participant.targetName" v-html-safe="ansiToHtml(`Target: ${participant.targetName}`)"></div>
           </div>
+          <div class="combo-rage" v-if="side == 'good'">
+            <div class="affect" v-if="entity && entity.combo > 0">
+              <div class="amount bold-yellow">{{ entity.combo }}</div>
+              <div class="label yellow">Combo</div>
+            </div>
 
-          <div class="affect" v-if="entity.rage > 0">
-            <div class="amount bold-red">{{ entity.rage }}</div>
-            <div class="label red">Rage</div>
+            <div class="affect" v-if="entity && entity.rage > 0">
+              <div class="amount bold-red">{{ entity.rage }}</div>
+              <div class="label red">Rage</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
+
     </div>
 
     <div class="vital-row">
-      <div class="vital-amount bold-green" v-if="side == 'good'">
+      <div class="vital-amount bold-green" v-if="entity && side == 'good'">
         {{ entity.hp }}
       </div>
 
@@ -33,7 +43,7 @@
 
       <NProgress
         class="vital-bar" type="line" status="success" aria-label="Health"
-        v-if="side == 'good'"
+        v-if="entity && side == 'good'"
         :stroke-width="16"
         :percentage="entity.hp / entity.maxHp * 100"
         :show-indicator="false"
@@ -53,7 +63,7 @@
     </div>
 
     <div class="vital-row">
-      <div class="vital-amount bold-cyan" v-if="side == 'good'">
+      <div class="vital-amount bold-cyan" v-if="entity && side == 'good'">
         {{ entity.energy }}
       </div>
 
@@ -63,7 +73,7 @@
 
       <NProgress
         class="vital-bar" type="line" status="default" aria-label="Health"
-        v-if="side == 'good'"
+        v-if="entity && side == 'good'"
         :stroke-width="16"
         :percentage="entity.energy / entity.maxEnergy * 100"
         :show-indicator="false"
@@ -84,7 +94,7 @@
 
 
     <div class="vital-row">
-      <div class="vital-amount bold-yellow" v-if="side == 'good'">
+      <div class="vital-amount bold-yellow" v-if="entity && side == 'good'">
         {{ entity.stamina }}
       </div>
 
@@ -94,7 +104,7 @@
 
       <NProgress
         class="vital-bar" type="line" status="warning" aria-label="Stamina"
-        v-if="side == 'good'"
+        v-if="entity && side == 'good'"
         :stroke-width="16"
         :percentage="entity.stamina / entity.maxStamina * 100"
         :show-indicator="false"
@@ -114,57 +124,6 @@
     </div>
 
 
-    <!-- <div class="vitals">
-      <div class="vital" v-if="side == 'good' && entity.combo > 0">
-        <div class="amount bold-yellow">{{ entity.combo }}</div>
-        <div class="label yellow">Combo</div>
-      </div>
-
-      <div class="vital" v-if="side == 'good' && entity.rage > 0">
-        <div class="amount bold-red">{{ entity.rage }}</div>
-        <div class="label red">Rage</div>
-      </div>
-
-      <div class="vital" v-if="side == 'good'">
-        <div class="amount bold-cyan">{{ entity.energy }}</div>
-        <n-progress
-          type="line" status="default" aria-label="Energy" :height="4" :show-indicator="false" :border-radius="0"
-          :percentage="entity.energy / entity.maxEnergy * 100"
-        ></n-progress>
-      </div>
-
-      <div class="vital" v-if="side == 'good'">
-        <div class="amount bold-yellow">{{ entity.stamina }}</div>
-        <n-progress
-          type="line" status="warning" aria-label="Stamina" :height="4" :show-indicator="false" :border-radius="0"
-          :percentage="entity.stamina / entity.maxStamina * 100" 
-        ></n-progress>
-      </div>
-
-      <div class="vital" v-if="side == 'evil'">
-        <div class="amount bold-cyan">{{ participant.energyPercent }}%</div>
-        <n-progress v-if="participant.energyPercent > 0" type="line" status="default" aria-label="Energy" :percentage="participant.energyPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
-      </div>
-
-      <div class="vital" v-if="side == 'evil'">
-        <div class="amount bold-yellow">{{ participant.staminaPercent }}%</div>
-        <n-progress v-if="participant.staminaPercent > 0" type="line" status="warning" aria-label="Stamina" :percentage="participant.staminaPercent" :height="4" :border-radius="0" :show-indicator="false"></n-progress>
-      </div>
-
-      <div class="vital">
-        <div class="amount bold-red">Act</div>
-        <n-progress
-          type="line" status="error" aria-label="Health"
-          :height="4"
-          :show-indicator="false"
-          :border-radius="0"
-          :percentage="100 - participant.nextAction / 40 * 100"
-        ></n-progress>
-      </div>
-
-    </div>
- -->
-
   </div>
 
 </template>
@@ -172,6 +131,8 @@
 import { defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
+
+import MercOrders from '@/components/battle/MercOrders.vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -186,6 +147,7 @@ const props = defineProps({
   entity: Object,
   side: String
 })
+
 const { participant, entity, side } = toRefs(props)
 
 function target (participant) {
@@ -211,6 +173,14 @@ function getAffects (participant) {
     return ''
   }
   return participant.affects.join(' ')
+}
+
+function isMercenary (entity) {
+  return entity && entity.traits && entity.traits.includes('mercenary')
+}
+
+function getMercenary (entity) {
+  return state.gameState.charmies[entity.eid]
 }
 
 // function getStatus (participant) {
@@ -280,19 +250,27 @@ function getAffects (participant) {
   }
 
   .name-area {
-    min-height: 36px;
-    .affects-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    min-height: 70px;
 
-      .combo-rage {
-        .affect {
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-end;
-          align-items: center;
-          gap: 5px;
+    .name-affects {
+      width: 100%;
+
+      .affects-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .combo-rage {
+          .affect {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 5px;
+          }
         }
       }
     }

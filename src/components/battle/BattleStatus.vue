@@ -1,7 +1,5 @@
 <template>
   <div class="battle-area">
-    <MercOrders v-if="showOrdersRef"></MercOrders>
-
     <div :class="getBattleStatusClass()">
       <div class="side good">
         <div class="entity" v-for="participant in getSide('good')" :key="participant.eid">
@@ -58,13 +56,12 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/battle/BattleEntity.vue'
-import MercOrders from '@/components/battle/MercOrders.vue'
 
 const { selectNearestElement } = useHelpers()
 
@@ -78,9 +75,6 @@ function performBattleAction () {
     selectedElement.click()
   }
 }
-
-const battleStatus = ref(null)
-const showOrdersRef = ref(false)
 
 function getBattleStatusClass () {
   let classes = ['battle-status']
@@ -106,36 +100,14 @@ function getAnimationClass (anim) {
   return classes.join(' ')
 }
 
-function isMercHere() {
-  let isMercHere = false
-  Object.values(state.gameState.battle.participants).map(participant => {
-    if (participant.eid === state.mercEid) {
-      isMercHere = true
-    }
-  })
-  return isMercHere
-}
-
-let unwatch
 onMounted(() => {
   state.inputEmitter.on('selectBattleAction', selectBattleAction)
   state.inputEmitter.on('performBattleAction', performBattleAction)
-
-  let parent = battleStatus.value?.parentElement
-  showOrdersRef.value = isMercHere()
-  if (parent) {
-    parent.scrollTo(0, parent.scrollHeight)
-  }
-
-  unwatch = watch(state.gameState.battle.participants, () => {
-    showOrdersRef.value = isMercHere()
-  })
 })
 
 onBeforeUnmount(() => {
   state.inputEmitter.off('selectBattleAction', selectBattleAction)
   state.inputEmitter.off('performBattleAction', performBattleAction)
-  unwatch()
 })
 </script>
 
