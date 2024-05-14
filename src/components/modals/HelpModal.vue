@@ -64,12 +64,12 @@
                 <h3 class="bold-green" v-if="key">{{ key }}</h3>
                 <div class="help-text related"
                   v-if="key == 'Related' && content.body[key].length"
-                  v-html-safe="addLinks(ansiToHtml(content.body[key]))"
+                  v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
                   @click="lineClickRelated"
                 ></div>
                 <div class="help-text"
                   v-else
-                  v-html-safe="addLinks(ansiToHtml(content.body[key]))"
+                  v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
                   @click="lineClick"
                 ></div>
               </div>
@@ -78,7 +78,7 @@
                 v-if="content.desc"
               >
                 <div class="help-text"
-                  v-html-safe="ansiToHtml(content.desc)"
+                  v-html-safe="ansiToHtml(ANSI.reset + content.desc)"
                 ></div>
               </div>
 
@@ -87,7 +87,7 @@
               >
                 <h3 class="bold-yellow">Rank 2</h3>
                 <div class="help-text"
-                  v-html-safe="ansiToHtml(content.rank2)"
+                  v-html-safe="ansiToHtml(ANSI.reset + content.rank2)"
                 ></div>
               </div>
 
@@ -96,7 +96,7 @@
               >
                 <h3 class="bold-red">Rank 3</h3>
                 <div class="help-text"
-                  v-html-safe="ansiToHtml(content.rank3)"
+                  v-html-safe="ansiToHtml(ANSI.reset + content.rank3)"
                 ></div>
               </div>
 
@@ -185,6 +185,7 @@ import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
 
 import { state, prevMode } from '@/static/state'
+import { ANSI } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
