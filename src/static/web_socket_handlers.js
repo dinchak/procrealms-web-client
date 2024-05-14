@@ -3,6 +3,7 @@ import jiff from 'jiff'
 import { CHANNEL_COLORS } from '@/static/constants'
 import { addLine, state, setMode } from '@/static/state'
 import { processTriggers } from '@/static/triggers'
+import { playRandomTrack } from '@/static/sound'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useHelpers } from '@/composables/helpers'
@@ -134,6 +135,7 @@ const webSocketHandlers = {
   
     loadOptions()
     loadInputMappings()
+    playRandomTrack()
   },
   
   'out': (line) => {

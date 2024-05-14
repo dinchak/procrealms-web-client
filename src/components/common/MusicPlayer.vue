@@ -38,7 +38,7 @@
   </div>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { NSlider, NIcon, NIconWrapper } from 'naive-ui'
 
 import PauseOutlined from '@vicons/material/PauseOutlined'
@@ -46,13 +46,11 @@ import PlayArrowOutlined from '@vicons/material/PlayArrowOutlined'
 import SkipNextOutlined from '@vicons/material/SkipNextOutlined'
 import VolumeDownOutlined from '@vicons/material/VolumeDownOutlined'
 
-import { MUSIC_TRACKS } from '@/static/constants'
 import { state } from '@/static/state'
-import { cons } from 'jiff/lib/array'
+import { stopPlaying, playRandomTrack } from '@/static/sound'
 
 let analyzerData = null
 let stopAnalysis = false
-let trackLoading = false
 
 let redCounter = Date.now() + 1000
 let greenCounter = Date.now() + 2000
@@ -87,92 +85,6 @@ async function skip () {
 
 function updateVolume () {
   state.music.gainNode.gain.value = state.options.volume / 100.0
-}
-
-async function playRandomTrack () {
-  let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
-  state.music.currentTrack = track
-  await startPlaying(track)
-}
-
-function loadTrack (track) {
-  return new Promise((resolve, reject) => {
-    trackLoading = true
-    if (track.buffer) {
-      trackLoading = false
-      resolve()
-      return
-    }
-
-    let request = new XMLHttpRequest()
-    request.open('GET', track.url, true)
-    request.responseType = 'arraybuffer'
-
-    request.onload = () => {
-      if (!request.response) {
-        trackLoading = false
-        return
-      }
-
-      state.music.audioContext.decodeAudioData(request.response, (buffer) => {
-        track.buffer = buffer
-        trackLoading = false
-        resolve()
-      })
-    }
-
-    request.send()
-  })
-}
-
-function stopPlaying () {
-  const { musicSource } = state.music
-  if (musicSource) {
-    musicSource.stop()
-    musicSource.disconnect()
-    state.music.playing = false
-  }
-}
-
-async function startPlaying (track) {
-  const { audioContext, gainNode } = state.music
-
-  if (audioContext.state === 'suspended') {
-    await audioContext.resume()
-  }
-
-  if (trackLoading) {
-    return
-  }
-
-  if (!track.buffer) {
-    await loadTrack(track)
-  }
-
-  if (state.music.musicSource) {
-    state.music.musicSource.stop()
-    state.music.musicSource.disconnect()
-  }
-
-  let musicSource = audioContext.createBufferSource()
-  musicSource.buffer = track.buffer
-  musicSource.connect(gainNode)
-  musicSource.start()
-
-  musicSource.addEventListener('ended', async () => {
-    if (track.name != state.music.currentTrack.name) {
-      return
-    }
-
-    if (trackLoading) {
-      return
-    }
-
-    await playRandomTrack()
-  })
-
-  state.music.musicSource = musicSource
-  state.music.playing = true
 }
 
 function drawAnalyzer () {
