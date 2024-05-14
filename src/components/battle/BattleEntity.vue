@@ -1,21 +1,23 @@
 <template>
   <div :class="getClass(participant)" @click="target(participant)">
-    <div class="name">
-      <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
-    </div>
-    
-    <div class="affects-row">
-      <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
+    <div class="name-area">
+      <div class="name">
+        <div v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)"></div>
+      </div>
+      
+      <div class="affects-row">
+        <div class="affects" v-html-safe="ansiToHtml(getAffects(participant))"></div>
 
-      <div class="combo-rage" v-if="side == 'good'">
-        <div class="affect" v-if="entity.combo > 0">
-          <div class="amount bold-yellow">{{ entity.combo }}</div>
-          <div class="label yellow">Combo</div>
-        </div>
+        <div class="combo-rage" v-if="side == 'good'">
+          <div class="affect" v-if="entity.combo > 0">
+            <div class="amount bold-yellow">{{ entity.combo }}</div>
+            <div class="label yellow">Combo</div>
+          </div>
 
-        <div class="affect" v-if="entity.rage > 0">
-          <div class="amount bold-red">{{ entity.rage }}</div>
-          <div class="label red">Rage</div>
+          <div class="affect" v-if="entity.rage > 0">
+            <div class="amount bold-red">{{ entity.rage }}</div>
+            <div class="label red">Rage</div>
+          </div>
         </div>
       </div>
     </div>
@@ -234,7 +236,7 @@ function getAffects (participant) {
   padding: 5px;
   border: 2px solid #333;
   margin: 2px;
-  min-width: 200px;
+  width: 250px;
   
   &.selected {
     // border: 1px solid #f8ff25;
@@ -277,17 +279,21 @@ function getAffects (participant) {
     }
   }
 
-  .affects-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    .combo-rage {
-      .affect {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 5px;
+  .name-area {
+    min-height: 36px;
+    .affects-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .combo-rage {
+        .affect {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: center;
+          gap: 5px;
+        }
       }
     }
   }
@@ -323,31 +329,31 @@ function getAffects (participant) {
 
 @media screen and (max-width: 1575px) {
   .battle-entity.mobile-menu-open {
-    // width: 450px;
+    width: 230px;
   }
 }
 
 @media screen and (max-width: 1375px) {
   .battle-entity.mobile-menu-open {
-    // width: 350px;
+    width: 220px;
   }
 }
 
 @media screen and (max-width: 1300px) {
   .battle-entity {
-    // width: 450px;
+    width: 210px;
   }
 }
 
 @media screen and (max-width: 1100px) {
   .battle-entity {
-    // width: 350px;
+    width: 200px;
   }
 }
 
 @media screen and (max-width: 400px) {
   .battle-entity {
-    // width: 325px;
+    width: 250px;
   }
 }
 

@@ -183,14 +183,14 @@ onBeforeUnmount(() => {
         top: 0px;
         font-size: 1.4rem;
         color: #ff3333;
-        padding: 2px 4px;
-        border: 1px solid #330000;
-        background-color: rgba(0, 0, 0, 0.4);
+        padding: 5px 10px;
+        opacity: 0.8;
+        background-color: #101014;
+
         &.crit {
           line-height: 1.2rem;
           font-size: 1.9rem;
           color: #ffcc33;
-          border: 1px solid #332200
         }
       }
 
@@ -200,8 +200,9 @@ onBeforeUnmount(() => {
         top: -40px;
         font-size: 1.4rem;
         color: #33ff33;
-        border: 1px solid #003300;
-        background-color: rgba(0, 0, 0, 0.4);
+        padding: 5px 10px;
+        opacity: 0.8;
+        background-color: #101014;
       }
 
     }
@@ -209,7 +210,7 @@ onBeforeUnmount(() => {
 }
 
 .damage-enter-active {
-  animation: damage 1s ease-out;
+  animation: damage 2s ease-out;
 }
 
 @keyframes damage {
@@ -228,7 +229,7 @@ onBeforeUnmount(() => {
 }
 
 .healing-enter-active {
-  animation: healing 1s ease-out;
+  animation: healing 2s ease-out;
 }
 
 @keyframes healing {
