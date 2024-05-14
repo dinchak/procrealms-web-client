@@ -30,7 +30,7 @@
 
     <div class="track-info">
       <div ref="trackName" class="track-name">
-        {{ state.music.currentTrack.name }}
+        {{ state.music.currentTrack.name || 'Press play to start'}}
       </div>
       <canvas ref="analyzer" width="186" height="36"></canvas>
     </div>
