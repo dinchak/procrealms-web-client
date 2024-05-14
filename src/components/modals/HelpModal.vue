@@ -305,7 +305,6 @@ function onCloseModal () {
 }
 
 function onOpenModal () {
-  console.log(`gamepadHelpTab: ${state.gamepadHelpTab}`)
   currentPane.value = state.gamepadHelpTab || "topics"
   scrollDown()
 }
