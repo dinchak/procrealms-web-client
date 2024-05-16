@@ -34,21 +34,45 @@
           
           <NTabPane name="topics" tab="Topics" :closable="false">
             <div :class="getScrollContainerClass()">
-              <h1>New Players</h1>
-              <div class="help-topics">
-                <div v-for="topic in state.help.topics.newbie" @click="loadHelpEntry(topic)">{{ topic }}</div>
+              <div class="search-container">
+                <NInput placeholder="Filter Topics" v-model:value="topicsFilter"></NInput>
+
+                <div class="search-help">
+                  <NInputGroup>
+                    <NInput placeholder="Search Help" v-model:value="searchFilter" @keydown.enter="searchHelp"></NInput>
+                    <NButton @click="searchHelp">Search</NButton>
+                  </NInputGroup>
+                </div>
+
               </div>
-              <h1>General</h1>
-              <div class="help-topics">
-                <div v-for="topic in state.help.topics.general" @click="loadHelpEntry(topic)">{{ topic }}</div>
+
+              <div class="search-results" v-if="state.help.searchResults.length > 0">
+                <div class="search-result" v-for="result in state.help.searchResults" :key="result.id" @click="loadHelpEntry(result.id)">
+                  <div class="result-id">
+                    {{ result.id }}
+                  </div>
+                  <div class="result-fragment" v-html-safe="renderFragment(result.fragment)"></div>
+                </div>
               </div>
-              <h1>Skills</h1>
-              <div class="help-topics">
-                <div v-for="topic in state.help.topics.skills" @click="loadHelpEntry(topic)">{{ topic }}</div>
+
+              <h1 v-if="filterTopics(state.help.topics.newbie)">New Players</h1>
+              <div v-if="filterTopics(state.help.topics.newbie)" class="help-topics">
+                <div v-for="topic in filterTopics(state.help.topics.newbie)" @click="loadHelpEntry(topic)">{{ topic }}</div>
               </div>
-              <h1>Commands</h1>
-              <div class="help-topics">
-                <div v-for="topic in state.help.topics.commands" @click="loadHelpEntry(topic)">{{ topic }}</div>
+
+              <h1 v-if="filterTopics(state.help.topics.general).length > 0">General</h1>
+              <div v-if="filterTopics(state.help.topics.general).length > 0" class="help-topics">
+                <div v-for="topic in filterTopics(state.help.topics.general)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+              </div>
+
+              <h1 v-if="filterTopics(state.help.topics.skills).length > 0">Skills</h1>
+              <div v-if="filterTopics(state.help.topics.skills).length > 0" class="help-topics">
+                <div v-for="topic in filterTopics(state.help.topics.skills)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+              </div>
+
+              <h1 v-if="filterTopics(state.help.topics.commands).length > 0">Commands</h1>
+              <div class="help-topics" v-if="filterTopics(state.help.topics.commands).length > 0">
+                <div v-for="topic in filterTopics(state.help.topics.commands)" @click="loadHelpEntry(topic)">{{ topic }}</div>
               </div>
             </div>
           </NTabPane>
@@ -179,7 +203,7 @@
 
 <script setup>
 import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
+import { NModal, NTabs, NTabPane, NIcon, NInput, NButton, NInputGroup } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
@@ -197,6 +221,29 @@ const tabs = ref(null)
 const currentPane = ref("topics")
 const miniOutputEnabled = ref(false)
 const panes = ref(['topics'])
+const topicsFilter = ref('')
+const searchFilter = ref('')
+
+function filterTopics (topics) {
+  console.log(topicsFilter.value)
+  if (!topicsFilter.value) {
+    return topics
+  }
+  return topics.filter(topic => topic.toLowerCase().includes(topicsFilter.value.toLowerCase()))
+}
+
+function searchHelp () {
+  if (!searchFilter.value) {
+    state.help.searchResults = []
+    return
+  }
+
+  send('help', { cmd: 'search', search: searchFilter.value })
+}
+
+function renderFragment (fragment) {
+  return `...${fragment.replace(new RegExp(`${searchFilter.value}`, 'gi'), `<span class="bold-yellow">${searchFilter.value}</span>`)}...`
+}
 
 function getRequirements (skillData) {
   return skillData.requirements
@@ -429,6 +476,45 @@ onBeforeUnmount(() => {
             height: calc(100vh - 225px);
           }
 
+          .search-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 10px;
+            .search-help {
+              flex-basis: 100%;
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              min-width: 300px;
+            }
+          }
+
+          .search-results {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            .search-result {
+              display: flex;
+              flex-direction: row;
+              background-color: #222;
+              padding: 5px 0;
+              gap: 10px;
+              cursor: pointer;
+              transition: all 0.2s;
+              &:hover {
+                background-color: #333;
+              }
+              .result-id {
+                min-width: 150px;
+                text-align: right;
+              }
+              .result-fragment {
+              }
+            }
+          }
+
           .help-section {
             h3 {
               font-size: 20px;
@@ -563,4 +649,19 @@ onBeforeUnmount(() => {
   }
 }
 
+@media screen and (max-width: 650px) {
+  .help-modal {
+    .modal-body {
+      .help-modal-tabs {
+        .n-tab-pane {
+          .scroll-container {
+            .search-container {
+              flex-direction: column;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 </style>
