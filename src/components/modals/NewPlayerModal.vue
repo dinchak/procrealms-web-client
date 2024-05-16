@@ -47,12 +47,12 @@
 import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton, NSwitch } from 'naive-ui'
-import { state, prevMode } from '@/static/state'
+import { state, prevMode, authenticationSuccess } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { send } = useWebSocket()
+const { sendWithResponse } = useWebSocket()
 const { selectNearestElement } = useHelpers()
 
 const formRef = ref(null)
@@ -89,11 +89,15 @@ const rules = {
       message: 'Name is already taken, please choose another',
       trigger: ['blur'],
       asyncValidator: () => {
-        return new Promise((resolve, reject) => {
-          console.log('set name exists resolve/reject')
-          state.nameExistsResolve = resolve
-          state.nameExistsReject = reject
-          send('nameExists', { name: model.value.name })
+        return new Promise(async (resolve, reject) => {
+          let { cmd } = await sendWithResponse('nameExists', { name: model.value.name })
+          if (cmd == 'login.nameExists') {
+            reject(new Error('Name is already taken, please choose another'))
+          } else if (cmd == 'login.validationFailed') {
+            reject(new Error('Invalid name'))
+          } else if (cmd == 'login.nameAvailable') {
+            resolve()
+          }
         })
       }
     }
@@ -129,18 +133,25 @@ const rules = {
 
     {
       message: 'Invalid character name',
-      asyncValidator: () => {
-        return new Promise((resolve, reject) => {
-          state.loginResolve = resolve
-          state.loginReject = reject
-          // send('create', {
-          //   name: model.value.name,
-          //   password: model.value.password,
-          //   width: 100,
-          //   height: 24,
-          //   tutorial: model.value?.tutorial ? 'Y' : 'N',
-          //   ttype: 'play.proceduralrealms.com'
-          // })
+      asyncValidator: async () => {
+        return new Promise(async (resolve, reject) => {
+          let { cmd, msg } = await sendWithResponse('create', {
+            name: model.value.name,
+            password: model.value.password,
+            width: 100,
+            height: 24,
+            tutorial: model.value?.tutorial ? 'Y' : 'N',
+            ttype: 'play.proceduralrealms.com'
+          })
+
+          if (cmd == 'login.validationFailed') {
+            reject(new Error('Invalid character name'))
+          } else if (cmd == 'login.fail') {
+            reject(new Error('Failed to create character'))
+          } else if (cmd == 'token.success') {
+            authenticationSuccess(msg)
+            resolve()
+          }
         })
       }
     }
@@ -176,13 +187,7 @@ function onCloseModal () {
 
 function handleValidation (e) {
   e.preventDefault()
-  formRef.value?.validate().then(() => {
-  }).catch(() => {
-  })
-}
-
-function validatePasswordSame(rule, value) {
-  return value === model.value.password
+  formRef.value?.validate()
 }
 
 let chain = null

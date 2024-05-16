@@ -1,6 +1,11 @@
 import { reactive, ref } from 'vue'
-
 import { EventEmitter } from 'events'
+
+import { loadSettingsByNameAndType } from '@/static/triggers'
+
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
+
+const { addToken } = useLocalStorageHandler()
 
 export const state = reactive({
   connected: false,
@@ -210,6 +215,18 @@ function resetOptions () {
   }
 }
 
+export function authenticationSuccess ({ name, token }) {
+  state.name = name
+  state.token = token
+  state.disconnected = false
+  state.prevModes = ['login']
+  state.mode = 'hotkey'
+  addToken(name, token)
+  state.modals.loginModal = false
+  state.modals.newPlayerModal = false
+  loadSettingsByNameAndType(state.triggers, name, 'triggers')
+  loadSettingsByNameAndType(state.variables, name, 'variables')
+}
 
 function addSuggestedCommand (command) {
   if (state.suggestedCommands.includes(command)) {

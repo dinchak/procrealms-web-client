@@ -38,13 +38,12 @@
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
-import { state, prevMode } from '@/static/state'
+import { state, prevMode, authenticationSuccess} from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
-import { loadSettingsByNameAndType } from "@/static/triggers"
 import { useHelpers } from '@/composables/helpers'
 
-const { send } = useWebSocket()
+const { sendWithResponse } = useWebSocket()
 const { selectNearestElement } = useHelpers()
 
 const formRef = ref(null)
@@ -84,16 +83,23 @@ const rules = {
     {
       message: 'Invalid name or password',
       asyncValidator: async () => {
-        return new Promise((resolve, reject) => {
-          state.loginResolve = resolve
-          state.loginReject = reject
-          send('login', {
+        return new Promise(async (resolve, reject) => {
+          let { cmd, msg } = await sendWithResponse('login', {
             name: model.value.name,
             password: model.value.password,
             width: 100,
             height: 24,
             ttype: 'play.proceduralrealms.com'
           })
+
+          if (cmd == 'login.validationFailed') {
+            reject(new Error('Invalid character name'))
+          } else if (cmd == 'login.fail') {
+            reject(new Error('Failed to create character'))
+          } else if (cmd == 'token.success') {
+            authenticationSuccess(msg)
+            resolve()
+          }
         })
       }
     }
@@ -127,21 +133,9 @@ function onCloseModal () {
   prevMode()
 }
 
-let validationInProgress = false
 function handleValidation (e) {
   e.preventDefault()
-  if (validationInProgress) {
-    return
-  }
-
-  validationInProgress = true
-  formRef.value?.validate().then(() => {
-    loadSettingsByNameAndType(state.triggers, model.value.name, 'triggers')
-    loadSettingsByNameAndType(state.variables, model.value.name, 'variables')
-    validationInProgress = false
-  }).catch(() => {
-    validationInProgress = false
-  })
+  formRef.value?.validate()
 }
 
 onMounted(() => {

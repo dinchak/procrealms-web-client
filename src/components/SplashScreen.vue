@@ -58,17 +58,32 @@ import { NButton, NIcon } from 'naive-ui'
 
 import DeleteFilled from '@vicons/material/DeleteFilled'
 
-import { state, setMode} from '@/static/state'
+import { state, setMode, authenticationSuccess} from '@/static/state'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { doTokenAuth } = useWebSocket()
+const { sendWithResponse } = useWebSocket()
 const { selectNearestElement } = useHelpers()
 const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
+
+async function doTokenAuth (name, token) {
+  let { cmd, msg } = await sendWithResponse('token', {
+    name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com'
+  })
+
+  if (cmd == 'login.validationFailed') {
+    console.log('Token validation failed')
+  } else if (cmd == 'login.fail') {
+    console.log('Token login failed')
+  } else if (cmd == 'token.success') {
+    authenticationSuccess(msg)
+  }
+}
+
 
 function onConnected () {
   tokens.value = getTokens()
