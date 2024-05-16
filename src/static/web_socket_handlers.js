@@ -7,79 +7,23 @@ import { processTriggers } from '@/static/triggers'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useHelpers } from '@/composables/helpers'
 
-const { loadOptions, loadInputMappings, addToken } = useLocalStorageHandler()
+const { addToken } = useLocalStorageHandler()
 const { ansiToHtml, strToLines } = useHelpers()
 
-export function onWebSocketEvent (cmd, msg, id) {
-  if (webSocketHandlers[cmd]) {
-    // Do not print in output if and ID has been passed to cmd
-    id ? null : webSocketHandlers[cmd](msg)
+export function onWebSocketEvent (cmd, msg, reqId) {
+  if (state.pendingRequests[reqId]) {
+    let { resolve } = state.pendingRequests[reqId]
+    delete state.pendingRequests[reqId]
+    resolve(cmd, msg)
     return
   }
 
-  let matches = cmd.match(/^entity-([a-zA-Z0-9-_]+)$/)
-  if (matches && state.pendingRequests[cmd]) {
-    let eid = parseInt(matches[1], 10)
-    let { resolve, timeout } = state.pendingRequests[cmd]
-    state.cache.entityCache[eid] = { entity: msg, date: Date.now() }
-    delete state.pendingRequests[cmd]
-    clearTimeout(timeout)
-    resolve(msg)
+  if (!webSocketHandlers[cmd]) {
+    console.log(`unhandled websocket event: ${cmd}`)
     return
   }
 
-  matches = cmd.match(/^item-([a-zA-Z0-9-_]+)$/)
-  if (matches && state.pendingRequests[cmd]) {
-    let iid = parseInt(matches[1], 10)
-    let { resolve, timeout } = state.pendingRequests[cmd]
-    state.cache.itemCache[iid] = { item: msg, date: Date.now() }
-    delete state.pendingRequests[cmd]
-    clearTimeout(timeout)
-    resolve(msg)
-    return
-  }
-
-  matches = cmd.match(/^items-([a-zA-Z0-9-_]+)$/)
-  if (matches && state.pendingRequests[cmd]) {
-    for (let item of msg) {
-      state.cache.itemCache[item.iid] = { item, date: Date.now() }
-    }
-
-    let { resolve, timeout, iids } = state.pendingRequests[cmd]
-    delete state.pendingRequests[cmd]
-    clearTimeout(timeout)
-
-    let items = []
-    for (let iid of iids) {
-      if (state.cache.itemCache[iid]) {
-        items.push(state.cache.itemCache[iid].item)
-      }
-    }
-
-    resolve(items)
-    return
-  }
-
-  matches = cmd.match(/^entities-([a-zA-Z0-9-_]+)$/)
-  if (matches && state.pendingRequests[cmd]) {
-    for (let entity of msg) {
-      state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
-    }
-
-    let { resolve, timeout, eids } = state.pendingRequests[cmd]
-    delete state.pendingRequests[cmd]
-    clearTimeout(timeout)
-
-    let entities = []
-    for (let eid of eids) {
-      if (state.cache.entityCache[eid]) {
-        entities.push(state.cache.entityCache[eid].entity)
-      }
-    }
-
-    resolve(entities)
-    return
-  }
+  webSocketHandlers[cmd](msg)
 }
 
 const webSocketHandlers = {
@@ -131,9 +75,6 @@ const webSocketHandlers = {
   
     state.modals.loginModal = false
     state.modals.newPlayerModal = false
-  
-    loadOptions()
-    loadInputMappings()
   },
   
   'out': (line) => {
@@ -274,6 +215,6 @@ const webSocketHandlers = {
   },
   
   'help.search': ({ matches }) => {
-    state.help.matches = matches
+    state.help.searchResults = matches
   }
 }
