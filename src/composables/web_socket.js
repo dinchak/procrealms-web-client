@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+
 import { addLine, state } from '@/static/state'
 import { loadSettingsByNameAndType } from '@/static/triggers'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
@@ -17,15 +19,15 @@ export function useWebSocket () {
 
     const _onMessage = (json) => {
       try {
-        let { cmd, msg, id } = JSON.parse(json)
-        if (id) {
-          state.cache.commandCache[id] = msg
+        let { cmd, msg, reqId } = JSON.parse(json)
+        if (reqId) {
+          state.cache.commandCache[reqId] = msg
         }
         if (import.meta.env.MODE == 'development') {
-          console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
+          console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
         }
 
-        id ? onWebSocketEvent(cmd, msg, id) : onWebSocketEvent(cmd, msg)
+        reqId ? onWebSocketEvent(cmd, msg, reqId) : onWebSocketEvent(cmd, msg)
       } catch (err) {
         console.log('error parsing message: %s', json)
         console.log(err.stack)
@@ -39,15 +41,46 @@ export function useWebSocket () {
     send('token', { name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
   }
 
-  function send (cmd, msg, id = false) {
-    if (import.meta.env.MODE == 'development') {
-      console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${id ? ` (id=${id})` : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
-    }
+  function send (cmd, msg) {
     let out = { cmd, msg }
-    if (id) {
-      out.id = id
+
+    if (import.meta.env.MODE == 'development') {
+      console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
     }
+
     state.websocketConnection.send(JSON.stringify(out))
+  }
+
+  function sendWithResponse (cmd, msg, reqId = false) {
+    if (reqId && state.pendingRequests[reqId]) {
+      return state.pendingRequests[reqId].promise
+    }
+
+    reqId = reqId || nanoid()
+
+    if (import.meta.env.MODE == 'development') {
+      console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} reqId=${reqId}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
+    }
+
+    let responsePromise = new Promise((resolve, reject) => {
+      let timeout = setTimeout(() => {
+        delete state.pendingRequests[reqId]
+        reject(new Error(`Request for ${cmd} timed out after 5 seconds (reqId=${reqId})`))
+      }, 5000)
+
+      state.pendingRequests[reqId] = {
+        resolve: (responseCmd, responseMsg) => {
+          clearTimeout(timeout)
+          resolve({ cmd: responseCmd, msg: responseMsg })
+        }
+      }
+    })
+
+    state.pendingRequests[reqId].promise = responsePromise
+
+    state.websocketConnection.send(JSON.stringify({ cmd, msg, reqId }))
+
+    return responsePromise
   }
 
   function cmd (command, id, fromTrigger) {
@@ -103,29 +136,18 @@ export function useWebSocket () {
     }, 100)
   }  
 
-  function fetchEntity (eid, skipCache) {
+  async function fetchEntity (eid, skipCache) {
     if (state.cache.entityCache[eid] && !skipCache) {
       return new Promise((resolve) => resolve(state.cache.entityCache[eid].entity))
     }
 
-    const requestId = `entity-${eid}`
-    const pendingRequest = state.pendingRequests[requestId]
-    if (pendingRequest) {
-      return pendingRequest.promise
-    }
-
-    const promise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error(`Request for entity-${eid} timed out after 5 seconds`)), 5000)
-      state.pendingRequests[requestId] = { resolve, reject, timeout }
-    })
-
-    state.pendingRequests[requestId].promise = promise
-
-    send('entity', { eid })
-    return promise
+    const reqId = `entity-${eid}`
+    let entity = await sendWithResponse('entity', { eid }, reqId)
+    state.cache.entityCache[eid] = { entity, date: Date.now() }
+    return entity
   }
 
-  function fetchEntities (eids) {
+  async function fetchEntities (eids) {
     let fetchEids = eids.filter(eid => !state.cache.entityCache[eid])
     if (!fetchEids.length) {
       return new Promise((resolve) => {
@@ -137,49 +159,25 @@ export function useWebSocket () {
       })
     }
 
-    let id = Math.round(Math.random() * 1000000)
-    while (state.pendingRequests[`entities-${id}`]) {
-      id = Math.round(Math.random() * 1000000)
+    let { msg } = await sendWithResponse('entities', { eids: fetchEids })
+    for (let entity of msg) {
+      state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
     }
-    let requestId = `entities-${id}`
-
-    const promise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        console.log(`Request for ${requestId} timed out after 5 seconds`)
-        resolve([])
-      }, 5000)
-      state.pendingRequests[requestId] = { resolve, reject, timeout, eids }
-    })
-
-    state.pendingRequests[requestId].promise = promise
-
-    send('entities', { eids: fetchEids, id })
-    return promise
+    return msg
   }
 
-  function fetchItem (iid)  {
+  async function fetchItem (iid)  {
     if (state.cache.itemCache[iid]) {
       return new Promise((resolve) => resolve(state.cache.itemCache[iid].item))
     }
 
-    const requestId = `item-${iid}`
-    const pendingRequest = state.pendingRequests[requestId]
-    if (pendingRequest) {
-      return pendingRequest.promise
-    }
-
-    const promise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error(`Request for item-${iid} timed out after 5 seconds`)), 5000)
-      state.pendingRequests[requestId] = { resolve, reject, timeout }
-    })
-
-    state.pendingRequests[requestId].promise = promise
-
-    send('item', { iid })
-    return promise
+    const reqId = `item-${iid}`
+    let item = await sendWithResponse('item', { iid }, reqId)
+    state.cache.itemCache[iid] = { item, date: Date.now() }
+    return item
   }
 
-  function fetchItems (iids) {
+  async function fetchItems (iids) {
     let fetchIids = iids.filter(iid => !state.cache.itemCache[iid])
     if (!fetchIids.length) {
       return new Promise((resolve) => {
@@ -191,27 +189,18 @@ export function useWebSocket () {
       })
     }
 
-    let id = Math.round(Math.random() * 1000000)
-    while (state.pendingRequests[`items-${id}`]) {
-      id = Math.round(Math.random() * 1000000)
+    let { msg } = await sendWithResponse('items', { iids: fetchIids })
+    for (let item of msg) {
+      state.cache.itemCache[item.iid] = { item, date: Date.now() }
     }
-    let requestId = `items-${id}`
-
-    const promise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        console.log(`Request for ${requestId} timed out after 5 seconds`)
-        resolve([])
-      }, 5000)
-      state.pendingRequests[requestId] = { resolve, reject, timeout, iids }
-    })
-
-    state.pendingRequests[requestId].promise = promise
-
-    send('items', { iids: fetchIids, id })
-    return promise
+    return msg
   }
 
   return {
-    initConnection, doTokenAuth, send, cmd, fetchEntity, fetchEntities, fetchItem, fetchItems, move, enter
+    initConnection, doTokenAuth,
+    send, sendWithResponse, cmd,
+    move, enter,
+    fetchEntity, fetchEntities,
+    fetchItem, fetchItems,
   }
 }

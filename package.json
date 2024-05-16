@@ -15,6 +15,7 @@
     "dayjs": "^1.11.10",
     "events": "^3.3.0",
     "jiff": "^0.7.3",
+    "nanoid": "^5.0.7",
     "strip-ansi": "^7.1.0",
     "vue": "^3.4.15",
     "vue-html-secure": "^1.0.10",

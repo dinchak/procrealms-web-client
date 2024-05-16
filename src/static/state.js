@@ -91,7 +91,7 @@ export const state = reactive({
       commands: []
     },
     topicsLoaded: false,
-    matches: [],
+    searchResults: [],
     contents: [],
     openEntries: []
   },
@@ -110,7 +110,7 @@ export function resetState () {
   state.activeTab = 'output'
   state.mode = 'hotkey'
   state.prevModes = ['login']
-  state.pendingRequests = []
+  state.pendingRequests = {}
   state.inputMappings = resetInputMappings()
   state.cache = resetCache()
   state.gameState = resetGameState()
