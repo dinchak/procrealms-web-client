@@ -15,6 +15,7 @@ import { NConfigProvider, darkTheme } from 'naive-ui'
 
 import { state, resetState, resetMode } from './static/state'
 import { useWebSocket } from '@/composables/web_socket'
+import { useLocalStorageHandler } from './composables/local_storage_handler'
 import { CACHE_DELETE_TIME, CACHE_DELETE_INTERVAL } from '@/static/constants'
 
 import InputHandler from '@/components/InputHandler.vue'
@@ -29,12 +30,9 @@ const themeOverrides = {
 }
 
 const { initConnection } = useWebSocket()
+const { loadOptions, loadInputMappings } = useLocalStorageHandler()
 
 let cacheClearInterval = null
-
-function onConnect () {
-  state.connected = true
-}
 
 function doConnect () {
   if (state.connected) {
@@ -42,6 +40,10 @@ function doConnect () {
   }
 
   initConnection({ onConnect, onClose, url: import.meta.env.VITE_WEBSOCKET_URL })
+}
+
+function onConnect () {
+  state.connected = true
 }
 
 function onClose () {
@@ -67,6 +69,9 @@ function clearCache(object) {
 }
 
 onMounted(() => {
+  loadOptions()
+  loadInputMappings()
+
   doConnect()
 
   cacheClearInterval = setInterval(() => {
@@ -102,6 +107,11 @@ onBeforeUnmount(() => {
 :root, .n-form-item, .n-form-item-label, .n-button, .n-input, .n-dialog {
   --n-font-size: 16px;
   --n-label-font-size: 16px;
+}
+
+.selected {
+  box-shadow: 0 0 5px #f8ff25;
+  color: #f8ff25;
 }
 
 body, html {
