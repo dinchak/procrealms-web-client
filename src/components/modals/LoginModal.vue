@@ -1,62 +1,59 @@
 <template>
 
-  <n-modal
+  <NModal
     v-model:show="state.modals.loginModal"
     type="success"
     preset="dialog"
     title="Login"
+    class="login-modal"
+    @after-enter="onOpenModal"
+    @after-leave="onCloseModal"
   >
 
     <template #header>
       <div>Existing Player Login</div>
     </template>
 
-    <n-form ref="formRef" :model="model" :rules="rules" size="large">
+    <NForm ref="formRef" :model="model" :rules="rules" size="large">
 
-      <n-form-item path="name" label="Character Name">
-        <n-input ref="nameInput" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" />
-      </n-form-item>
+      <NFormItem path="name" label="Character Name">
+        <NInput ref="nameInput" class="selectable" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" @click="nameInput.select()"/>
+      </NFormItem>
 
-      <n-form-item ref="passwordFormItem" path="password" label="Password">
-        <n-input ref="passwordInput" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?"/>
-      </n-form-item>
+      <NFormItem path="password" label="Password">
+        <NInput ref="passwordInput" class="selectable" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?" @click="passwordInput.select()"/>
+      </NFormItem>
 
-    </n-form>
+    </NForm>
 
     <template #action>
-      <n-button type="success" ghost @click="handleValidation">Login</n-button>
+      <NButton class="selectable" type="success" ghost @click="handleValidation">Login</NButton>
     </template>
 
-  </n-modal>
+  </NModal>
 
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
-import { state } from '@/static/state'
+import { state, prevMode } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { loadSettingsByNameAndType } from "@/static/triggers"
+import { useHelpers } from '@/composables/helpers'
 
 const { send } = useWebSocket()
+const { selectNearestElement } = useHelpers()
 
 const formRef = ref(null)
 const nameInput = ref(null)
-const passwordFormItem = ref(null)
+const passwordInput = ref(null)
 
 const model = ref({
   name: null,
   password: null
-})
-
-watch(() => state.modals.loginModal, () => {
-  if (state.modals.loginModal) {
-    setTimeout(() => {
-      nameInput.value.focus()
-    }, 100)
-  }
 })
 
 const rules = {
@@ -103,14 +100,61 @@ const rules = {
   ],
 }
 
+let selectedElement = null
+function selectModalAction (degree) {
+  selectedElement = selectNearestElement(selectedElement, degree)
+  if (selectedElement) {
+    selectedElement.focus()
+  }
+}
+
+function performModalAction () {
+  if (selectedElement) {
+    selectedElement.click()
+  }
+}
+
+async function onOpenModal () {
+  await nextTick()
+  nameInput.value.select()
+}
+
+function onCloseModal () {
+  if (!state.modals.loginModal) {
+    return
+  }
+  state.modals.loginModal = false
+  prevMode()
+}
+
+let validationInProgress = false
 function handleValidation (e) {
   e.preventDefault()
+  if (validationInProgress) {
+    return
+  }
+
+  validationInProgress = true
   formRef.value?.validate().then(() => {
     loadSettingsByNameAndType(state.triggers, model.value.name, 'triggers')
     loadSettingsByNameAndType(state.variables, model.value.name, 'variables')
+    validationInProgress = false
   }).catch(() => {
+    validationInProgress = false
   })
 }
+
+onMounted(() => {
+  state.inputEmitter.on('closeModal', onCloseModal)
+  state.inputEmitter.on('selectModalAction', selectModalAction)
+  state.inputEmitter.on('performModalAction', performModalAction)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('closeModal', onCloseModal)
+  state.inputEmitter.off('selectModalAction', selectModalAction)
+  state.inputEmitter.off('performModalAction', performModalAction)
+})
 </script>
 
 <style lang="less">

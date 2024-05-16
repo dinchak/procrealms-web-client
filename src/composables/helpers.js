@@ -93,6 +93,7 @@ export function useHelpers () {
     return merc
   }
 
+  let modalClasses = ['game-modal', 'login-modal', 'new-player-modal']
   function getSelectableElements () {
     return Array.from(document.querySelectorAll('.selectable'))
       .filter(el => {
@@ -100,20 +101,14 @@ export function useHelpers () {
           return false
         }
 
-        const gameModal = document.querySelector('.game-modal')
-        if (gameModal && !gameModal.contains(el)) {
-          return false
+        for (let modalClass of modalClasses) {
+          let modal = document.querySelector(`.${modalClass}`)
+          if (modal && !modal.contains(el)) {
+            return false
+          }
         }
 
         return true
-
-        // const rect = el.getBoundingClientRect()
-        // return (
-        //   rect.top >= 0 &&
-        //   rect.left >= 0 &&
-        //   rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        //   rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        // )
       })
   }
 
@@ -145,6 +140,7 @@ export function useHelpers () {
 
   let selectDelay = false
   let selectDelayTimeout = null
+
   function selectNearestElement (selectedElement, degree) {
     if (degree === false) {
       return selectedElement

@@ -34,7 +34,7 @@
         size="large"
         tabindex="0"
         class="selectable"
-        @click="state.modals.loginModal = true"
+        @click="openLoginModal"
       >
         Login
       </NButton>
@@ -44,7 +44,7 @@
         size="large"
         tabindex="0"
         class="selectable"
-        @click="state.modals.newPlayerModal = true"
+        @click="openNewPlayerModal"
       >
         New Player
       </NButton>
@@ -58,7 +58,7 @@ import { NButton, NIcon } from 'naive-ui'
 
 import DeleteFilled from '@vicons/material/DeleteFilled'
 
-import { state } from '@/static/state'
+import { state, setMode} from '@/static/state'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
@@ -75,13 +75,23 @@ function onConnected () {
 }
 
 let selectedElement = null
-function selectLoginItem (degree) {
+function selectLoginAction (degree) {
   selectedElement = selectNearestElement(selectedElement, degree)
 }
 
 function doDeleteToken (name) {
   deleteToken(name)
   tokens.value = getTokens()
+}
+
+function openLoginModal () {
+  setMode('modal')
+  state.modals.loginModal = true
+}
+
+function openNewPlayerModal () {
+  setMode('modal')
+  state.modals.newPlayerModal = true
 }
 
 function performLoginAction () {
@@ -98,13 +108,13 @@ onMounted(() => {
   }
 
   unwatch = watch(() => state.connected, onConnected)
-  state.inputEmitter.on('selectLoginAction', selectLoginItem)
+  state.inputEmitter.on('selectLoginAction', selectLoginAction)
   state.inputEmitter.on('performLoginAction', performLoginAction)
 })
 
 onBeforeUnmount(() => {
   unwatch()
-  state.inputEmitter.off('selectLoginAction', selectLoginItem)
+  state.inputEmitter.off('selectLoginAction', selectLoginAction)
   state.inputEmitter.off('performLoginAction', performLoginAction)
 })
 
@@ -191,12 +201,20 @@ onBeforeUnmount(() => {
   } 
 }
 
+@media screen and (max-width: 900px) {
+  .splashscreen {
+    h1 {
+      font-size: 74px;
+      padding-top: 100px;
+    }
+  } 
+}
+
 @media screen and (max-width: 700px) {
   .splashscreen {
     h1 {
       font-size: 48px;
-      // padding-top: 100px;
-      // padding-bottom: 25px;
+      padding-top: 100px;
     }
   } 
 }

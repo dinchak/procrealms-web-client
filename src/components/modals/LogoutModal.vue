@@ -14,7 +14,7 @@
     Are you sure you want to logout?
 
     <template #action>
-      <n-button type="success" ghost @click="logout">Logout</n-button>
+      <n-button class="selectable" type="success" ghost @click="logout">Logout</n-button>
     </template>
 
   </n-modal>
