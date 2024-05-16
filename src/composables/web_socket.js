@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid'
 
 import { addLine, state } from '@/static/state'
-import { loadSettingsByNameAndType } from '@/static/triggers'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
 
 export function useWebSocket () {
@@ -33,12 +32,6 @@ export function useWebSocket () {
         console.log(err.stack)
       }
     }
-  }
-
-  function doTokenAuth (name, token) {
-    loadSettingsByNameAndType(state.triggers, name, 'triggers')
-    loadSettingsByNameAndType(state.variables, name, 'variables')
-    send('token', { name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com' })
   }
 
   function send (cmd, msg) {
@@ -197,7 +190,7 @@ export function useWebSocket () {
   }
 
   return {
-    initConnection, doTokenAuth,
+    initConnection,
     send, sendWithResponse, cmd,
     move, enter,
     fetchEntity, fetchEntities,

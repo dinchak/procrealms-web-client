@@ -4,10 +4,8 @@ import { CHANNEL_COLORS } from '@/static/constants'
 import { addLine, state, setMode } from '@/static/state'
 import { processTriggers } from '@/static/triggers'
 
-import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useHelpers } from '@/composables/helpers'
 
-const { addToken } = useLocalStorageHandler()
 const { ansiToHtml, strToLines } = useHelpers()
 
 export function onWebSocketEvent (cmd, msg, reqId) {
@@ -33,48 +31,6 @@ const webSocketHandlers = {
     } catch (err) {
       console.log(err.stack)
     }
-  },
-  
-  'login.nameAvailable': () => {
-    state.nameExistsResolve()
-    state.nameExistsReject = null
-    state.nameExistsResolve = null
-  },
-
-  'login.nameExists': () => {
-    state.nameExistsReject(new Error('login.nameExists'))
-    state.nameExistsReject = null
-    state.nameExistsResolve = null
-  },
-  
-  'login.fail': () => {
-    state.loginReject(new Error('login.fail'))
-    state.loginResolve = null
-    state.loginReject = null
-  },
-  
-  'token.fail': () => {
-    state.token = ''
-  },
-  
-  'token.success': ({ name, token }) => {
-    state.name = name
-    state.token = token
-    state.disconnected = false
-  
-    state.prevModes = ['login']
-    state.mode = 'hotkey'
-  
-    addToken(name, token)
-  
-    if (state.loginResolve) {
-      state.loginResolve()
-      state.loginResolve = null
-      state.loginReject = null
-    }
-  
-    state.modals.loginModal = false
-    state.modals.newPlayerModal = false
   },
   
   'out': (line) => {
