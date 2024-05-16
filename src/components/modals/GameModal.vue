@@ -109,10 +109,9 @@ function performModalAction () {
 const tabs = ref(null)
 const currentPane = ref("score")
 const miniOutputEnabled = ref(false)
-const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment', 'options', 'mappings'])
+const panes = ref(['score', 'skills', 'inventory', 'equipment', 'quests', 'options', 'mappings'])
 
 function onOpenModal () {
-  // currentPane.value = state.gamepadTab || "score"
   setFontSize(state.options.fontSize)
   setFontFamily(state.options.fontFamily)
   scrollDown()

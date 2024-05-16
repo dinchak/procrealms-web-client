@@ -21,7 +21,6 @@ const axesConfig = [
   }
 ]
 
-
 function handleMetaKey (ev, keyState) {
   if (ev.key == 'Control' || ev.key == 'Meta') {
     state.metaKeyState.ctrl = keyState

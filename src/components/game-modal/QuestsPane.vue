@@ -27,7 +27,7 @@
 
         <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
 
-        <NButton ghost size="tiny"
+        <NButton ghost size="tiny" class="selectable"
           v-if="quest.desc && !questsExpanded[quest.name]"
           @click="questsExpanded[quest.name] = true"
         >
@@ -36,7 +36,7 @@
         
         <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
 
-        <NButton ghost size="tiny"
+        <NButton ghost size="tiny" class="selectable"
           v-if="quest.desc && questsExpanded[quest.name] && questsExpanded[quest.name]"
           @click="questsExpanded[quest.name] = false"
         >

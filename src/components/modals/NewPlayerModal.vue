@@ -5,6 +5,9 @@
     type="success"
     preset="dialog"
     title="New Player"
+    class="new-player-modal"
+    @after-enter="onOpenModal"
+    @after-leave="onCloseModal"
   >
 
     <template #header>
@@ -14,27 +17,26 @@
     <NForm ref="formRef" :model="model" :rules="rules" size="large">
 
       <NFormItem path="name" label="Character Name">
-        <NInput v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name"/>
-        <NButton size="medium" type="warning" ghost @click="generateName">Random</NButton>
+        <NInput ref="nameInput" class="selectable" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name" @click="nameInput.select()"/>
+        <NButton class="selectable" size="medium" type="warning" ghost @click="generateName">Random</NButton>
       </NFormItem>
 
-
       <NFormItem path="password" label="Password">
-        <NInput v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password"/>
+        <NInput ref="passwordInput" class="selectable" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password" @click="passwordInput.select()"/>
       </NFormItem>
 
       <NFormItem path="repeatPassword" label="Repeat Password">
-        <NInput v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password"/>
+        <NInput ref="repeatPasswordInput" class="selectable" v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password" @click="repeatPasswordInput.select()"/>
       </NFormItem>
 
       <NFormItem path="tutorial" label="Start the tutorial?">
-        <NSwitch v-model:value="model.tutorial" />
+        <NSwitch class="selectable" v-model:value="model.tutorial" />
       </NFormItem>
 
     </NForm>
 
     <template #action>
-      <NButton type="success" ghost @click="handleValidation">Play!</NButton>
+      <NButton class="selectable" type="success" ghost @click="handleValidation">Play!</NButton>
     </template>
 
   </NModal>
@@ -42,15 +44,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton, NSwitch } from 'naive-ui'
-import { state } from '@/static/state'
+import { state, prevMode } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
+import { useHelpers } from '@/composables/helpers'
+
 const { send } = useWebSocket()
+const { selectNearestElement } = useHelpers()
 
 const formRef = ref(null)
+
+const nameInput = ref(null)
+const passwordInput = ref(null)
+const repeatPasswordInput = ref(null)
 
 const model = ref({
   name: '',
@@ -58,10 +67,6 @@ const model = ref({
   repeatPassword: '',
   tutorial: true
 })
-
-function validatePasswordSame(rule, value) {
-  return value === model.value.password
-}
 
 const rules = {
   name: [
@@ -85,6 +90,7 @@ const rules = {
       trigger: ['blur'],
       asyncValidator: () => {
         return new Promise((resolve, reject) => {
+          console.log('set name exists resolve/reject')
           state.nameExistsResolve = resolve
           state.nameExistsReject = reject
           send('nameExists', { name: model.value.name })
@@ -96,8 +102,14 @@ const rules = {
   password: [
     {
       required: true,
-      message: "Password is required",
       trigger: ['password-input', 'blur'],
+      validator (rule, value) {
+        if (!value) {
+          return new Error('Password is required')
+        } else if (value.length < 3) {
+          return new Error('Password is too short')
+        }
+      }
     }
   ],
 
@@ -106,12 +118,13 @@ const rules = {
       required: true,
       message: "Repeat Password is required",
       trigger: ['password-input', 'blur'],
-    },
-
-    {
-      validator: validatePasswordSame,
-      message: 'Password is not same as re-entered password!',
-      trigger: ['password-input', 'blur'],
+      validator (rule, value) {
+        if (!value) {
+          return new Error('Repeat Password is required')
+        } else if (value != model.value.password) {
+          return new Error('Password is not same as repeat password')
+        }
+      }
     },
 
     {
@@ -120,18 +133,45 @@ const rules = {
         return new Promise((resolve, reject) => {
           state.loginResolve = resolve
           state.loginReject = reject
-          send('create', {
-            name: model.value.name,
-            password: model.value.password,
-            width: 100,
-            height: 24,
-            tutorial: model.value?.tutorial ? 'Y' : 'N',
-            ttype: 'play.proceduralrealms.com'
-          })
+          // send('create', {
+          //   name: model.value.name,
+          //   password: model.value.password,
+          //   width: 100,
+          //   height: 24,
+          //   tutorial: model.value?.tutorial ? 'Y' : 'N',
+          //   ttype: 'play.proceduralrealms.com'
+          // })
         })
       }
     }
   ]
+}
+
+let selectedElement = null
+function selectModalAction (degree) {
+  selectedElement = selectNearestElement(selectedElement, degree)
+  if (selectedElement) {
+    selectedElement.focus()
+  }
+}
+
+function performModalAction () {
+  if (selectedElement) {
+    selectedElement.click()
+  }
+}
+
+async function onOpenModal () {
+  await nextTick()
+  nameInput.value.select()
+}
+
+function onCloseModal () {
+  if (!state.modals.loginModal) {
+    return
+  }
+  state.modals.loginModal = false
+  prevMode()
 }
 
 function handleValidation (e) {
@@ -139,6 +179,10 @@ function handleValidation (e) {
   formRef.value?.validate().then(() => {
   }).catch(() => {
   })
+}
+
+function validatePasswordSame(rule, value) {
+  return value === model.value.password
 }
 
 let chain = null
@@ -255,7 +299,19 @@ function generateName () {
   model.value.name = selectName()
 }
 
-onMounted(() => generateName())
+onMounted(() => {
+  state.inputEmitter.on('closeModal', onCloseModal)
+  state.inputEmitter.on('selectModalAction', selectModalAction)
+  state.inputEmitter.on('performModalAction', performModalAction)
+
+  generateName()
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('closeModal', onCloseModal)
+  state.inputEmitter.off('selectModalAction', selectModalAction)
+  state.inputEmitter.off('performModalAction', performModalAction)
+})
 </script>
 
 <style lang="less">

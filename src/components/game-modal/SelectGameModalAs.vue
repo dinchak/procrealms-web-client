@@ -1,12 +1,19 @@
 <template>
   <div class="select-game-modal-as" v-if="getGameModalAsOptions().length > 1">
-    <div class="label">Select character</div>
-    <NSelect v-model:value="state.gameModalAs" :options="getGameModalAsOptions()"></NSelect>
+    <NDropdown
+      trigger="click"
+      v-model:value="state.gameModalAs"
+      :options="getGameModalAsOptions()"
+      :render-label="renderOption"
+    >
+      <NButton class="selectable">Select character</NButton>
+    </NDropdown>
   </div>
 </template>
 
 <script setup>
-import { NSelect } from 'naive-ui'
+import { h } from 'vue'
+import { NDropdown, NButton } from 'naive-ui'
 import { state } from '@/static/state'
 
 function getGameModalAsOptions () {
@@ -26,9 +33,18 @@ function getGameModalAsOptions () {
 
   return values
 }
+
+function renderOption (option) {
+  return h('div', { class: 'selectable' }, option.label)
+}
 </script>
 
 <style lang="less">
+.n-dropdown-option-body__label {
+  .selected {
+    color: #3F3;
+  }
+}
 .select-game-modal-as {
   margin-bottom: 20px;
   display: flex;
@@ -38,8 +54,10 @@ function getGameModalAsOptions () {
     align-items: center;
     margin-right: 10px;
   }
-  .n-select {
-    max-width: 200px;
+  .n-button {
+    &.selected {
+      background: #121;
+    }
   }
 }
 </style>
