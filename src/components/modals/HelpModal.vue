@@ -82,7 +82,7 @@
               <h1 v-html-safe="getTitle(content)"></h1>
 
               <div class="help-section"
-                v-if="content.body"
+                v-if="content.body && !content.skill"
                 v-for="key in Object.keys(content.body)" :key="key"
               >
                 <h3 class="bold-green" v-if="key">{{ key }}</h3>
@@ -121,6 +121,24 @@
                 <h3 class="bold-red">Rank 3</h3>
                 <div class="help-text"
                   v-html-safe="ansiToHtml(ANSI.reset + content.rank3)"
+                ></div>
+              </div>
+
+              <div class="help-section"
+                v-if="content.rank4"
+              >
+                <h3 class="bold-magenta">Rank 4</h3>
+                <div class="help-text"
+                  v-html-safe="ansiToHtml(ANSI.reset + content.rank4)"
+                ></div>
+              </div>
+
+              <div class="help-section"
+                v-if="content.rank5"
+              >
+                <h3 class="bold-cyan">Rank 5</h3>
+                <div class="help-text"
+                  v-html-safe="ansiToHtml(ANSI.reset + content.rank5)"
                 ></div>
               </div>
 
