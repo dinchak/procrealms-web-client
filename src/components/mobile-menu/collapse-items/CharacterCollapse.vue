@@ -1,5 +1,5 @@
 <template>
-  <n-collapse-item title="Statistics">
+  <n-collapse-item title="Statistics" @click="setWeapon()">
 
     <div class="ability-points" v-if="player().abilityPoints > 0">
       You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command or the <n-icon class="inline"><AddBoxOutlined></AddBoxOutlined></n-icon> symbol below to spend them.
@@ -329,7 +329,7 @@
       <div class="combat-row">
         <div class="flex-row">
           <div class="left-label">Command</div>
-          <div class="left-value bold-green">{{ renderNumber(player().focus) }}</div>
+          <div class="left-value bold-green">{{ renderNumber(player().command) }}</div>
           <div class="right-value bold-green">{{ player().numCharmies }}<span class="white">/</span><span class="green">{{ player().maxCharmies }}</span></div>
           <div class="right-label">followers</div>
         </div>
@@ -495,11 +495,13 @@
 
 <script setup>
 import { NCollapseItem, NIcon } from 'naive-ui'
-import { defineProps, ref, onMounted, watch } from 'vue'
+import { defineProps, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
+import { state } from '@/static/state'
 import { DAMAGE_TYPE_COLORS } from '@/static/constants'
+
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
@@ -555,13 +557,22 @@ function getDamageType () {
   }
 }
 
-onMounted(() => {
-  setWeapon()
+let watchers = []
+onMounted(async () => {
+  watchers.push(
+    watch(() => state.gameState.equipment, async () => {
+      console.log('equipment changed')
+      setWeapon()
+    })
+  )
 })
 
-watch(props.equipment, () => {
-  setWeapon()
+onBeforeUnmount(() => {
+  for (let watcher of watchers) {
+    watcher()
+  }
 })
+
 </script>
 
 <style lang="less">
