@@ -2,6 +2,7 @@
 node_modules
 /dist
 deploy-qa.sh
+deploy-prod.sh
 
 # local env files
 .env.local
