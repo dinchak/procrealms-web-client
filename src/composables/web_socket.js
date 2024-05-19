@@ -135,9 +135,9 @@ export function useWebSocket () {
     }
 
     const reqId = `entity-${eid}`
-    let entity = await sendWithResponse('entity', { eid }, reqId)
-    state.cache.entityCache[eid] = { entity, date: Date.now() }
-    return entity
+    let { msg } = await sendWithResponse('entity', { eid }, reqId)
+    state.cache.entityCache[eid] = { entity: msg, date: Date.now() }
+    return msg
   }
 
   async function fetchEntities (eids) {
@@ -165,9 +165,9 @@ export function useWebSocket () {
     }
 
     const reqId = `item-${iid}`
-    let item = await sendWithResponse('item', { iid }, reqId)
-    state.cache.itemCache[iid] = { item, date: Date.now() }
-    return item
+    let { msg } = await sendWithResponse('item', { iid }, reqId)
+    state.cache.itemCache[iid] = { item: msg, date: Date.now() }
+    return msg
   }
 
   async function fetchItems (iids) {
