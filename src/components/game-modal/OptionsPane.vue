@@ -26,6 +26,13 @@
             <NSwitch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side" class="selectable"></NSwitch>
           </div>
         </NGi>
+
+        <NGi>
+          <div class="option">
+            <label for="option-show-map-area">Show Movement Controls</label>
+            <NSwitch id="option-show-map-area" v-model:value="state.options.showMobileMenuMoveControls" aria-label="Show Movement Controls" class="selectable"></NSwitch>
+          </div>
+        </NGi>
       </NGrid>
 
       <NGrid class="options" cols="1">

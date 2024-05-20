@@ -6,8 +6,8 @@
         <div class="quick-slots">
           <QuickSlots :layout-mode="'mobile'"></QuickSlots>
         </div>
-        <div class="map-area" v-show="!state.gameState.battle.active">
-          <MoveControls></MoveControls>
+        <div class="map-area" v-show="!state.gameState.battle.active && (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)">
+          <MoveControls v-if="state.options.showMobileMenuMoveControls"></MoveControls>
           <MiniMap v-if="state.options.showMobileMenuMap"></MiniMap>
         </div>
         <div class="mini-stats">
