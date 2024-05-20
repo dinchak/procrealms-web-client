@@ -202,11 +202,6 @@ function getTarget (participant) {
 
     .name-row {
       min-height: 36px;
-      -webkit-hyphens: auto;
-      -moz-hyphens: auto;
-      -ms-hyphens: auto;
-      hyphens: auto;
-      word-break: auto-phrase;
     }
 
     .name-merc-col {
@@ -281,12 +276,9 @@ function getTarget (participant) {
   }
 
   &::before {
-    transition: border-color 0.3s;
     content: '';
     position: absolute;
     width: 0;
-    top: -9999px;
-    left: -9999px;
     height: 0;
     border-style: solid;
     border-width: 15px 15px 15px 15px;
@@ -295,7 +287,6 @@ function getTarget (participant) {
   }
 
   &::after {
-    transition: border-color 0.3s;
     content: '';
     position: absolute;
     width: 0;
@@ -317,7 +308,6 @@ function getTarget (participant) {
     color: #f8ff25 !important;
 
     &::before {
-      top: auto;
       bottom: -2px;
       left: -2px;
       border-width: 15px 0 0 15px;
@@ -331,7 +321,6 @@ function getTarget (participant) {
 
     &::after {
       top: -2px;
-      left: auto;
       right: -2px;
       border-width: 0 15px 15px 0;
       border-color: transparent #ffa850 transparent transparent;
@@ -341,7 +330,6 @@ function getTarget (participant) {
   &.acting {
     &::after {
       top: 0;
-      left: auto;
       right: 0;
     }
   }

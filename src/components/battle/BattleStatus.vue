@@ -142,6 +142,7 @@ onBeforeUnmount(() => {
   align-items: center;
 
   .vs {
+    animation: vs 0.6s ease-out;
     flex-basis: 4%;
     font-size: 1.1rem;
     text-align: center;
@@ -178,14 +179,14 @@ onBeforeUnmount(() => {
         margin: 5px;
 
         .damage {
-          opacity: 0;
           position: absolute;
-          top: 0px;
+          top: 0;
           font-size: 1.4rem;
           color: #ff3333;
           padding: 5px 10px;
           opacity: 0.8;
           background-color: #101014;
+          z-index: 1;
 
           &.crit {
             line-height: 1.2rem;
@@ -196,13 +197,13 @@ onBeforeUnmount(() => {
 
         .healing {
           position: absolute;
-          opacity: 0;
           top: -40px;
           font-size: 1.4rem;
           color: #33ff33;
           padding: 5px 10px;
           opacity: 0.8;
           background-color: #101014;
+          z-index: 1;
         }
       }
     }
@@ -231,7 +232,7 @@ onBeforeUnmount(() => {
 @keyframes damage {
   0% {
     opacity: 1;
-    top: 0px;
+    top: 0;
   }
   60% {
     opacity: 0.9;
@@ -258,7 +259,22 @@ onBeforeUnmount(() => {
   }
   100% {
     opacity: 0;
-    top: 0px;
+    top: 0;
+  }
+}
+
+@keyframes vs {
+  0% {
+    rotate: 20deg;
+    scale: 600%;
+  }
+  80% {
+    scale: 90%;
+    rotate: -10deg;
+  }
+  100% {
+    rotate: 0deg;
+    scale: 100%;
   }
 }
 
