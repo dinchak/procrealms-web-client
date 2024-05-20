@@ -27,6 +27,10 @@ export function onWebSocketEvent (cmd, msg, reqId) {
 const webSocketHandlers = {
   'state.patch': ({ patch }) => {
     try {
+      // for (let operation of patch) {
+      //   console.log(operation)
+      //   state.gameState = jiff.patch([operation], state.gameState)  
+      // }
       state.gameState = jiff.patch(patch, state.gameState)
     } catch (err) {
       console.log(err.stack)
