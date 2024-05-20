@@ -24,7 +24,7 @@
                 >{{ anim.amount }}</div>
               </TransitionGroup>
 
-              <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="'good'"></BattleEntity>
+              <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="side"></BattleEntity>
             </div>
           </div>
         </div>
@@ -144,8 +144,22 @@ onBeforeUnmount(() => {
   .vs {
     flex-basis: 4%;
     font-size: 1.1rem;
-    color: #c50f1f;
     text-align: center;
+    font-weight: bold;
+    //color: #c50f1f;
+    color: #f5f5f5;
+    text-shadow:
+          0px -2px 2px black,
+          2px 0px 2px black,
+          -2px 0px 2px black,
+          0px -4px 4px #fff,
+          0px -4px 4px #fff,
+      0px -6px 6px #FF3,
+      0px -6px 6px #FF3,
+      0px -8px 8px #F90,
+      0px -8px 8px #F90,
+      0px -16px 12px #C33,
+      0px -16px 12px #C33;
   }
 
   .side {
@@ -159,8 +173,9 @@ onBeforeUnmount(() => {
       justify-content: center;
 
       .entity {
+        align-self: stretch;
         position: relative;
-        margin-bottom: 5px;
+        margin: 5px;
 
         .damage {
           opacity: 0;
