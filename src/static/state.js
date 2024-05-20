@@ -197,7 +197,7 @@ function resetOptions () {
     // interface options
     showMinimap: false,
     showRoomInfo: false,
-    showAffects: false,
+    showEffects: false,
     showQuests: false,
 
     showTabs: true,
@@ -266,11 +266,11 @@ export function prevMode () {
 
 export function showHUD () {
   const {
-    showMinimap, showRoomInfo, showAffects, showQuests,
+    showMinimap, showRoomInfo, showEffects, showQuests,
   } = state.options
 
   return (
-    showMinimap || showRoomInfo || showAffects || showQuests
+    showMinimap || showRoomInfo || showEffects || showQuests
   )
 }
 

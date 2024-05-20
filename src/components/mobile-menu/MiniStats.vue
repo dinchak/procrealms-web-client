@@ -3,17 +3,17 @@
     <span class="left">
       <span class="stat">
         <div class="value bold-green">{{ entity.hp }}<span class="label green">HP</span></div>
-        <n-progress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false" :height="8" :border-radius="0"></n-progress>
+        <NProgress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
       </span>
 
       <span class="stat">
         <div class="value bold-cyan">{{ entity.energy }}<span class="label cyan">EN</span></div>
-        <n-progress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :height="8" :border-radius="0" :show-indicator="false"></n-progress>
+        <NProgress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :height="8" :border-radius="0" :show-indicator="false"></NProgress>
       </span>
 
       <span class="stat">
         <div class="value bold-yellow">{{ entity.stamina }}<span class="label yellow">ST</span></div>
-        <n-progress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :height="8" :border-radius="0" :show-indicator="false"></n-progress>
+        <NProgress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :height="8" :border-radius="0" :show-indicator="false"></NProgress>
       </span>
 
     </span>
@@ -32,7 +32,7 @@
 
     <span class="stat">
       <div class="value bold-green"><span class="label green">Food</span></div>
-      <n-progress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></n-progress>
+      <NProgress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
     </span>
 
   </div>

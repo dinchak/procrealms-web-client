@@ -1,7 +1,7 @@
 <template>
-  <n-collapse-item title="Options">
+  <NCollapseItem title="Options">
     <OptionsMenu></OptionsMenu>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>

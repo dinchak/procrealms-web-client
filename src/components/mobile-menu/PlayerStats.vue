@@ -7,11 +7,11 @@
     </div>
 
     <hr v-if="isNaN(getTNL())" class="exp-row">
-    <n-progress v-else class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
+    <NProgress v-else class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
       {{ getTNL() }} TNL
-    </n-progress>
+    </NProgress>
 
-    <n-collapse>
+    <NCollapse>
       <CharacterCollapse
         :character="state.gameState.player"
         :equipment="state.gameState.equipment"
@@ -20,7 +20,7 @@
       ></CharacterCollapse>
 
       <EffectsCollapse
-        :affects="Object.values(state.gameState.affects)"
+        :effects="Object.values(state.gameState.affects)"
         :isPlayer="true"
         tabindex="0"
       ></EffectsCollapse>
@@ -55,7 +55,7 @@
       <OptionsCollapse
         tabindex="0"
       ></OptionsCollapse>
-    </n-collapse>
+    </NCollapse>
   </div>
 </template>
 

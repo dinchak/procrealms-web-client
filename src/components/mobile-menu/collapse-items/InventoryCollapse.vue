@@ -1,5 +1,5 @@
 <template>
-  <n-collapse-item title="Inventory" class="inventory-dropdown">
+  <NCollapseItem title="Inventory" class="inventory-dropdown">
     <div class="money" v-html-safe=copperToMoneyString(getMoney())></div>
     <div class="limits">
       <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
@@ -27,7 +27,7 @@
           menu="inventory"
       ></ItemModal>
     </div>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>

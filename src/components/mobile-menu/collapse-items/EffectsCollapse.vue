@@ -1,6 +1,6 @@
 <template>
   <NCollapseItem title="Effects">
-    <div class="effects">
+    <div class="effects-collapse">
       <div v-if="effects().length == 0">You are not affected by anything.</div>
 
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
@@ -24,7 +24,7 @@
             v-for="{ name, value } in effectBonuses(effect)"
             :key="name"
           >
-            <div class="effect-bonus-value bold-white" v-html-safe="(value > 0 ? '+' : '') + value"></div>
+            <div class="effect-bonus-value bold-white" v-html-safe="getEffectValue(value)"></div>
             <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
           </div>
         </div>
@@ -41,16 +41,20 @@ import { ITEM_EFFECTS } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, progressStatus, effectBonuses } = useHelpers()
+const { ansiToHtml, progressStatus, effectBonuses, renderNumber } = useHelpers()
 
-const props = defineProps(['affects', 'isPlayer'])
+const props = defineProps(['effects', 'isPlayer'])
 
 function effects () {
-  return props.affects || []
+  return props.effects || []
 }
 
 function getEffectName (effect) {
   return ansiToHtml(effect.longFlag || effect.name)
+}
+
+function getEffectValue (value) {
+  return (value > 0 ? '+' : '') + renderNumber(value)
 }
 
 function getEffectPercentage (effect) {
@@ -76,29 +80,35 @@ function getEffectBonusLabelClass (bonus) {
 </script>
 
 <style lang="less" scoped>
-.effects {
+.effects-collapse {
+
   .effect {
     white-space: pre-wrap;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
     .effect-name {
       font-size: 16px;
     }
+
     .effect-bonuses {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       width: 100%;
+
       .effect-bonus {
         display: flex;
         flex-direction: row;
         align-items: center;
         margin-right: 10px;
+        gap: 5px;
+
         .effect-bonus-label {
-          padding: 2px 5px;
           border-radius: 5px;
+
           &.success {
             background-color: #3F3;
           }
@@ -111,6 +121,7 @@ function getEffectBonusLabelClass (bonus) {
         }
       }
     }
+
     .hired {
       width: 100%;
     }

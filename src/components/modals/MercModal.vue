@@ -3,9 +3,9 @@
     <p class="close" v-on:click="closeModal()">x</p>
     <h3 class="bold-green" style="display: inline;margin-right: 10px"> {{mercEntity.name}} </h3>
     <span style="color: #aaa">Level</span> <span class="bold-cyan">{{ mercEntity.level }}</span>
-    <n-progress v-if="!isNaN(getMercTNL())" class="exp-row" type="line" status="default" :percentage="getMercExpPercentage()">
+    <NProgress v-if="!isNaN(getMercTNL())" class="exp-row" type="line" status="default" :percentage="getMercExpPercentage()">
       {{ getMercTNL() }} TNL
-    </n-progress>
+    </NProgress>
 
     <div class="affects">
       <n-tooltip trigger="hover" v-for="(affect, index) in affects" v-bind:key='index'>
@@ -17,7 +17,7 @@
       </n-tooltip>
     </div>
     <MiniStats :entity="mercVitals"></MiniStats>
-    <n-collapse>
+    <NCollapse>
       <CharacterCollapse
           :character="mercEntity"
           :equipment="mercEquipment"
@@ -44,7 +44,7 @@
           :skills="mercSkills"
           :isPlayer="false"
       ></SkillsCollapse>
-    </n-collapse>
+    </NCollapse>
   </n-card>
 </template>
 

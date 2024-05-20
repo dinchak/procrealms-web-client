@@ -1,12 +1,12 @@
 <template>
-  <n-collapse-item title="Quests">
+  <NCollapseItem title="Quests">
     <div class="quests">
       <div v-if="quests().length == 0">You don't have any quests.</div>
       <div class="quest" v-for="quest in quests()" :key="quest.name">
         <div v-html-safe="getQuestName(quest)"></div>
         <div v-html-safe="getGivenBy(quest)"></div>
         <div v-if="quest.objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
-        <n-progress
+        <NProgress
           v-if="quest.amount" 
           :status="quest.progress < quest.amount ? 'default' : 'success'"
           type="line"
@@ -18,7 +18,7 @@
           <span class="bold-yellow" v-if="quest.progress >= quest.amount">
             Complete
           </span>
-        </n-progress>
+        </NProgress>
 
         <div
           class="expand-link"
@@ -41,7 +41,7 @@
 
       </div>
     </div>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>

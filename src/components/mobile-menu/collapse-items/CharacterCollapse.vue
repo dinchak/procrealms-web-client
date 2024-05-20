@@ -1,8 +1,8 @@
 <template>
-  <n-collapse-item title="Statistics" @click="setWeapon()">
+  <NCollapseItem title="Statistics" @click="setWeapon()">
 
     <div class="ability-points" v-if="player().abilityPoints > 0">
-      You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command or the <n-icon class="inline"><AddBoxOutlined></AddBoxOutlined></n-icon> symbol below to spend them.
+      You have <span class="bold-yellow">{{ player().abilityPoints }}</span> unspent ability points. Use the point command or the <NIcon class="inline"><AddBoxOutlined></AddBoxOutlined></NIcon> symbol below to spend them.
     </div>
 
     <div class="character-stats">
@@ -14,7 +14,7 @@
               <span class="bold-red">{{ player()._strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
             </div>
             <div class="increase-stat">
-              <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('strength')"><AddBoxOutlined></AddBoxOutlined></n-icon>
+              <NIcon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('strength')"><AddBoxOutlined></AddBoxOutlined></NIcon>
             </div>
             <div class="stat-label">
               Strength
@@ -28,7 +28,7 @@
               <span class="bold-cyan">{{ player()._magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
             </div>
             <div class="increase-stat">
-              <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('magic')"><AddBoxOutlined></AddBoxOutlined></n-icon>
+              <NIcon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('magic')"><AddBoxOutlined></AddBoxOutlined></NIcon>
             </div>
             <div class="stat-label">
               Magic
@@ -138,7 +138,7 @@
               <span class="bold-yellow">{{ player()._agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
             </div>
             <div class="increase-stat">
-              <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('agility')"><AddBoxOutlined></AddBoxOutlined></n-icon>
+              <NIcon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('agility')"><AddBoxOutlined></AddBoxOutlined></NIcon>
             </div>
             <div class="stat-label">
               Agility
@@ -152,7 +152,7 @@
               <span class="bold-green">{{ player()._spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
             </div>
             <div class="increase-stat">
-              <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('spirit')"><AddBoxOutlined></AddBoxOutlined></n-icon>
+              <NIcon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('spirit')"><AddBoxOutlined></AddBoxOutlined></NIcon>
             </div>
             <div class="stat-label">
               Spirit
@@ -513,7 +513,7 @@
         <div class="col"></div>
       </div>
     </div>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>

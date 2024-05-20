@@ -1,19 +1,19 @@
 <template>
   <div class="mobile-movement">
     <div class="row">
-      <n-icon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></n-icon>
-      <n-icon :class="getMovementClass('north')" @click="move('north')"><NorthOutlined></NorthOutlined></n-icon>
-      <n-icon :class="getMovementClass('northeast')" @click="move('northeast')"><NorthEastOutlined></NorthEastOutlined></n-icon>
+      <NIcon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></NIcon>
+      <NIcon :class="getMovementClass('north')" @click="move('north')"><NorthOutlined></NorthOutlined></NIcon>
+      <NIcon :class="getMovementClass('northeast')" @click="move('northeast')"><NorthEastOutlined></NorthEastOutlined></NIcon>
     </div>
     <div class="row">
-      <n-icon :class="getMovementClass('west')" @click="move('west')"><WestOutlined></WestOutlined></n-icon>
-      <n-icon :class="getEnterClass()" @click="enter()"><MeetingRoomOutlined></MeetingRoomOutlined></n-icon>
-      <n-icon :class="getMovementClass('east')" @click="move('east')"><EastOutlined></EastOutlined></n-icon>
+      <NIcon :class="getMovementClass('west')" @click="move('west')"><WestOutlined></WestOutlined></NIcon>
+      <NIcon :class="getEnterClass()" @click="enter()"><MeetingRoomOutlined></MeetingRoomOutlined></NIcon>
+      <NIcon :class="getMovementClass('east')" @click="move('east')"><EastOutlined></EastOutlined></NIcon>
     </div>
     <div class="row">
-      <n-icon :class="getMovementClass('southwest')" @click="move('southwest')"><SouthWestOutlined></SouthWestOutlined></n-icon>
-      <n-icon :class="getMovementClass('south')" @click="move('south')"><SouthOutlined></SouthOutlined></n-icon>
-      <n-icon :class="getMovementClass('southeast')" @click="move('southeast')"><SouthEastOutlined></SouthEastOutlined></n-icon>
+      <NIcon :class="getMovementClass('southwest')" @click="move('southwest')"><SouthWestOutlined></SouthWestOutlined></NIcon>
+      <NIcon :class="getMovementClass('south')" @click="move('south')"><SouthOutlined></SouthOutlined></NIcon>
+      <NIcon :class="getMovementClass('southeast')" @click="move('southeast')"><SouthEastOutlined></SouthEastOutlined></NIcon>
     </div>
   </div>
 </template>

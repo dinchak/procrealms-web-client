@@ -19,8 +19,8 @@
 
       <NButton size="medium"
         title="Affects"
-        :type="getOptionType('showAffects')"
-        @click="toggleOption('showAffects')"
+        :type="getOptionType('showEffects')"
+        @click="toggleOption('showEffects')"
       >
         <NIcon size="24"><AlignHorizontalLeftOutlined/></NIcon>
       </NButton>

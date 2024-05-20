@@ -1,5 +1,5 @@
 <template>
-  <n-collapse-item title="Skills">
+  <NCollapseItem title="Skills">
     <div class="skills">
       <div class="skill-type bold-red">Weapon Skills</div>
       <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('weapon'))" :key="skill.name">
@@ -7,8 +7,8 @@
           <div>{{ skill.name }}</div>
           <div>Level {{ skill.level }}</div>
         </div>
-        <n-progress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
-        </n-progress>
+        <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
+        </NProgress>
         <!-- <div>{{ skill }}</div> -->
       </div>
 
@@ -21,8 +21,8 @@
           <div>{{ skill.name }}</div>
           <div>Level {{ skill.level }}</div>
         </div>
-        <n-progress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
-        </n-progress>
+        <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
+        </NProgress>
         <!-- <div>{{ skill }}</div> -->
       </div>
 
@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>
