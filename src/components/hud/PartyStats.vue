@@ -47,7 +47,7 @@ function getShortFlags (member) {
 
 function getPartyMembers () {
   let members = Object.values(state.gameState.party)
-  members.sort((a, b) => a.traits.includes('player') ? -1 : a.name.localeCompare(b.name))
+  members.sort((a, b) => a.sort < b.sort ? -1 : 1)
   return members
 }
 </script>
