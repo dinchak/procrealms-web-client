@@ -188,6 +188,7 @@ function resetOptions () {
     showMobileMenuMap: true,
     fixedMobileMenuMap: false,
     swapMobileMenuSide: false,
+    showMobileMenuMoveControls: true,
 
     // map options
     sideMapWidth: 50,
