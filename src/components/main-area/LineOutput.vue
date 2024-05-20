@@ -286,7 +286,7 @@ function getOutputHeight () {
     heightOffset += 33
   }
 
-  if (state.options.showPartyStats) {
+  if (state.options.showPartyStats && !state.gameState.battle.active) {
     heightOffset += getPartyStatsHeight()
   }
 

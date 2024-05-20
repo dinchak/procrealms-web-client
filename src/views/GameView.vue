@@ -27,7 +27,7 @@
       <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
       <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
       <QuickSlotHandlers></QuickSlotHandlers>
-      <PartyStats v-if="state.options.showPartyStats"></PartyStats>
+      <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"></PartyStats>
       <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
 
     </n-layout>
@@ -110,7 +110,7 @@ function getSideAreaHeight () {
     heightOffset += 56
   }
 
-  if (state.options.showPartyStats) {
+  if (state.options.showPartyStats && !state.gameState.battle.active) {
     heightOffset += getPartyStatsHeight()
   }
 

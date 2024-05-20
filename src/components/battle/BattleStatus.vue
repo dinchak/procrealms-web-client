@@ -1,55 +1,34 @@
 <template>
   <div class="battle-area">
     <div :class="getBattleStatusClass()">
-      <div class="side good">
-        <div class="entity" v-for="participant in getSide('good')" :key="participant.eid">
-          <TransitionGroup appear name="damage">
-            <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
-              :key="anim.key"
-              :style="{ left: `${10 + i * 50}px` }"
-              :class="getAnimationClass(anim)"
-            >{{ anim.amount }}</div>
-          </TransitionGroup>
+      <template v-for="side in ['good', 'vs', 'evil']">
+        <div v-if="side === 'vs'" class="vs">VS</div>
+        <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
+          <div v-for="row in getRows(side)" class="side-row">
+            <div v-for="participant in getSideInRow(side, row)" class="entity" :key="participant.eid">
+              <TransitionGroup appear name="damage">
+                <div
+                    v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
+                    :key="anim.key"
+                    :style="{ left: `${10 + i * 50}px` }"
+                    :class="getAnimationClass(anim)"
+                >{{ anim.amount }}</div>
+              </TransitionGroup>
 
-          <TransitionGroup appear name="healing">
-            <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
-              :key="anim.key"
-              :style="{ left: `${10 + i * 50}px` }"
-              :class="getAnimationClass(anim)"
-            >{{ anim.amount }}</div>
-          </TransitionGroup>
+              <TransitionGroup appear name="healing">
+                <div
+                    v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
+                    :key="anim.key"
+                    :style="{ left: `${10 + i * 50}px` }"
+                    :class="getAnimationClass(anim)"
+                >{{ anim.amount }}</div>
+              </TransitionGroup>
 
-          <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="'good'"></BattleEntity>
+              <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="side"></BattleEntity>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="vs">VS</div>
-
-      <div class="side evil">
-        <div class="entity" v-for="participant in getSide('evil')" :key="participant.eid">
-          <TransitionGroup appear name="damage">
-            <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
-              :key="anim.key"
-              :style="{ left: `${10 + i * 50}px` }"
-              :class="getAnimationClass(anim)"
-            >{{ anim.amount }}</div>
-          </TransitionGroup>
-
-          <TransitionGroup appear name="healing">
-            <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
-              :key="anim.key"
-              :style="{ left: `${10 + i * 50}px` }"
-              :class="getAnimationClass(anim)"
-            >{{ anim.amount }}</div>
-          </TransitionGroup>
-
-          <BattleEntity :entity="{}" :participant="participant" :side="'evil'"></BattleEntity>
-        </div>
-      </div>
+      </template>
     </div>
   </div>
 
@@ -84,8 +63,38 @@ function getBattleStatusClass () {
   return classes.join(' ')
 }
 
-function getSide (side) {
+function getParticipants (side) {
+  console.debug(side, Object.values(state.gameState.battle.participants).filter(p => p.side == side))
   return Object.values(state.gameState.battle.participants).filter(p => p.side == side)
+}
+
+function getParticipantsPerRow () {
+  var m = window.matchMedia("(max-width: 1075px)")
+  return !m.matches ? 3 : 2; // 2 per row on mobile
+}
+
+// Gets the participants of a side which belong to a certain row.
+// Row begins at 1.
+function getSideInRow(side, row) {
+  const participants = getParticipants(side);
+  const perRow = getParticipantsPerRow();
+
+  const startIndex = (row * perRow) - perRow;
+  const endIndex = (row * perRow);
+
+  return participants.slice(startIndex, Math.min(endIndex, participants.length)); // Clamp by amount of participants.
+}
+
+// Gets the amount of participant rows per side.
+// Ex. 7 participants = 3 rows (3, 3, 2).
+function getRows (side) {
+  const perRow = getParticipantsPerRow();
+
+  const len = getParticipants(side).length
+  const rows = Math.ceil(len / perRow)
+
+  console.debug(side, rows)
+  return Math.max(1, rows) // To ward off against 3 participants returning 0 rows.
 }
 
 function getPartyEntity (participant) {
@@ -97,6 +106,12 @@ function getAnimationClass (anim) {
   if (anim.crit) {
     classes.push('crit')
   }
+  return classes.join(' ')
+}
+
+function getSideClass (side) {
+  let classes = ["side"]
+  classes.push(side)
   return classes.join(' ')
 }
 
@@ -127,56 +142,85 @@ onBeforeUnmount(() => {
   align-items: center;
 
   .vs {
+    animation: vs 0.6s ease-out;
     flex-basis: 4%;
     font-size: 1.1rem;
-    color: #c50f1f;
     text-align: center;
+    font-weight: bold;
+    //color: #c50f1f;
+    color: #f5f5f5;
+    text-shadow:
+          0px -2px 2px black,
+          2px 0px 2px black,
+          -2px 0px 2px black,
+          0px -4px 4px #fff,
+          0px -4px 4px #fff,
+      0px -6px 6px #FF3,
+      0px -6px 6px #FF3,
+      0px -8px 8px #F90,
+      0px -8px 8px #F90,
+      0px -16px 12px #C33,
+      0px -16px 12px #C33;
   }
 
   .side {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
+    flex-basis: 48%;
+
+    .side-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .entity {
+        align-self: stretch;
+        position: relative;
+        margin: 5px;
+
+        .damage {
+          position: absolute;
+          top: 0;
+          font-size: 1.4rem;
+          color: #ff3333;
+          padding: 5px 10px;
+          opacity: 0.8;
+          background-color: #101014;
+          z-index: 1;
+
+          &.crit {
+            line-height: 1.2rem;
+            font-size: 1.9rem;
+            color: #ffcc33;
+          }
+        }
+
+        .healing {
+          position: absolute;
+          top: -40px;
+          font-size: 1.4rem;
+          color: #33ff33;
+          padding: 5px 10px;
+          opacity: 0.8;
+          background-color: #101014;
+          z-index: 1;
+        }
+      }
+    }
 
     &.good {
-      align-items: flex-end;
+      justify-content: end;
+      .side-row {
+        align-items: flex-start;
+      }
     }
 
     &.evil {
-      align-items: flex-start;
-    }
-
-    .entity {
-      position: relative;
-      margin-bottom: 5px;
-      
-      .damage {
-        opacity: 0;
-        position: absolute;
-        top: 0px;
-        font-size: 1.4rem;
-        color: #ff3333;
-        padding: 5px 10px;
-        opacity: 0.8;
-        background-color: #101014;
-
-        &.crit {
-          line-height: 1.2rem;
-          font-size: 1.9rem;
-          color: #ffcc33;
-        }
+      justify-content: start;
+      flex-direction: row;
+      .side-row {
+        align-items: flex-start;
       }
-
-      .healing {
-        position: absolute;
-        opacity: 0;
-        top: -40px;
-        font-size: 1.4rem;
-        color: #33ff33;
-        padding: 5px 10px;
-        opacity: 0.8;
-        background-color: #101014;
-      }
-
     }
   }
 }
@@ -188,7 +232,7 @@ onBeforeUnmount(() => {
 @keyframes damage {
   0% {
     opacity: 1;
-    top: 0px;
+    top: 0;
   }
   60% {
     opacity: 0.9;
@@ -215,7 +259,22 @@ onBeforeUnmount(() => {
   }
   100% {
     opacity: 0;
-    top: 0px;
+    top: 0;
+  }
+}
+
+@keyframes vs {
+  0% {
+    rotate: 20deg;
+    scale: 600%;
+  }
+  80% {
+    scale: 90%;
+    rotate: -10deg;
+  }
+  100% {
+    rotate: 0deg;
+    scale: 100%;
   }
 }
 
@@ -224,17 +283,39 @@ onBeforeUnmount(() => {
   .battle-status.mobile-menu-open {
     flex-direction: column;
   }
+
+  .battle-status {
+    .side {
+      flex-basis: auto;
+      flex-direction: column-reverse;
+      .side-row {
+        flex-direction: row;
+      }
+      &.evil {
+        flex-direction: column;
+        .side-row {
+          flex-direction: row;
+        }
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 800px) {
   .battle-status {
     flex-direction: column;
-  }
-}
-
-@media screen and (max-width: 420px) {
-  .battle-status {
-    flex-direction: column;
+    .side {
+      flex-direction: column-reverse;
+      .side-row {
+        flex-direction: column-reverse;
+      }
+      &.evil {
+        flex-direction: column;
+        .side-row {
+          flex-direction: column;
+        }
+      }
+    }
   }
 }
 
