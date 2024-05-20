@@ -64,11 +64,17 @@ import { USER_GESTURE_EVENTS } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
+import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
 const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 const { triggerResize } = useWindowHandler()
 const { saveOptions } = useLocalStorageHandler()
+
+const { cmd } = useWebSocket()
+
+let moveTimeout = null
+
 
 function openGameModal () {
   setMode('modal')
@@ -147,6 +153,70 @@ function startAudioContext (ev) {
   }
 }
 
+function move (dir) {
+  if (moveTimeout) {
+    return
+  }
+
+  let { room } = state.gameState
+  if (!room || !room.exits.includes(dir)) {
+    return
+  }
+  cmd(dir)
+
+  moveTimeout = setTimeout(() => {
+    moveTimeout = null
+  }, 100)
+}
+
+function enter () {
+  if (moveTimeout) {
+    return
+  }
+
+  let { room } = state.gameState
+  if (!room || !room.canEnter) {
+    return
+  }
+  cmd('enter')
+
+  moveTimeout = setTimeout(() => {
+    moveTimeout = null
+  }, 100)
+}
+
+function moveNorth () {
+  move('north')
+}
+
+function moveSouth () {
+  move('south')
+}
+
+function moveEast () {
+  move('east')
+}
+
+function moveWest () {
+  move('west')
+}
+
+function moveNorthEast () {
+  move('northeast')
+}
+
+function moveNorthWest () {
+  move('northwest')
+}
+
+function moveSouthEast () {
+  move('southeast')
+}
+
+function moveSouthWest () {
+  move('southwest')
+}
+
 let watchers = []
 onMounted(() => {
   state.inputEmitter.on('openGameModal', openGameModal)
@@ -156,6 +226,16 @@ onMounted(() => {
   state.inputEmitter.on('openInventory', openInventory)
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.inputEmitter.on('moveNorth', moveNorth)
+  state.inputEmitter.on('moveSouth', moveSouth)
+  state.inputEmitter.on('moveEast', moveEast)
+  state.inputEmitter.on('moveWest', moveWest)
+  state.inputEmitter.on('moveNorthEast', moveNorthEast)
+  state.inputEmitter.on('moveNorthWest', moveNorthWest)
+  state.inputEmitter.on('moveSouthEast', moveSouthEast)
+  state.inputEmitter.on('moveSouthWest', moveSouthWest)
+  state.inputEmitter.on('enter', enter)
 
   window.addEventListener('resize', triggerResize)
   window.addEventListener('focus', onWindowFocusBlur)
@@ -184,6 +264,16 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.inputEmitter.off('moveNorth', moveNorth)
+  state.inputEmitter.off('moveSouth', moveSouth)
+  state.inputEmitter.off('moveEast', moveEast)
+  state.inputEmitter.off('moveWest', moveWest)
+  state.inputEmitter.off('moveNorthEast', moveNorthEast)
+  state.inputEmitter.off('moveNorthWest', moveNorthWest)
+  state.inputEmitter.off('moveSouthEast', moveSouthEast)
+  state.inputEmitter.off('moveSouthWest', moveSouthWest)
+  state.inputEmitter.off('enter', enter)
 
   for (let eventName of USER_GESTURE_EVENTS) {
     window.removeEventListener(eventName, startAudioContext)

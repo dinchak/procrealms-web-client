@@ -19,10 +19,8 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
 import { NIcon } from 'naive-ui'
 
-import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/static/state'
 
 import NorthOutlined from '@vicons/material/NorthOutlined'
@@ -34,42 +32,6 @@ import NorthEastOutlined from '@vicons/material/NorthEastOutlined'
 import NorthWestOutlined from '@vicons/material/NorthWestOutlined'
 import SouthEastOutlined from '@vicons/material/SouthEastOutlined'
 import SouthWestOutlined from '@vicons/material/SouthWestOutlined'
-
-const { cmd } = useWebSocket()
-
-let moveTimeout = null
-
-function move (dir) {
-  if (moveTimeout) {
-    return
-  }
-
-  let { room } = state.gameState
-  if (!room || !room.exits.includes(dir)) {
-    return
-  }
-  cmd(dir)
-
-  moveTimeout = setTimeout(() => {
-    moveTimeout = null
-  }, 100)
-}
-
-function enter () {
-  if (moveTimeout) {
-    return
-  }
-
-  let { room } = state.gameState
-  if (!room || !room.canEnter) {
-    return
-  }
-  cmd('enter')
-
-  moveTimeout = setTimeout(() => {
-    moveTimeout = null
-  }, 100)
-}
 
 function getMovementClass (dir) {
   let { room } = state.gameState
@@ -97,61 +59,6 @@ function getEnterClass () {
   }
 }
 
-function moveNorth () {
-  move('north')
-}
-
-function moveSouth () {
-  move('south')
-}
-
-function moveEast () {
-  move('east')
-}
-
-function moveWest () {
-  move('west')
-}
-
-function moveNorthEast () {
-  move('northeast')
-}
-
-function moveNorthWest () {
-  move('northwest')
-}
-
-function moveSouthEast () {
-  move('southeast')
-}
-
-function moveSouthWest () {
-  move('southwest')
-}
-
-onMounted(() => {
-  state.inputEmitter.on('moveNorth', moveNorth)
-  state.inputEmitter.on('moveSouth', moveSouth)
-  state.inputEmitter.on('moveEast', moveEast)
-  state.inputEmitter.on('moveWest', moveWest)
-  state.inputEmitter.on('moveNorthEast', moveNorthEast)
-  state.inputEmitter.on('moveNorthWest', moveNorthWest)
-  state.inputEmitter.on('moveSouthEast', moveSouthEast)
-  state.inputEmitter.on('moveSouthWest', moveSouthWest)
-  state.inputEmitter.on('enter', enter)
-})
-
-onBeforeUnmount(() => {
-  state.inputEmitter.off('moveNorth', moveNorth)
-  state.inputEmitter.off('moveSouth', moveSouth)
-  state.inputEmitter.off('moveEast', moveEast)
-  state.inputEmitter.off('moveWest', moveWest)
-  state.inputEmitter.off('moveNorthEast', moveNorthEast)
-  state.inputEmitter.off('moveNorthWest', moveNorthWest)
-  state.inputEmitter.off('moveSouthEast', moveSouthEast)
-  state.inputEmitter.off('moveSouthWest', moveSouthWest)
-  state.inputEmitter.off('enter', enter)
-})
 </script>
 
 <style lang="less">
