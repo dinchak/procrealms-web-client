@@ -22,12 +22,12 @@
         </div>
       </div>
 
-      <div class="target-row">
+      <div class="target-row" v-if="participant.hpPercent > 0">
         <div v-if="participant.targetName" v-html-safe="ansiToHtml(`Target: ${getTarget(participant)}`)"></div>
       </div>
     </div>
 
-    <div class="vital-area">
+    <div class="vital-area" v-if="participant.hpPercent > 0">
       <div class="vital-row">
         <div class="vital-amount bold-green">
           {{ entity && side === 'good' ? entity.hp : `${participant.hpPercent}%` }}
@@ -113,14 +113,12 @@ const isPlayerTarget = (participant) => {
 }
 
 const isTargetingPlayer = (participant) => {
-  console.debug(state)
   if (!participant.targetName) return false
   const name = stripAnsi(participant.targetName)
   return name === 'You'
 }
 
 const getClass = computed(() => {
-  console.debug(side.value)
   return {
     'dead': participant.value.hpPercent === 0,
     'selectable': participant.value.hpPercent > 0,
@@ -141,7 +139,6 @@ function getAffects (participant) {
   }
 
   affects = affects.concat(participant.affects)
-  console.debug(affects.map(s => ansiToHtml(s)))
   affects = affects.map(s => ansiToHtml(s))
 
   return affects
@@ -215,7 +212,6 @@ function getTarget (participant) {
       justify-content: space-between;
       align-items: flex-start;
       gap: 15px;
-      margin: 0 0 6px;
     }
 
     .affect-row {
@@ -250,6 +246,7 @@ function getTarget (participant) {
 
   .target-row {
     min-height: 36px;
+    margin: 6px 0 0;
   }
 
   .vital-area {
