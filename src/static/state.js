@@ -191,8 +191,8 @@ function resetOptions () {
     showMobileMenuMoveControls: true,
 
     // map options
-    sideMapWidth: 50,
-    sideMapHeight: 50,
+    sideMapWidth: 25,
+    sideMapHeight: 25,
 
     // interface options
     showMinimap: false,
