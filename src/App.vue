@@ -135,16 +135,6 @@ body, html {
 #app {
   height: 100vh;
   font-size: 16px;
-
-  &.font-18 {
-    font-size: 18px;
-  }
-  &.font-16 {
-    font-size: 16px;
-  }
-  &.font-14 {
-    font-size: 14px;
-  }
 }
 
 .red, .ansi-red-fg { color: #c50f1f; }
