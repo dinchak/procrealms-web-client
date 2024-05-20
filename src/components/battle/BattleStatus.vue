@@ -64,6 +64,7 @@ function getBattleStatusClass () {
 }
 
 function getParticipants (side) {
+  console.debug(side, Object.values(state.gameState.battle.participants).filter(p => p.side == side))
   return Object.values(state.gameState.battle.participants).filter(p => p.side == side)
 }
 
@@ -90,10 +91,9 @@ function getRows (side) {
   const perRow = getParticipantsPerRow();
 
   const len = getParticipants(side).length
-  const rest = len % perRow
-  const lenMinusRest = len - rest
-  const rows = lenMinusRest / perRow
+  const rows = Math.ceil(len / perRow)
 
+  console.debug(side, rows)
   return Math.max(1, rows) // To ward off against 3 participants returning 0 rows.
 }
 
