@@ -94,7 +94,6 @@ function getRows (side) {
   const len = getParticipants(side).length
   const rows = Math.ceil(len / perRow)
 
-  console.debug(side, rows)
   return Math.max(1, rows) // To ward off against 3 participants returning 0 rows.
 }
 

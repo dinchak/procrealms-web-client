@@ -116,10 +116,10 @@ export function resetState () {
   state.mode = 'hotkey'
   state.prevModes = ['login']
   state.pendingRequests = {}
-  state.inputMappings = resetInputMappings()
   state.cache = resetCache()
   state.gameState = resetGameState()
-  state.options = resetOptions()
+  // state.inputMappings = resetInputMappings()
+  // state.options = resetOptions() // Do not reset the GUI on reconnect
   state.output = []
   state.chat = []
   state.trade = []
@@ -217,6 +217,7 @@ function resetOptions () {
 }
 
 export function authenticationSuccess ({ name, token }) {
+  console.debug("authSuccess");
   state.name = name
   state.token = token
   state.disconnected = false
