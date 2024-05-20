@@ -3,7 +3,7 @@
     <div class="center-hud" :style="{ height: getHUDHeight() }">
       <MiniMap v-if="state.options.showMinimap"></MiniMap>
       <HUDRoomInfo v-if="state.options.showRoomInfo"></HUDRoomInfo>
-      <HUDAffects v-if="state.options.showAffects"></HUDAffects>
+      <HUDEffects v-if="state.options.showEffects"></HUDEffects>
       <HUDQuests v-if="state.options.showQuests"></HUDQuests>
     </div>
   </div>
@@ -12,7 +12,7 @@
 <script setup>
 import { state, showHUD, getHUDHeight } from '@/static/state'
 
-import HUDAffects from '@/components/hud/HUDAffects.vue'
+import HUDEffects from '@/components/hud/HUDEffects.vue'
 import HUDQuests from '@/components/hud/HUDQuests.vue'
 import HUDRoomInfo from '@/components/hud/HUDRoomInfo.vue'
 import MiniMap from '@/components/common/MiniMap.vue'

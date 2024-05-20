@@ -1,50 +1,50 @@
 <template>
   <div class="interface-overlay">
     <div class="interface">
-      <n-icon 
+      <NIcon 
         title="Settings"
         :class="state.settingsMode ? 'active' : ''"
         size="24"
         @click="toggleSettings"
       >
         <SettingsFilled />
-      </n-icon>
+      </NIcon>
 
-      <n-icon 
+      <NIcon 
         title="Music Player"
         :class="state.options.showMusicPlayer ? 'active' : ''"
         size="24"
         @click="toggleMusicPlayer"
       >
         <MusicNoteOutlined/>
-      </n-icon>
+      </NIcon>
 
-      <n-icon 
+      <NIcon 
         title="Game Menu"
         :class="state.modals.gameModal ? 'active' : ''"
         size="24"
         @click="toggleGameModal"
       >
         <AssessmentOutlined/>
-      </n-icon>
+      </NIcon>
 
-      <n-icon
+      <NIcon
         title="Help"
         :class="state.modals.helpModal ? 'active' : ''"
         size="24"
         @click="toggleHelp"
       >
         <QuestionMarkOutlined/>
-      </n-icon>
+      </NIcon>
       
-      <n-icon
+      <NIcon
         title="Sidebar"
         :class="state.options.showMobileMenu ? 'active' : ''"
         size="24"
         @click="state.options.showMobileMenu = !state.options.showMobileMenu"
       >
         <MenuOutlined />
-      </n-icon>
+      </NIcon>
     </div>
 
     <SettingsOverlay v-if="state.settingsMode" />

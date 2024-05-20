@@ -7,9 +7,9 @@
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDownTab('output')">
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
         More
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
       </div>
     </n-tab-pane>
 
@@ -24,9 +24,9 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.chat" class="scrollback-control" @click="scrollDownTab('chat')">
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
         More
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
       </div>
     </n-tab-pane>
 
@@ -41,9 +41,9 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDownTab('trade')">
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
         More
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
       </div>
     </n-tab-pane>
 
@@ -58,9 +58,9 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDownTab('newbie')">
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
         More
-        <n-icon><SouthOutlined></SouthOutlined></n-icon>
+        <NIcon><SouthOutlined></SouthOutlined></NIcon>
       </div>
     </n-tab-pane>
   </n-tabs>
