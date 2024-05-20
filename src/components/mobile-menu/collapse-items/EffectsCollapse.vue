@@ -1,28 +1,49 @@
 <template>
-  <n-collapse-item title="Effects">
+  <NCollapseItem title="Effects">
     <div class="effects">
       <div v-if="effects().length == 0">You are not affected by anything.</div>
+
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
+
       <div class="effect" v-for="effect in effects()" :key="effect.name">
-        <n-progress type="line" status="default" :percentage="getEffectPercentage(effect)" v-if="!isHiredEffect(effect)">
-          <div v-html-safe="getEffectName(effect)"></div>
-        </n-progress>
+        <div class="effect-name" v-html-safe="getEffectName(effect)"></div>
+        <NProgress 
+          v-if="effect.name != 'charm'"
+          type="line"
+          :status="progressStatus(getEffectPercentage(effect))" 
+          :percentage="getEffectPercentage(effect)"
+          :border-radius="0"
+          :show-indicator="false"
+          :height="4"
+        >
+        </NProgress>
         <div v-if="effect.desc">{{ effect.desc }}</div>
         <div class="effect-bonuses">
-          <div class="effect-bonus" v-for="(bonus, i) in getEffectBonuses(effect)" :key="`bouns-${i}`" v-html-safe="bonus"></div>
+          <div
+            class="effect-bonus"
+            v-for="{ name, value } in effectBonuses(effect)"
+            :key="name"
+          >
+            <div class="effect-bonus-value bold-white" v-html-safe="(value > 0 ? '+' : '') + value"></div>
+            <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
+          </div>
         </div>
       </div>
     </div>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>
-import { NProgress, NCollapseItem } from 'naive-ui'
-import { useHelpers } from '@/composables/helpers'
 import { defineProps } from 'vue'
+import { NProgress, NCollapseItem } from 'naive-ui'
+
+import { ITEM_EFFECTS } from '@/static/constants'
+
+import { useHelpers } from '@/composables/helpers'
+
+const { ansiToHtml, progressStatus, effectBonuses } = useHelpers()
 
 const props = defineProps(['affects', 'isPlayer'])
-const { ansiToHtml } = useHelpers()
 
 function effects () {
   return props.affects || []
@@ -33,56 +54,62 @@ function getEffectName (effect) {
 }
 
 function getEffectPercentage (effect) {
-  if (effect.timeLeft > 60) {
-    return 100
-  }
-
-  return effect.timeLeft / 60 * 100
+  return effect.timeLeft / effect.totalTimeLeft * 100
 }
 
-function getEffectBonuses (effect) {
-  let bonuses = []
-
-  if (effect.charges) {
-    bonuses.push(`${effect.charges} charges remaining`)
+function getEffectBonusLabel (bonus) {
+  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
+  if (itemEffect) {
+    return itemEffect.label
   }
-
-  if (effect.healOverTime) {
-    let { healLow, healHigh } = effect.healOverTime
-    bonuses.push(`Heals ${healLow.toFixed(0)} - ${healHigh.toFixed(0)} every ${effect.triggerTime}s`)
-  }
-
-  if (effect.damageOverTime) {
-    let { damLow, damHigh, damageType } = effect.damageOverTime
-    bonuses.push(`Deals ${damLow.toFixed(0)} - ${damHigh.toFixed(0)} ${damageType} damage every ${effect.triggerTime}s`)
-  }
-
-  bonuses = bonuses.concat(effect.bonuses.map( ({ name, value }) => {
-    return `${value > 0 ? '+' : ''}${value} ${name}`
-  }))
-  return bonuses
 }
 
-function isHiredEffect(effect) {
-  return effect.longFlag && effect.longFlag.includes("Hired")
+function getEffectBonusLabelClass (bonus) {
+  let classes = ['effect-bonus-label']
+  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
+  if (itemEffect) {
+    classes.push(itemEffect.color)
+  }
+  return classes.join(' ')
 }
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .effects {
   .effect {
     white-space: pre-wrap;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
+    .effect-name {
+      font-size: 16px;
+    }
     .effect-bonuses {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      justify-content: space-between;
       width: 100%;
+      .effect-bonus {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 10px;
+        .effect-bonus-label {
+          padding: 2px 5px;
+          border-radius: 5px;
+          &.success {
+            background-color: #3F3;
+          }
+          &.warning {
+            background-color: #FF3;
+          }
+          &.error {
+            background-color: #F33;
+          }
+        }
+      }
     }
     .hired {
       width: 100%;

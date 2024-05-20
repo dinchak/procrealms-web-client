@@ -1,62 +1,78 @@
 <template>
-  <div class="affects" :style="{ height: getHUDHeight() + 'px' }">
-    <div class="affect" v-if="Object.values(state.gameState.affects).length == 0">
-      <div class="name">No affects</div>
+  <div class="effects" :style="{ height: getHUDHeight() + 'px' }">
+    <div class="effect" v-if="Object.values(state.gameState.affects).length == 0">
+      <div class="name">No effects</div>
     </div>
 
-    <div class="affect" v-for="affect in Object.values(state.gameState.affects)" :key="affect.name">
-      <div class="name" v-html-safe="affect.longFlag ? ansiToHtml(ANSI.reset + affect.longFlag) : ansiToHtml(ANSI.reset + affect.name)"></div>
+    <NCollapse>
+      <NCollapseItem class="effect"
+        v-for="effect in Object.values(state.gameState.affects)"
+        :key="effect.name"
+      >
+        <template #header>
+          <div class="effects-header">
+            <div class="name" v-html-safe="getEffectName(effect)"></div>
+            <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
+              v-show="typeof effect.timeLeft == 'number'"
+              :status="progressStatus(getTimeLeftPercentage(effect))" :percentage="getTimeLeftPercentage(effect)"
+            />
+          </div>
+        </template>
 
-      <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
-        v-show="typeof affect.timeLeft == 'number'"
-        :status="getTimeLeftColor(affect)" :percentage="getTimeLeftPercentage(affect)" />
-
-      <!-- <div class="desc" v-show="affect.desc" v-html-safe="ansiToHtml(ANSI.reset + affect.desc)"></div> -->
-
-      <div class="bonuses">
-
-        <!-- <div class="bonus" v-for="bonus in affect.bonuses" :key="bonus.name">
-          <div class="value">{{ (bonus.value > 0 ? '+' : '') + bonus.value }}</div>
-          <div class="label">{{ bonus.name }}</div>
+        <div class="effect-bonuses">
+          <div
+            class="effect-bonus"
+            v-for="{ name, value } in effectBonuses(effect)"
+            :key="name"
+          >
+            <div class="effect-bonus-value bold-white" v-html-safe="(value > 0 ? '+' : '') + value"></div>
+            <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
+          </div>
         </div>
-    -->
-        <div v-show="affect.charges" class="bonus">
-          <div class="value">{{ affect.charges }}</div>
-          <div class="label">charges</div>
-        </div>
-      </div>
-    </div>
+      </NCollapseItem>
+    </NCollapse>
   </div>
 </template>
 
 <script setup>
-import { NProgress } from 'naive-ui'
+import { NProgress, NCollapse, NCollapseItem } from 'naive-ui'
 
 import { state, getHUDHeight } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
-import { ANSI } from '@/static/constants'
+import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, progressStatus, effectBonuses } = useHelpers()
 
-function getTimeLeftPercentage (affect) {
-  return affect.timeLeft / affect.totalTimeLeft * 100
+function getEffectName (effect) {
+  return effect.longFlag ?
+    ansiToHtml(ANSI.reset + effect.longFlag) :
+    ansiToHtml(ANSI.reset + effect.name)
 }
 
-function getTimeLeftColor (affect) {
-  if (affect.timeLeft / affect.totalTimeLeft > 0.5) {
-    return 'success'
-  }
-
-  if (affect.timeLeft / affect.totalTimeLeft > 0.25) {
-    return 'warning'
-  }
-
-  return 'error'
+function getTimeLeftPercentage (effect) {
+  return effect.timeLeft / effect.totalTimeLeft * 100
 }
+
+function getEffectBonusLabel (bonus) {
+  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
+  if (itemEffect) {
+    return itemEffect.label
+  }
+}
+
+function getEffectBonusLabelClass (bonus) {
+  let classes = ['effect-bonus-label']
+  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
+  if (itemEffect) {
+    classes.push(itemEffect.color)
+  }
+  return classes.join(' ')
+}
+
 </script>
 
 <style lang="less" scoped>
-.affects {
+.effects {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -64,32 +80,39 @@ function getTimeLeftColor (affect) {
   width: 100%;
   margin-right: 10px;
   
-  .affect {
+  .effect {
     display: flex;
     flex-direction: column;
     margin-bottom: 5px;
+    width: 100%;
     &:last-child {
       margin-bottom: 0;
       padding-bottom: 0;
       border-bottom: 0;
     }
 
-    .n-progress {
-      max-width: 200px;
-    }
-
-    .bonuses {
+    .effects-header {
+      width: 100%;
       display: flex;
       flex-direction: row;
-      .bonus {
+      align-items: center;
+      justify-content: space-between;
+      .n-progress {
+        width: 50px;
+      }
+    }
+
+    .effect-bonuses {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .effect-bonus {
         display: flex;
         flex-direction: row;
         align-items: center;
         margin-right: 10px;
-        .value {
+        .effect-bonus-value {
           margin-right: 5px;
-        }
-        .label {
         }
       }
     }
