@@ -11,7 +11,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-red">{{ player().strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
+              <span class="bold-red">{{ player()._strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('strength')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -25,7 +25,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-cyan">{{ player().magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
+              <span class="bold-cyan">{{ player()._magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('magic')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -135,7 +135,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-yellow">{{ player().agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
+              <span class="bold-yellow">{{ player()._agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('agility')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -149,7 +149,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-green">{{ player().spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
+              <span class="bold-green">{{ player()._spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('spirit')"><AddBoxOutlined></AddBoxOutlined></n-icon>
