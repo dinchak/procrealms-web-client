@@ -11,7 +11,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-red">{{ player().strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
+              <span class="bold-red">{{ player()._strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('strength')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -25,7 +25,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-cyan">{{ player().magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
+              <span class="bold-cyan">{{ player()._magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('magic')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -135,7 +135,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-yellow">{{ player().agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
+              <span class="bold-yellow">{{ player()._agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('agility')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -149,7 +149,7 @@
         <div class="col header">
           <div class="stat-header">
             <div class="stat-value">
-              <span class="bold-green">{{ player().spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
+              <span class="bold-green">{{ player()._spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
             </div>
             <div class="increase-stat">
               <n-icon class="add-point" v-if="player().abilityPoints > 0" @click="addStatPoint('spirit')"><AddBoxOutlined></AddBoxOutlined></n-icon>
@@ -285,8 +285,8 @@
         <div class="flex-row">
           <div class="left-label">Armor</div>
           <div class="left-value bold-white">{{ player().armor }}</div>
-          <div class="right-value bold-white">{{ player().armorAbsorbtion }}</div>
-          <div class="right-label">absorbtion</div>
+          <div class="right-value bold-white">{{ player().armorAbsorption }}</div>
+          <div class="right-label">absorption</div>
         </div>
       </div>
 
@@ -294,7 +294,7 @@
         <div class="flex-row">
           <div class="left-label">Speed</div>
           <div class="left-value bold-yellow">{{ player().speed }}</div>
-          <div class="right-value bold-green">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
+          <div class="right-value bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="white">s</span></div>
           <div class="right-label">recovery</div>
         </div>
       </div>
@@ -311,7 +311,7 @@
       <div class="combat-row">
         <div class="flex-row">
           <div class="left-label">Critical</div>
-          <div class="left-value bold-red">{{ renderNumber(player().critical) }}<span class="white">%</span></div>
+          <div class="left-value bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
           <div class="right-value bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
           <div class="right-label">multiplier</div>
         </div>
@@ -334,6 +334,29 @@
           <div class="right-label">followers</div>
         </div>
       </div>
+
+      <div class="combat-row" v-if="player().bonusSkeletons > 0">
+        <div class="flex-row">
+          <div class="left-label"></div>
+          <div class="left-value"></div>
+          <div class="right-value bold-magenta">
+            +{{ renderNumber(player().bonusSkeletons) }}
+          </div>
+          <div class="right-label">skeletons</div>
+        </div>
+      </div>
+
+      <div class="combat-row" v-if="player().bonusTamed > 0">
+        <div class="flex-row">
+          <div class="left-label"></div>
+          <div class="left-value"></div>
+          <div class="right-value yellow">
+            +{{ renderNumber(player().bonusTamed) }}
+          </div>
+          <div class="right-label">tamed</div>
+        </div>
+      </div>
+
     </div>
 
     <div class="spacer"></div>
@@ -402,7 +425,7 @@
         <div class="col">
           <div class="flex-row">
             <div class="value bold-yellow">
-              {{ renderNumber(player().xpBonus) }}<span class="white">%</span>
+              {{ renderNumber(player().xpGainBonus) }}<span class="white">%</span>
             </div>
             <div class="bonus">
               EXP Bonus
@@ -561,7 +584,6 @@ let watchers = []
 onMounted(async () => {
   watchers.push(
     watch(() => state.gameState.equipment, async () => {
-      console.log('equipment changed')
       setWeapon()
     })
   )
