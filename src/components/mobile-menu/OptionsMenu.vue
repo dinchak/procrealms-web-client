@@ -18,6 +18,11 @@
       <n-switch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side"></n-switch>
     </div>
 
+    <div class="option">
+      <label for="option-show-map-area">Show Movement Controls</label>
+      <n-switch id="option-show-map-area" v-model:value="state.options.showMobileMenuMoveControls" aria-label="Show Movement Controls"></n-switch>
+    </div>
+
     <h3>General</h3>
 
     <div class="option">
