@@ -236,12 +236,11 @@ function getSlotClass (slot) {
     margin-left: 1px;
     margin-right: 8px;
     overflow-x: scroll;
-    padding-bottom: 5px;
+    padding: 5px 0;
     &.mobile-layout-mode {
       margin-left: 1px;
       margin-right: 8px;
       overflow-x: initial;
-      padding-bottom: 15px;
       flex-wrap: wrap;
       justify-content: space-between;
       margin-right: 0;
@@ -257,7 +256,7 @@ function getSlotClass (slot) {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
+    gap: 0 5px;
     .quick-slot {
       background-color: #222;
       border: 1px solid #222;
@@ -269,7 +268,6 @@ function getSlotClass (slot) {
       justify-content: flex-start;
       transition: all 0.3s;
       color: #767676;
-      margin-right: 5px;
       border-radius: 4px;
       cursor: pointer;
       height: 45px;
