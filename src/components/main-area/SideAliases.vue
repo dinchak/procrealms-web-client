@@ -37,7 +37,7 @@ function getBottom () {
     bottomOffset += 56
   }
 
-  if (state.options.showPartyStats) {
+  if (state.options.showPartyStats && !state.gameState.battle.active) {
     bottomOffset += getPartyStatsHeight()
   }
 
