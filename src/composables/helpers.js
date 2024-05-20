@@ -365,12 +365,49 @@ export function useHelpers () {
     let lines = str.trim().split('\n')
     return lines.map((line) => ansiToHtml(line))
   }
+
+  function progressStatus (percentage) {
+    if (percentage > 50) {
+      return 'success'
+    }
+  
+    if (percentage > 25) {
+      return 'warning'
+    }
+  
+    return 'error'
+  }
+
+  function effectBonuses (effect) {
+    let bonuses = []
+  
+    if (effect.charges) {
+      bonuses.push({
+        value: `<span class="bold-white">${effect.charges}</span> charges remaining`
+      })
+    }
+  
+    if (effect.healOverTime) {
+      let { healLow, healHigh } = effect.healOverTime
+      bonuses.push({
+        value: `Heals <span class="bold-green">${healLow.toFixed(0)}</span>-<span class="bold-green">${healHigh.toFixed(0)}</span> every <span class="bold-yellow">${effect.triggerTime}</span>s`
+      })
+    }
+  
+    if (effect.damageOverTime) {
+      let { damLow, damHigh, damageType } = effect.damageOverTime
+      bonuses.push({
+        value: `Deals <span class="bold-red">${damLow.toFixed(0)}</span>-<span class="bold-red">${damHigh.toFixed(0)}</span> ${damageType} damage every <span class="bold-yellow">${effect.triggerTime}</span>s` })
+    }
+  
+    return bonuses.concat(effect.bonuses)
+  }  
   
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
-    calcMapSize, strToLines
+    calcMapSize, strToLines, progressStatus, effectBonuses
   }
 }

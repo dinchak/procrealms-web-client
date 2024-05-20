@@ -183,7 +183,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'agility',
     label: 'agility',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.1,
     minimum: 1,
     prefix: 'agile',
@@ -193,7 +193,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'strength',
     label: 'strength',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 0.1,
     minimum: 1,
     prefix: 'strong',
@@ -203,7 +203,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'magic',
     label: 'magic',
-    color: '{{C',
+    color: 'bold-cyan',
     multiplier: 0.1,
     minimum: 1,
     prefix: 'magical',
@@ -213,7 +213,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'spirit',
     label: 'spirit',
-    color: '{{G',
+    color: 'bold-green',
     multiplier: 0.1,
     minimum: 1,
     prefix: 'vigorous',
@@ -224,7 +224,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'magicFind',
     label: 'magic find',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.1,
     minimum: 2,
     prefix: false,
@@ -234,7 +234,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'speed',
     label: 'speed',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'quick',
@@ -245,7 +245,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'criticalMultiplier',
     label: 'critical multiplier',
-    color: '{{R',
+    color: 'bold-yellow',
     percent: true,
     multiplier: 0.001,
     minimum: 0.005,
@@ -256,7 +256,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'critical',
     label: 'critical',
-    color: '{{Y',
+    color: 'bold-yellow',
     percent: true,
     multiplier: 0.01,
     minimum: 0.05,
@@ -268,7 +268,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'spellCooldown',
     label: 'spell cooldown',
-    color: '{{C',
+    color: 'bold-cyan',
     multiplier: 0.005,
     minimum: 0.025,
     prefix: 'cooling',
@@ -278,7 +278,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'castingTime',
     label: 'casting time',
-    color: '{{C',
+    color: 'bold-cyan',
     multiplier: 0.002,
     minimum: 0.01,
     prefix: 'wizardly',
@@ -289,7 +289,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'magicDamage',
     label: 'magic damage',
-    color: '{{M',
+    color: 'bold-magenta',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'embuing',
@@ -300,7 +300,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'command',
     label: 'command',
-    color: '{{G',
+    color: 'bold-green',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'commanding',
@@ -310,7 +310,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'focus',
     label: 'focus',
-    color: '{{B',
+    color: 'bold-blue',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'focused',
@@ -322,7 +322,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'skillCooldown',
     label: 'skill cooldown',
-    color: '{{m',
+    color: 'bold-magenta',
     multiplier: 0.005,
     minimum: 0.025,
     prefix: 'refreshing',
@@ -333,7 +333,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'hp',
     label: 'hp',
-    color: '{{G',
+    color: 'bold-green',
     multiplier: 1,
     minimum: 5,
     prefix: 'healthy',
@@ -344,7 +344,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'energy',
     label: 'energy',
-    color: '{{W',
+    color: 'bold-white',
     multiplier: 0.4,
     minimum: 2,
     prefix: 'energized',
@@ -354,7 +354,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'stamina',
     label: 'stamina',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.4,
     minimum: 2,
     prefix: 'staminous',
@@ -364,7 +364,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'regeneration',
     label: 'regeneration',
-    color: '{{G',
+    color: 'bold-green',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'renewing',
@@ -374,7 +374,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'maxItems',
     label: 'max items',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'spacious',
@@ -384,7 +384,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'damage',
     label: 'damage',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'vicious',
@@ -394,7 +394,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'maxWeight',
     label: 'max weight',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 2,
     minimum: 10,
     prefix: 'light',
@@ -404,7 +404,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'maxItems',
     label: 'max items',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 0.5,
     minimum: 2,
     prefix: 'pocketed',
@@ -414,7 +414,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'armor',
     label: 'armor',
-    color: '{{W',
+    color: 'bold-white',
     multiplier: 2,
     minimum: 10,
     prefix: 'defensive',
@@ -424,7 +424,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'xpBonus',
     label: 'xp bonus',
-    color: '{{c',
+    color: 'cyan',
     percent: true,
     multiplier: 0.1,
     minimum: 2,
@@ -436,7 +436,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistFire',
     label: 'resist fire',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'heated',
@@ -446,7 +446,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistIce',
     label: 'resist ice',
-    color: '{{B',
+    color: 'bold-blue',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'frosted',
@@ -456,7 +456,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistElectric',
     label: 'resist electric',
-    color: '{{Y',
+    color: 'bold-yellow',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'sparking',
@@ -466,7 +466,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistArcane',
     label: 'resist arcane',
-    color: '{{C',
+    color: 'bold-cyan',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'shielding',
@@ -476,7 +476,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistHoly',
     label: 'resist holy',
-    color: '{{W',
+    color: 'bold-white',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'holy',
@@ -486,7 +486,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistPoison',
     label: 'resist poison',
-    color: '{{g',
+    color: 'green',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'curative',
@@ -496,7 +496,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistPiercing',
     label: 'resist piercing',
-    color: '{{r',
+    color: 'red',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'deflecting',
@@ -506,7 +506,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistSlashing',
     label: 'resist slashing',
-    color: '{{R',
+    color: 'bold-red',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'folded',
@@ -516,7 +516,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistBludgeoning',
     label: 'resist bludgeoning',
-    color: '{{y',
+    color: 'yellow',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'absorbing',
@@ -526,7 +526,7 @@ export const ITEM_EFFECTS = [
   {
     bonus: 'resistAcid',
     label: 'resist acid',
-    color: '{{G',
+    color: 'bold-green',
     multiplier: 0.2,
     minimum: 1,
     prefix: 'stainless',
