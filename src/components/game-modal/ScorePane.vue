@@ -114,7 +114,7 @@
       <NGi class="grid-item">
         <div class="ability-point">
           <div class="ability-point-value">
-            <span class="bold-red">{{ player().strength }}</span> <span class="black">+</span>
+            <span class="bold-red">{{ player()._strength }}</span> <span class="black">+</span>
             <span class="red">{{ player().strength - player()._strength }}</span>
           </div>
           <div class="ability-point-label bold-red">Strength</div>
@@ -151,7 +151,7 @@
       <NGi class="grid-item">
         <div class="ability-point">
           <div class="ability-point-value">
-            <span class="bold-yellow">{{ player().agility }}</span> <span class="black">+</span>
+            <span class="bold-yellow">{{ player()._agility }}</span> <span class="black">+</span>
             <span class="yellow">{{ player().agility - player()._agility }}</span>
           </div>
           <div class="ability-point-label bold-yellow">Agility</div>
@@ -186,7 +186,7 @@
       <NGi class="grid-item">
         <div class="ability-point">
           <div class="ability-point-value">
-            <span class="bold-cyan">{{ player().magic }}</span> <span class="black">+</span>
+            <span class="bold-cyan">{{ player()._magic }}</span> <span class="black">+</span>
             <span class="cyan">{{ player().magic - player()._magic }}</span>
           </div>
           <div class="ability-point-label bold-cyan">Magic</div>
@@ -221,7 +221,7 @@
       <NGi class="grid-item">
         <div class="ability-point">
           <div class="ability-point-value">
-            <span class="bold-green">{{ player().spirit }}</span> <span class="black">+</span>
+            <span class="bold-green">{{ player()._spirit }}</span> <span class="black">+</span>
             <span class="green">{{ player().spirit - player()._spirit }}</span>
           </div>
           <div class="ability-point-label bold-green">Spirit</div>
@@ -299,8 +299,8 @@
             <div class="label"><span :class="getDamageColor()">{{ ucfirst(getDamageType()) }}</span>/Round</div>
           </div>        
           <div class="row">
-            <div class="value bold-white">{{ player().armorAbsorbtion }}</div>
-            <div class="label">Damage Absorbtion</div>
+            <div class="value bold-white">{{ player().armorAbsorption }}</div>
+            <div class="label">Damage Absorption</div>
           </div>
           <div class="row">
             <div class="value bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="black">s</span></div>
@@ -322,6 +322,19 @@
             <div class="value"><span class="bold-green">{{ player().numCharmies }}</span><span class="black">/</span><span class="green">{{ player().maxCharmies }}</span></div>
             <div class="label">Charmed Followers</div>
           </div>
+          <div class="row" v-if="player().bonusSkeletons > 0">
+            <div class="value">
+              <span class="bold-magenta">+{{ player().bonusSkeletons }}</span>
+            </div>
+            <div class="label">Bonus Skeletons</div>
+          </div>
+          <div class="row" v-if="player().bonusTamed > 0">
+            <div class="value">
+              <span class="yellow">+{{ player().bonusTamed }}</span>
+            </div>
+            <div class="label">Bonus Tamed</div>
+          </div>
+
         </div>
       </NGi>
 
