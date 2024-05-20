@@ -64,8 +64,9 @@ function getBattleStatusClass () {
 }
 
 function getParticipants (side) {
-  console.debug(side, Object.values(state.gameState.battle.participants).filter(p => p.side == side))
-  return Object.values(state.gameState.battle.participants).filter(p => p.side == side)
+  let participants = Object.values(state.gameState.battle.participants).filter(p => p.side == side)
+  participants.sort((a, b) => a.sort < b.sort ? -1 : 1)
+  return participants
 }
 
 function getParticipantsPerRow () {
