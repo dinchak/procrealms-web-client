@@ -108,8 +108,4 @@ async function setOptions () {
 
 </script>
 
-<style lang="less" scoped>
-.order-dropdown {
-  margin-top: 5px;
-}
-</style>
+<style lang="less" scoped />
