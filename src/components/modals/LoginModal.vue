@@ -87,8 +87,8 @@ const rules = {
           let { cmd, msg } = await sendWithResponse('login', {
             name: model.value.name,
             password: model.value.password,
-            width: 100,
-            height: 24,
+            width: state.options.terminalWidth,
+            height: state.options.terminalHeight,
             ttype: 'play.proceduralrealms.com'
           })
 
