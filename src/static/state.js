@@ -4,6 +4,7 @@ import { EventEmitter } from 'events'
 import { loadSettingsByNameAndType } from '@/static/triggers'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
+import { DEFAULT_TERMINAL_SIZE } from '@/static/constants.js'
 
 const { addToken } = useLocalStorageHandler()
 
@@ -213,11 +214,14 @@ function resetOptions () {
     // font options
     fontFamily: 'Ubuntu Mono, monospace',
     fontSize: '16px',
+
+    // terminal size
+    terminalWidth: DEFAULT_TERMINAL_SIZE.width,
+    terminalHeight: DEFAULT_TERMINAL_SIZE.height,
   }
 }
 
 export function authenticationSuccess ({ name, token }) {
-  console.debug("authSuccess");
   state.name = name
   state.token = token
   state.disconnected = false

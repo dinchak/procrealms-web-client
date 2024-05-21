@@ -19,12 +19,12 @@ export function useWindowHandler () {
   function calcTerminalSize (outputWidth, outputHeight) {
     let output = document.getElementById('output')
     if (!output) {
-      return { width: 80, height: 25 }
+      return DEFAULT_TERMINAL_SIZE
     }
 
     let outputLine = output.querySelector('.line')
     if (!outputLine) {
-      return { width: 80, height: 25 }
+      return DEFAULT_TERMINAL_SIZE
     }
 
     let outputStyle = getComputedStyle(outputLine)
@@ -39,6 +39,8 @@ export function useWindowHandler () {
     let width = Math.floor(outputWidth  / charWidth)
     let height = Math.floor(outputHeight  / charHeight)
 
+    state.options.terminalWidth = width;
+    state.options.terminalHeight = height;
     return { width, height }
   }
 
