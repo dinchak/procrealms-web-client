@@ -204,6 +204,7 @@ function getTarget (participant) {
     .name-merc-col {
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
     }
 
     .affect-area {
