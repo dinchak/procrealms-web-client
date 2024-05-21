@@ -131,7 +131,7 @@ export function useWebSocket () {
 
   async function fetchEntity (eid, skipCache) {
     if (state.cache.entityCache[eid] && !skipCache) {
-      return new Promise((resolve) => resolve(state.cache.entityCache[eid].entity))
+      return state.cache.entityCache[eid].entity
     }
 
     const reqId = `entity-${eid}`
@@ -143,25 +143,19 @@ export function useWebSocket () {
   async function fetchEntities (eids) {
     let fetchEids = eids.filter(eid => !state.cache.entityCache[eid])
     if (!fetchEids.length) {
-      return new Promise((resolve) => {
-        let entities = []
-        for (let eid of eids) {
-          entities.push(state.cache.entityCache[eid].entity)
-        }
-        resolve(entities)
-      })
+      return eids.map(eid => state.cache.entityCache[eid].entity)
     }
 
     let { msg } = await sendWithResponse('entities', { eids: fetchEids })
     for (let entity of msg) {
       state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
     }
-    return msg
+    return eids.map(eid => state.cache.entityCache[eid].entity)
   }
 
   async function fetchItem (iid)  {
     if (state.cache.itemCache[iid]) {
-      return new Promise((resolve) => resolve(state.cache.itemCache[iid].item))
+      return state.cache.itemCache[iid].item
     }
 
     const reqId = `item-${iid}`
@@ -173,20 +167,16 @@ export function useWebSocket () {
   async function fetchItems (iids) {
     let fetchIids = iids.filter(iid => !state.cache.itemCache[iid])
     if (!fetchIids.length) {
-      return new Promise((resolve) => {
-        let items = []
-        for (let iid of iids) {
-          items.push(state.cache.itemCache[iid].item)
-        }
-        resolve(items)
-      })
+      return iids.map(iid => state.cache.itemCache[iid].item)
     }
 
     let { msg } = await sendWithResponse('items', { iids: fetchIids })
+
     for (let item of msg) {
       state.cache.itemCache[item.iid] = { item, date: Date.now() }
     }
-    return msg
+
+    return iids.map(iid => state.cache.itemCache[iid].item)
   }
 
   return {

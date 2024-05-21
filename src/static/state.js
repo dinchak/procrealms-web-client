@@ -7,6 +7,8 @@ import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 
 const { addToken } = useLocalStorageHandler()
 
+export const updateCounter = ref(0)
+
 export const state = reactive({
   connected: false,
   disconnected: false,

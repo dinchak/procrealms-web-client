@@ -34,10 +34,6 @@
           :isPlayer="false"
       ></InventoryCollapse>
       <EquipmentCollapse
-          :equipment="mercEquipment"
-          :character="mercEntity"
-          :isPlayer="false"
-          :affects="affects"
       ></EquipmentCollapse>
       <SkillsCollapse
           :character="mercEntity"

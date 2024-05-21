@@ -1,45 +1,86 @@
 <template>
-  <div class="inventory-item">
-      <n-popover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
-          <template #trigger >
-              <div v-html-safe="`L${props.level} ${props.amount}x ${ansiToHtml(props.colorName)}`" class="item-name"></div>
-          </template>
-          <div v-html-safe="`${ansiToHtml(props.description)}`" class="tooltip"></div>
-      </n-popover>
+  <div :class="getInventoryRowClass()">
+    <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false" :disabled="!item.description">
+      <template #trigger >
+        <div v-html-safe="ansiToHtml(getItemName())" class="item-name"></div>
+      </template>
+      <div v-html-safe="`${ansiToHtml(item.description)}`" class="tooltip"></div>
+    </NPopover>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-import { useHelpers } from '@/composables/helpers'
+import { defineProps, toRefs, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NPopover } from 'naive-ui'
 
-const { ansiToHtml } = useHelpers()
+import { ANSI } from '@/static/constants'
 
-const props = defineProps(['colorName', 'amount', 'level', 'description'])
+import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
+
+const { ansiToHtml } = useHelpers()
+const { fetchItem } = useWebSocket()
+
+const props = defineProps({
+  iid: String,
+  selected: Boolean
+})
+
+const { iid, selected } = toRefs(props)
+const item = ref({})
+
+function getItemName () {
+  if (!item.value) {
+    return ''
+  }
+
+  const { amount, colorName, level } = item.value
+  return `${ANSI.boldWhite}${amount}${ANSI.reset}x L${ANSI.boldWhite}${level} ${colorName}`
+}
+
+function getInventoryRowClass () {
+  let classes = ['inventory-row']
+  if (selected.value) {
+    classes.push('selected')
+  }
+  return classes.join(' ')
+}
+
+let watchers = []
+onMounted(async () => {
+  if (iid.value) {
+    item.value = await fetchItem(iid.value)
+  }
+
+  watchers.push(watch(() => iid.value, async () => {
+    if (iid.value) {
+      console.log(`fetch item, iid=${iid.value}`)
+      item.value = await fetchItem(iid.value)
+    } else {
+      item.value = {}
+    }
+  }))
+})
+
+onBeforeUnmount(() => {
+  watchers.forEach(w => w())
+})
 </script>
 
 <style scoped lang="less">
-  .inventory-item {
-    padding-bottom: 5px;
-    .item-name {
-      cursor: pointer;
-    }
+.inventory-row {
+  padding: 5px 10px;
+  user-select: none;
+  cursor: pointer;
+  &.selected {
+    background: #121;
   }
-
-  .actions {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 10px 0;
-    .action {
-      margin: 2px 2px;
-      text-transform: capitalize;
-    }
+  .item-name {
+    cursor: pointer;
   }
+}
 
-  .tooltip {
-    width: 200px;
-  }
-
+.tooltip {
+  width: 200px;
+}
 </style>

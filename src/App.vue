@@ -109,10 +109,10 @@ onBeforeUnmount(() => {
   --n-label-font-size: 16px;
 }
 
-.selected {
-  box-shadow: 0 0 5px #f8ff25;
-  color: #f8ff25;
-}
+// .selected {
+//   box-shadow: 0 0 5px #f8ff25;
+//   color: #f8ff25;
+// }
 
 body, html {
   margin: 0;
