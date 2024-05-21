@@ -72,7 +72,11 @@ let tokens = ref([])
 
 async function doTokenAuth (name, token) {
   let { cmd, msg } = await sendWithResponse('token', {
-    name, token, width: 70, height: 24, ttype: 'play.proceduralrealms.com'
+    name,
+    token,
+    width: state.options.terminalWidth,
+    height: state.options.terminalHeight,
+    ttype: 'play.proceduralrealms.com'
   })
 
   if (cmd == 'login.validationFailed') {

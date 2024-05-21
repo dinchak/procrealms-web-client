@@ -718,3 +718,8 @@ export const MUSIC_TRACKS = [{
   name: 'Whispers of the Wild',
   url: '/music/Whispers of the Wild.mp3',
 }]
+
+export const DEFAULT_TERMINAL_SIZE = {
+  width: 80,
+  height: 25,
+}
