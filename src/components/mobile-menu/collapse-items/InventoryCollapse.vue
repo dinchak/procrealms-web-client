@@ -1,48 +1,53 @@
 <template>
   <NCollapseItem title="Inventory" class="inventory-dropdown">
     <div class="money" v-html-safe=copperToMoneyString(getMoney())></div>
+
     <div class="limits">
       <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
       <div class="weight">{{getWeight()}}/{{getMaxWeight()}} lbs</div>
     </div>
+
     <div v-if="items.length !== 0" class="inventory-items">
       <div class="search">
-        <n-input v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus" placeholder="Search"></n-input>
-      </div>
-      <div class="sorting">
-        <span>Sort by </span>
-        <n-popselect v-model:value="value" :options="options">
-          <span class="dropdown">{{value}}</span>
-        </n-popselect>
+        <NInput v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus" placeholder="Search"></NInput>
       </div>
 
-      <InventoryRow v-for="item in filteredItems" :key="item.iid" v-bind="item" v-on:click="clickHandler(item)" :isPlayer="props.isPlayer"></InventoryRow>
+      <div class="sorting">
+        <span>Sort by </span>
+        <NPopselect v-model:value="value" :options="options">
+          <span class="dropdown">{{value}}</span>
+        </NPopselect>
+      </div>
+
+      <InventoryRow
+        v-for="item in filteredItems"
+        :key="item.iid"
+        :iid="item.iid"
+        :selected="getSelected(item.iid)"
+        v-on:click="clickHandler(item.iid)"
+      ></InventoryRow>
+
       <ItemModal
-          :visible="isModalOpen"
-          :isPlayer="props.isPlayer"
-          :item="clickedItem"
-          :charEId="props.character.eid"
-          :name="props.character.name"
-          :affects="props.affects"
-          menu="inventory"
+        :item="items.find(item => item.iid === selectedIid)"
+        mode="inventory"
       ></ItemModal>
     </div>
   </NCollapseItem>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, defineProps } from 'vue'
+import { ref, watch, onMounted, defineProps, onBeforeUnmount } from 'vue'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
-
-import { state, setMode, prevMode } from '@/static/state'
-import { useWebSocket } from '@/composables/web_socket'
-import { useHelpers } from '@/composables/helpers'
-import { COMMAND_IDS } from '@/static/constants'
 
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'
 
-const { fetchItems, cmd } = useWebSocket()
+import { setMode, prevMode, updateCounter } from '@/static/state'
+
+import { useWebSocket } from '@/composables/web_socket'
+import { useHelpers } from '@/composables/helpers'
+
+const { fetchItems } = useWebSocket()
 const { copperToMoneyString } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'affects', 'menu'])
@@ -52,8 +57,8 @@ const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
 const clickedItem = ref({})
-const isModalOpen = ref(0)
 const value = ref('name')
+const selectedIid = ref('')
 
 const options = [
   {
@@ -82,21 +87,34 @@ const options = [
   }
 ]
 
+let watchers = []
 onMounted(() => {
   setItems(props.inventory)
 
-  watch(() => props.inventory, () => {
+  watchers.push(watch(() => props.inventory, () => {
     setItems(props.inventory)
-  })
+  }))
 
-  watch(searchTerm, () => {
+  watchers.push(watch(searchTerm, () => {
     setItems(props.inventory)
-  })
+  }))
 
-  watch(value, () => {
+  watchers.push(watch(updateCounter, () => {
+    setItems(props.inventory)
+  }))
+
+  watchers.push(watch(value, () => {
     filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
-  })
+  }))
 })
+
+onBeforeUnmount(() => {
+  watchers.forEach(w => w())
+})
+
+function getSelected (iid) {
+  return selectedIid.value === iid
+}
 
 async function setItems (itemIIDs) {
   items.value = await fetchItems(itemIIDs)
@@ -107,28 +125,16 @@ async function setItems (itemIIDs) {
       item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
       (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
       .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+}
 
-  if (isModalOpen.value) {
-    items.value.map(item => {
-      if (item.name === clickedItem.value.name && item.iid !== clickedItem.value.iid) {
-        clickedItem.value = item
-      }
-    })
+function clickHandler (iid) {
+  if (selectedIid.value && selectedIid.value == iid) {
+    selectedIid.value = ''
+  } else {
+    selectedIid.value = iid
   }
 }
 
-function clickHandler(item) {
-  clickedItem.value = item
-  isModalOpen.value++
-  props.isPlayer ? state.modals.inventoryModals.playerItemModal = "inventory" : state.modals.inventoryModals.mercItemModal = "inventory"
-
-  const commandCacheKey = COMMAND_IDS.EXAMINE + item.iid.toString()
-
-  const mercOrder = props.isPlayer ? '' : `order eid:${props.character.eid} `
-  cmd(`${mercOrder}examine iid:${item.iid}`, commandCacheKey)
-}
-
-// Setters
 function onFocus() {
   setMode('input')
 }
@@ -136,8 +142,6 @@ function onFocus() {
 function onBlur() {
   prevMode()
 }
-
-// Getters
 
 function getMoney() {
   return props.character.money || 0

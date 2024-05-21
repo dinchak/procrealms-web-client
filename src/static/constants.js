@@ -151,13 +151,6 @@ export const DIRECTION_MAP = {
   8: 'northeast'
 }
 
-export const COMMAND_IDS = {
-  EXAMINE: '1000',
-  COMPARE: '1001',
-  MAP: '1002',
-  MERC_ACTION: '1003'
-}
-
 export const CHANNEL_COLORS = {
   chat: 'bold-yellow',
   trade: 'bold-green',

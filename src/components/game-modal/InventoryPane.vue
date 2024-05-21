@@ -44,15 +44,17 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NInput } from 'naive-ui'
-import { state, getOrderCmd } from '@/static/state'
-import { useHelpers } from '@/composables/helpers'
-import { useWebSocket } from '@/composables/web_socket'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
 
-const { ansiToHtml, copperToMoneyString } = useHelpers()
-const { fetchItems, fetchItem, cmd } = useWebSocket()
+import { state } from '@/static/state'
+
+import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
+
+const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
+const { fetchItems } = useWebSocket()
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -79,218 +81,6 @@ function selectItem (item) {
     return
   }
   selectedIid.value = item.iid
-}
-
-async function updateItem (iid) {
-  delete state.cache.itemCache[iid]
-  let oldItem = items.value[items.value.findIndex(i => i.iid == iid)]
-  let newItem = await fetchItem(iid)
-  items.value[items.value.findIndex(i => i.iid == iid)] = newItem
-  if (selectedIid.value == oldItem.iid) {
-    selectedIid.value = newItem.iid
-  }
-}
-
-function getActions (item) {
-  let actions = [{
-    label: 'Drop',
-    onClick: () => cmd(`${getOrderCmd()}drop iid:${item.iid}`),
-    class: 'bold-red',
-    disabled: false
-  }]
-
-  if (item.keeping) {
-    actions.push({
-      label: 'Unkeep',
-      onClick: () => {
-        cmd(`${getOrderCmd()}unkeep iid:${item.iid}`)
-        updateItem(item.iid)
-      },
-      class: 'bold-yellow',
-      disabled: false
-    })
-  } else {
-    actions.push({
-      label: 'Keep',
-      onClick: () => {
-        cmd(`${getOrderCmd()}keep iid:${item.iid}`)
-        updateItem(item.iid)
-      },
-      class: 'bold-green',
-      disabled: false
-    })
-  }
-
-  if (item.type == 'consumable') {
-    if (item.subtype == 'food') {
-      actions.push({
-        label: 'Eat',
-        onClick: () => cmd(`${getOrderCmd()}eat iid:${item.iid}`),
-        class: 'bold-green',
-        disabled: false
-      })
-    } else if (item.subtype == 'potion') {
-      actions.push({
-        label: 'Drink',
-        onClick: () => cmd(`${getOrderCmd()}drink iid:${item.iid}`),
-        class: 'bold-green',
-        disabled: false
-      })
-    } else {
-      actions.push({
-        label: 'Consume',
-        onClick: () => cmd(`${getOrderCmd()}consume iid:${item.iid}`),
-        class: 'bold-green',
-        disabled: false
-      })
-    }
-  }
-
-  if (state.gameState.room.flags.includes('store')) {
-    actions.push({
-      label: 'Sell',
-      onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
-      class: 'bold-green',
-      disabled: false
-    })
-  } else {
-    actions.push({
-      label: 'Sell',
-      onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
-      class: 'bold-green',
-      disabled: true
-    })
-  }
-
-  if (item.type == 'weapon') {
-    actions.push({
-      label: 'Wield',
-      onClick: () => cmd(`${getOrderCmd()}wield iid:${item.iid}`),
-      class: 'bold-red',
-      disabled: false
-    })
-  }
-
-  if (item.type == 'armor') {
-    actions.push({
-      label: 'Wear',
-      onClick: () => cmd(`${getOrderCmd()}wear iid:${item.iid}`),
-      class: 'bold-red',
-      disabled: false
-    })
-  }
-
-  if (item.type == 'weapon' || item.type == 'armor') {
-    actions.push({
-      label: 'Compare',
-      onClick: () => cmd(`${getOrderCmd()}compare iid:${item.iid}`),
-      class: 'bold-yellow',
-      disabled: false
-    })
-  }
-
-  if (item.type == 'weapon' || item.type == 'armor' || item.type == 'tool' || item.type == 'bag') {
-    if (hasSkillsRequired(item)) {
-      actions.push({
-        label: 'Salvage',
-        onClick: () => cmd(`${getOrderCmd()}salvage iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-      if (item.type == 'tool') {
-        actions.push({
-          label: 'Repair',
-          onClick: () => cmd(`${getOrderCmd()}repair iid:${item.iid}`),
-          class: 'bold-yellow',
-          disabled: false
-        })
-      }
-    }
-  }
-
-  if (item.type == 'material') {
-    if (item.subtype == 'hide') {
-      actions.push({
-        label: 'Tan',
-        onClick: () => cmd(`${getOrderCmd()}tan iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-    
-    if (item.subtype == 'seed') {
-      actions.push({
-        label: 'Plant',
-        onClick: () => cmd(`${getOrderCmd()}plant iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-
-    if (item.subtype == 'bandage') {
-      actions.push({
-        label: 'Wrap',
-        onClick: () => cmd(`${getOrderCmd()}wrap iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-
-    if (item.subtype == 'fish') {
-      actions.push({
-        label: 'Filet',
-        onClick: () => cmd(`${getOrderCmd()}filet iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-  }
-
-  if (item.type == 'book' || item.type == 'scroll') {
-    actions.push({
-      label: 'Read',
-      onClick: () => cmd(`${getOrderCmd()}read iid:${item.iid}`),
-      class: 'bold-magenta',
-      disabled: false
-    })
-  }
-
-  if (item.type == 'tool') {
-    if (item.subtype == 'penned animal') {
-      actions.push({
-        label: 'Unpen',
-        onClick: () => cmd(`${getOrderCmd()}unpen iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-
-    if (item.subtype == 'deployable') {
-      actions.push({
-        label: 'Unpack',
-        onClick: () => cmd(`${getOrderCmd()}unpack iid:${item.iid}`),
-        class: 'bold-yellow',
-        disabled: false
-      })
-    }
-  }
-
-  return actions
-}
-
-function hasSkillsRequired (item) {
-  if (!item.skillsRequired || item.skillsRequired.length == 0) {
-    return false
-  }
-
-  for (let skill of item.skillsRequired) {
-    let playerSkill = state.gameState.skills[skill.name]
-    if (!playerSkill || playerSkill.level < skill.level) {
-      return false
-    }
-  }
-
-  return true
 }
 
 function getNumItems() {
@@ -366,11 +156,8 @@ onMounted(async () => {
   )
 })
 
-
 onBeforeUnmount(() => {
-  for (let watcher of watchers) {
-    watcher()
-  }
+  watchers.forEach(w => w())
   unwatchCharmieInventory()
 })
 </script>

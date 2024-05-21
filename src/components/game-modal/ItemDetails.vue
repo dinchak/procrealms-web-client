@@ -182,6 +182,10 @@ function getItemBonuses () {
 
   if (item.value.flags) {
     for (let flag of item.value.flags) {
+      if (!flag.bonuses) {
+        continue
+      }
+
       for (let bonus of flag.bonuses) {
         let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
         let row = bonuses.find(b => b.label == (itemEffect ? itemEffect.label : bonus.name))

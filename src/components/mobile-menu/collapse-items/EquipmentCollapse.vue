@@ -1,63 +1,79 @@
 <template>
-  <n-collapse-item title="Equipment" @click="updateEquipment()">
+  <NCollapseItem title="Equipment">
     <EquipmentRow
-      v-for="(iid, slot) in equipment"
+      v-for="{ iid, slot, label, color } in equipmentRows"
       :key="slot"
       :itemSlot="slot"
-      :item="getItem(iid)"
-      v-on:click="clickHandler(iid)"
+      :iid="iid"
+      :selected="selectedIid && selectedIid == iid"
+      v-on:click="clickHandler(iid, slot)"
     ></EquipmentRow>
     <ItemModal
-      :visible="selectedItem.iid"
-      :isPlayer="isPlayer"
-      :item="selectedItem"
-      :charEId="character.eid"
-      :name="character.name"
-      :affects="affects"
-      menu="equipment"
+      v-if="getEquipment()[selectedSlot]"
+      :item="item"
+      mode="equipment"
     ></ItemModal>
-  </n-collapse-item>
+  </NCollapseItem>
 </template>
 
 <script setup>
-import { ref, defineProps, toRefs } from 'vue'
+import { watch, ref, onMounted, onBeforeUnmount } from 'vue'
 import { NCollapseItem } from 'naive-ui'
-
-import { state } from "@/static/state"
 
 import EquipmentRow from '@/components/mobile-menu/collapse-items/EquipmentRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'
 
+import { state } from "@/static/state"
+import { equipmentLabels } from '@/static/constants'
+
 import { useWebSocket } from '@/composables/web_socket'
-const { fetchItems } = useWebSocket()
 
-const props = defineProps(['character', 'isPlayer', 'affects', 'equipment'])
-const { character, isPlayer, affects, equipment } = toRefs(props)
+const { fetchItem } = useWebSocket()
 
-const items = ref([])
-const selectedItem = ref({})
+const selectedIid = ref('')
+const selectedSlot = ref('')
+const equipmentRows = ref([])
+const item = ref({})
 
-function getItem (iid) {
-  return items.value.find(item => item.iid == iid)
+let watchers = []
+onMounted(() => {
+  equipmentRows.value = getEquipmentRows()
+  watchers.push(watch(() => state.gameState.equipment, () => {
+    equipmentRows.value = getEquipmentRows()
+  }))
+})
+
+onBeforeUnmount(() => {
+  watchers.forEach(w => w())
+})
+
+function getEquipment () {
+  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+    return state.gameState.charmies[state.gameModalAs].equipment
+  }
+  return state.gameState.equipment
 }
 
-async function updateEquipment () {
-  items.value = await fetchItems(Object.values(equipment.value))
+function getEquipmentRows () {
+  return equipmentLabels.map(({ label, slot, color }) => {
+    return { slot, label, color, iid: getEquipment()[slot] }
+  })
 }
 
-async function clickHandler (iid) {
+async function clickHandler (iid, slot) {
   if (!iid) {
     return
   }
 
-  if (isPlayer.value) {
-    state.modals.inventoryModals.playerItemModal = "equipment"
+  if (selectedIid.value && selectedIid.value == iid) {
+    selectedIid.value = ''
+    selectedSlot.value = ''
+    item.value = {}
   } else {
-    state.modals.inventoryModals.mercItemModal = "equipment"
+    selectedIid.value = iid
+    selectedSlot.value = slot
+    item.value = await fetchItem(iid)
   }
-
-  let item = items.value.find(item => item.iid == iid)
-  selectedItem.value = item
 }
 
 </script>

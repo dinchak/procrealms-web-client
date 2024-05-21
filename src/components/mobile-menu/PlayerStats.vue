@@ -34,10 +34,6 @@
       ></InventoryCollapse>
 
       <EquipmentCollapse
-        :equipment="state.gameState.equipment"
-        :character="state.gameState.player"
-        :isPlayer="true"
-        :affects="Object.values(state.gameState.affects)"
         tabindex="0"
       ></EquipmentCollapse>
 

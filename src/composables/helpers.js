@@ -1,6 +1,6 @@
 import { AnsiUp } from 'ansi_up'
 
-import { state } from '@/static/state'
+import { state, getOrderCmd, updateCounter } from '@/static/state'
 import { ACTION_MAP, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
@@ -8,7 +8,7 @@ import { useWebSocket } from '@/composables/web_socket'
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
-const { move, enter } = useWebSocket()
+const { cmd, move, enter, fetchItem } = useWebSocket()
 
 export function useHelpers () {
   function copperToMoneyString (amount, short) {
@@ -38,23 +38,211 @@ export function useHelpers () {
     return valueString
   }
 
-  function getActions (item, isPlayer) {
-    const playerActions = []
-    const mercActions = []
-    ACTION_MAP.map(action => {
-      if (action.condition(item)) {
-        playerActions.push(action.action)
+  function getActions (item) {
+    let actions = [{
+      label: 'Drop',
+      onClick: () => cmd(`${getOrderCmd()}drop iid:${item.iid}`),
+      class: 'bold-red',
+      disabled: false
+    }]
+  
+    if (item.keeping) {
+      actions.push({
+        label: 'Unkeep',
+        onClick: async () => {
+          cmd(`${getOrderCmd()}unkeep iid:${item.iid}`)
+          delete state.cache.itemCache[item.iid]
+          await fetchItem(item.iid)
+          updateCounter.value++
+        },
+        class: 'bold-yellow',
+        disabled: false
+      })
+    } else {
+      actions.push({
+        label: 'Keep',
+        onClick: async () => {
+          cmd(`${getOrderCmd()}keep iid:${item.iid}`)
+          delete state.cache.itemCache[item.iid]
+          await fetchItem(item.iid)
+          updateCounter.value++
+        },
+        class: 'bold-green',
+        disabled: false
+      })
+    }
+  
+    if (item.type == 'consumable') {
+      if (item.subtype == 'food') {
+        actions.push({
+          label: 'Eat',
+          onClick: () => cmd(`${getOrderCmd()}eat iid:${item.iid}`),
+          class: 'bold-green',
+          disabled: false
+        })
+      } else if (item.subtype == 'potion') {
+        actions.push({
+          label: 'Drink',
+          onClick: () => cmd(`${getOrderCmd()}drink iid:${item.iid}`),
+          class: 'bold-green',
+          disabled: false
+        })
+      } else {
+        actions.push({
+          label: 'Consume',
+          onClick: () => cmd(`${getOrderCmd()}consume iid:${item.iid}`),
+          class: 'bold-green',
+          disabled: false
+        })
       }
-    })
-
-    ACTION_MAP.map(action => {
-      if (action.condition(item) && !action.crafting) {
-        mercActions.push(action.action)
+    }
+  
+    if (state.gameState.room.flags.includes('store')) {
+      actions.push({
+        label: 'Sell',
+        onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
+        class: 'bold-green',
+        disabled: false
+      })
+    } else {
+      actions.push({
+        label: 'Sell',
+        onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
+        class: 'bold-green',
+        disabled: true
+      })
+    }
+  
+    if (item.type == 'weapon') {
+      actions.push({
+        label: 'Wield',
+        onClick: () => cmd(`${getOrderCmd()}wield iid:${item.iid}`),
+        class: 'bold-red',
+        disabled: false
+      })
+    }
+  
+    if (item.type == 'armor') {
+      actions.push({
+        label: 'Wear',
+        onClick: () => cmd(`${getOrderCmd()}wear iid:${item.iid}`),
+        class: 'bold-red',
+        disabled: false
+      })
+    }
+  
+    if (item.type == 'weapon' || item.type == 'armor') {
+      actions.push({
+        label: 'Compare',
+        onClick: () => cmd(`${getOrderCmd()}compare iid:${item.iid}`),
+        class: 'bold-yellow',
+        disabled: false
+      })
+    }
+  
+    if (item.type == 'weapon' || item.type == 'armor' || item.type == 'tool' || item.type == 'bag') {
+      if (hasSkillsRequired(item)) {
+        actions.push({
+          label: 'Salvage',
+          onClick: () => cmd(`${getOrderCmd()}salvage iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+        if (item.type == 'tool') {
+          actions.push({
+            label: 'Repair',
+            onClick: () => cmd(`${getOrderCmd()}repair iid:${item.iid}`),
+            class: 'bold-yellow',
+            disabled: false
+          })
+        }
       }
-    })
-
-    return isPlayer ? playerActions : mercActions;
+    }
+  
+    if (item.type == 'material') {
+      if (item.subtype == 'hide') {
+        actions.push({
+          label: 'Tan',
+          onClick: () => cmd(`${getOrderCmd()}tan iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+      
+      if (item.subtype == 'seed') {
+        actions.push({
+          label: 'Plant',
+          onClick: () => cmd(`${getOrderCmd()}plant iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+  
+      if (item.subtype == 'bandage') {
+        actions.push({
+          label: 'Wrap',
+          onClick: () => cmd(`${getOrderCmd()}wrap iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+  
+      if (item.subtype == 'fish') {
+        actions.push({
+          label: 'Filet',
+          onClick: () => cmd(`${getOrderCmd()}filet iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+    }
+  
+    if (item.type == 'book' || item.type == 'scroll') {
+      actions.push({
+        label: 'Read',
+        onClick: () => cmd(`${getOrderCmd()}read iid:${item.iid}`),
+        class: 'bold-magenta',
+        disabled: false
+      })
+    }
+  
+    if (item.type == 'tool') {
+      if (item.subtype == 'penned animal') {
+        actions.push({
+          label: 'Unpen',
+          onClick: () => cmd(`${getOrderCmd()}unpen iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+  
+      if (item.subtype == 'deployable') {
+        actions.push({
+          label: 'Unpack',
+          onClick: () => cmd(`${getOrderCmd()}unpack iid:${item.iid}`),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+    }
+  
+    return actions
   }
+  
+  function hasSkillsRequired (item) {
+    if (!item.skillsRequired || item.skillsRequired.length == 0) {
+      return false
+    }
+  
+    for (let skill of item.skillsRequired) {
+      let playerSkill = state.gameState.skills[skill.name]
+      if (!playerSkill || playerSkill.level < skill.level) {
+        return false
+      }
+    }
+  
+    return true
+  }  
 
   function ansiToHtml (str) {
     if (typeof str !== 'string') {

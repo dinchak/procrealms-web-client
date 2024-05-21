@@ -1,6 +1,7 @@
 <template>
   <div :class="getScrollContainerClass()">
     <SelectGameModalAs></SelectGameModalAs>
+
     <NGrid class="equipment" cols="1">
       <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
         <div class="slot">
@@ -36,13 +37,15 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
-import { state, getOrderCmd } from '@/static/state'
-import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
-import { useWebSocket } from '@/composables/web_socket'
-import { useHelpers } from '@/composables/helpers'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectGameModalAs from './SelectGameModalAs.vue'
+import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+
+import { state, getOrderCmd } from '@/static/state'
+import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
+
+import { useWebSocket } from '@/composables/web_socket'
+import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, getPetEid } = useHelpers()
 const { cmd, fetchItems, fetchItem } = useWebSocket()
@@ -129,7 +132,8 @@ function getScrollContainerClass () {
 
 let watchers = []
 onMounted(async () => {
-  equipment.value = await fetchItems(Object.values(getEquipment()))
+  let fetchIids = Object.values(getEquipment()).filter(iid => iid)
+  equipment.value = await fetchItems(fetchIids)
   
   watchers.push(
     watch(state.gameState, async (newVal) => {
@@ -143,9 +147,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  for (let watcher of watchers) {
-    watcher()
-  }
+  watchers.forEach(w => w())
 })
 
 </script>
