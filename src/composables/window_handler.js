@@ -58,6 +58,7 @@ export function useWindowHandler () {
 
   function setFontFamily (fontFamily) {
     state.options.fontFamily = fontFamily
+    document.body.style.fontFamily = fontFamily;
     document.getElementById('app').style.fontFamily = fontFamily
 
     let modalContainers = document.getElementsByClassName('n-modal-container')
