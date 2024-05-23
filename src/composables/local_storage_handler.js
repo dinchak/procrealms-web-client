@@ -1,3 +1,4 @@
+import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 import { state, resetInputMappings } from '@/static/state'
 
 export function useLocalStorageHandler () {
@@ -10,6 +11,14 @@ export function useLocalStorageHandler () {
       const options = JSON.parse(localStorage.getItem('options'))
       if (options !== null) {
         state.options = Object.assign(state.options, options)
+      }
+
+      if (
+        !(state.options.terminalHeight > 0 && state.options.terminalHeight < 300) ||
+        !(state.options.terminalWidth > 0 && state.options.terminalWidth < 300)
+      ) {
+        state.options.terminalHeight = DEFAULT_TERMINAL_SIZE.height
+        state.options.terminalWidth = DEFAULT_TERMINAL_SIZE.width
       }
 
       if (state.options.fontFamily) {

@@ -75,7 +75,6 @@ const { cmd } = useWebSocket()
 
 let moveTimeout = null
 
-
 function openGameModal () {
   setMode('modal')
   state.modals.gameModal = true
