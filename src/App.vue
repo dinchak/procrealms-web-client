@@ -120,6 +120,7 @@ body, html {
   font-family: 'Ubuntu Mono', monospace;
   color: #fff;
   overflow-x: hidden;
+  overflow-y: hidden;
   color-scheme: dark;
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
