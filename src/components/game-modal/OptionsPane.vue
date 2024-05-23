@@ -151,7 +151,7 @@ function onSetFontSize () {
 }
 
 function onSetFontFamily () {
-  setFontFamily(selectedFontFamily.value)
+  setFontFamily(state.options.fontFamily)
 }
 
 function openTriggersModal () {
