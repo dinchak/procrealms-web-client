@@ -27,7 +27,7 @@
       </div>
 
       <div class="skill-type bold-cyan">Learned Skills</div>
-      <div class="points" v-if="character.craftingPoints > 0">
+      <div class="points" v-if="character.skillPoints > 0">
         You have <span class="bold-cyan">{{ character.skillPoints }}</span> unspent skill points. Find a skill book to read.
       </div>
       <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned'))" :key="skill.name">
