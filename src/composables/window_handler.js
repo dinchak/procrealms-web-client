@@ -1,4 +1,5 @@
 import { state } from '@/static/state'
+import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 
 let resizeHandlers = []
 
