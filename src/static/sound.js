@@ -17,7 +17,7 @@ export async function playRandomTrack () {
 export function stopPlaying (pause) {
   const { musicSource, audioContext } = state.music
 
-  audioContext.suspend()
+  audioContext?.suspend()
 
   if (!pause && musicSource) {
     musicSource.stop()
@@ -54,11 +54,7 @@ export async function startPlaying (track) {
 
     musicSource.addEventListener('ended', async (ev) => {
       if (track.name !== state.music.currentTrack.name) return;
-      if (playingNewTrack) return;
-      if (trackLoading) return;
       if (state.music.musicSource !== ev.target) return;
-
-      if (audioContext.state === 'suspended') return;
       console.debug("randum")
       await playRandomTrack();
     })
