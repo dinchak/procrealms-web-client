@@ -30,7 +30,7 @@
 
     <div class="track-info">
       <div ref="trackName" class="track-name">
-        {{ state.music.currentTrack.name || 'Press play to start'}}
+        {{ getTrackName() }}
       </div>
       <canvas ref="analyzer" width="186" height="36"></canvas>
     </div>
@@ -77,6 +77,12 @@ async function pause () {
 async function skip () {
   stopPlaying()
   await playRandomTrack()
+}
+
+function getTrackName () {
+  return state.music.currentTrack ?
+    state.music.currentTrack.name :
+    'Press play to start'
 }
 
 function updateVolume () {
