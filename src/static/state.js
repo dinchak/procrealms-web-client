@@ -110,7 +110,7 @@ export const state = reactive({
     musicSource: null,
     audioAnalyzer: null,
     gainNode: null,
-    currentTrack: false,
+    currentTrack: null,
     playing: false
   }
 })
