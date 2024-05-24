@@ -291,7 +291,7 @@ function getOutputHeight () {
   }
 
   if (state.options.showQuickSlots) {
-    heightOffset += 56
+    heightOffset += 61
   }
 
   return `calc(100vh - ${heightOffset}px)`
