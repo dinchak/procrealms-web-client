@@ -18,6 +18,8 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useLocalStorageHandler } from './composables/local_storage_handler'
 import { CACHE_DELETE_TIME, CACHE_DELETE_INTERVAL } from '@/static/constants'
 
+import { stopPlaying } from '@/static/sound'
+
 import InputHandler from '@/components/InputHandler.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from '@/components/modals/LoginModal.vue'
@@ -52,6 +54,7 @@ function onClose () {
   state.disconnected = true
   state.connected = false
   setTimeout(() => doConnect(), 1000)
+  stopPlaying()
 }
 
 function clearCache(object) {

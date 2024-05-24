@@ -145,7 +145,7 @@ function startAudioContext (ev) {
 
   state.music.gainNode = state.music.audioContext.createGain()
   state.music.gainNode.connect(state.music.audioAnalyzer)
-  state.music.gainNode.gain.value = state.options.volume / 100.0  
+  state.music.gainNode.gain.value = state.options.volume / 100.0
 
   for (let eventName of USER_GESTURE_EVENTS) {
     window.removeEventListener(eventName, startAudioContext)
