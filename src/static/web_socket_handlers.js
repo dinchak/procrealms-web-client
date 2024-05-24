@@ -180,7 +180,7 @@ const webSocketHandlers = {
 
   'client.media.play': ({ name, volume }) => {
     // Intercept known OST tracks
-    if (!state.options.autoplayMusic) return;
+    if (!state.options.autoplayMusic || state.music.audioContext?.state === 'suspended') return;
     switch (name) {
       case "music/ost/my-portal.mp3":
         playTrackByName('My Portal');
