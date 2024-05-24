@@ -3,6 +3,13 @@ import { MUSIC_TRACKS } from '@/static/constants'
 
 let trackLoading = false
 
+export async function playTrack(name) {
+  let track = MUSIC_TRACKS.find(t => t.name === name)
+  if (!track || state.music.currentTrack === track) return;
+  state.music.currentTrack = track
+  await startPlaying(track)
+}
+
 export async function playRandomTrack () {
   let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
   state.music.currentTrack = track

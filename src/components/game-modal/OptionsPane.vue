@@ -68,6 +68,13 @@
           </div>
         </NGi>
 
+        <NGi>
+          <div class="option">
+            <label for="option-autoplay-music">Autoplay Music</label>
+            <NSwitch id="option-autoplay-music" v-model:value="state.options.autoplayMusic" aria-label="Autoplay Music" class="selectable"></NSwitch>
+          </div>
+        </NGi>
+
       </NGrid>
     </div>
 

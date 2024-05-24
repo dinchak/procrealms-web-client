@@ -220,6 +220,9 @@ function resetOptions () {
     // terminal size
     terminalWidth: DEFAULT_TERMINAL_SIZE.width,
     terminalHeight: DEFAULT_TERMINAL_SIZE.height,
+
+    // music
+    autoplayMusic: false,
   }
 }
 
