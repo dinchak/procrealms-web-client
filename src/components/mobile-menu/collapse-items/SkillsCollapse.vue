@@ -26,7 +26,7 @@
 
       <div class="skill-type bold-red">Combat Skills</div>
       <div class="points" v-if="character.skillPoints > 0">
-        You have <span class="bold-red">{{ character.skillPoints }}</span> unspent skill  {{ character.skillPoints > 1 ? 'points' : 'point' }}. Find a combat skill book to read.
+        You have <span class="bold-red">{{ character.skillPoints }}</span> unspent skill {{ character.skillPoints > 1 ? 'points' : 'point' }}. Find a combat skill book to read.
       </div>
       <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned') && sk.type.includes('combat'))" :key="skill.name">
         <div class="skill-header">
@@ -37,7 +37,7 @@
 
       <div class="skill-type bold-cyan">Artisan Skills</div>
       <div class="points" v-if="character.artisanPoints > 0">
-        You have <span class="bold-cyan">{{ character.artisanPoints }}</span> unspent artisan  {{ character.artisanPoints > 1 ? 'points' : 'point' }}. Find an artisan skill book to read.
+        You have <span class="bold-cyan">{{ character.artisanPoints }}</span> unspent artisan {{ character.artisanPoints > 1 ? 'points' : 'point' }}. Find an artisan skill book to read.
       </div>
       <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned') && sk.type.includes('artisan'))" :key="skill.name">
         <div class="skill-header">
