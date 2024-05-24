@@ -45,6 +45,11 @@
       <n-switch id="option-text-input-always-focused" v-model:value="state.options.textInputAlwaysFocused" aria-label="Text Input Always Focused"></n-switch>
     </div>
 
+    <div class="option">
+      <label for="option-autoplay-music">Autoplay Music</label>
+      <n-switch id="option-autoplay-music" v-model:value="state.options.autoplayMusic" aria-label="Auto Play Music"></n-switch>
+    </div>
+
     <h3 class="pad-top">Font Settings</h3>
 
     <n-select
