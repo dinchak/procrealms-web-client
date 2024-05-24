@@ -3,7 +3,7 @@ import jiff from 'jiff'
 import { CHANNEL_COLORS } from '@/static/constants'
 import { addLine, state, setMode } from '@/static/state'
 import { processTriggers } from '@/static/triggers'
-import { playTrack } from '@/static/sound'
+import { playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, strToLines } = useHelpers()
@@ -183,22 +183,22 @@ const webSocketHandlers = {
     if (!state.options.autoplayMusic) return;
     switch (name) {
       case "music/ost/my-portal.mp3":
-        playTrack('My Portal');
+        playTrackByName('My Portal');
         break;
       case "music/ost/the-endless-sands.mp3":
-        playTrack('The Endless Sands');
+        playTrackByName('The Endless Sands');
         break;
       case "music/ost/the-hidden-grove.mp3":
-        playTrack('The Hidden Grove');
+        playTrackByName('The Hidden Grove');
         break;
       case "music/ost/the-nexus.mp3":
-        playTrack('The Nexus');
+        playTrackByName('The Nexus');
         break;
       case "music/ost/the-plains.mp3":
-        playTrack('The Great Plains');
+        playTrackByName('The Great Plains');
         break;
       case "music/ost/the-shrine.mp3":
-        playTrack('The Shrine');
+        playTrackByName('The Shrine');
         break;
     }
   }

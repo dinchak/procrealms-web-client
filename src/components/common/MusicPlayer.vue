@@ -47,7 +47,7 @@ import SkipNextOutlined from '@vicons/material/SkipNextOutlined'
 import VolumeDownOutlined from '@vicons/material/VolumeDownOutlined'
 
 import { state } from '@/static/state'
-import { stopPlaying, playRandomTrack } from '@/static/sound'
+import { stopPlaying, playRandomTrack, startPlaying } from '@/static/sound'
 
 let analyzerData = null
 let stopAnalysis = false
@@ -61,15 +61,11 @@ const analyzer = ref(null)
 const trackName = ref(null)
 
 async function play () {
-  const { audioContext } = state.music
-
-  if (audioContext.state === 'suspended') {
-    await audioContext.resume()
-    state.music.playing = true
-  }
-
   if (!state.music.currentTrack) {
     await playRandomTrack()
+  }
+  else {
+    startPlaying(state.music.currentTrack)
   }
 }
 
