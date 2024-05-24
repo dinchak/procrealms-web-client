@@ -219,7 +219,6 @@ function getSlotClass (slot) {
   display: flex;
   flex-direction: row;
   margin-left: 9px;
-  min-height: 56px;
   background-color: rgb(16, 18, 22);
   margin-right: 8px;
   overflow-x: scroll;
