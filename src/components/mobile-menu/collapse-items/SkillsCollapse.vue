@@ -9,12 +9,11 @@
         </div>
         <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
         </NProgress>
-        <!-- <div>{{ skill }}</div> -->
       </div>
 
       <div class="skill-type bold-magenta" v-if="isPlayer">Crafting Skills</div>
       <div class="points" v-if="character.craftingPoints > 0">
-        You have <span class="bold-magenta">{{ character.craftingPoints }}</span> unspent crafting points. Find a crafting skill book to read.
+        You have <span class="bold-magenta">{{ character.craftingPoints }}</span> unspent crafting {{ character.craftingPoints > 1 ? 'points' : 'point' }}. Find a crafting skill book to read.
       </div>
       <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('crafting'))" :key="skill.name">
         <div class="skill-header">
@@ -23,14 +22,24 @@
         </div>
         <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
         </NProgress>
-        <!-- <div>{{ skill }}</div> -->
       </div>
 
-      <div class="skill-type bold-cyan">Learned Skills</div>
+      <div class="skill-type bold-red">Combat Skills</div>
       <div class="points" v-if="character.skillPoints > 0">
-        You have <span class="bold-cyan">{{ character.skillPoints }}</span> unspent skill points. Find a skill book to read.
+        You have <span class="bold-red">{{ character.skillPoints }}</span> unspent skill  {{ character.skillPoints > 1 ? 'points' : 'point' }}. Find a combat skill book to read.
       </div>
-      <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned'))" :key="skill.name">
+      <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned') && sk.type.includes('combat'))" :key="skill.name">
+        <div class="skill-header">
+          <div>{{ skill.name }}</div>
+          <div>Rank {{ skill.rank }}</div>
+        </div>
+      </div>
+
+      <div class="skill-type bold-cyan">Artisan Skills</div>
+      <div class="points" v-if="character.artisanPoints > 0">
+        You have <span class="bold-cyan">{{ character.artisanPoints }}</span> unspent artisan  {{ character.artisanPoints > 1 ? 'points' : 'point' }}. Find an artisan skill book to read.
+      </div>
+      <div class="skill" v-for="skill in skills.filter(sk => sk.type.includes('learned') && sk.type.includes('artisan'))" :key="skill.name">
         <div class="skill-header">
           <div>{{ skill.name }}</div>
           <div>Rank {{ skill.rank }}</div>
@@ -49,6 +58,7 @@ const props = defineProps(['character', 'skills', 'isPlayer'])
 
 const { character, skills, isPlayer } = toRefs(props)
 
+console.debug(skills, character)
 </script>
 
 <style lang="less">
