@@ -3,27 +3,35 @@ import { MUSIC_TRACKS } from '@/static/constants'
 
 let trackLoading = false
 
-export async function playRandomTrack () {
-  let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
-  state.music.currentTrack = track
+export async function playTrackByName(name) {
+  const { currentTrack } = state.music;
+  if (currentTrack.name === name) return;
+  let track = MUSIC_TRACKS.find(t => t.name === name)
+  if (!track) return;
   await startPlaying(track)
 }
 
-export function stopPlaying () {
-  const { musicSource } = state.music
-  if (musicSource) {
+export async function playRandomTrack () {
+  let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
+  await startPlaying(track)
+}
+
+export function stopPlaying (pause) {
+  const { musicSource, audioContext } = state.music
+
+  audioContext?.suspend()
+
+  if (!pause && musicSource) {
     musicSource.stop()
     musicSource.disconnect()
-    state.music.playing = false
+    state.music.musicSource = null;
   }
+
+  state.music.playing = false
 }
 
 export async function startPlaying (track) {
   const { audioContext, gainNode } = state.music
-
-  if (audioContext.state === 'suspended') {
-    await audioContext.resume()
-  }
 
   if (trackLoading) {
     return
@@ -33,29 +41,33 @@ export async function startPlaying (track) {
     await loadTrack(track)
   }
 
-  if (state.music.musicSource) {
-    state.music.musicSource.stop()
-    state.music.musicSource.disconnect()
+  if (state.music.currentTrack !== track) {
+    if (state.music.musicSource) {
+      state.music.musicSource.stop()
+      state.music.musicSource.disconnect()
+    }
+
+    let musicSource = audioContext.createBufferSource()
+    musicSource.buffer = track.buffer
+    musicSource.connect(gainNode)
+
+    state.music.musicSource = musicSource
+    musicSource.start()
+
+    musicSource.addEventListener('ended', async (ev) => {
+      if (track.name !== state.music.currentTrack.name) return;
+      if (state.music.musicSource !== ev.target) return;
+      console.debug("randum")
+      await playRandomTrack();
+    })
+
+    state.music.currentTrack = track
   }
 
-  let musicSource = audioContext.createBufferSource()
-  musicSource.buffer = track.buffer
-  musicSource.connect(gainNode)
-  musicSource.start()
+  if (audioContext.state === 'suspended') {
+    await audioContext.resume()
+  }
 
-  musicSource.addEventListener('ended', async () => {
-    if (track.name != state.music.currentTrack.name) {
-      return
-    }
-
-    if (trackLoading) {
-      return
-    }
-
-    await playRandomTrack()
-  })
-
-  state.music.musicSource = musicSource
   state.music.playing = true
 }
 

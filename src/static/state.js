@@ -4,7 +4,8 @@ import { EventEmitter } from 'events'
 import { loadSettingsByNameAndType } from '@/static/triggers'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
-import { DEFAULT_TERMINAL_SIZE } from '@/static/constants.js'
+import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
+import { playRandomTrack } from '@/static/sound'
 
 const { addToken } = useLocalStorageHandler()
 
@@ -109,7 +110,7 @@ export const state = reactive({
     musicSource: null,
     audioAnalyzer: null,
     gainNode: null,
-    currentTrack: false,
+    currentTrack: null,
     playing: false
   }
 })
@@ -220,6 +221,9 @@ function resetOptions () {
     // terminal size
     terminalWidth: DEFAULT_TERMINAL_SIZE.width,
     terminalHeight: DEFAULT_TERMINAL_SIZE.height,
+
+    // music
+    autoplayMusic: false,
   }
 }
 
@@ -234,6 +238,7 @@ export function authenticationSuccess ({ name, token }) {
   state.modals.newPlayerModal = false
   loadSettingsByNameAndType(state.triggers, name, 'triggers')
   loadSettingsByNameAndType(state.variables, name, 'variables')
+  if (state.options.autoplayMusic) playRandomTrack()
 }
 
 function addSuggestedCommand (command) {
