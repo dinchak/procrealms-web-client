@@ -4,8 +4,10 @@ import { MUSIC_TRACKS } from '@/static/constants'
 let trackLoading = false
 
 export async function playTrackByName(name) {
+  const { currentTrack } = state.music;
+  if (currentTrack.name === name) return;
   let track = MUSIC_TRACKS.find(t => t.name === name)
-  if (!track || state.music.currentTrack === track) return;
+  if (!track) return;
   await startPlaying(track)
 }
 
