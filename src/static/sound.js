@@ -57,7 +57,6 @@ export async function startPlaying (track) {
     musicSource.addEventListener('ended', async (ev) => {
       if (track.name !== state.music.currentTrack.name) return;
       if (state.music.musicSource !== ev.target) return;
-      console.debug("randum")
       await playRandomTrack();
     })
 
