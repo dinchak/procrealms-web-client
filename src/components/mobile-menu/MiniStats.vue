@@ -31,7 +31,7 @@
     </span>
 
     <span class="stat food">
-      <div class="value bold-red">{{ entity.food }}<span class="label red">FD</span></div>
+      <div class="value bold-red">{{ (entity.food / entity.maxFood) * 100 }}<span class="label red">FD</span></div>
       <NProgress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
     </span>
 
