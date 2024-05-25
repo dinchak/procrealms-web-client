@@ -23,7 +23,7 @@ export function useWebSocket () {
           state.cache.commandCache[reqId] = msg
         }
         if (import.meta.env.MODE == 'development') {
-          console.log(`%c<%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} ${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', 'color: #ccffcc')
+          console.log(`%c<%c ${cmd}${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', msg)
         }
 
         reqId ? onWebSocketEvent(cmd, msg, reqId) : onWebSocketEvent(cmd, msg)
@@ -38,7 +38,7 @@ export function useWebSocket () {
     let out = { cmd, msg }
 
     if (import.meta.env.MODE == 'development') {
-      console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
+      console.log(`%c>%c ${cmd}`, 'background-color: #662222; color: #fff', 'color: #ff3333', msg)
     }
 
     state.websocketConnection.send(JSON.stringify(out))
