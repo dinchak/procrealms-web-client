@@ -52,20 +52,25 @@ function openGameModal (pane) {
 </script>
 <style lang="less">
 .game-modal-shortcuts {
+  flex-basis: 0;
+  flex-grow: 0;
+  z-index: 1;
+  top: 10px + 34px + 5px; // Offset from ButtonControls
+  right: 10px;
   display: flex;
+  gap: 5px;
   flex-direction: column;
-  margin-top: 2px;
   .shortcut {
+    padding: 5px;
     cursor: pointer;
-    height: 34px;
-    width: 34px;
+    height: 24px;
+    width: 24px;
     user-select: none;
     border: 1px solid rgba(255, 255, 255, 0.24);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4px;
     transition: all 0.3s;
     background: rgb(16, 16, 20);
     &:last-child {

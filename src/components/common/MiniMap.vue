@@ -30,10 +30,10 @@ function renderMinimap () {
 
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 .minimap-container {
   display: flex;
-  margin-right: 10px;
+  flex-grow: 0;
   .minimap {
     user-select: none;
     white-space: pre;

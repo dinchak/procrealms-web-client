@@ -13,11 +13,11 @@ import { state } from '@/static/state'
 
 <style scoped lang="less">
 .mobile-input-controls {
+  flex-grow: 0;
+  flex-basis: 0;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  .n-button {
-    margin-right: 8px;
-  }
+  gap: 10px;
 }
 </style>
