@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
 }
 
 .player-header {
-  padding: 10px 10px 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #333;
 }
 
@@ -131,8 +131,6 @@ onBeforeUnmount(() => {
 
 .player-stats {
   padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
   overflow-y: auto;
   flex-grow: 1;
 

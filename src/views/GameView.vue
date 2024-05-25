@@ -1,5 +1,5 @@
 <template>
-  <div v-if="state.token && state.connected && !state.disconnected" class="game" :class="{
+  <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected" class="game" :class="{
      'swap-mobile-menu': state.options.swapMobileMenuSide
   }">
     <div class="game-layout">
@@ -34,12 +34,12 @@
     <GameModal/>
     <MercModal/>
     <RadialOverlay/>
-  </div>
+  </n-el>
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { NLayout } from 'naive-ui'
+import { NEl, NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
@@ -305,8 +305,7 @@ onBeforeUnmount(() => {
 
   > * {
     flex-grow: 0;
-    padding: 5px 0;
-    margin: 0 5px;
+    padding: 5px 10px;
   }
 }
 
