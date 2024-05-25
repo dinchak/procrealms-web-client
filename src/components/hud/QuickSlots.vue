@@ -243,22 +243,29 @@ function getSlotClass (slot) {
     .quick-scroller {
       width: auto;
       overflow-x: auto;
-      margin-left: 11px;
-      margin-right: 11px;
       background-color: transparent;
       padding: 0;
       flex-wrap: wrap;
       justify-content: left;
+      gap: 8px;
+    }
+
+    .quick-slot {
+      width: 78px;
+      min-width: 78px;
     }
   }
 }
 
 .quick-slot {
+   box-sizing: border-box;
   background-color: #222;
   border: 1px solid #222;
   display: flex;
   position: relative;
   padding: 2px;
+  width: 80px;
+  min-width: 80px;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -269,6 +276,43 @@ function getSlotClass (slot) {
 
   &:last-child {
     margin-right: 0;
+  }
+
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+  .slot-number {
+    padding: 2px 4px;
+    border-bottom-right-radius: 4px;
+    border-top-left-radius: 4px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 12px;
+    font-size: 14px;
+    line-height: 12px;
+  }
+
+  .slot-label {
+    width: 100%;
+    font-size: 11px;
+    padding: 0 2px;
+    word-wrap: break-word;
+    line-height: 11px;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .n-progress {
+    --n-rail-height: 2px !important;
+    position: absolute;
+    top: 0px;
+    z-index: 5;
   }
 
   &.selected {
@@ -373,43 +417,6 @@ function getSlotClass (slot) {
       line-height: 16px;
       text-align: center;
     }
-  }
-
-  .icon {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
-
-  .slot-number {
-    padding: 2px 4px;
-    border-bottom-right-radius: 4px;
-    border-top-left-radius: 4px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: 12px;
-    font-size: 14px;
-    line-height: 12px;
-  }
-
-  .slot-label {
-    font-size: 11px;
-    width: 70px;
-    padding: 0 2px;
-    word-wrap: break-word;
-    line-height: 11px;
-    text-align: left;
-    overflow: hidden;
-  }
-
-  .n-progress {
-    --n-rail-height: 2px !important;
-    position: absolute;
-    top: 0px;
-    z-index: 5;
   }
 }
 </style>
