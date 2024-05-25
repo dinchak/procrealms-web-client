@@ -135,6 +135,18 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   flex-grow: 1;
 
+  @media screen and (max-width: 650px) {
+    overflow-y: visible;
+  }
+  @media screen and (min-width: 651px) and (max-height: 575px) {
+    overflow-y: visible;
+  }
+  @media screen and (min-width: 651px) and (max-height: 745px) {
+    .sidebar.map-area-visible & {
+      overflow-y: visible;
+    }
+  }
+
   .stat-row {
     display: flex;
     flex-direction: row;

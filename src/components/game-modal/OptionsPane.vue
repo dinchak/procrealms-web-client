@@ -15,13 +15,6 @@
 
         <NGi>
           <div class="option">
-            <label for="option-fixed-minimap">Fixed Minimap</label>
-            <NSwitch id="option-fixed-minimap" v-model:value="state.options.fixedMobileMenuMap" aria-label="Fixed Mini Map" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
             <label for="option-swap-menu-side">Swap Menu Side</label>
             <NSwitch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side" class="selectable"></NSwitch>
           </div>

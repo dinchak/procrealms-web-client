@@ -18,9 +18,9 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane name="chat" :tab="getTab('chat')" display-directive="show">
-      <div id="chat" class="output" ref="chat" @scroll="onScroll('chat')">
-        <div v-for="(line, i) in state.chat" class="message" :key="`line-${i}`">
+    <n-tab-pane v-for="tabName in ['chat', 'trade', 'newbie']" :name="tabName" :tab="getTab(tabName)" display-directive="show">
+      <div :id="tabName" class="output" :ref="refs[tabName]" @scroll="onScroll(tabName)">
+        <div v-for="(line, i) in state[tabName]" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-yellow">{{ line.from }}</div>
             <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
@@ -28,55 +28,13 @@
           <div class="body bold-white" v-html-safe="line.message"></div>
         </div>
       </div>
-      <div v-show="state.scrolledBack.chat" class="scrollback-control" @click="scrollDownTab('chat')">
+      <div v-show="state.scrolledBack[tabName]" class="scrollback-control" @click="scrollDownTab(tabName)">
         <NIcon>
-          <SouthOutlined></SouthOutlined>
+          <SouthOutlined />
         </NIcon>
         More
         <NIcon>
-          <SouthOutlined></SouthOutlined>
-        </NIcon>
-      </div>
-    </n-tab-pane>
-
-    <n-tab-pane name="trade" :tab="getTab('trade')" display-directive="show">
-      <div id="trade" class="output" ref="trade" @scroll="onScroll('trade')">
-        <div v-for="(line, i) in state.trade" class="message" :key="`line-${i}`">
-          <div class="from">
-            <div class="name bold-green">{{ line.from }}</div>
-            <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
-          </div>
-          <div class="body bold-white" v-html-safe="line.message"></div>
-        </div>
-      </div>
-      <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDownTab('trade')">
-        <NIcon>
-          <SouthOutlined></SouthOutlined>
-        </NIcon>
-        More
-        <NIcon>
-          <SouthOutlined></SouthOutlined>
-        </NIcon>
-      </div>
-    </n-tab-pane>
-
-    <n-tab-pane name="newbie" :tab="getTab('newbie')" display-directive="show">
-      <div id="newbie" class="output" ref="newbie" @scroll="onScroll('newbie')">
-        <div v-for="(line, i) in state.newbie" class="message" :key="`line-${i}`">
-          <div class="from">
-            <div class="name bold-magenta">{{ line.from }}</div>
-            <div class="timestamp black">{{ getTimeSince(line.timestamp) }}</div>
-          </div>
-          <div class="body bold-white" v-html-safe="line.message"></div>
-        </div>
-      </div>
-      <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDownTab('newbie')">
-        <NIcon>
-          <SouthOutlined></SouthOutlined>
-        </NIcon>
-        More
-        <NIcon>
-          <SouthOutlined></SouthOutlined>
+          <SouthOutlined />
         </NIcon>
       </div>
     </n-tab-pane>
@@ -122,7 +80,7 @@ function doResize () {
       return
     }
 
-    let { width, height } = calcTerminalSize(output.value.offsetWidth, output.value.offsetHeight)
+    let { width, height } = calcTerminalSize()
     send('terminal', { width, height, ttype: 'play.proceduralrealms.com' })
     resizeTimeout = null
   }, 500)
@@ -358,56 +316,53 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
+.line-area {
+  .n-tabs.n-tabs--bar-type {
+    .n-tabs-tab {
+      padding: 5px;
+    }
 
-.n-tabs.n-tabs--bar-type {
-  width: initial;
-  height: 100%;
-  padding: 0;
-
-  .n-tabs-tab {
-    padding: 5px;
-  }
-
-  .n-tabs-nav {
-    margin: 0;
-    padding: 0;
-    flex-grow: 0;
-
-    &.hide {
-      display: none;
+    .n-tabs-nav {
+      &.hide {
+        display: none;
+      }
     }
   }
-}
 
-
-.n-tab-pane {
-  position: relative;
-  padding: 0;
-  flex-grow: 1;
-  height: 0;
+  .n-tab-pane {
+    position: relative; // for scrollback
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
 <style scoped lang="less">
 .output-tabs {
-
   margin-top: -3px;
-}
-.output {
+  padding: 0;
+  width: 100%;
   height: 100%;
+}
+
+.output {
   display: flex;
   flex-direction: column;
   flex-basis: fit-content;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 
 .scrollback-control {
   position: absolute;
-  left: 8px;
-  bottom: 5px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 40px;
   line-height: 40px;
-  width: calc(100% - 13px);
   background-color: rgba(20, 80, 20, 0.4);
   font-size: 1.5rem;
   text-align: center;
@@ -456,6 +411,7 @@ onBeforeUnmount(() => {
 .line {
   display: block;
   white-space: pre-wrap;
+  word-break: break-word;
   font-weight: normal !important;
 
   .player-cmd-caret {

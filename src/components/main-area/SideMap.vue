@@ -1,5 +1,5 @@
 <template>
-  <div class="side-map" v-if="state.options.showSideMap">
+  <div class="side-map" v-if="state.options.showSideMap && !state.gameState.battle.active">
     <div class="map-container">
       <div 
         class="map-line"

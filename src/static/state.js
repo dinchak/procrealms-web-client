@@ -190,7 +190,6 @@ function resetOptions () {
     // mobile menu options
     showMobileMenu: false,
     showMobileMenuMap: true,
-    fixedMobileMenuMap: false,
     swapMobileMenuSide: false,
     showMobileMenuMoveControls: true,
 
