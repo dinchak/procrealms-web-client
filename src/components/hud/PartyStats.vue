@@ -32,7 +32,7 @@
         <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
           <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
           <div class="food-bar-content">
-            {{ member.food }} FD
+            {{ (member.food / member.maxFood) * 100 }} FD
           </div>
         </div>
       </div>

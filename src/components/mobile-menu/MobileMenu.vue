@@ -2,20 +2,20 @@
   <n-el tag="aside" class="sidebar" :class="{
     'hide': !state.options.showMobileMenu,
     'right-side': state.options.swapMobileMenuSide,
-    'map-area-visible': (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)
+    'crowded': state.options.showMobileMenuQuickslots && (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)
   }" style="background-color: var(--table-color)">
   <div class="sidebar-inner">
     <PlayerStats/>
     <div class="bottom-area">
-      <div class="quick-slots">
+      <div class="quick-slots" v-if="state.options.showMobileMenuQuickslots">
         <QuickSlots :is-mobile-menu="true"/>
       </div>
       <div class="map-area"
-           v-show="!state.gameState.battle.active && (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)">
+           v-if="!state.gameState.battle.active && (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)">
         <MovementControls is-mobile-menu="true" v-if="state.options.showMobileMenuMoveControls" />
         <MiniMap v-if="state.options.showMobileMenuMap" />
       </div>
-      <div class="mini-stats">
+      <div class="mini-stats" v-if="state.options.showMobileMenuMiniStats">
         <MiniStats :entity="state.gameState.player" />
       </div>
     </div>
@@ -91,7 +91,7 @@ import MovementControls from '@/components/common/MovementControls.vue'
       overflow-y: auto;
   }
   @media screen and (min-width: 651px) and (max-height: 745px) {
-    .sidebar.map-area-visible & {
+    .sidebar.crowded & {
       overflow-y: auto;
     }
   }

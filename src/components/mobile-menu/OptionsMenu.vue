@@ -1,49 +1,13 @@
 <template>
   <div class="options-menu">
+    <template v-for="(options, title) in configurableOptions">
+      <h3>{{ title }}</h3>
 
-    <h3>Sidebar</h3>
-
-    <div class="option">
-      <label for="option-show-map-area">Show Map Area</label>
-      <n-switch id="option-show-map-area" v-model:value="state.options.showMobileMenuMap" aria-label="Show Map Area"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-swap-menu-side">Swap Menu Side</label>
-      <n-switch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-show-map-area">Show Movement Controls</label>
-      <n-switch id="option-show-map-area" v-model:value="state.options.showMobileMenuMoveControls" aria-label="Show Movement Controls"></n-switch>
-    </div>
-
-    <h3>General</h3>
-
-    <div class="option">
-      <label for="option-minimap-in-room-description">Minimap In Room Description</label>
-      <n-switch id="option-minimap-in-room-description" v-model:value="state.options.roomDescriptionMinimap" aria-label="Minimap In Room Description"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-chat-in-main-output">Chat In Main Output</label>
-      <n-switch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-keep-sent-commands">Keep Sent Commands</label>
-      <n-switch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-text-input-always-focused">Text Input Always Focused</label>
-      <n-switch id="option-text-input-always-focused" v-model:value="state.options.textInputAlwaysFocused" aria-label="Text Input Always Focused"></n-switch>
-    </div>
-
-    <div class="option">
-      <label for="option-autoplay-music">Autoplay Music</label>
-      <n-switch id="option-autoplay-music" v-model:value="state.options.autoplayMusic" aria-label="Auto Play Music"></n-switch>
-    </div>
+      <div class="option" v-for="(option, label) in options">
+        <label :for="'option-' + option">{{ label }}</label>
+        <n-switch :id="'option-' + option" v-model:value="state.options[option]" aria-label="{{ label }}" />
+      </div>
+    </template>
 
     <h3 class="pad-top">Font Settings</h3>
 
@@ -81,7 +45,7 @@
 <script setup>
 import { ref } from 'vue'
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
-import { state, setMode } from '@/static/state'
+import { state, setMode, configurableOptions } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
