@@ -107,6 +107,7 @@ onBeforeUnmount(() => {
 
 .n-collapse {
   .n-collapse-item {
+    user-select: none;
     &:first-child {
       margin: var(--n-item-margin);
     }

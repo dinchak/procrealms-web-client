@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
 
   > * {
     flex-grow: 0;
-    padding: 5px 10px;
+    padding: 5px 5px 5px 10px;
   }
 }
 
