@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
 }
 
 .player-header {
-  padding: 5px 10px 10px;
+  padding: 10px 10px 10px;
   border-bottom: 1px solid #333;
 }
 

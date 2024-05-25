@@ -1,5 +1,5 @@
 <template>
-  <n-tabs ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab"
+  <n-tabs class="output-tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab"
           @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" class="output" ref="output" @scroll="onScroll('output')">
@@ -388,7 +388,10 @@ onBeforeUnmount(() => {
 }
 </style>
 <style scoped lang="less">
+.output-tabs {
 
+  margin-top: -3px;
+}
 .output {
   height: 100%;
   display: flex;

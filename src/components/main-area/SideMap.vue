@@ -27,7 +27,6 @@ const { ansiToHtml } = useHelpers()
   flex-direction: column;
   user-select: none;
   .map-container {
-    padding-top: 5px;
     .map-line {
       white-space: pre;
     }
