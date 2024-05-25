@@ -28,7 +28,7 @@
       </div>
 
       <div class="bottom-bar">
-        <n-popover trigger="hover">
+        <n-popover trigger="hover" placement="top-start">
           <template #trigger>
             <div class="shortflags" v-html-safe="getShortFlags(member)"/>
           </template>
@@ -169,7 +169,7 @@ function getPartyMembers () {
       display: flex;
       gap: 3px;
       overflow-x: hidden;
-
+      cursor: help;
     }
 
     .food-bar {

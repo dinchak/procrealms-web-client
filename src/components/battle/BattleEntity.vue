@@ -28,7 +28,7 @@
             </div>
 
             <div class="affect-area">
-              <n-popover trigger="hover" placement="top-start" if>
+              <n-popover trigger="hover" placement="top-start">
                 <template #trigger>
                   <div class="affect-row">
                     <span class="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
@@ -401,6 +401,7 @@ function getTarget (participant) {
     }
 
     .affect-row {
+      cursor: help;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
