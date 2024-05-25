@@ -1,40 +1,44 @@
 <template>
   <div class="effects">
-    <div class="effect" v-if="Object.values(state.gameState.affects).length == 0">
+    <div class="effect" v-if="!Object.keys(affects).length">
       <div class="name">No effects</div>
     </div>
 
     <NCollapse>
-      <NCollapseItem class="effect"
-        v-for="effect in Object.values(state.gameState.affects)"
-        :key="effect.name"
-      >
-        <template #header>
-          <div class="effects-header">
-            <div class="name" v-html-safe="getEffectName(effect)"></div>
-            <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
-              v-show="typeof effect.timeLeft == 'number'"
-              :status="progressStatus(getTimeLeftPercentage(effect))" :percentage="getTimeLeftPercentage(effect)"
-            />
-          </div>
-        </template>
-
-        <div class="effect-bonuses">
-          <div
-            class="effect-bonus"
-            v-for="{ name, value } in effectBonuses(effect)"
-            :key="name"
-          >
-            <div class="effect-bonus-value bold-white" v-html-safe="(value > 0 ? '+' : '') + value"></div>
-            <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
-          </div>
+      <template v-for="effect in Object.values(affects)"
+                :key="effect.name">
+        <div class="effect" v-if="!(effect.bonuses && effect.timeLeft)">
+          <div class="effects-header"  v-html-safe="getEffectName(effect)" />
         </div>
-      </NCollapseItem>
+        <NCollapseItem class="effect" v-if="effect.bonuses && effect.timeLeft">
+          <template #header>
+            <div class="effects-header">
+              <div class="name" v-html-safe="getEffectName(effect)" />
+              <NProgress type="line" :show-indicator="false" :border-radius="0" :height="4"
+                         v-show="typeof effect.timeLeft == 'number'"
+                         :status="progressStatus(getTimeLeftPercentage(effect))" :percentage="getTimeLeftPercentage(effect)"
+              />
+            </div>
+          </template>
+
+          <div class="effect-bonuses">
+            <div
+                class="effect-bonus"
+                v-for="{ name, value } in effectBonuses(effect)"
+                :key="name"
+            >
+              <div class="effect-bonus-value bold-white" v-html-safe="(value > 0 ? '+' : '') + value"></div>
+              <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
+            </div>
+          </div>
+        </NCollapseItem>
+      </template>
     </NCollapse>
   </div>
 </template>
 
 <script setup>
+defineProps(['affects'])
 import { NProgress, NCollapse, NCollapseItem } from 'naive-ui'
 
 import { state } from '@/static/state'

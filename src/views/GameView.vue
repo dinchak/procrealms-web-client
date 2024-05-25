@@ -1,6 +1,7 @@
 <template>
   <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
         class="game" :class="{
+     'show-mobile-menu': state.options.showMobileMenu,
      'swap-mobile-menu': state.options.swapMobileMenuSide,
      'show-modal-shortcuts': state.options.showGameModalShortcuts
   }">
