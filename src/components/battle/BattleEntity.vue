@@ -158,7 +158,6 @@ const isTargetingPlayer = (participant) => {
 }
 
 function getAffects (participant) {
-  console.debug(participant, entity)
   let affects = []
   if (participant.isDead) {
     affects.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
