@@ -1,5 +1,5 @@
 <template>
-  <div class="party-health-container" :style="{ height: getPartyStatsHeight() + 'px' }">
+  <div class="party-health-container">
     <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
       <div class="name" v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
@@ -32,7 +32,7 @@
 </template>
 <script setup>
 import { ANSI } from '@/static/constants'
-import { state, getPartyStatsHeight } from '@/static/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()
@@ -56,8 +56,8 @@ function getPartyMembers () {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  padding: 0 10px;
-  overflow-x: scroll;
+  gap: 10px;
+  overflow-x: auto;
   background-color: rgb(16, 18, 22);
 
   .party-member {
@@ -65,7 +65,6 @@ function getPartyMembers () {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-right: 10px;
 
     .health-bar {
       width: 201px;

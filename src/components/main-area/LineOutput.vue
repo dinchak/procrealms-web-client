@@ -1,20 +1,25 @@
 <template>
-
-  <n-tabs class="tabs" ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab" @update:value="onAfterChangeTab" :bar-width="20">
+  <n-tabs ref="tabsInstance" v-model:value="currentPane" @before-leave="onBeforeChangeTab"
+          @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
-      <div id="output" class="output" :style="{ height: getOutputHeight() }" ref="output" @scroll="onScroll('output')">
-        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick" @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
+      <div id="output" class="output" ref="output" @scroll="onScroll('output')">
+        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick"
+             @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDownTab('output')">
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
         More
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
       </div>
     </n-tab-pane>
 
     <n-tab-pane name="chat" :tab="getTab('chat')" display-directive="show">
-      <div id="chat" class="output" :style="{ height: getOutputHeight() }" ref="chat" @scroll="onScroll('chat')">
+      <div id="chat" class="output" ref="chat" @scroll="onScroll('chat')">
         <div v-for="(line, i) in state.chat" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-yellow">{{ line.from }}</div>
@@ -24,14 +29,18 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.chat" class="scrollback-control" @click="scrollDownTab('chat')">
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
         More
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
       </div>
     </n-tab-pane>
 
     <n-tab-pane name="trade" :tab="getTab('trade')" display-directive="show">
-      <div id="trade" class="output" :style="{ height: getOutputHeight() }" ref="trade" @scroll="onScroll('trade')">
+      <div id="trade" class="output" ref="trade" @scroll="onScroll('trade')">
         <div v-for="(line, i) in state.trade" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-green">{{ line.from }}</div>
@@ -41,14 +50,18 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.trade" class="scrollback-control" @click="scrollDownTab('trade')">
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
         More
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
       </div>
     </n-tab-pane>
 
     <n-tab-pane name="newbie" :tab="getTab('newbie')" display-directive="show">
-      <div id="newbie" class="output" :style="{ height: getOutputHeight() }" ref="newbie" @scroll="onScroll('newbie')">
+      <div id="newbie" class="output" ref="newbie" @scroll="onScroll('newbie')">
         <div v-for="(line, i) in state.newbie" class="message" :key="`line-${i}`">
           <div class="from">
             <div class="name bold-magenta">{{ line.from }}</div>
@@ -58,9 +71,13 @@
         </div>
       </div>
       <div v-show="state.scrolledBack.newbie" class="scrollback-control" @click="scrollDownTab('newbie')">
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
         More
-        <NIcon><SouthOutlined></SouthOutlined></NIcon>
+        <NIcon>
+          <SouthOutlined></SouthOutlined>
+        </NIcon>
       </div>
     </n-tab-pane>
   </n-tabs>
@@ -72,7 +89,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
-import { state, addLine, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
+import { state, addLine } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -86,7 +103,7 @@ const chat = ref(null)
 const trade = ref(null)
 const newbie = ref(null)
 const tabsInstance = ref(null)
-const currentPane = ref("output") // chat, trade, or newbie
+const currentPane = ref('output') // chat, trade, or newbie
 const refs = { output, chat, trade, newbie }
 
 const { send, cmd } = useWebSocket()
@@ -191,33 +208,33 @@ function lineMouseleave (ev) {
 }
 
 function selectOutputTab () {
-  onBeforeChangeTab("output")
-  currentPane.value = "output"
-  state.activeTab = "output"
+  onBeforeChangeTab('output')
+  currentPane.value = 'output'
+  state.activeTab = 'output'
   nextTick(() => tabsInstance.value?.syncBarPosition())
   onAfterChangeTab(currentPane.value)
 }
 
 function selectChatTab () {
-  onBeforeChangeTab("chat")
-  currentPane.value = "chat"
-  state.activeTab = "chat"
+  onBeforeChangeTab('chat')
+  currentPane.value = 'chat'
+  state.activeTab = 'chat'
   nextTick(() => tabsInstance.value?.syncBarPosition())
   onAfterChangeTab(currentPane.value)
 }
 
 function selectTradeTab () {
-  onBeforeChangeTab("trade")
-  currentPane.value = "trade"
-  state.activeTab = "trade"
+  onBeforeChangeTab('trade')
+  currentPane.value = 'trade'
+  state.activeTab = 'trade'
   nextTick(() => tabsInstance.value?.syncBarPosition())
   onAfterChangeTab(currentPane.value)
 }
 
 function selectNewbieTab () {
-  onBeforeChangeTab("newbie")
-  currentPane.value = "newbie"
-  state.activeTab = "newbie"
+  onBeforeChangeTab('newbie')
+  currentPane.value = 'newbie'
+  state.activeTab = 'newbie'
   nextTick(() => tabsInstance.value?.syncBarPosition())
   onAfterChangeTab(currentPane.value)
 }
@@ -271,32 +288,6 @@ function showDebug () {
   }
 }
 
-function getOutputHeight () {
-  let heightOffset = 47
-
-  if (showHUD()) {
-    heightOffset += getHUDHeight() + 6
-  }
-
-  if (state.gameState.battle.active) {
-    heightOffset = 47
-  }
-
-  if (state.options.showTabs) {
-    heightOffset += 33
-  }
-
-  if (state.options.showPartyStats && !state.gameState.battle.active) {
-    heightOffset += getPartyStatsHeight()
-  }
-
-  if (state.options.showQuickSlots) {
-    heightOffset += 61
-  }
-
-  return `calc(100vh - ${heightOffset}px)`
-}
-
 function showHideTabs () {
   console.log(`show hide tabs`)
   let tabs = document.querySelector('.n-tabs-nav')
@@ -340,7 +331,7 @@ onMounted(() => {
   watchers.push(watch(() => state.chat.length, () => onChanged('chat')))
   watchers.push(watch(() => state.trade.length, () => onChanged('trade')))
   watchers.push(watch(() => state.newbie.length, () => onChanged('newbie')))
-  
+
   watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
   watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
   watchers.push(watch(() => state.options, () => doResize()))
@@ -367,124 +358,142 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
-.content-area {
-  .n-tabs {
-    width: initial;
-    flex: 1;
-    .n-tab-pane {
-      position: relative;
-      padding: 0;
-    }
-  }
-}
 
-.tabs {
+.n-tabs.n-tabs--bar-type {
+  width: initial;
+  height: 100%;
+  padding: 0;
+
+  .n-tabs-tab {
+    padding: 5px;
+  }
+
   .n-tabs-nav {
-    margin: 0 10px;
+    margin: 0;
+    padding: 0;
+    flex-grow: 0;
+
     &.hide {
       display: none;
     }
   }
+}
 
-  .scrollback-control {
-    position: absolute;
-    left: 8px;
-    bottom: 5px;
-    height: 40px;
-    line-height: 40px;
-    width: calc(100% - 13px);
-    background-color: rgba(20, 80, 20, 0.4);
-    font-size: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
+
+.n-tab-pane {
+  position: relative;
+  padding: 0;
+  flex-grow: 1;
+  height: 0;
+}
+</style>
+<style scoped lang="less">
+
+.output {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-basis: fit-content;
+  overflow-y: scroll;
+}
+
+
+.scrollback-control {
+  position: absolute;
+  left: 8px;
+  bottom: 5px;
+  height: 40px;
+  line-height: 40px;
+  width: calc(100% - 13px);
+  background-color: rgba(20, 80, 20, 0.4);
+  font-size: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .n-icon {
+    margin: 0 15px;
+  }
+}
+
+#chat {
+  .message {
+    border-top: 1px solid #433f17;
+
+    &:first-child {
+      border: 0;
+    }
+  }
+}
+
+#trade {
+  .message {
+    border-top: 1px solid #193e17;
+
+    &:first-child {
+      border: 0;
+    }
+  }
+}
+
+#newbie {
+  .message {
+    border-top: 1px solid #33163f;
+
+    &:first-child {
+      border: 0;
+    }
+  }
+}
+
+
+.line {
+  display: block;
+  white-space: pre-wrap;
+  font-weight: normal !important;
+
+  .player-cmd-caret {
+    color: #f8ff25;
+  }
+
+  .player-cmd {
+    color: #fff;
+  }
+}
+
+.message {
+  display: grid;
+  grid-template-columns: 110px calc(100% - 200px) 90px;
+  border-top: 1px solid #181818;
+  margin-top: 5px;
+  padding-top: 5px;
+  align-items: center;
+
+  &:first-child {
+    border: 0;
+  }
+
+  .from {
+    .name {
+      font-size: 0.9rem;
+      line-height: 0.8rem;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .timestamp {
+      font-size: 0.6rem;
+      line-height: 0.6rem;
+      text-align: right;
+    }
+  }
+
+  .body {
     display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .n-icon {
-      margin: 0 15px;
-    }
-  }
-
-  #chat {
-    .message {
-      border-top: 1px solid #433f17;
-      &:first-child {
-        border: 0;
-      }
-    }
-  }
-
-  #trade {
-    .message {
-      border-top: 1px solid #193e17;
-      &:first-child {
-        border: 0;
-      }
-    }
-  }
-
-  #newbie {
-    .message {
-      border-top: 1px solid #33163f;
-      &:first-child {
-        border: 0;
-      }
-    }
-  }
-
-  .output {
-    display: flex;
-    flex-direction: column;
-    flex-basis: fit-content;
-    margin: 5px 10px 5px 10px;
-    position: relative;
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-    .line {
-      display: block;
-      white-space: pre-wrap;
-      font-weight: normal !important;
-
-      .player-cmd-caret {
-        color: #f8ff25;
-      }
-
-      .player-cmd {
-        color: #fff;
-      }
-    }
-
-    .message {
-      display: grid;
-      grid-template-columns: 110px calc(100% - 200px) 90px;
-      border-top: 1px solid #181818;
-      margin-top: 5px;
-      padding-top: 5px;
-      align-items: center;
-      &:first-child {
-        border: 0;
-      }
-      .from {
-        .name {
-          font-size: 0.9rem;
-          line-height: 0.8rem;
-          text-align: right;
-          word-break: break-all;
-        }
-        .timestamp {
-          font-size: 0.6rem;
-          line-height: 0.6rem;
-          text-align: right;
-        }
-      }
-      .body {
-        display: flex;
-        margin-left: 10px;
-      }
-    }
+    margin-left: 10px;
   }
 }
 
@@ -495,8 +504,10 @@ onBeforeUnmount(() => {
         font-size: 1rem;
         line-height: 1rem;
       }
+
       .message {
         grid-template-columns: 90px calc(100% - 90px);
+
         .body {
           font-size: 1rem;
           line-height: 1rem;

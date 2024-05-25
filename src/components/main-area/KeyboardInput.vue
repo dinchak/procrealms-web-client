@@ -1,7 +1,7 @@
 <template>
   <div class="input-wrapper">
     <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
-    <MobileInputControls v-if="state.options.textInputMobileButtons"></MobileInputControls>
+    <MobileInputControls v-if="state.options.textInputMobileButtons" />
   </div>
 </template>
 
@@ -185,6 +185,7 @@ onBeforeUnmount(() => {
   font-size: 0.9rem;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 
   .menu-button {
     color: #fff;
@@ -223,10 +224,10 @@ onBeforeUnmount(() => {
   input {
     background-color: #222;
     border: 0;
-    width: ~"calc(100% - 20px)";
+    flex-grow: 1;
+    flex-basis: 0;
     border-radius: 4px;
     padding: 1px 10px 0 10px;
-    margin: 0 8px 0 8px;
     height: 27px;
     &.output {
       &:focus-visible {

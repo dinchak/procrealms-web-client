@@ -1,5 +1,5 @@
 <template>
-  <div class="effects" :style="{ height: getHUDHeight() + 'px' }">
+  <div class="effects">
     <div class="effect" v-if="Object.values(state.gameState.affects).length == 0">
       <div class="name">No effects</div>
     </div>
@@ -37,7 +37,7 @@
 <script setup>
 import { NProgress, NCollapse, NCollapseItem } from 'naive-ui'
 
-import { state, getHUDHeight } from '@/static/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
@@ -75,10 +75,6 @@ function getEffectBonusLabelClass (bonus) {
 .effects {
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
-  min-width: 200px;
-  width: 100%;
-  margin-right: 10px;
   
   .effect {
     display: flex;
@@ -97,6 +93,7 @@ function getEffectBonusLabelClass (bonus) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+      gap: 5px;
       .n-progress {
         width: 50px;
       }

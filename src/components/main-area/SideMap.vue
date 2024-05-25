@@ -23,10 +23,8 @@ const { ansiToHtml } = useHelpers()
 .side-map {
   display: flex;
   align-items: flex-end;
+  align-self: center;
   flex-direction: column;
-  overflow: hidden;
-  margin-bottom: auto;
-  margin-right: 8px;
   user-select: none;
   .map-container {
     padding-top: 5px;

@@ -87,27 +87,22 @@ function toggleGameModal() {
 </script>
 <style scoped lang="less">
 .interface-overlay {
-  position: absolute;
-  top: 2px;
-  right: 10px;
+  z-index: 2;
   .interface {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+    gap: 5px;
     .n-icon {
       padding: 5px 5px;
       color: #fff;
       cursor: pointer;
       transition: all 0.2s;
-      margin-right: 5px;
       background: rgb(16, 16, 20);
       border: 1px solid rgba(255, 255, 255, 0.24);
       user-select: none;
       transition: all 0.3s;
 
-      &:last-child {
-        margin-right: 0;
-      }
       &:hover {
         border: 1px solid #0cc6c6;
       }
