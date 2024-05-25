@@ -131,6 +131,22 @@ function openGameModal (pane = null) {
   position: absolute;
   top: 5px;
   right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  @media screen and (max-width: 650px) {
+    .game.swap-mobile-menu & {
+      flex-direction: column-reverse;
+      top: auto;
+      bottom: 5px;
+    }
+  }
+  @media screen and (min-width: 651px) {
+    .game.swap-mobile-menu & {
+      right: 272px + 5px;
+    }
+  }
 }
 
 .interface {
@@ -141,6 +157,9 @@ function openGameModal (pane = null) {
 
   @media screen and (max-width: 650px) {
     flex-direction: column-reverse;
+    .game.swap-mobile-menu & {
+      flex-direction: column;
+    }
   }
 
   .n-icon {
@@ -175,8 +194,14 @@ function openGameModal (pane = null) {
   gap: 5px;
   flex-direction: column;
 
-  @media screen and (max-width: 600px) {
+  .game.swap-mobile-menu & {
+    flex-direction: column;
+  }
+  @media screen and (max-width: 650px) {
     position: static;
+    .game.swap-mobile-menu & {
+      flex-direction: column-reverse;
+    }
   }
 
   .shortcut {
