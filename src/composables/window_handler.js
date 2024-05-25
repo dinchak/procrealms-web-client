@@ -17,8 +17,9 @@ export function useWindowHandler () {
     }
   }
 
-  function calcTerminalSize (outputWidth, outputHeight) {
-    let output = document.getElementById('output')
+  function calcTerminalSize () {
+    let output = document.getElementById('output')?.parentElement;
+
     if (!output) {
       return DEFAULT_TERMINAL_SIZE
     }
@@ -28,14 +29,21 @@ export function useWindowHandler () {
       return DEFAULT_TERMINAL_SIZE
     }
 
-    let outputStyle = getComputedStyle(outputLine)
+    const outputStyle = getComputedStyle(output)
+
+    let outputWidth = output.clientWidth;
+    let outputHeight = output.clientHeight;
+    outputWidth -= parseFloat(outputStyle.paddingLeft) + parseFloat(outputStyle.paddingRight);
+    outputHeight -= parseFloat(outputStyle.paddingTop) + parseFloat(outputStyle.paddingBottom);
+
+    const lineStyle = getComputedStyle(outputLine)
 
     let canvas = calcTerminalSize.canvas || (calcTerminalSize.canvas = document.createElement("canvas"))
     let context = canvas.getContext("2d")
-    context.font = outputStyle.fontSize + ' ' + outputStyle.fontFamily
+    context.font = lineStyle.fontSize + ' ' + lineStyle.fontFamily
 
     let charWidth = context.measureText('-').width
-    let charHeight = Number(outputStyle.lineHeight.replace('px', ''))
+    let charHeight = Number(lineStyle.lineHeight.replace('px', ''))
 
     let width = Math.floor(outputWidth  / charWidth)
     let height = Math.floor(outputHeight  / charHeight)

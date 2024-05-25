@@ -128,10 +128,20 @@ body, html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+//*, * > * {
+  //overflow: auto;
+//}
+
 ::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
   background: transparent;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 0 !important;
+}
+
+::-webkit-scrollbar:vertical {
+  width: 0 !important;
 }
 
 #app {

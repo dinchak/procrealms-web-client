@@ -9,11 +9,6 @@
     </div>
 
     <div class="option">
-      <label for="option-fixed-minimap">Fixed Minimap</label>
-      <n-switch id="option-fixed-minimap" v-model:value="state.options.fixedMobileMenuMap" aria-label="Fixed Mini Map"></n-switch>
-    </div>
-
-    <div class="option">
       <label for="option-swap-menu-side">Swap Menu Side</label>
       <n-switch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side"></n-switch>
     </div>

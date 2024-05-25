@@ -1,31 +1,34 @@
 <template>
-  <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected" class="game" :class="{
-     'swap-mobile-menu': state.options.swapMobileMenuSide
+  <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
+        class="game" :class="{
+     'swap-mobile-menu': state.options.swapMobileMenuSide,
+     'show-modal-shortcuts': state.options.showGameModalShortcuts
   }">
+    <ButtonControls/>
     <div class="game-layout">
-      <MobileMenu />
+      <MobileMenu/>
       <main class="vertical-split">
         <div class="content-split">
           <div class="line-area">
-            <LineOutput />
+            <LineOutput/>
           </div>
-          <div class="side-area">
-            <ButtonControls />
-            <div class="row side-top">
-              <SideMap v-if="!state.gameState.battle.active" />
-              <GameModalShortcuts v-if="state.options.showGameModalShortcuts" />
+          <div class="side-area" v-if="(state.options.showSideMap && !state.gameState.battle.active) || (state.options.showSideAliases || (state.options.showSideMovement && !state.gameState.battle.active))">
+            <div class="row side-top" v-if="state.options.showSideMap && !state.gameState.battle.active">
+              <SideMap />
             </div>
-            <div class="row side-bottom" v-if="state.options.showSideAliases || state.options.showSideMovement">
-              <SideAliases />
-              <SideMovement v-if="!state.gameState.battle.active" />
+            <div class="row side-bottom" v-if="state.options.showSideAliases || (state.options.showSideMovement && !state.gameState.battle.active)">
+              <SideAliases/>
+              <SideMovement/>
             </div>
           </div>
         </div>
-        <OverworldHUD v-if="!state.gameState.battle.active" />
-        <QuickSlots v-if="state.options.showQuickSlots" />
-        <QuickSlotHandlers />
-        <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active" />
-        <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']" />
+        <div class="bottom-split">
+          <OverworldHUD v-if="!state.gameState.battle.active"/>
+          <QuickSlots v-if="state.options.showQuickSlots"/>
+          <QuickSlotHandlers/>
+          <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
+          <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"/>
+        </div>
       </main>
     </div>
     <LogoutModal/>
@@ -43,7 +46,6 @@ import { NEl, NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
-import GameModalShortcuts from '@/components/main-area/GameModalShortcuts.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
 import SideAliases from '@/components/main-area/SideAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
@@ -280,11 +282,6 @@ onBeforeUnmount(() => {
   width: 100%;
   position: relative;
 
-  &.swap-mobile-menu {
-    .game-layout {
-      flex-direction: row-reverse;
-    }
-  }
 }
 
 .game-layout {
@@ -292,55 +289,86 @@ onBeforeUnmount(() => {
   flex-direction: row;
   height: 100%;
   width: 100%;
+
+  .game.swap-mobile-menu & {
+    flex-direction: row-reverse;
+  }
+
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+    .game.swap-mobile-menu & {
+      flex-direction: column-reverse;
+    }
+  }
 }
 
 .vertical-split {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  flex-basis: max-content;
   align-items: stretch;
   padding-bottom: 5px;
-  width: 0;
+  flex: 1 1 auto;
 
   > * {
-    flex-grow: 0;
     padding: 5px 5px 5px 10px;
+    flex: 0 0 content;
   }
 }
 
 .content-split {
-  flex-grow: 1 !important;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: stretch;
-}
+  flex: 1 1 0;
+  overflow: auto;
 
-.line-area {
-  flex-grow: 1;
-  flex-basis: max-content;
-}
-.side-area {
-  flex-basis: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    gap: 5px;
-  }
+  .line-area {
+    flex: 1 1 auto;
+    overflow: visible;
 
-  .side-top {
     &:last-child {
-      flex-grow: 1;
+      padding-right: 34px + 10px;
     }
   }
-  .side-bottom {
-    flex-grow: 1;
-    height: 0;
+
+  .side-area {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      gap: 5px;
+
+      &:first-child {
+        padding-top: 34px + 10px;
+
+        .game.show-modal-shortcuts & {
+          padding-right: 34px + 10px;
+        }
+      }
+    }
+
+    .side-top {
+      min-height: 300px;
+
+      &:last-child {
+        flex-grow: 1;
+      }
+    }
+
+    .side-bottom {
+      flex-grow: 1;
+      height: 0;
+    }
   }
+}
+
+.bottom-split {
+  flex: 0 0 content;
 }
 </style>
