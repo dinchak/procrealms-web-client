@@ -28,11 +28,16 @@
       </div>
 
       <div class="bottom-bar">
-        <div class="shortflags" v-html-safe="getShortFlags(member)"/>
+        <n-popover trigger="hover">
+          <template #trigger>
+            <div class="shortflags" v-html-safe="getShortFlags(member)"/>
+          </template>
+          <HUDEffects :affects="member.affects" />
+        </n-popover>
         <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
           <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
           <div class="food-bar-content">
-            {{ (member.food / member.maxFood) * 100 }} FD
+            {{ Math.round((member.food / member.maxFood) * 100) }} FD
           </div>
         </div>
       </div>
@@ -43,10 +48,13 @@
 import { ANSI } from '@/static/constants'
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
+import { NPopover } from 'naive-ui'
+import HUDEffects from '@/components/hud/HUDEffects.vue'
 
 const { ansiToHtml } = useHelpers()
 
 function getShortFlags (member) {
+  console.debug(member)
   return ansiToHtml(Object.values(member.affects).map(affect => affect.shortFlag).join(' '),
   )
 }
