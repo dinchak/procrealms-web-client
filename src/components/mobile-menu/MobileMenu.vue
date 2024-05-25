@@ -49,7 +49,6 @@ function openCloseSider () {
   width: 272px;
   margin-right: 0;
   margin-left: 0;
-  padding-top: 10px;
 
   &.hide {
     margin-left: -272px;
