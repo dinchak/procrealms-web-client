@@ -28,14 +28,17 @@
             </div>
 
             <div class="affect-area">
-              <n-popover trigger="hover" placement="top-start">
+              <n-popover trigger="hover" placement="top-start" v-if="entity">
                 <template #trigger>
-                  <div class="affect-row">
-                    <span class="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
+                  <div className="affect-row popover">
+                    <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
                   </div>
                 </template>
                 <HUDEffects :affects="entity.affects"/>
               </n-popover>
+              <div className="affect-row" v-else>
+                <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
+              </div>
               <div class="bonus-row">
         <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
                 <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
@@ -400,13 +403,16 @@ function getTarget (participant) {
     }
 
     .affect-row {
-      cursor: help;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       gap: 4px 4px;
       flex-grow: 1;
       justify-content: flex-start;
+
+      &.popover {
+        cursor: help;
+      }
     }
 
     .bonus-row {
