@@ -29,7 +29,8 @@ function getAliases () {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 200px;
+  max-width: 200px;
+  max-height: 133px;
   justify-content: center;
   align-content: flex-start;
 
