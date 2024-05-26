@@ -5,7 +5,7 @@ let trackLoading = false
 
 export async function playTrackByName(name) {
   const { currentTrack } = state.music;
-  if (currentTrack.name === name) return;
+  if (currentTrack?.name === name) return;
   let track = MUSIC_TRACKS.find(t => t.name === name)
   if (!track) return;
   await startPlaying(track)
