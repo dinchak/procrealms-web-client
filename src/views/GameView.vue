@@ -370,6 +370,10 @@ onBeforeUnmount(() => {
 }
 
 .bottom-split {
+  padding: 0;
   flex: 0 0 content;
+  > * {
+    padding: 5px 5px 5px 10px;
+  }
 }
 </style>
