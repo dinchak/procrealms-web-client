@@ -40,7 +40,7 @@ import MovementControls from '@/components/common/MovementControls.vue'
   box-sizing: border-box;
   transition: transform 0.2s, opacity 0.5s;
   opacity: 1;
-  min-width: 272px; // original width of n-layout sider
+  min-width: 272px;
   width: 272px;
   padding: 10px;
   flex: 0 0 auto;
