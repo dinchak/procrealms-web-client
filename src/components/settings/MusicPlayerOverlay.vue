@@ -12,7 +12,8 @@ import MusicPlayer from '@/components/common/MusicPlayer.vue'
 <style scoped lang="less">
 .music-player-container {
   position: absolute;
-  right: 36px;
+  top: 34px + 5px;
+  right: 34px + 5px;
   z-index: 3;
   display: flex;
   flex-direction: row;
@@ -23,5 +24,11 @@ import MusicPlayer from '@/components/common/MusicPlayer.vue'
   padding-top: 4px;
   background-color: rgba(0, 0, 0, 0.9);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+
+  @media screen and (max-width: 650px) {
+    top: 0;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
 }
 </style>
