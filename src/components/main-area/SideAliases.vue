@@ -30,9 +30,18 @@ function getAliases () {
   flex-direction: row;
   flex-wrap: wrap;
   max-width: 200px;
-  max-height: 133px;
+  max-height: 130px;
   justify-content: center;
   align-content: flex-start;
+
+  @media screen and (max-width: 900px) {
+    .game.show-mobile-menu & {
+      max-width: 100px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    max-width: 100px;
+  }
 
   overflow-y: scroll;
   .n-button {
