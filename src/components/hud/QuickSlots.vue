@@ -227,7 +227,6 @@ function getSlotClass (slot) {
   padding: 5px 0;
   user-select: none;
   overflow-x: scroll;
-  width: 0;
 
   .quick-scroller {
     display: flex;
@@ -235,6 +234,7 @@ function getSlotClass (slot) {
     background-color: rgb(16, 18, 22);
     justify-content: left;
     gap: 5px;
+    width: 0;
   }
 
   &.mobile-layout-mode {
