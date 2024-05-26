@@ -338,6 +338,7 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    overflow-y: auto;
 
     .row {
       box-sizing: border-box;
@@ -365,7 +366,6 @@ onBeforeUnmount(() => {
 
     .side-bottom {
       flex-grow: 1;
-      height: 0;
     }
   }
 }
