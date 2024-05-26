@@ -589,13 +589,22 @@ export function useHelpers () {
     }
   
     return bonuses.concat(effect.bonuses)
-  }  
+  }
+
+  function isOverflowX(element) {
+    return element.scrollWidth !== Math.max(element.offsetWidth, element.clientWidth)
+  }
+
+  function isOverflowY(element) {
+    return element.scrollHeight !== Math.max(element.offsetHeight, element.clientHeight)
+  }
   
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
-    calcMapSize, strToLines, progressStatus, effectBonuses
+    calcMapSize, strToLines, progressStatus, effectBonuses,
+    isOverflowX, isOverflowY
   }
 }

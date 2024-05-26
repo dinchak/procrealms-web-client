@@ -1,48 +1,52 @@
 <template>
-  <n-layout has-sider
-    v-if="state.token && state.connected && !state.disconnected" class="game" 
-    :sider-placement="state.options.swapMobileMenuSide ? 'right' : 'left'">
-    <MobileMenu v-if="!state.options.swapMobileMenuSide"></MobileMenu>
-    <n-layout>
-      <LogoutModal></LogoutModal>
-      <HelpModal></HelpModal>
-      <TriggersModal></TriggersModal>
-      <GameModal></GameModal>
-      <MercModal></MercModal>
-
-      <div class="content-area">
-        <LineOutput></LineOutput>
-        <ButtonControls></ButtonControls>
-        <div class="side-area" :style="{ height: getSideAreaHeight() }">
-          <div class="row">
-            <SideMap v-if="!state.gameState.battle.active"></SideMap>
-            <GameModalShortcuts v-if="state.options.showGameModalShortcuts"></GameModalShortcuts>
+  <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
+        class="game" :class="{
+     'show-mobile-menu': state.options.showMobileMenu,
+     'swap-mobile-menu': state.options.swapMobileMenuSide,
+     'show-modal-shortcuts': state.options.showGameModalShortcuts
+  }">
+    <ButtonControls/>
+    <div class="game-layout">
+      <MobileMenu/>
+      <main class="vertical-split">
+        <div class="content-split">
+          <div class="line-area">
+            <LineOutput/>
           </div>
-          <div class="row" :style="{ marginTop: '10px' }">
-            <SideAliases></SideAliases>
-            <SideMovement v-if="!state.gameState.battle.active"></SideMovement>
+          <div class="side-area" v-if="(state.options.showSideMap && !state.gameState.battle.active) || (state.options.showSideAliases || (state.options.showSideMovement && !state.gameState.battle.active))">
+            <div class="row side-top" v-if="state.options.showSideMap && !state.gameState.battle.active">
+              <SideMap />
+            </div>
+            <div class="row side-bottom" v-if="state.options.showSideAliases || (state.options.showSideMovement && !state.gameState.battle.active)">
+              <SideAliases/>
+              <SideMovement/>
+            </div>
           </div>
         </div>
-      </div>
-      <OverworldHUD v-if="!state.gameState.battle.active"></OverworldHUD>
-      <QuickSlots v-if="state.options.showQuickSlots"></QuickSlots>
-      <QuickSlotHandlers></QuickSlotHandlers>
-      <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"></PartyStats>
-      <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"></KeyboardInput>
-
-    </n-layout>
-    <MobileMenu v-if="state.options.swapMobileMenuSide"></MobileMenu>
-    <RadialOverlay></RadialOverlay>
-  </n-layout>
+        <div class="bottom-split">
+          <OverworldHUD v-if="!state.gameState.battle.active"/>
+          <QuickSlots v-if="state.options.showQuickSlots"/>
+          <QuickSlotHandlers/>
+          <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
+          <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"/>
+        </div>
+      </main>
+    </div>
+    <LogoutModal/>
+    <HelpModal/>
+    <TriggersModal/>
+    <GameModal/>
+    <MercModal/>
+    <RadialOverlay/>
+  </n-el>
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { NLayout } from 'naive-ui'
+import { NEl, NLayout } from 'naive-ui'
 
 import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import GameModal from '@/components/modals/GameModal.vue'
-import GameModalShortcuts from '@/components/main-area/GameModalShortcuts.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
 import SideAliases from '@/components/main-area/SideAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
@@ -57,9 +61,9 @@ import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import SideMap from '@/components/main-area/SideMap.vue'
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
-import TriggersModal from "@/components/modals/TriggersModal.vue"
+import TriggersModal from '@/components/modals/TriggersModal.vue'
 
-import { state, setMode, showHUD, getHUDHeight, getPartyStatsHeight } from '@/static/state'
+import { state, setMode } from '@/static/state'
 import { USER_GESTURE_EVENTS } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
@@ -83,41 +87,24 @@ function openGameModal () {
 function openScore () {
   setMode('modal')
   state.modals.gameModal = true
-  state.gamepadTab = "score"
+  state.gamepadTab = 'score'
 }
 
 function openInventory () {
   setMode('modal')
   state.modals.gameModal = true
-  state.gamepadTab = "inventory"
+  state.gamepadTab = 'inventory'
 }
 
 function openQuests () {
   setMode('modal')
   state.modals.gameModal = true
-  state.gamepadTab = "quests"
+  state.gamepadTab = 'quests'
 }
 
 function openHelpModal () {
   setMode('modal')
   state.modals.helpModal = true
-}
-
-function getSideAreaHeight () {
-  let heightOffset = 90
-  if (state.options.showQuickSlots) {
-    heightOffset += 56
-  }
-
-  if (state.options.showPartyStats && !state.gameState.battle.active) {
-    heightOffset += getPartyStatsHeight()
-  }
-
-  if (showHUD()) {
-    heightOffset += getHUDHeight()
-  }
-
-  return `calc(100vh - ${heightOffset}px)`
 }
 
 function onWindowFocusBlur () {
@@ -290,56 +277,99 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 .game {
-  height: 100vh;
-  .stats-area {
+  height: 100%;
+  width: 100%;
+  position: relative;
+
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+
+  .game.swap-mobile-menu & {
+    flex-direction: row-reverse;
+  }
+
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+    .game.swap-mobile-menu & {
+      flex-direction: column-reverse;
+    }
+  }
+}
+
+.vertical-split {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-bottom: 5px;
+  flex: 1 1 auto;
+
+  > * {
+    padding: 5px 5px 5px 10px;
+    flex: 0 0 content;
+  }
+}
+
+.content-split {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: stretch;
+  flex: 1 1 0;
+  overflow: auto;
+
+  .line-area {
+    flex: 1 1 auto;
+    overflow: visible;
+
+    &:last-child {
+      padding-right: 34px + 10px;
+    }
+  }
+
+  .side-area {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    .bottom-area {
-      border-top: 1px solid rgba(255, 255, 255, 0.09);
-    }
-    .map-area {
-      align-items: center;
+    gap: 5px;
+
+    .row {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
-      width: 100%;
+      justify-content: flex-end;
+      gap: 5px;
 
-      .map-icon {
-        font-size: 1.9rem;
-        text-align: left;
-        cursor: pointer;
+      &:first-child {
+        padding-top: 34px + 10px;
+
+        .game.show-modal-shortcuts & {
+          padding-right: 34px + 10px;
+        }
       }
     }
-  }
 
-  .content-area {
-    flex-basis: fit-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    .side-area {
-      margin-top: 40px;
-      margin-right: 10px;
-      overflow-y: scroll;
-      .row {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+    .side-top {
+      min-height: 300px;
+
+      &:last-child {
+        flex-grow: 1;
       }
+    }
+
+    .side-bottom {
+      flex-grow: 1;
+      height: 0;
     }
   }
 }
 
-.n-layout {
-  z-index: 1;
+.bottom-split {
+  flex: 0 0 content;
 }
-
-.n-layout-sider {
-  z-index: 2;
-}
-
 </style>

@@ -1,8 +1,9 @@
 <template>
-  <div class="party-health-container" :style="{ height: getPartyStatsHeight() + 'px' }">
+  <div class="party-health-container">
     <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
-      <div class="name" v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
+      <div class="name"
+           v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
 
       <div class="health-bar" :style="{ height: `calc(${state.options.fontSize})` }">
         <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
@@ -26,22 +27,35 @@
         </div>
       </div>
 
-      <div class="shortflags" v-html-safe="getShortFlags(member)"></div>
+      <div class="bottom-bar">
+        <n-popover trigger="hover" placement="top-start">
+          <template #trigger>
+            <div class="shortflags" v-html-safe="getShortFlags(member)"/>
+          </template>
+          <HUDEffects :affects="member.affects" />
+        </n-popover>
+        <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
+          <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
+          <div class="food-bar-content">
+            {{ Math.round((member.food / member.maxFood) * 100) }} FD
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
 import { ANSI } from '@/static/constants'
-import { state, getPartyStatsHeight } from '@/static/state'
+import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
+import { NPopover } from 'naive-ui'
+import HUDEffects from '@/components/hud/HUDEffects.vue'
 
 const { ansiToHtml } = useHelpers()
 
 function getShortFlags (member) {
-  return ansiToHtml(
-    Object.values(member.affects)
-      .map(affect => affect.shortFlag)
-      .join(' ')
+  console.debug(member)
+  return ansiToHtml(Object.values(member.affects).map(affect => affect.shortFlag).join(' '),
   )
 }
 
@@ -56,26 +70,26 @@ function getPartyMembers () {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  padding: 0 10px;
-  overflow-x: scroll;
+  gap: 10px;
+  overflow-x: auto;
   background-color: rgb(16, 18, 22);
 
   .party-member {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    margin-right: 10px;
+    align-items: stretch;
+    width: 201px;
+    gap: 3px;
 
-    .health-bar {
-      width: 201px;
+
+    .health-bar, .food-bar {
       background-color: #333;
       overflow: hidden;
       position: relative;
       border: 1px solid #59d162;
-      margin-bottom: 2px;
 
-      .health-bar-fill {
+      .health-bar-fill, .food-bar-fill {
         position: absolute;
         top: 0;
         left: 0;
@@ -83,7 +97,7 @@ function getPartyMembers () {
         background: linear-gradient(to right, #206c2d, #21a425);
       }
 
-      .health-bar-content {
+      .health-bar-content, .food-bar-content {
         width: 100%;
         color: white;
         text-align: center;
@@ -98,9 +112,10 @@ function getPartyMembers () {
     .energy-stamina-bars {
       display: flex;
       flex-direction: row;
-      
+      gap: 3px;
+
       .energy-bar, .stamina-bar {
-        width: 98px;
+        flex-grow: 1;
         background-color: #333;
         overflow: hidden;
         position: relative;
@@ -134,21 +149,44 @@ function getPartyMembers () {
 
       .energy-bar {
         border: 1px solid #61d3df;
-        margin-right: 3px;
       }
-      
+
       .stamina-bar {
         border: 1px solid #cbcb0d;
       }
     }
 
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 3px;
+    }
+
     .shortflags {
+      flex-grow: 1;
       text-align: left;
-      width: 100%;
       height: 18px;
+      display: flex;
+      gap: 3px;
+      overflow-x: hidden;
+      cursor: help;
+    }
+
+    .food-bar {
+      border: 1px solid #d15959;
+      width: 75px;
+
+      .food-bar-fill {
+        background: linear-gradient(to right, #6c2020, #a42121);
+      }
+
+      .food-bar-content {
+
+      }
     }
 
     .name {
+      text-align: center;
     }
   }
 }

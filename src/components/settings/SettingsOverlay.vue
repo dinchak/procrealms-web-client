@@ -1,9 +1,9 @@
 <template>
   <div class="hud-settings-container">
-    <MapResize></MapResize>
-    <InterfaceToggles></InterfaceToggles>
-    <FontSelector></FontSelector>
-    <SettingsActions></SettingsActions>
+    <MapResize />
+    <InterfaceToggles />
+    <FontSelector />
+    <SettingsActions />
   </div>
 </template>
 <script setup>
@@ -18,8 +18,8 @@ import SettingsActions from '@/components/settings/SettingsActions.vue'
 <style scoped lang="less">
 .hud-settings-container {
   position: absolute;
-  top: 36px;
-  right: 0px;
+  top: 34px + 5px;
+  right: 0;
   z-index: 3;
   display: flex;
   flex-direction: row;
@@ -31,12 +31,13 @@ import SettingsActions from '@/components/settings/SettingsActions.vue'
   gap: 20px;
   background-color: rgba(0, 0, 0, 0.9);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-}
 
-@media screen and (max-width: 700px) {
-  .hud-settings-container {
+  @media screen and (max-width: 650px) {
+    top: 0;
+    right: 34px + 5px;
     flex-wrap: wrap;
     gap: 5px;
   }
 }
+
 </style>

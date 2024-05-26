@@ -1,5 +1,8 @@
 <template>
-  <div class="mobile-movement">
+  <div class="movement" :class="{
+    'is-mobile-menu': isMobileMenu ?? false,
+    'is-side': !isMobileMenu ?? true
+  }">
     <div class="row">
       <NIcon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></NIcon>
       <NIcon :class="getMovementClass('north')" @click="move('north')"><NorthOutlined></NorthOutlined></NIcon>
@@ -33,8 +36,13 @@ import { NIcon } from 'naive-ui'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/static/state'
+import { defineProps } from 'vue'
 
 const { move, enter } = useWebSocket()
+
+const props = defineProps({
+  isMobileMenu: Boolean,
+})
 
 function getMovementClass (dir) {
   let { room } = state.gameState
@@ -70,11 +78,44 @@ function getEnterClass () {
 
 </script>
 
-<style lang="less">
-.mobile-movement {
+<style scoped lang="less">
+
+.movement {
   display: flex;
   flex-direction: column;
   user-select: none;
+}
+.movement.is-mobile-menu {
+  .row {
+    display: flex;
+    flex-direction: row;
+    .direction {
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 45px;
+      height: 45px;
+      background-color: #333;
+      border: 1px solid #222;
+      transition: all 0.3s;
+      border-collapse: collapse;
+      margin-bottom: -1px;
+      margin-left: -1px;
+      &.active {
+        background-color: darken(#16c60c, 30%);
+        border: 1px solid darken(#16c60c, 25%);
+        @media (hover: hover) {
+          &:hover {
+            cursor: pointer;
+            background-color: darken(#16c60c, 33%);
+          }
+        }
+      }
+    }
+  }
+}
+.movement.is-side {
   .row {
     display: flex;
     flex-direction: row;

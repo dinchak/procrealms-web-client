@@ -1,6 +1,6 @@
 <template>
-  <div class="side-movement" v-if="state.options.showSideMovement">
-    <MovementControls></MovementControls>
+  <div class="side-movement" v-if="state.options.showSideMovement && !state.gameState.battle.active">
+    <MovementControls />
   </div>
 </template>
 

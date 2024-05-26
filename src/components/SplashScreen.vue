@@ -1,6 +1,5 @@
 <template>
   <div class="splashscreen">
-
     <h1>Procedural Realms</h1>
     
     <div class="server-status" v-if="state.disconnected">
@@ -146,7 +145,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 
   h1 {
     font-family: 'Pixelify Sans', sans-serif;

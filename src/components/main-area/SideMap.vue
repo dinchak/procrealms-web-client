@@ -1,5 +1,5 @@
 <template>
-  <div class="side-map" v-if="state.options.showSideMap">
+  <div class="side-map" v-if="state.options.showSideMap && !state.gameState.battle.active">
     <div class="map-container">
       <div 
         class="map-line"
@@ -23,13 +23,10 @@ const { ansiToHtml } = useHelpers()
 .side-map {
   display: flex;
   align-items: flex-end;
+  align-self: center;
   flex-direction: column;
-  overflow: hidden;
-  margin-bottom: auto;
-  margin-right: 8px;
   user-select: none;
   .map-container {
-    padding-top: 5px;
     .map-line {
       white-space: pre;
     }

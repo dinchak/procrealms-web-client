@@ -1,71 +1,82 @@
 <template>
-  <div :class="'quick-container' + getMobileLayoutClass()">
-    <div :class="getAttackButtonClass()" v-if="state.gameState.battle.active" @click="conditionalCmd(isAttackButtonActive, 'attack')">
-      <div class="slot-label" v-if="isAttackButtonActive()">
-        <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
+  <div :class="{
+    'quick-container': true,
+    'mobile-layout-mode': isMobileMenu ?? false
+  }">
+    <div class="quick-scroller">
+      <div :class="getAttackButtonClass()" v-if="state.gameState.battle.active"
+           @click="conditionalCmd(isAttackButtonActive, 'attack')">
+        <div class="slot-label" v-if="isAttackButtonActive()">
+          <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">A</span><span class="bold-black">ttack</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">A</span><span class="bold-black">ttack</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
-    </div>
 
-    <div :class="getDefendButtonClass()" v-if="state.gameState.battle.active" @click="conditionalCmd(isDefendButtonActive, 'defend')">
-      <div class="slot-label" v-if="isDefendButtonActive()">
-        <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
+      <div :class="getDefendButtonClass()" v-if="state.gameState.battle.active"
+           @click="conditionalCmd(isDefendButtonActive, 'defend')">
+        <div class="slot-label" v-if="isDefendButtonActive()">
+          <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">D</span><span class="bold-black">efend</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">D</span><span class="bold-black">efend</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
-    </div>
 
-    <div :class="getFleeButtonClass()" v-if="state.gameState.battle.active" @click="conditionalCmd(isFleeButtonActive,'flee')">
-      <div class="slot-label" v-if="isFleeButtonActive()">
-        <span class="bold-yellow">F</span><span class="yellow">lee</span>
+      <div :class="getFleeButtonClass()" v-if="state.gameState.battle.active"
+           @click="conditionalCmd(isFleeButtonActive,'flee')">
+        <div class="slot-label" v-if="isFleeButtonActive()">
+          <span class="bold-yellow">F</span><span class="yellow">lee</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">F</span><span class="bold-black">lee</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">F</span><span class="bold-black">lee</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
-    </div>
 
-    <div :class="getBattleButtonClass()" v-if="!state.gameState.battle.active" @click="conditionalCmd(isBattleButtonActive, 'battle')">
-      <div class="slot-label" v-if="isBattleButtonActive()">
-        <span class="bold-yellow">B</span><span class="bold-red">attle</span>
+      <div :class="getBattleButtonClass()" v-if="!state.gameState.battle.active"
+           @click="conditionalCmd(isBattleButtonActive, 'battle')">
+        <div class="slot-label" v-if="isBattleButtonActive()">
+          <span class="bold-yellow">B</span><span class="bold-red">attle</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">B</span><span class="bold-black">attle</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">B</span><span class="bold-black">attle</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
-    </div>
 
-    <div :class="getHarvestButtonClass()" v-if="!state.gameState.battle.active" @click="conditionalCmd(isHarvestButtonActive, 'harvest')">
-      <div class="slot-label" v-if="isHarvestButtonActive()">
-        <span class="bold-yellow">H</span><span class="yellow">arvest</span>
+      <div :class="getHarvestButtonClass()" v-if="!state.gameState.battle.active"
+           @click="conditionalCmd(isHarvestButtonActive, 'harvest')">
+        <div class="slot-label" v-if="isHarvestButtonActive()">
+          <span class="bold-yellow">H</span><span class="yellow">arvest</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">H</span><span class="bold-black">arvest</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">H</span><span class="bold-black">arvest</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
-    </div>
 
-    <div :class="getLootButtonClass()" v-if="!state.gameState.battle.active" @click="conditionalCmd(isLootButtonActive, 'loot')">
-      <div class="slot-label" v-if="isLootButtonActive()">
-        <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
+      <div :class="getLootButtonClass()" v-if="!state.gameState.battle.active"
+           @click="conditionalCmd(isLootButtonActive, 'loot')">
+        <div class="slot-label" v-if="isLootButtonActive()">
+          <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">L</span><span class="bold-black">oot</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
-      <div class="slot-label" v-else>
-        <span class="white">L</span><span class="bold-black">oot</span>
-      </div>
-      <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
-    </div>
 
-    <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
-      <NProgress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success"
-                 :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100"
-                 :show-indicator="false"/>
-      <div class="slot-label">{{ slot.label }}</div>
-      <div class="slot-number">{{ slot.slot }}</div>
+      <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
+        <NProgress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success"
+                   :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100"
+                   :show-indicator="false"/>
+        <div class="slot-label">{{ slot.label }}</div>
+        <div class="slot-number">{{ slot.slot }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -82,37 +93,39 @@ const { cmd } = useWebSocket()
 const { isGamepadConnected } = useHelpers()
 
 const props = defineProps({
-  layoutMode: String,
+  isMobileMenu: Boolean,
 })
-
-const { layoutMode } = toRefs(props)
 
 let actionTimeout = null
 
-function conditionalCmd(condition, cmdString) {
-  if (condition()) cmd(cmdString);
+function conditionalCmd (condition, cmdString) {
+  if (condition()) cmd(cmdString)
 }
-function isAttackButtonActive() {
-  return state.gameState.battle.active && state.gameState.battle.myTurn;
+
+function isAttackButtonActive () {
+  return state.gameState.battle.active && state.gameState.battle.myTurn
 }
+
 function getAttackButtonClass () {
   let classes = ['quick-slot', 'attack']
   if (isAttackButtonActive()) classes.push('active')
   return classes.join(' ')
 }
 
-function isDefendButtonActive() {
-  return state.gameState.battle.active && state.gameState.battle.myTurn;
+function isDefendButtonActive () {
+  return state.gameState.battle.active && state.gameState.battle.myTurn
 }
+
 function getDefendButtonClass () {
   let classes = ['quick-slot', 'defend']
   if (isDefendButtonActive()) classes.push('active')
   return classes.join(' ')
 }
 
-function isFleeButtonActive() {
-  return state.gameState.battle.active && state.gameState.battle.myTurn;
+function isFleeButtonActive () {
+  return state.gameState.battle.active && state.gameState.battle.myTurn
 }
+
 function getFleeButtonClass () {
   let classes = ['quick-slot', 'flee']
   if (isFleeButtonActive()) classes.push('active')
@@ -120,26 +133,29 @@ function getFleeButtonClass () {
 }
 
 function isBattleButtonActive () {
-  return state.gameState.player.canBattle;
+  return state.gameState.player.canBattle
 }
+
 function getBattleButtonClass () {
   let classes = ['quick-slot', 'battle']
   if (isBattleButtonActive()) classes.push('active')
   return classes.join(' ')
 }
 
-function isHarvestButtonActive() {
-  return state.gameState.player.canHarvest;
+function isHarvestButtonActive () {
+  return state.gameState.player.canHarvest
 }
+
 function getHarvestButtonClass () {
   let classes = ['quick-slot', 'harvest']
   if (isHarvestButtonActive()) classes.push('active')
   return classes.join(' ')
 }
 
-function isLootButtonActive() {
-  return state.gameState.player.canLoot;
+function isLootButtonActive () {
+  return state.gameState.player.canLoot
 }
+
 function getLootButtonClass () {
   let classes = ['quick-slot', 'loot']
   if (isLootButtonActive()) classes.push('active')
@@ -176,29 +192,20 @@ function getSkill (slot) {
   return (state.gameState.skills || {})[slot.label]
 }
 
-function getMobileLayoutClass () {
-  if (layoutMode.value === 'mobile') {
-    return ' mobile-layout-mode'
-  }
-  return ''
-}
-
 function isActive (slot) {
   let skill = getSkill(slot)
 
-  if (!skill) return true;
+  if (!skill) return true
 
   if (skill.timeLeft) {
     return false
-  }
-  else if (!skill.type.includes('combat') && state.gameState.battle.active) {
-    return false;
-  }
-  else if (!skill.type.includes('overworld') && (!state.gameState.battle.active || !state.gameState.battle.myTurn)) {
-    return false;
+  } else if (!skill.type.includes('combat') && state.gameState.battle.active) {
+    return false
+  } else if (!skill.type.includes('overworld') && (!state.gameState.battle.active || !state.gameState.battle.myTurn)) {
+    return false
   }
 
-  return true;
+  return true
 }
 
 function getSlotClass (slot) {
@@ -216,36 +223,49 @@ function getSlotClass (slot) {
 <style scoped lang="less">
 
 .quick-container {
-  display: flex;
-  flex-direction: row;
-  margin-left: 9px;
-  background-color: rgb(16, 18, 22);
-  margin-right: 8px;
-  overflow-x: scroll;
+  box-sizing: border-box;
   padding: 5px 0;
   user-select: none;
-  justify-content: left;
-  gap: 5px;
+  overflow-x: scroll;
+
+  .quick-scroller {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(16, 18, 22);
+    justify-content: left;
+    gap: 5px;
+  }
 
   &.mobile-layout-mode {
-    overflow-x: initial;
-    margin-top: 10px;
-    margin-left: 11px;
-    margin-right: 11px;
-    background-color: transparent;
-    display: flex;
-    padding: 0;
-    flex-wrap: wrap;
-    justify-content: left;
+    overflow-x: auto;
+    padding-top: 10px;
+
+    .quick-scroller {
+      width: auto;
+      overflow-x: auto;
+      background-color: transparent;
+      padding: 0;
+      flex-wrap: wrap;
+      justify-content: left;
+      gap: 8px;
+    }
+
+    .quick-slot {
+      width: 78px;
+      min-width: 78px;
+    }
   }
 }
 
 .quick-slot {
+   box-sizing: border-box;
   background-color: #222;
   border: 1px solid #222;
   display: flex;
   position: relative;
   padding: 2px;
+  width: 80px;
+  min-width: 80px;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -256,6 +276,43 @@ function getSlotClass (slot) {
 
   &:last-child {
     margin-right: 0;
+  }
+
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+  .slot-number {
+    padding: 2px 4px;
+    border-bottom-right-radius: 4px;
+    border-top-left-radius: 4px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 12px;
+    font-size: 14px;
+    line-height: 12px;
+  }
+
+  .slot-label {
+    width: 100%;
+    font-size: 11px;
+    padding: 0 2px;
+    word-wrap: break-word;
+    line-height: 11px;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .n-progress {
+    --n-rail-height: 2px !important;
+    position: absolute;
+    top: 0px;
+    z-index: 5;
   }
 
   &.selected {
@@ -360,43 +417,6 @@ function getSlotClass (slot) {
       line-height: 16px;
       text-align: center;
     }
-  }
-
-  .icon {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
-
-  .slot-number {
-    padding: 2px 4px;
-    border-bottom-right-radius: 4px;
-    border-top-left-radius: 4px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: 12px;
-    font-size: 14px;
-    line-height: 12px;
-  }
-
-  .slot-label {
-    font-size: 11px;
-    width: 70px;
-    padding: 0 2px;
-    word-wrap: break-word;
-    line-height: 11px;
-    text-align: left;
-    overflow: hidden;
-  }
-
-  .n-progress {
-    --n-rail-height: 2px !important;
-    position: absolute;
-    top: 0px;
-    z-index: 5;
   }
 }
 </style>
