@@ -19,7 +19,7 @@ import SettingsActions from '@/components/settings/SettingsActions.vue'
 .hud-settings-container {
   position: absolute;
   top: 34px + 5px;
-  right: 0;
+  right: 34px + 5px;
   z-index: 3;
   display: flex;
   flex-direction: row;
