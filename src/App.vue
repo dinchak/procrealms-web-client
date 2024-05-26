@@ -1,9 +1,9 @@
 <template>
-  <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
-    <SplashScreen v-if="state.disconnected || !state.token"></SplashScreen>
-    <LoginModal></LoginModal>
-    <NewPlayerModal></NewPlayerModal>
-    <InputHandler></InputHandler>
+  <n-config-provider :abstract="true" :theme="darkTheme" :theme-overrides="themeOverrides">
+    <SplashScreen v-if="state.disconnected || !state.token" />
+    <LoginModal />
+    <NewPlayerModal />
+    <InputHandler />
     <router-view/>
   </n-config-provider>
 </template>
@@ -122,23 +122,32 @@ body, html {
   padding: 0;
   font-family: 'Ubuntu Mono', monospace;
   color: #fff;
-  overflow-x: hidden;
-  overflow-y: hidden;
   color-scheme: dark;
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+//*, * > * {
+  //overflow: auto;
+//}
+
 ::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
   background: transparent;
 }
 
+::-webkit-scrollbar:horizontal {
+  height: 0 !important;
+}
+
+::-webkit-scrollbar:vertical {
+  width: 0 !important;
+}
+
 #app {
-  height: 100vh;
-  font-size: 16px;
+  position: fixed;
+  height: 100%;
+  width: 100%;
 }
 
 .red, .ansi-red-fg { color: #c50f1f; }

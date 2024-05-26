@@ -1,6 +1,4 @@
-<template>
-  <div></div>
-</template>
+<template />
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'

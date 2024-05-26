@@ -1,6 +1,6 @@
 <template>
   <div class="battle-area">
-    <div :class="getBattleStatusClass()">
+    <div class="battle-status">
       <template v-for="side in ['good', 'vs', 'evil']">
         <div v-if="side === 'vs'" class="vs">VS</div>
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
@@ -53,14 +53,6 @@ function performBattleAction () {
   if (selectedElement) {
     selectedElement.click()
   }
-}
-
-function getBattleStatusClass () {
-  let classes = ['battle-status']
-  if (state.options.showMobileMenu) {
-    classes.push('mobile-menu-open')
-  }
-  return classes.join(' ')
 }
 
 function getParticipants (side) {
@@ -142,31 +134,69 @@ onBeforeUnmount(() => {
   align-items: center;
 
   .vs {
-    animation: vs 0.6s ease-out;
-    flex-basis: 4%;
+    z-index: 1;
+    padding: 0;
+    margin: 0 4px;
+    flex: 0 0 0;
+    position: relative;
+    font-family: 'DOS', monospace;
+    animation: vs 0.4s ease-in forwards;
     font-size: 1.1rem;
     text-align: center;
-    font-weight: bold;
+    letter-spacing: 2px;
     //color: #c50f1f;
     color: #f5f5f5;
+    //text-shadow:
+    //      0px -2px 2px black,
+    //      2px 0px 2px black,
+    //      -2px 0px 2px black,
+    //      0px -4px 4px #fff,
+    //      0px -4px 4px #fff,
+    //  0px -6px 6px #FF3,
+    //  0px -6px 6px #FF3,
+    //  0px -8px 8px #F90,
+    //  0px -8px 8px #F90,
+    //  0px -16px 12px #C33,
+    //  0px -16px 12px #C33;
     text-shadow:
           0px -2px 2px black,
           2px 0px 2px black,
-          -2px 0px 2px black,
-          0px -4px 4px #fff,
-          0px -4px 4px #fff,
-      0px -6px 6px #FF3,
-      0px -6px 6px #FF3,
-      0px -8px 8px #F90,
-      0px -8px 8px #F90,
-      0px -16px 12px #C33,
-      0px -16px 12px #C33;
+          -2px 0px 2px black;
+
+    &::before, &::after {
+      animation: vsburn 0.6s ease-out 0.2s forwards;
+      opacity: 0;
+      z-index: 0;
+      position: absolute;
+      color: transparent;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      content: 'VS';
+      text-shadow: none;
+    }
+
+    &::before {
+      z-index: -1;
+      font-size: 1.25em;
+      text-shadow:
+            0 0 0 rgba(#ffb700, 0.7),
+            0 0 8px #F90;
+    }
+    &::after {
+      bottom: -2px;
+      z-index: -2;
+      font-size: 1.6em;
+      text-shadow:
+            0 0 0 rgba(#C33, 0.5),
+            0 0 8px #C33;
+    }
   }
 
   .side {
     display: flex;
     flex-direction: row-reverse;
-    flex-basis: 48%;
+    flex-basis: 50%;
 
     .side-row {
       display: flex;
@@ -265,26 +295,44 @@ onBeforeUnmount(() => {
 
 @keyframes vs {
   0% {
+    z-index: 2;
     rotate: 20deg;
-    scale: 600%;
+    scale: 400%;
   }
-  80% {
-    scale: 90%;
+  60% {
+    scale: 80%;
     rotate: -10deg;
   }
+  80% {
+    scale: 110%;
+  }
+  99% {
+    z-index: 2;
+  }
   100% {
+    z-index: auto;
     rotate: 0deg;
     scale: 100%;
   }
 }
-
+@keyframes vsburn {
+  0% {
+    opacity: 0;
+    translate: 50% 0;
+    scale: 200%;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 100%;
+  }
+}
 
 @media screen and (max-width: 1075px) {
-  .battle-status.mobile-menu-open {
-    flex-direction: column;
-  }
-
   .battle-status {
+    .game.show-mobile-menu & {
+      flex-direction: column;
+    }
     .side {
       flex-basis: auto;
       flex-direction: column-reverse;

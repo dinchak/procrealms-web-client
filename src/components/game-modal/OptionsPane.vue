@@ -1,81 +1,20 @@
 <template>
   <div :class="getScrollContainerClass()">
     <div class="row">
-      <NGrid class="options" cols="1">
-        <NGi>
-          <h3>Sidebar</h3>
-        </NGi>
+      <template v-for="(options, title) in configurableOptions">
+        <NGrid class="options" cols="1">
+          <NGi>
+            <h3>{{ title }}</h3>
+          </NGi>
 
-        <NGi>
-          <div class="option">
-            <label for="option-show-map-area">Show Map Area</label>
-            <NSwitch id="option-show-map-area" v-model:value="state.options.showMobileMenuMap" aria-label="Show Map Area" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-fixed-minimap">Fixed Minimap</label>
-            <NSwitch id="option-fixed-minimap" v-model:value="state.options.fixedMobileMenuMap" aria-label="Fixed Mini Map" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-swap-menu-side">Swap Menu Side</label>
-            <NSwitch id="option-swap-menu-side" v-model:value="state.options.swapMobileMenuSide" aria-label="Swap Menu Side" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-show-map-area">Show Movement Controls</label>
-            <NSwitch id="option-show-map-area" v-model:value="state.options.showMobileMenuMoveControls" aria-label="Show Movement Controls" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-      </NGrid>
-
-      <NGrid class="options" cols="1">
-        <NGi>
-          <h3>General</h3>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-minimap-in-room-description">Minimap In Room Description</label>
-            <NSwitch id="option-minimap-in-room-description" v-model:value="state.options.roomDescriptionMinimap" aria-label="Minimap In Room Description" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-chat-in-main-output">Chat In Main Output</label>
-            <NSwitch id="option-chat-in-main-output" v-model:value="state.options.chatInMain" aria-label="Chat In Main Output" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-keep-sent-commands">Keep Sent Commands</label>
-            <NSwitch id="option-keep-sent-commands" v-model:value="state.options.keepSentCommands" aria-label="Keep Sent Commands" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-text-input-always-focused">Text Input Always Focused</label>
-            <NSwitch id="option-text-input-always-focused" v-model:value="state.options.textInputAlwaysFocused" aria-label="Text Input Always Focused" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-        <NGi>
-          <div class="option">
-            <label for="option-autoplay-music">Autoplay Music</label>
-            <NSwitch id="option-autoplay-music" v-model:value="state.options.autoplayMusic" aria-label="Autoplay Music" class="selectable"></NSwitch>
-          </div>
-        </NGi>
-
-      </NGrid>
+          <NGi v-for="(option, label) in options">
+            <div class="option">
+              <label :for="'option-' + option">{{ label }}</label>
+              <NSwitch :id="'option-' + option" v-model:value="state.options[option]" aria-label="{{ label }}"/>
+            </div>
+          </NGi>
+        </NGrid>
+      </template>
     </div>
 
     <div class="row">
@@ -86,23 +25,23 @@
 
         <NGi style="text-align: center; margin-bottom: 20px;">
           <NSelect
-            class="font-selector selectable"
-            v-model:value="state.options.fontFamily"
-            placeholder="Select Font"
-            :options="FONT_OPTIONS"
-            aria-label="Select Font"
-            @update:value="onSetFontFamily"
+              class="font-selector selectable"
+              v-model:value="state.options.fontFamily"
+              placeholder="Select Font"
+              :options="FONT_OPTIONS"
+              aria-label="Select Font"
+              @update:value="onSetFontFamily"
           />
         </NGi>
         <NGi style="text-align: center">
           <NRadioGroup v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
             <NRadioButton
-              v-for="fontSize in FONT_SIZES"
-              :key="fontSize.value"
-              :value="fontSize.value"
-              :label="fontSize.label"
-              @change="onSetFontSize"
-              class="selectable"
+                v-for="fontSize in FONT_SIZES"
+                :key="fontSize.value"
+                :value="fontSize.value"
+                :label="fontSize.label"
+                @change="onSetFontSize"
+                class="selectable"
             />
           </NRadioGroup>
         </NGi>
@@ -124,10 +63,14 @@
 
       <NGrid class="options" cols="1">
         <NGi style="text-align: center">
-          <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()" ghost>Triggers</NButton>
+          <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()"
+                   ghost>Triggers
+          </NButton>
         </NGi>
         <NGi style="text-align: center">
-          <NButton class="menu-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">Full Screen</NButton>
+          <NButton class="menu-button selectable" type="success" @click="toggleFullscreen()"
+                   :ghost="!state.isFullscreen">Full Screen
+          </NButton>
         </NGi>
         <NGi style="text-align: center">
           <NButton class="menu-button selectable" type="error" @click="openLogoutModal()" ghost>Logout</NButton>
@@ -141,7 +84,7 @@
 <script setup>
 import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NSwitch, NRadioGroup, NRadioButton, NSelect, NButton } from 'naive-ui'
-import { state, setMode } from '@/static/state'
+import { state, setMode, configurableOptions } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
@@ -174,7 +117,7 @@ function openLogoutModal () {
 function getScrollContainerClass () {
   return {
     'scroll-container': true,
-    'mini-output-enabled': miniOutputEnabled.value
+    'mini-output-enabled': miniOutputEnabled.value,
   }
 }
 </script>
@@ -195,13 +138,16 @@ function getScrollContainerClass () {
     align-items: flex-start;
     flex-wrap: wrap;
     justify-content: center;
+
     .options {
       display: flex;
       flex-direction: column;
       flex-basis: 300px;
+
       h3 {
         text-align: center;
       }
+
       .option {
         max-width: 250px;
         display: flex;
@@ -233,7 +179,7 @@ function getScrollContainerClass () {
       .n-button, .n-select {
         &.selected {
           box-shadow: 0 0 5px #f8ff25;
-          color: #f8ff25;            
+          color: #f8ff25;
         }
       }
 
@@ -248,6 +194,7 @@ function getScrollContainerClass () {
       .menu-button {
         margin-bottom: 10px;
         width: 200px;
+
         &:first-child {
           margin-top: 10px;
         }

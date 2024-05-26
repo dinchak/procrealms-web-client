@@ -30,8 +30,8 @@
       </span>
     </span>
 
-    <span class="stat">
-      <div class="value bold-green"><span class="label green">Food</span></div>
+    <span class="stat food">
+      <div class="value bold-red">{{ Math.round((entity.food / entity.maxFood) * 100) }}<span class="label red">FD</span></div>
       <NProgress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
     </span>
 
@@ -53,10 +53,8 @@ const { entity } = toRefs(props)
 
 <style lang="less">
 .stats {
-  padding: 2px 5px;
   display: flex;
   flex-direction: row;
-  margin-bottom: 5px;
   align-items: center;
   justify-content: space-between;
   word-break: normal;
@@ -64,22 +62,22 @@ const { entity } = toRefs(props)
   .left, .right {
     display: flex;
     flex-direction: row;
-    .stat {
-      margin-right: 5px;
-      width: 38px;
-      &:last-child {
-        margin-right: 0px;
-      }
-      .value {
-        font-size: 16px;
-        text-align: center;
-        line-height: 14px;
-      }
-      .label {
-        font-size: 12px;
-        line-height: 10px;
-        text-align: center;
-      }
+    gap: 10px;
+  }
+  .stat {
+    width: 38px;
+    &:last-child {
+      margin-right: 0px;
+    }
+    .value {
+      font-size: 16px;
+      text-align: center;
+      line-height: 14px;
+    }
+    .label {
+      font-size: 12px;
+      line-height: 10px;
+      text-align: center;
     }
   }
 
@@ -89,33 +87,11 @@ const { entity } = toRefs(props)
       width: 38px;
     }
   }
-  //  .quick-stats {
-  //   height: 12px;
-  //   margin-right: 5px;
-  //   width: 30px;
-  //  }
 
-  // .flex {
-  //   display: flex;
-  //   flex-direction: row;
-  //   .quick-stats {
-  //     margin-right: 10px;
-  //     &:last-child {
-  //       margin-right: 0px;
-  //     }
-  //   }
-  // }
+  .food {
+    .n-progress .n-progress-graph-line-rail .n-progress-graph-line-fill {
+      background: #ff6983;
+    }
+  }
 }
-
-// .bar-label {
-//   width: 50px;
-//   display: inherit;
-//   text-align: right;
-// }
-
-// .half-bar-label {
-//   width: 50px;
-//   display: inherit;
-//   text-align: right;
-// }
 </style>
