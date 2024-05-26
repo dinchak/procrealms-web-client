@@ -227,6 +227,7 @@ function getSlotClass (slot) {
   padding: 5px 0;
   user-select: none;
   overflow-x: scroll;
+  width: 0;
 
   .quick-scroller {
     display: flex;
