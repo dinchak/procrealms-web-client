@@ -102,14 +102,13 @@ function loadTrack (track) {
 export const playMessageSound = ({ id, from, to, channel, timestamp, message }) => {
   let sound = null;
   // if (from === state.gameState.player.name || from === 'You') return;
+  if (channel === 'say') {
+    // TODO: Filter NPCs
+  }
   switch (channel) {
     case 'newbie':
     case 'tell':
       sound = channel;
-      break;
-    case 'say':
-      // TODO: Filter NPCs
-      sound = 'chat';
       break;
     case 'announce':
     case 'events':
