@@ -111,9 +111,10 @@ export const playMessageSound = ({ id, from, to, channel, timestamp, message }) 
       sound = channel;
       break;
     case 'announce':
-    case 'events':
     case 'info':
       sound = 'announce';
+      break;
+    case 'events':
       break;
     default:
       sound = 'chat';
