@@ -322,6 +322,10 @@ onBeforeUnmount(() => {
       padding: 5px;
     }
 
+    .n-tabs-nav-scroll-wrapper {
+      width: 0;
+    }
+
     .n-tabs-nav {
       &.hide {
         display: none;

@@ -338,8 +338,10 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    overflow-y: auto;
 
     .row {
+      box-sizing: border-box;
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
@@ -364,12 +366,15 @@ onBeforeUnmount(() => {
 
     .side-bottom {
       flex-grow: 1;
-      height: 0;
     }
   }
 }
 
 .bottom-split {
+  padding: 0;
   flex: 0 0 content;
+  > * {
+    padding: 5px 5px 5px 10px;
+  }
 }
 </style>

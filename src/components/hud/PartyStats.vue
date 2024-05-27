@@ -1,43 +1,45 @@
 <template>
   <div class="party-health-container">
-    <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
+    <div class="party-health-inner">
+      <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
-      <div class="name"
-           v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
+        <div class="name"
+             v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
 
-      <div class="health-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-        <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
-        <div class="health-bar-content">
-          {{ member.hp }} HP
+        <div class="health-bar" :style="{ height: `calc(${state.options.fontSize})` }">
+          <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
+          <div class="health-bar-content">
+            {{ member.hp }} HP
+          </div>
         </div>
-      </div>
-      <div class="energy-stamina-bars">
-        <div class="energy-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-          <div class="energy-bar-fill" :style="{ width: (member.energy / member.maxEnergy) * 100 + '%' }"></div>
-          <div class="energy-bar-content">
-            {{ member.energy }} EN
+        <div class="energy-stamina-bars">
+          <div class="energy-bar" :style="{ height: `calc(${state.options.fontSize})` }">
+            <div class="energy-bar-fill" :style="{ width: (member.energy / member.maxEnergy) * 100 + '%' }"></div>
+            <div class="energy-bar-content">
+              {{ member.energy }} EN
+            </div>
+          </div>
+
+          <div class="stamina-bar" :style="{ height: `calc(${state.options.fontSize})` }">
+            <div class="stamina-bar-fill" :style="{ width: (member.stamina / member.maxStamina) * 100 + '%' }"></div>
+            <div class="stamina-bar-content">
+              {{ member.stamina }} ST
+            </div>
           </div>
         </div>
 
-        <div class="stamina-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-          <div class="stamina-bar-fill" :style="{ width: (member.stamina / member.maxStamina) * 100 + '%' }"></div>
-          <div class="stamina-bar-content">
-            {{ member.stamina }} ST
-          </div>
-        </div>
-      </div>
-
-      <div class="bottom-bar">
-        <n-popover trigger="hover" placement="top-start">
-          <template #trigger>
-            <div class="shortflags" v-html-safe="getShortFlags(member)"/>
-          </template>
-          <HUDEffects :affects="member.affects" />
-        </n-popover>
-        <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
-          <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
-          <div class="food-bar-content">
-            {{ Math.round((member.food / member.maxFood) * 100) }} FD
+        <div class="bottom-bar">
+          <n-popover trigger="hover" placement="top-start">
+            <template #trigger>
+              <div class="shortflags" v-html-safe="getShortFlags(member)"/>
+            </template>
+            <HUDEffects :affects="member.affects"/>
+          </n-popover>
+          <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
+            <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
+            <div class="food-bar-content">
+              {{ Math.round((member.food / member.maxFood) * 100) }} FD
+            </div>
           </div>
         </div>
       </div>
@@ -67,21 +69,25 @@ function getPartyMembers () {
 </script>
 <style lang="less" scoped>
 .party-health-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 10px;
-  overflow-x: auto;
   background-color: rgb(16, 18, 22);
+  overflow-x: auto;
+
+  .party-health-inner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: 0;
+  }
 
   .party-member {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+    flex: 0 0 auto;
     width: 201px;
     gap: 3px;
-
 
     .health-bar, .food-bar {
       background-color: #333;
