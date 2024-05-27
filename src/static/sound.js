@@ -99,3 +99,7 @@ function loadTrack (track) {
     request.send()
   })
 }
+
+export const playSound = (name) => {
+  state.soundQueue = name;
+}
