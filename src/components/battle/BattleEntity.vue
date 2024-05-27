@@ -170,8 +170,9 @@ function getAffects (participant) {
     affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
   }
 
-  affects = affects.concat(Object.entries(participant.affects).map(p => p[1].shortFlag))
-  affects = affects.map(s => ansiToHtml(s))
+  affects = affects.concat(Object.entries(participant.affects)
+  .map(p => p[1].shortFlag))
+  affects = affects.map(s => ansiToHtml(s)).filter(s => s.trim().length)
 
   return affects
 }
