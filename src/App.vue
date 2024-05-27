@@ -4,6 +4,7 @@
     <LoginModal />
     <NewPlayerModal />
     <InputHandler />
+    <SoundHandler />
     <router-view/>
   </n-config-provider>
 </template>
@@ -24,6 +25,7 @@ import InputHandler from '@/components/InputHandler.vue'
 import SplashScreen from '@/components/SplashScreen.vue'
 import LoginModal from '@/components/modals/LoginModal.vue'
 import NewPlayerModal from '@/components/modals/NewPlayerModal.vue'
+import SoundHandler from '@/components/SoundHandler.vue'
 
 const themeOverrides = {
   Button: {
