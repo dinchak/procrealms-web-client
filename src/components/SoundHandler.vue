@@ -9,10 +9,6 @@ const sounds = {
     audio: new Audio('http://proceduralrealms.com:8080/sounds/com/info.mp3'),
     enabled: () => !!state.options.chatSounds,
   },
-  trade: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/info.mp3'),
-    enabled: () => !!state.options.chatSounds,
-  },
   newbie: {
     audio: new Audio('http://proceduralrealms.com:8080/sounds/com/newbie.mp3'),
     enabled: () => !!state.options.chatSounds,
@@ -21,16 +17,8 @@ const sounds = {
     audio: new Audio('http://proceduralrealms.com:8080/sounds/com/announcement.mp3'),
     enabled: () => !!state.options.chatSounds,
   },
-  party: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/info.mp3'),
-    enabled: () => !!state.options.chatSounds,
-  },
   tell: {
     audio: new Audio('http://proceduralrealms.com:8080/sounds/com/gossip.mp3'),
-    enabled: () => !!state.options.chatSounds,
-  },
-  say: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/info.mp3'),
     enabled: () => !!state.options.chatSounds,
   }
 }
