@@ -1,10 +1,10 @@
 <template>
   <div class="effects">
-    <div class="effect" v-if="!Object.keys(affects).length">
+    <div class="effect" v-if="!affects || !Object.keys(affects).length">
       <div class="name">No effects</div>
     </div>
 
-    <NCollapse>
+    <NCollapse v-else>
       <template v-for="effect in Object.values(affects)"
                 :key="effect.name">
         <div class="effect" v-if="!(effect.bonuses && effect.timeLeft)">

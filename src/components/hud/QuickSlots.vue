@@ -252,6 +252,7 @@ function getSlotClass (slot) {
     }
 
     .quick-slot {
+      flex: 0 0 auto;
       width: 78px;
       min-width: 78px;
     }

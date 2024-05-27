@@ -24,6 +24,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
   padding-top: 5px;
   border-top: 1px solid #181818;
   background-color: rgb(16, 18, 22);
+  overflow-x: auto;
 }
 
 .movement-controls-container {
@@ -36,13 +37,12 @@ import MiniMap from '@/components/common/MiniMap.vue'
   flex-direction: row;
   justify-content: space-between;
   gap: 10px;
-  width: 100%;
+  width: 0;
 }
 
 .hud-item {
   overflow-y: auto;
-  flex-grow: 1;
-  flex-basis: 0;
+  flex: 0 0 auto;
 }
 
 </style>
