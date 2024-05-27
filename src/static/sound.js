@@ -99,6 +99,30 @@ function loadTrack (track) {
     request.send()
   })
 }
+export const playMessageSound = ({ id, from, to, channel, timestamp, message }) => {
+  let sound = null;
+  // if (from === state.gameState.player.name || from === 'You') return;
+  switch (channel) {
+    case 'newbie':
+    case 'tell':
+      sound = channel;
+      break;
+    case 'say':
+      // TODO: Filter NPCs
+      sound = 'chat';
+      break;
+    case 'announce':
+    case 'events':
+    case 'info':
+      sound = 'announce';
+      break;
+    default:
+      sound = 'chat';
+      break;
+  }
+  if (sound)
+    playSound(sound)
+}
 
 export const playSound = (name) => {
   state.soundQueue = name;
