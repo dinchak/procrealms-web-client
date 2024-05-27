@@ -67,7 +67,6 @@ export const state = reactive({
   chat: [],
   trade: [],
   newbie: [],
-  important: [],
 
   animations: [],
   nextAnimationDelay: 0,
