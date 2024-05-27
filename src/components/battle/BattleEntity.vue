@@ -28,17 +28,14 @@
             </div>
 
             <div class="affect-area">
-              <n-popover trigger="hover" placement="top-start" v-if="entity">
+              <n-popover trigger="hover" placement="top-start">
                 <template #trigger>
                   <div className="affect-row popover">
                     <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
                   </div>
                 </template>
-                <HUDEffects :affects="entity.affects"/>
+                <HUDEffects :affects="participant.affects"/>
               </n-popover>
-              <div className="affect-row" v-else>
-                <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
-              </div>
               <div class="bonus-row">
         <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
                 <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
@@ -162,6 +159,7 @@ const isTargetingPlayer = (participant) => {
 
 function getAffects (participant) {
   let affects = []
+  console.debug(participant)
   if (participant.isDead) {
     affects.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
   }
@@ -172,7 +170,7 @@ function getAffects (participant) {
     affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
   }
 
-  affects = affects.concat(participant.affects)
+  affects = affects.concat(Object.entries(participant.affects).map(p => p[1].shortFlag))
   affects = affects.map(s => ansiToHtml(s))
 
   return affects
