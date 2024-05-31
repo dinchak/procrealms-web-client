@@ -1,5 +1,5 @@
 <template>
-  <div class="quests">
+  <div class="hud-quests">
     <div v-if="state.gameState.quests.length == 0">
       No quests
     </div>
@@ -66,7 +66,7 @@ function questHasObjectives (quest) {
 </script>
 
 <style lang="less" scoped>
-.hud-item.quests {
+.hud-quests {
   flex-grow: 1.65;
   .quest {
     display: flex;

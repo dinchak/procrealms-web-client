@@ -25,24 +25,18 @@ import MiniMap from '@/components/common/MiniMap.vue'
   border-top: 1px solid #181818;
   background-color: rgb(16, 18, 22);
   overflow-x: auto;
-}
 
-.movement-controls-container {
-  margin-right: 3px;
-  margin-left: 10px;
-}
+  .center-hud {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    flex: 1 0 auto;
 
-.center-hud {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10px;
-  width: 0;
+    .hud-item {
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+  }
 }
-
-.hud-item {
-  overflow-y: auto;
-  flex: 0 0 auto;
-}
-
 </style>

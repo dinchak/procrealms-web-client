@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="bottom-split">
-          <OverworldHUD v-if="!state.gameState.battle.active"/>
+          <BottomHUD v-if="!state.gameState.battle.active"/>
           <QuickSlots v-if="state.options.showQuickSlots"/>
           <QuickSlotHandlers/>
           <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
@@ -32,6 +32,7 @@
         </div>
       </main>
     </div>
+    <DebugModal/>
     <LogoutModal/>
     <HelpModal/>
     <TriggersModal/>
@@ -43,25 +44,29 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { NEl, NLayout } from 'naive-ui'
+import { NEl } from 'naive-ui'
 
-import ButtonControls from '@/components/main-area/ButtonControls.vue'
+import DebugModal from '@/components/modals/DebugModal.vue'
 import GameModal from '@/components/modals/GameModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
+import LogoutModal from '@/components/modals/LogoutModal.vue'
+import MercModal from '@/components/modals/MercModal.vue'
+import RadialOverlay from '@/components/modals/RadialOverlay.vue'
+import TriggersModal from '@/components/modals/TriggersModal.vue'
+
+import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
+
+import ButtonControls from '@/components/main-area/ButtonControls.vue'
 import SideAliases from '@/components/main-area/SideAliases.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import LineOutput from '@/components/main-area/LineOutput.vue'
-import LogoutModal from '@/components/modals/LogoutModal.vue'
-import MercModal from '@/components/modals/MercModal.vue'
+import QuickSlotHandlers from '@/components/main-area/QuickSlotHandlers.vue'
+import BottomHUD from '@/components/main-area/BottomHUD.vue'
+import SideMap from '@/components/main-area/SideMap.vue'
+import SideMovement from '@/components/main-area/SideMovement.vue'
+
 import PartyStats from '@/components/hud/PartyStats.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
-import QuickSlotHandlers from '@/components/main-area/QuickSlotHandlers.vue'
-import OverworldHUD from '@/components/main-area/OverworldHUD.vue'
-import RadialOverlay from '@/components/modals/RadialOverlay.vue'
-import SideMap from '@/components/main-area/SideMap.vue'
-import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
-import SideMovement from '@/components/main-area/SideMovement.vue'
-import TriggersModal from '@/components/modals/TriggersModal.vue'
 
 import { state, setMode } from '@/static/state'
 import { USER_GESTURE_EVENTS } from '@/static/constants'
@@ -105,6 +110,11 @@ function openQuests () {
 function openHelpModal () {
   setMode('modal')
   state.modals.helpModal = true
+}
+
+function showDebug () {
+  setMode('modal')
+  state.modals.debugModal = true
 }
 
 function onWindowFocusBlur () {
@@ -223,6 +233,8 @@ onMounted(() => {
   state.inputEmitter.on('moveSouthWest', moveSouthWest)
   state.inputEmitter.on('enter', enter)
 
+  state.inputEmitter.on('showDebug', showDebug)
+
   window.addEventListener('resize', triggerResize)
   window.addEventListener('focus', onWindowFocusBlur)
   window.addEventListener('blur', onWindowFocusBlur)
@@ -260,6 +272,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('moveSouthEast', moveSouthEast)
   state.inputEmitter.off('moveSouthWest', moveSouthWest)
   state.inputEmitter.off('enter', enter)
+
+  state.inputEmitter.off('showDebug', showDebug)
 
   for (let eventName of USER_GESTURE_EVENTS) {
     window.removeEventListener(eventName, startAudioContext)
@@ -311,7 +325,7 @@ onBeforeUnmount(() => {
   flex: 1 1 auto;
 
   > * {
-    padding: 5px 5px 5px 10px;
+    padding: 5px 10px;
     flex: 0 0 content;
   }
 }
@@ -374,7 +388,7 @@ onBeforeUnmount(() => {
   padding: 0;
   flex: 0 0 content;
   > * {
-    padding: 5px 5px 5px 10px;
+    padding: 5px 10px 5px 10px;
   }
 }
 </style>

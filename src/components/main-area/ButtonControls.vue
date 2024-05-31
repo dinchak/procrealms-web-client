@@ -129,11 +129,11 @@ function openGameModal (pane = null) {
 .interface-overlay {
   z-index: 2;
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 10px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 
   @media screen and (max-width: 650px) {
     .game.swap-mobile-menu & {
@@ -189,7 +189,7 @@ function openGameModal (pane = null) {
   flex-basis: 0;
   flex-grow: 0;
   right: 0;
-  top: 34px + 10px; // Offset from ButtonControls
+  top: 30px + 10px; // Offset from ButtonControls
   display: flex;
   gap: 5px;
   flex-direction: column;
