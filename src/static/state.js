@@ -71,6 +71,8 @@ export const state = reactive({
   animations: [],
   nextAnimationDelay: 0,
 
+  soundQueue: null,
+
   triggers: ref(new Map()),
   variables: ref(new Map()),
 
@@ -190,6 +192,7 @@ export const configurableOptions = {
     'Chat In Main Output': 'chatInMain',
     'Keep Sent Commands': 'keepSentCommands',
     'Text Input Always Focused': 'textInputAlwaysFocused',
+    'Chat Message Sounds': 'chatSounds',
     'Autoplay Music': 'autoplayMusic',
   },
 }
@@ -240,8 +243,9 @@ function resetOptions () {
     terminalWidth: DEFAULT_TERMINAL_SIZE.width,
     terminalHeight: DEFAULT_TERMINAL_SIZE.height,
 
-    // music
+    // audio
     autoplayMusic: false,
+    chatSounds: true,
   }
 }
 
