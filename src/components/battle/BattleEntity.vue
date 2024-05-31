@@ -170,8 +170,9 @@ function getAffects (participant) {
     affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
   }
 
-  affects = affects.concat(Object.entries(participant.affects).map(p => p[1].shortFlag))
-  affects = affects.map(s => ansiToHtml(s))
+  affects = affects.concat(Object.entries(participant.affects)
+  .map(p => p[1].shortFlag))
+  affects = affects.map(s => ansiToHtml(s)).filter(s => s.trim().length)
 
   return affects
 }
@@ -274,10 +275,10 @@ function getTarget (participant) {
   }
 
   .card-layer-2::before, .card-layer-2::after {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
   }
 
   .battle-entity.selectable & {

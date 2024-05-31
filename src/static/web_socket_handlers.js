@@ -3,7 +3,7 @@ import jiff from 'jiff'
 import { CHANNEL_COLORS } from '@/static/constants'
 import { addLine, state, setMode } from '@/static/state'
 import { processTriggers } from '@/static/triggers'
-import { playTrackByName } from '@/static/sound'
+import { playMessageSound, playSound, playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, strToLines } = useHelpers()
@@ -121,19 +121,17 @@ const webSocketHandlers = {
       if (state.options.chatInMain) {
         out = `<span class="bold-yellow">${from}</span> <span class="${CHANNEL_COLORS[channel]}">${channel}${from == 'You' ? '' : 's'}</span> <span class="bold-white">'${message}'</span>`
       }
-    } else if (['party'].includes(channel)) {
+    }
+    else if (['party'].includes(channel)) {
       out = `<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`
-  
     } else if (['tell'].includes(channel)) {
       if (from == 'You') {
         out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
       } else {
         out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
       }
-  
     } else if (['info', 'announce', 'events'].includes(channel)) {
       out = message
-  
     } else {
       out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
     }
@@ -141,6 +139,8 @@ const webSocketHandlers = {
       addLine(out, 'output')
       processTriggers(out)
     }
+
+    playMessageSound({ id, from, to, channel, timestamp, message })
   },
 
   'map.settings': ({ width, height, enabled }) => {

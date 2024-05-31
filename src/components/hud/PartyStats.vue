@@ -56,7 +56,6 @@ import HUDEffects from '@/components/hud/HUDEffects.vue'
 const { ansiToHtml } = useHelpers()
 
 function getShortFlags (member) {
-  console.debug(member)
   return ansiToHtml(Object.values(member.affects).map(affect => affect.shortFlag).join(' '),
   )
 }
