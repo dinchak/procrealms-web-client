@@ -238,14 +238,6 @@ function scrollDown () {
   }
 }
 
-function showDebug () {
-  let json = JSON.stringify(state.gameState, null, 2)
-  let lines = json.split('\n')
-  for (let line of lines) {
-    addLine(line, 'output')
-  }
-}
-
 function showHideTabs () {
   console.log(`show hide tabs`)
   let tabs = document.querySelector('.n-tabs-nav')
@@ -283,14 +275,13 @@ onMounted(() => {
   state.inputEmitter.on('pageUp', pageUp)
   state.inputEmitter.on('pageDown', pageDown)
   state.inputEmitter.on('scrollDown', scrollDown)
-  state.inputEmitter.on('showDebug', showDebug)
 
   watchers.push(watch(() => state.output.length, () => onChanged('output')))
   watchers.push(watch(() => state.chat.length, () => onChanged('chat')))
   watchers.push(watch(() => state.trade.length, () => onChanged('trade')))
   watchers.push(watch(() => state.newbie.length, () => onChanged('newbie')))
 
-  watchers.push(watch(() => state.gameState.battle.active, () => onChanged('output')))
+  watchers.push(watch(() => state.gameState.battle.active, () => scrollDownTab('output')))
   watchers.push(watch(() => state.gameState.battle.participants, () => onChanged('output')))
   watchers.push(watch(() => state.options, () => doResize()))
   watchers.push(watch(() => state.options.showTabs, () => showHideTabs()))
@@ -306,7 +297,6 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('pageUp', pageUp)
   state.inputEmitter.off('pageDown', pageDown)
   state.inputEmitter.off('scrollDown', scrollDown)
-  state.inputEmitter.off('showDebug', showDebug)
 
   for (let watcher of watchers) {
     watcher()

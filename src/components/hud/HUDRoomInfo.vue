@@ -49,5 +49,6 @@ function getRoomTitle () {
 .room-info {
   display: flex;
   flex-direction: column;
+  flex-basis: 200px;
 }
 </style>

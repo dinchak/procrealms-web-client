@@ -82,6 +82,7 @@ export const state = reactive({
   settingsMode: false,
 
   modals: {
+    debugModal: false,
     inventoryModals: {
       playerItemModal: ref(''),
       mercItemModal: ref(''),
