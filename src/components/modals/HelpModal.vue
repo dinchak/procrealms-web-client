@@ -77,135 +77,139 @@
             </div>
           </NTabPane>
 
-          <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry" :tab="stripAnsi(content.title || entry)">
-            <div :class="getScrollContainerClass()">
-              <h1 v-html-safe="getTitle(content)"></h1>
+          <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry">
+            <template #tab>
+              <div @click.middle="() => handleCloseTab(entry)">{{ stripAnsi(content.title || entry) }}</div>
+            </template>
+            <template #default>
+              <div :class="getScrollContainerClass()">
+                <h1 v-html-safe="getTitle(content)"></h1>
 
-              <div class="help-section"
-                v-if="content.body && !content.skill"
-                v-for="key in Object.keys(content.body)" :key="key"
-              >
-                <h3 class="bold-green" v-if="key">{{ key }}</h3>
-                <div class="help-text related"
-                  v-if="key == 'Related' && content.body[key].length"
-                  v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
-                  @click="lineClickRelated"
-                ></div>
-                <div class="help-text"
-                  v-else
-                  v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
-                  @click="lineClick"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.desc"
-              >
-                <div class="help-text"
-                  v-html-safe="ansiToHtml(ANSI.reset + content.desc)"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.rank2"
-              >
-                <h3 class="bold-yellow">Rank 2</h3>
-                <div class="help-text"
-                  v-html-safe="ansiToHtml(ANSI.reset + content.rank2)"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.rank3"
-              >
-                <h3 class="bold-red">Rank 3</h3>
-                <div class="help-text"
-                  v-html-safe="ansiToHtml(ANSI.reset + content.rank3)"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.rank4"
-              >
-                <h3 class="bold-magenta">Rank 4</h3>
-                <div class="help-text"
-                  v-html-safe="ansiToHtml(ANSI.reset + content.rank4)"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.rank5"
-              >
-                <h3 class="bold-cyan">Rank 5</h3>
-                <div class="help-text"
-                  v-html-safe="ansiToHtml(ANSI.reset + content.rank5)"
-                ></div>
-              </div>
-
-              <div class="help-section"
-                v-if="content.skillData"
-              >
-                <h3>Skill Overview</h3>
-                <div class="skill-info" v-if="content.skillData.requirements">
-                  <div class="label">Requirements</div>
-                  <div class="value" v-html-safe="getRequirements(content.skillData)"></div>
+                <div class="help-section"
+                  v-if="content.body && !content.skill"
+                  v-for="key in Object.keys(content.body)" :key="key"
+                >
+                  <h3 class="bold-green" v-if="key">{{ key }}</h3>
+                  <div class="help-text related"
+                    v-if="key == 'Related' && content.body[key].length"
+                    v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
+                    @click="lineClickRelated"
+                  ></div>
+                  <div class="help-text"
+                    v-else
+                    v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
+                    @click="lineClick"
+                  ></div>
                 </div>
 
-                <div class="skill-info" v-if="content.skillData.pointCost">
-                  <div class="label">Point Cost</div>
-                  <div class="value bold-white">{{ content.skillData.pointCost }}</div>
+                <div class="help-section"
+                  v-if="content.desc"
+                >
+                  <div class="help-text"
+                    v-html-safe="ansiToHtml(ANSI.reset + content.desc)"
+                  ></div>
                 </div>
 
-                <div class="skill-info" v-if="content.skillData.castingTime">
-                  <div class="label">Casting Time</div>
-                  <div class="value">
-                    <span class="bold-white">{{ content.skillData.castingTime }}</span> seconds
+                <div class="help-section"
+                  v-if="content.rank2"
+                >
+                  <h3 class="bold-yellow">Rank 2</h3>
+                  <div class="help-text"
+                    v-html-safe="ansiToHtml(ANSI.reset + content.rank2)"
+                  ></div>
+                </div>
+
+                <div class="help-section"
+                  v-if="content.rank3"
+                >
+                  <h3 class="bold-red">Rank 3</h3>
+                  <div class="help-text"
+                    v-html-safe="ansiToHtml(ANSI.reset + content.rank3)"
+                  ></div>
+                </div>
+
+                <div class="help-section"
+                  v-if="content.rank4"
+                >
+                  <h3 class="bold-magenta">Rank 4</h3>
+                  <div class="help-text"
+                    v-html-safe="ansiToHtml(ANSI.reset + content.rank4)"
+                  ></div>
+                </div>
+
+                <div class="help-section"
+                  v-if="content.rank5"
+                >
+                  <h3 class="bold-cyan">Rank 5</h3>
+                  <div class="help-text"
+                    v-html-safe="ansiToHtml(ANSI.reset + content.rank5)"
+                  ></div>
+                </div>
+
+                <div class="help-section"
+                  v-if="content.skillData"
+                >
+                  <h3>Skill Overview</h3>
+                  <div class="skill-info" v-if="content.skillData.requirements">
+                    <div class="label">Requirements</div>
+                    <div class="value" v-html-safe="getRequirements(content.skillData)"></div>
                   </div>
-                </div>
 
-                <div class="skill-info" v-if="content.skillData.cooldownTime">
-                  <div class="label">Cooldown Time</div>
-                  <div class="value">
-                    <span class="bold-white">{{ content.skillData.cooldownTime }}</span> seconds
+                  <div class="skill-info" v-if="content.skillData.pointCost">
+                    <div class="label">Point Cost</div>
+                    <div class="value bold-white">{{ content.skillData.pointCost }}</div>
                   </div>
-                </div>
 
-                <div class="skill-info" v-if="content.skillData.recoveryTime">
-                  <div class="label">Recovery</div>
-                  <div class="value">
-                    +<span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
-                </div>
-
-                <div class="skill-info" v-if="content.skillData.spell">
-                  <div class="label">Multicast</div>
-                  <div class="value">
-                    <span class="bold-white">{{ content.skillData.multicastable ? 'Yes' : 'No' }}</span>
+                  <div class="skill-info" v-if="content.skillData.castingTime">
+                    <div class="label">Casting Time</div>
+                    <div class="value">
+                      <span class="bold-white">{{ content.skillData.castingTime }}</span> seconds
+                    </div>
                   </div>
-                </div>
 
-                <div class="skill-info" v-if="content.skillData.priority">
-                  <div class="label">Priority</div>
-                  <div class="value bold-white">{{ content.skillData.priority }}</div>
-                </div>
+                  <div class="skill-info" v-if="content.skillData.cooldownTime">
+                    <div class="label">Cooldown Time</div>
+                    <div class="value">
+                      <span class="bold-white">{{ content.skillData.cooldownTime }}</span> seconds
+                    </div>
+                  </div>
 
-                <div class="skill-info" v-if="content.skillData.target">
-                  <div class="label">Target</div>
-                  <div class="value bold-white">{{ ucfirst(content.skillData.target) }}</div>
-                </div>
+                  <div class="skill-info" v-if="content.skillData.recoveryTime">
+                    <div class="label">Recovery</div>
+                    <div class="value">
+                      +<span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
+                  </div>
 
-                <div class="skill-info">
-                  <div class="label">Type</div>
-                  <div class="value" v-html-safe="getSkillType(content.skillData)"></div>
-                </div>
+                  <div class="skill-info" v-if="content.skillData.spell">
+                    <div class="label">Multicast</div>
+                    <div class="value">
+                      <span class="bold-white">{{ content.skillData.multicastable ? 'Yes' : 'No' }}</span>
+                    </div>
+                  </div>
 
-                <div class="skill-info">
-                  <div class="label">Cost</div>
-                  <div class="value" v-html-safe="getCosts(content.skillData)"></div>
-                </div>
+                  <div class="skill-info" v-if="content.skillData.priority">
+                    <div class="label">Priority</div>
+                    <div class="value bold-white">{{ content.skillData.priority }}</div>
+                  </div>
 
+                  <div class="skill-info" v-if="content.skillData.target">
+                    <div class="label">Target</div>
+                    <div class="value bold-white">{{ ucfirst(content.skillData.target) }}</div>
+                  </div>
+
+                  <div class="skill-info">
+                    <div class="label">Type</div>
+                    <div class="value" v-html-safe="getSkillType(content.skillData)"></div>
+                  </div>
+
+                  <div class="skill-info">
+                    <div class="label">Cost</div>
+                    <div class="value" v-html-safe="getCosts(content.skillData)"></div>
+                  </div>
+
+                </div>
               </div>
-
-            </div>
+            </template>
           </NTabPane>
 
           <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
