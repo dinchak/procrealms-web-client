@@ -27,7 +27,6 @@
           :class="getTabsClass()"
           :closable="true"
           type="card"
-          tab-style="min-width: 80px;"
           ref="tabs"
           @close="handleCloseTab"
         >
@@ -480,6 +479,20 @@ onBeforeUnmount(() => {
     padding: 10px;
 
     .help-modal-tabs {
+      .n-tabs-tab {
+        text-overflow: ellipsis;
+        box-sizing: border-box;
+        width: calc((100vw - 160px) / 14);
+        min-width: 80px;
+      }
+      .n-tabs-tab[data-name="topics"] {
+        width: auto;
+        min-width: 80px;
+      }
+      .n-tabs-tab__label {
+        display: block;
+        text-overflow: ellipsis;
+      }
       .n-tabs-nav {
         width: calc(100vw - 100px);
       }
