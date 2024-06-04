@@ -176,6 +176,10 @@ export function resetGameState () {
     },
     minimap: [],
     sidemap: [],
+    scan: {
+      entities: [],
+      entrances: [],
+    },
     slots: [],
   }
 }
