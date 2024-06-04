@@ -496,7 +496,6 @@ onBeforeUnmount(() => {
 
     .help-modal-tabs {
       .n-tabs-tab {
-        text-overflow: ellipsis;
         box-sizing: border-box;
         width: calc((100vw - 160px) / 14);
         min-width: 80px;
@@ -506,8 +505,14 @@ onBeforeUnmount(() => {
         min-width: 80px;
       }
       .n-tabs-tab__label {
-        display: block;
         text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        div {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
       }
       .n-tabs-nav {
         width: calc(100vw - 100px);
