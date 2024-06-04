@@ -150,7 +150,9 @@ export function useWebSocket () {
     for (let entity of msg) {
       state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
     }
-    return eids.map(eid => state.cache.entityCache[eid].entity)
+    return eids
+      .map(eid => state.cache.entityCache[eid] ? state.cache.entityCache[eid].entity : false)
+      .filter(entity => entity)
   }
 
   async function fetchItem (iid)  {
@@ -176,7 +178,9 @@ export function useWebSocket () {
       state.cache.itemCache[item.iid] = { item, date: Date.now() }
     }
 
-    return iids.map(iid => state.cache.itemCache[iid].item)
+    return iids
+      .map(iid => state.cache.itemCache[iid] ? state.cache.itemCache[iid].item : false)
+      .filter(item => item)
   }
 
   return {

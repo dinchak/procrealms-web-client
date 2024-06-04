@@ -279,7 +279,9 @@ onBeforeUnmount(() => {
     window.removeEventListener(eventName, startAudioContext)
   }
 
-  state.music.audioContext.close()
+  if (state.music.audioContext) {
+    state.music.audioContext.close()
+  }
 
   window.removeEventListener('resize', triggerResize)
   window.removeEventListener('focus', onWindowFocusBlur)
