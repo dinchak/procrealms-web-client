@@ -164,8 +164,10 @@ const webSocketHandlers = {
   
   'help.entry': ({ entry, content }) => {
     let helpFile = { entry, content }
-    state.help.contents.push(helpFile)
-    state.help.openEntries.push(helpFile)
+    if (!state.help.openEntries.some(e => e.entry == entry)) {
+      state.help.contents.push(helpFile)
+      state.help.openEntries.push(helpFile)
+    }
     state.gamepadHelpTab = entry
     if (!state.modals.helpModal) {
       console.log(`opening help modal`)
