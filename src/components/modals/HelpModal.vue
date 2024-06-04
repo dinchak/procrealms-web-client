@@ -339,7 +339,15 @@ function handleCloseTab (name) {
   if (name == 'topics') {
     return
   }
-  state.help.openEntries = state.help.openEntries.filter(e => e.entry != name)
+  const currentIndex = state.help.openEntries.findIndex(e => e.entry == name)
+  state.help.openEntries = state.help.openEntries.filter(e => e.entry !== name)
+  panes.value = panes.value.filter(p => p !== name)
+
+  if (currentIndex && state.help.openEntries.length) {
+    state.gamepadHelpTab = state.help.openEntries[currentIndex - 1].entry
+  } else {
+    state.gamepadHelpTab = 'topics'
+  }
 }
 
 function getRecentOutput () {
@@ -455,8 +463,12 @@ onMounted(() => {
   )
 
   watchers.push(
-    watch(() => state.help.openEntries.length, () => {
-      currentPane.value = state.help.openEntries[state.help.openEntries.length - 1]?.entry || "topics"
+    watch(() => state.gamepadHelpTab, () => {
+      const tab = state.gamepadHelpTab
+      currentPane.value = tab || "topics"
+      if (!panes.value.includes(tab)) {
+        panes.value.push(tab);
+      }
     }
   ))
 })
