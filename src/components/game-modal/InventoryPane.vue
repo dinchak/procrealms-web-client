@@ -25,19 +25,17 @@
       </NGi>
     </NGrid>
 
-    <NGrid class="inventory" cols="1 800:2 1200:3">
-      <NGi v-if="getItems().length == 0">You don't have anything in your inventory.</NGi>
-
-      <NGi v-for="item in getItems()" :key="item.iid">
-        <div class="item">
-          <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-
-          <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
-
+    <div class="item-table">
+      <div class="inventory" v-for="(e, i) in 3" :key="i">
+        <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
+        <div v-for="(item, index) in getItems()" :key="item.iid">
+          <div :class=itemClass(item.iid) v-if="index % 3 === i">
+            <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
+              <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+          </div>
         </div>
-      </NGi>
-
-    </NGrid>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -134,6 +132,10 @@ function watchCharmieInventory () {
   })
 }
 
+function itemClass(itemIid) {
+  return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
+}
+
 let watchers = []
 onMounted(async () => {
   items.value = await fetchItems(getInventory())
@@ -163,6 +165,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less" scoped>
+.item-table {
+  display: flex;
+  width: 100%;
+}
 .scroll-container {
   height: calc(100vh - 75px);
   overflow-y: scroll;
@@ -208,6 +214,16 @@ onBeforeUnmount(() => {
     }
   }
   .inventory {
+    width: 33%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    .selected-item {
+      border-style: solid;
+      border-width: 0.2rem;
+      border-color: #121;
+    }
     .item {
       .name {
         padding: 5px 10px;
