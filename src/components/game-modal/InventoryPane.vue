@@ -26,10 +26,10 @@
     </NGrid>
 
     <div class="item-table">
-      <div class="inventory" v-for="(e, i) in 3" :key="i">
+      <div class="inventory" v-for="(e, i) in columns" :key="i">
         <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
         <div v-for="(item, index) in getItems()" :key="item.iid">
-          <div :class=itemClass(item.iid) v-if="index % 3 === i">
+          <div :class=itemClass(item.iid) v-if="index % columns === i">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
               <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
           </div>
@@ -60,6 +60,7 @@ const { miniOutputEnabled } = toRefs(props)
 const items = ref([])
 const selectedIid = ref({})
 const search = ref('')
+const columns = ref(1)
 
 function getItems () {
   if (search.value) {
@@ -136,8 +137,21 @@ function itemClass(itemIid) {
   return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
 }
 
+function onWidthChange() {
+  if (window.innerWidth < 600) {
+    columns.value = 1
+  } else if (window.innerWidth < 800) {
+    columns.value = 2
+  } else {
+    columns.value = 3
+  }
+}
+
 let watchers = []
 onMounted(async () => {
+  onWidthChange()
+  window.addEventListener('resize', onWidthChange)
+
   items.value = await fetchItems(getInventory())
   
   watchers.push(
@@ -161,6 +175,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   watchers.forEach(w => w())
   unwatchCharmieInventory()
+  window.removeEventListener('resize', onWidthChange)
 })
 </script>
 
@@ -242,6 +257,9 @@ onBeforeUnmount(() => {
 
 @media screen and (max-width: 800px) {
   .scroll-container {
+    .inventory {
+      width: 50%;
+    }
     .inventory-summary {
       .summary {
         .money {
@@ -257,6 +275,9 @@ onBeforeUnmount(() => {
 
 @media screen and (max-width: 600px) {
   .scroll-container {
+    .inventory {
+      width: 100%;
+    }
     .inventory-summary {
       .summary {
         flex-direction: row;
