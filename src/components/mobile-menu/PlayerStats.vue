@@ -5,8 +5,7 @@
       <div class="bold-magenta">{{ player().class }}</div>
       <div><span style="color: #aaa">Level</span> <span class="bold-cyan">{{ player().level }}</span></div>
     </div>
-    <hr v-if="isNaN(getTNL())" class="exp-row">
-    <NProgress v-else class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
+    <NProgress v-if="player().level < 100" class="exp-row" type="line" status="default" :percentage="getExpPercentage()">
       {{ getTNL() }} TNL
     </NProgress>
   </div>
