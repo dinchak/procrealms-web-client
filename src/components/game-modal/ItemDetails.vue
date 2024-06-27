@@ -229,11 +229,11 @@ function getItemBonuses () {
 }
 
 const renderBonusPercent = [
-  'critical', 'xpBonus'
+  'critical', 'xpBonus', 'castingTime'
 ]
 
 const renderBonusSeconds = [
-  'skillCooldown', 'spellCooldown', 'castingTime'
+  'skillCooldown', 'spellCooldown'
 ]
 
 const renderBonusMultipliers = [
