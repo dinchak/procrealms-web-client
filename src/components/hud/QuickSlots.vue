@@ -247,8 +247,8 @@ function getSlotClass (slot) {
       background-color: transparent;
       padding: 0;
       flex-wrap: wrap;
-      justify-content: left;
-      gap: 8px;
+      justify-content: center;
+      gap: 10px;
     }
 
     .quick-slot {
