@@ -128,7 +128,7 @@
       <div class="row">
         <div class="col-2">
           <div class="stat-header">
-            <div :class="'stat-value ' + getDamageColor()">
+            <div :class="'damage-value ' + getDamageColor()">
               {{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ getDamageBonus() }}
             </div>
             <div class="stat-label">
@@ -139,7 +139,7 @@
 
         <div class="col-2">
           <div class="stat-header">
-            <div :class="'stat-value ' + getDamageColor()">
+            <div :class="'damage-value ' + getDamageColor()">
               <span class="bold-yellow">{{ renderNumber(player().dpr) }}</span>
             </div>
             <div class="stat-label">
@@ -161,7 +161,7 @@
       <div class="row">
         <div>Speed</div>
         <div class="bold-yellow">{{ player().speed }}</div>
-        <div class="bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="white">s</span></div>
+        <div class="bold-yellow">{{ renderNumber(player().recoveryTimeBonus) }}<span class="white">s</span></div>
         <div>recovery</div>
       </div>
 
@@ -423,10 +423,13 @@ onBeforeUnmount(() => {
           .stat-value {
             font-size: 1.5rem;
           }
+          .damage-value {
+            font-size: 1.2rem;
+          }
           .increase-stat {
           }
           .stat-label {
-            font-size: 1.2rem;
+            font-size: 1.0rem;
             text-align: center;
           }        
         }
