@@ -25,19 +25,17 @@
       </NGi>
     </NGrid>
 
-    <NGrid class="inventory" cols="1 800:2 1200:3">
-      <NGi v-if="getItems().length == 0">You don't have anything in your inventory.</NGi>
-
-      <NGi v-for="item in getItems()" :key="item.iid">
-        <div class="item">
-          <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-
-          <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
-
+    <div class="item-table">
+      <div class="inventory" v-for="(e, i) in columns" :key="i">
+        <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
+        <div v-for="(item, index) in getItems()" :key="item.iid">
+          <div :class=itemClass(item.iid) v-if="index % columns === i">
+            <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
+              <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+          </div>
         </div>
-      </NGi>
-
-    </NGrid>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -62,6 +60,7 @@ const { miniOutputEnabled } = toRefs(props)
 const items = ref([])
 const selectedIid = ref({})
 const search = ref('')
+const columns = ref(1)
 
 function getItems () {
   if (search.value) {
@@ -134,8 +133,25 @@ function watchCharmieInventory () {
   })
 }
 
+function itemClass(itemIid) {
+  return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
+}
+
+function onWidthChange() {
+  if (window.innerWidth < 600) {
+    columns.value = 1
+  } else if (window.innerWidth < 800) {
+    columns.value = 2
+  } else {
+    columns.value = 3
+  }
+}
+
 let watchers = []
 onMounted(async () => {
+  onWidthChange()
+  window.addEventListener('resize', onWidthChange)
+
   items.value = await fetchItems(getInventory())
   
   watchers.push(
@@ -159,10 +175,15 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   watchers.forEach(w => w())
   unwatchCharmieInventory()
+  window.removeEventListener('resize', onWidthChange)
 })
 </script>
 
 <style lang="less" scoped>
+.item-table {
+  display: flex;
+  width: 100%;
+}
 .scroll-container {
   height: calc(100vh - 75px);
   overflow-y: scroll;
@@ -208,6 +229,16 @@ onBeforeUnmount(() => {
     }
   }
   .inventory {
+    width: 33%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    .selected-item {
+      border-style: solid;
+      border-width: 0.2rem;
+      border-color: #121;
+    }
     .item {
       .name {
         padding: 5px 10px;
@@ -226,6 +257,9 @@ onBeforeUnmount(() => {
 
 @media screen and (max-width: 800px) {
   .scroll-container {
+    .inventory {
+      width: 50%;
+    }
     .inventory-summary {
       .summary {
         .money {
@@ -241,6 +275,9 @@ onBeforeUnmount(() => {
 
 @media screen and (max-width: 600px) {
   .scroll-container {
+    .inventory {
+      width: 100%;
+    }
     .inventory-summary {
       .summary {
         flex-direction: row;
