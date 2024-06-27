@@ -8,7 +8,7 @@
     <div class="character-stats">
 
       <div class="row">
-        <div class="col header">
+        <div class="col-2">
           <div class="stat-header">
             <div class="stat-value">
               <span class="bold-red">{{ player()._strength }}</span><span class="black">+</span><span class="red">{{ player().strength - player()._strength }}</span>
@@ -22,7 +22,7 @@
           </div>
         </div>
 
-        <div class="col header">
+        <div class="col-2">
           <div class="stat-header">
             <div class="stat-value">
               <span class="bold-cyan">{{ player()._magic }}</span><span class="black">+</span><span class="cyan">{{ player().magic - player()._magic }}</span>
@@ -36,103 +36,38 @@
           </div>
         </div>
       </div>
+    </div>
 
+    <div class="character-stats">
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-green">
-              {{ player().strengthHpBonus }} 
-            </div>
-            <div class="bonus">
-              Max Health
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-white">
-              {{ player().magicEnergyBonus }} 
-            </div>
-            <div class="bonus">
-              Max Energy
-            </div>
-          </div>
-        </div>
+        <div class="bold-green">{{ player().strengthHpBonus }}</div>
+        <div>Max Health</div>
+        <div class="bold-white">{{ player().magicEnergyBonus }}</div>
+        <div>Max Energy</div>
       </div>
-
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-yellow">
-              {{ player().strengthStaminaBonus }} 
-            </div>
-            <div class="bonus">
-              Max Stamina
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value magenta">
-              {{ renderNumber(player().magicSpellCooldownBonus) }} 
-            </div>
-            <div class="bonus">
-              Spell Cooldown
-            </div>
-          </div>
-        </div>
+        <div class="bold-yellow">{{ player().strengthStaminaBonus }}</div>
+        <div>Max Stamina</div>
+        <div class="magenta">{{ renderNumber(player().magicSpellCooldownBonus) }}</div>
+        <div>Spell Cooldown</div>
       </div>
-
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-red">
-              {{ player().strengthDamageBonus }} 
-            </div>
-            <div class="bonus">
-              Damage
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-magenta">
-              {{ renderNumber(player().magicDamageBonus) }} 
-            </div>
-            <div class="bonus">
-              Magic Damage
-            </div>
-          </div>
-        </div>
+        <div class="bold-red">{{ player().strengthDamageBonus }}</div>
+        <div>Damage</div>
+        <div class="bold-magenta">{{ renderNumber(player().magicDamageBonus) }}</div>
+        <div>Magic Damage</div>
       </div>
-
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value red">
-              {{ player().strengthResistBonus }} 
-            </div>
-            <div class="bonus">
-              Resist Physical
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-cyan">
-              {{ renderNumber(player().magicResistBonus) }} 
-            </div>
-            <div class="bonus">
-              Resist Magic
-            </div>
-          </div>
-        </div>
+        <div class="red">{{ player().strengthResistBonus }}</div>
+        <div>Resist Physical</div>
+        <div class="bold-cyan">{{ renderNumber(player().magicResistBonus) }}</div>
+        <div>Resist Magic</div>
       </div>
+    </div>
 
-      <div class="spacer"></div>
-
+    <div class="character-stats">
       <div class="row">
-        <div class="col header">
+        <div class="col-2">
           <div class="stat-header">
             <div class="stat-value">
               <span class="bold-yellow">{{ player()._agility }}</span><span class="black">+</span><span class="yellow">{{ player().agility - player()._agility }}</span>
@@ -146,7 +81,7 @@
           </div>
         </div>
 
-        <div class="col header">
+        <div class="col-2">
           <div class="stat-header">
             <div class="stat-value">
               <span class="bold-green">{{ player()._spirit }}</span><span class="black">+</span><span class="green">{{ player().spirit - player()._spirit }}</span>
@@ -159,360 +94,221 @@
             </div>
           </div>
         </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-yellow">
-              {{ player().agilitySpeedBonus }} 
-            </div>
-            <div class="bonus">
-              Speed
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-white">
-              {{ player().spiritEnergyBonus }}
-            </div>
-            <div class="bonus">
-              Max Energy
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value yellow">
-              {{ renderNumber(player().agilitySkillCooldownBonus) }} 
-            </div>
-            <div class="bonus">
-              Skill Cooldown
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-blue">
-              {{ player().spiritFocusBonus }} 
-            </div>
-            <div class="bonus">
-              Focus
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-red">
-              {{ renderNumber(player().agilityCriticalBonus) }}
-            </div>
-            <div class="bonus">
-              % Critical Hit
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-green">
-              {{ player().spiritCommandBonus }}
-            </div>
-            <div class="bonus">
-              Command
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value red">
-              {{ renderNumber(player().agilityCriticalMultiplierBonus) }}
-            </div>
-            <div class="bonus">
-              x Multiplier
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value green">
-              {{ player().spiritResistBonus }} 
-            </div>
-            <div class="bonus">
-              Resist Spirit
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <div class="subtitle"><span class="title">Combat</span></div>
+    <div class="character-stats">
+      <div class="row">
+        <div>{{ player().agilitySpeedBonus }}</div>
+        <div>Speed</div>
+        <div class="bold-white">{{ player().spiritEnergyBonus }}</div>
+        <div>Max Energy</div>
+      </div>
+      <div class="row">
+        <div>{{ player().agilitySkillCooldownBonus }}</div>
+        <div>Skill Cooldown</div>
+        <div class="bold-blue">{{ player().spiritFocusBonus }}</div>
+        <div>Focus</div>
+      </div>
+      <div class="row">
+        <div class="bold-red">{{ renderNumber(player().agilityCriticalBonus) }}</div>
+        <div>% Critical Hit</div>
+        <div class="bold-green">{{ player().spiritCommandBonus }}</div>
+        <div>Command</div>
+      </div>
+      <div class="row">
+        <div>{{ player().agilityCriticalMultiplierBonus }}</div>
+        <div>x Multiplier</div>
+        <div class="bold-yellow">{{ player().spiritResistBonus }}</div>
+        <div>Resist Spirit</div>
+      </div>
+    </div>
 
     <div class="character-stats">
-      <div class="damage-row">
-        <div class="flex-row">
-          <div :class="'value ' + getDamageColor()">{{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ getDamageBonus() }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="label">
-            <span :class="getDamageColor()">{{ getDamageType() }}</span>
-            damage
+      <div class="row">
+        <div class="col-2">
+          <div class="stat-header">
+            <div :class="'stat-value ' + getDamageColor()">
+              {{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ getDamageBonus() }}
+            </div>
+            <div class="stat-label">
+              {{ getDamageType() }}
+            </div>
           </div>
         </div>
-      </div>
-      <div class="damage-row">
-        <div class="flex-row">
-          <div :class="'value ' + getDamageColor()">{{ renderNumber(player().dpr) }}</div>
-        </div>
-        <div class="flex-row">
-          <div class="label">avg/round</div>
+
+        <div class="col-2">
+          <div class="stat-header">
+            <div :class="'stat-value ' + getDamageColor()">
+              <span class="bold-yellow">{{ renderNumber(player().dpr) }}</span>
+            </div>
+            <div class="stat-label">
+              avg/round
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="character-stats">
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Armor</div>
-          <div class="left-value bold-white">{{ player().armor }}</div>
-          <div class="right-value bold-white">{{ player().armorAbsorption }}</div>
-          <div class="right-label">absorption</div>
-        </div>
+      <div class="row">
+        <div>Armor</div>
+        <div class="bold-white">{{ player().armor }}</div>
+        <div class="bold-white">{{ renderNumber(player().armorAbsorption) }}<span class="white">%</span></div>
+        <div>absorption</div>
       </div>
 
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Speed</div>
-          <div class="left-value bold-yellow">{{ player().speed }}</div>
-          <div class="right-value bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="white">s</span></div>
-          <div class="right-label">recovery</div>
-        </div>
+      <div class="row">
+        <div>Speed</div>
+        <div class="bold-yellow">{{ player().speed }}</div>
+        <div class="bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="white">s</span></div>
+        <div>recovery</div>
       </div>
 
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Recovery</div>
-          <div class="left-value bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
-          <div class="right-value bold-yellow">{{ renderNumber(player().apr) }}</div>
-          <div class="right-label">attacks/round</div>
-        </div>
+      <div class="row">
+        <div>Recovery</div>
+        <div class="bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
+        <div class="bold-yellow">{{ renderNumber(player().apr) }}</div>
+        <div>attacks/round</div>
       </div>
-
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Critical</div>
-          <div class="left-value bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
-          <div class="right-value bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
-          <div class="right-label">multiplier</div>
-        </div>
-      </div>
-
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Focus</div>
-          <div class="left-value bold-blue">{{ renderNumber(player().focus) }}</div>
-          <div class="right-value bold-blue">{{ renderNumber(player().interruptChance) }}<span class="white">%</span></div>
-          <div class="right-label">interrupt</div>
-        </div>
-      </div>
-
-      <div class="combat-row">
-        <div class="flex-row">
-          <div class="left-label">Command</div>
-          <div class="left-value bold-green">{{ renderNumber(player().command) }}</div>
-          <div class="right-value bold-green">{{ player().numCharmies }}<span class="white">/</span><span class="green">{{ player().maxCharmies }}</span></div>
-          <div class="right-label">followers</div>
-        </div>
-      </div>
-
-      <div class="combat-row" v-if="player().bonusSkeletons > 0">
-        <div class="flex-row">
-          <div class="left-label"></div>
-          <div class="left-value"></div>
-          <div class="right-value bold-magenta">
-            +{{ renderNumber(player().bonusSkeletons) }}
-          </div>
-          <div class="right-label">skeletons</div>
-        </div>
-      </div>
-
-      <div class="combat-row" v-if="player().bonusTamed > 0">
-        <div class="flex-row">
-          <div class="left-label"></div>
-          <div class="left-value"></div>
-          <div class="right-value yellow">
-            +{{ renderNumber(player().bonusTamed) }}
-          </div>
-          <div class="right-label">tamed</div>
-        </div>
-      </div>
-
     </div>
-
-    <div class="spacer"></div>
 
     <div class="character-stats">
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-cyan">
-              {{ renderNumber(player().castingTime) }}<span class="white">s</span>
-            </div>
-            <div class="bonus">
-              Casting Time
-            </div>
-          </div>
-        </div>
-
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-magenta">
-              {{ renderNumber(player().magicDamage) }}
-            </div>
-            <div class="bonus">
-              Magic Damage
-            </div>
-          </div>
-        </div>
+        <div>Critical</div>
+        <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
+        <div class="bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
+        <div>multiplier</div>
       </div>
 
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value magenta">
-              {{ renderNumber(player().spellCooldown) }}<span class="white">s</span>
-            </div>
-            <div class="bonus">
-              Spell Cooldown
-            </div>
-          </div>
-        </div>
-
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-blue">
-              {{ renderNumber(player().magicFindBonus) }}
-            </div>
-            <div class="bonus">
-              Magic Find
-            </div>
-          </div>
-        </div>
+        <div>Focus</div>
+        <div class="bold-blue">{{ renderNumber(player().focus) }}</div>
+        <div class="bold-blue">{{ renderNumber(player().interruptChance) }}<span class="white">%</span></div>
+        <div>interrupt</div>
       </div>
 
       <div class="row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value yellow">
-              {{ renderNumber(player().skillCooldown) }}<span class="white">s</span>
-            </div>
-            <div class="bonus">
-              Skill Cooldown
-            </div>
-          </div>
-        </div>
+        <div>Command</div>
+        <div class="bold-green">{{ renderNumber(player().command) }}</div>
+        <div>+<span class="bold-green">{{ renderNumber(player().summonMultiplier) }}</span><span class="white">%</span></div>
+        <div>summon power</div>
+      </div>
 
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-yellow">
-              {{ renderNumber(player().xpGainBonus) }}<span class="white">%</span>
-            </div>
-            <div class="bonus">
-              EXP Bonus
-            </div>
-          </div>
+      <div class="row" v-if="player().numSkeletons > 0">
+        <div></div>
+        <div></div>
+        <div>
+          <span class="bold-magenta">{{ renderNumber(player().numSkeletons) }}</span>/<span class="magenta">{{ renderNumber(player().maxSkeletons) }}</span>
         </div>
+        <div>skeletons</div>
+      </div>
+
+      <div class="row" v-if="player().numTamed > 0">
+        <div></div>
+        <div></div>
+        <div>
+          <span class="bold-yellow">{{ renderNumber(player().numTamed) }}</span>/<span class="yellow">{{ renderNumber(player().maxTamed) }}</span>
+        </div>
+        <div>tamed</div>
+      </div>
+
+      <div class="row" v-if="player().numLivestock > 0">
+        <div></div>
+        <div></div>
+        <div>
+          <span class="bold-green">{{ renderNumber(player().numLivestock) }}</span>/<span class="green">{{ renderNumber(player().maxLivestock) }}</span>
+        </div>
+        <div>livestock</div>
       </div>
     </div>
-
-    <div class="subtitle"><span class="title">Resistances</span></div>
 
     <div class="character-stats">
-      <div class="resist-row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value magenta">{{ player().resistBludgeoning }}</div>
-            <div class="label">Bludgeon</div>
-          </div>
+      <div class="row">
+        <div>
+          Magic Damage
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-cyan">{{ player().resistArcane }}</div>
-            <div class="label">Arcane</div>
-          </div>
+        <div class="bold-magenta">
+          {{ renderNumber(player().magicDamage) }}
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-yellow">{{ player().resistHoly }}</div>
-            <div class="label">Acid</div>
-          </div>
+        <div class="bold-cyan">
+          {{ renderNumber(player().castingTime) }}<span class="white">%</span>
+        </div>
+        <div>
+          Faster Casting
         </div>
       </div>
 
-
-      <div class="resist-row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value red">{{ player().resistPiercing }}</div>
-            <div class="label">Pierce</div>
-          </div>
+      <div class="row">
+        <div>
+          Magic Find
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-yellow">{{ player().resistElectric }}</div>
-            <div class="label">Electric</div>
-          </div>
+        <div class="bold-blue">
+          {{ renderNumber(player().magicFindBonus) }}
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-white">{{ player().resistHoly }}</div>
-            <div class="label">Holy</div>
-          </div>
+        <div class="magenta">
+          {{ renderNumber(player().spellCooldown) }}<span class="white">s</span>
+        </div>
+        <div>
+          Spell Cooldown
         </div>
       </div>
 
-      <div class="resist-row">
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-red">{{ player().resistSlashing }}</div>
-            <div class="label">Slash</div>
-          </div>
+      <div class="row">
+        <div>
+          EXP Bonus
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value red">{{ player().resistFire }}</div>
-            <div class="label">Fire</div>
-          </div>
+        <div class="bold-yellow">
+          {{ renderNumber(100 * player().xpGainBonus) }}<span class="white">%</span>
         </div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value green">{{ player().resistPoison }}</div>
-            <div class="label">Poison</div>
-          </div>
+        <div class="yellow">
+          {{ renderNumber(player().skillCooldown) }}<span class="white">s</span>
         </div>
-      </div>
-
-      <div class="resist-row">
-        <div class="col"></div>
-        <div class="col">
-          <div class="flex-row">
-            <div class="value bold-blue">{{ player().resistIce }}</div>
-            <div class="label">Ice</div>
-          </div>
+        <div>
+          Skill Cooldown
         </div>
-        <div class="col"></div>
       </div>
     </div>
+
+    <div class="resistances">Resistances</div>
+
+    <div class="character-stats">
+      <div class="row">
+        <div class="value magenta">{{ player().resistBludgeoning }}</div>
+        <div class="label">Bludgeon</div>
+        <div class="value bold-cyan">{{ player().resistArcane }}</div>
+        <div class="label">Arcane</div>
+        <div class="value bold-yellow">{{ player().resistHoly }}</div>
+        <div class="label">Acid</div>
+      </div>
+      <div class="row">
+        <div class="value red">{{ player().resistPiercing }}</div>
+        <div class="label">Pierce</div>
+        <div class="value bold-yellow">{{ player().resistElectric }}</div>
+        <div class="label">Electric</div>
+        <div class="value bold-white">{{ player().resistHoly }}</div>
+        <div class="label">Holy</div>
+      </div>
+
+      <div class="row">
+        <div class="value bold-red">{{ player().resistSlashing }}</div>
+        <div class="label">Slash</div>
+        <div class="value red">{{ player().resistFire }}</div>
+        <div class="label">Fire</div>
+        <div class="value green">{{ player().resistPoison }}</div>
+        <div class="label">Poison</div>
+      </div>
+
+      <div class="row">
+        <div></div>
+        <div></div>
+        <div class="value bold-blue">{{ player().resistIce }}</div>
+        <div class="label">Ice</div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
   </NCollapseItem>
 </template>
 
@@ -599,147 +395,40 @@ onBeforeUnmount(() => {
 
 <style lang="less">
 
-.subtitle {
-  font-size: 16px;
+.resistances {
   text-align: center;
-  margin-top: 10px;
-  margin-left: -10px;
-  .title {
-    border-bottom: 1px solid #333;
-  }
+  font-size: 1.2rem;
+  margin-bottom: 10px;
 }
 
 .character-stats {
   display: table;
+  margin-bottom: 10px;
   width: 100%;
-  border-spacing: 5px;
-  margin-left: -10px;
-
   .row {
     display: table-row;
-
-    .col {
+    > div {
       display: table-cell;
-      width: 50%;
-      .stat-header {
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        .stat-label {
-          font-size: 16px;
-          border-bottom: 1px solid #333;
-        }
-        .stat-value {
-          font-size: 28px;
-          line-height: 26px;
-        }
-      }
-
-      .flex-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        line-height: 10px;
-        .value {
-          width: 42px;
-          margin-right: 5px;
-          text-align: right;
-        }
-        .bonus {
-          color: #aaa;
-          font-size: 11px;
-          line-height: 10px;
-          width: 83px;
-        }
-      }
-    }
-  }
-
-  .damage-row {
-    display: table-row;
-    margin-bottom: 20px;
-    .flex-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      .value {
-        font-size: 24px;
-        line-height: 20px;
-      }
-      .label {
-        font-size: 11px;
-        line-height: 14px;
-        color: #aaa;
-        margin-left: 5px;
-        margin-bottom: 5px;
-      }
-    }
-  }
-
-  .combat-row {
-    display: table-row;
-
-    .flex-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      line-height: 14px;
-
-      .left-label {
-        font-size: 11px;
-        line-height: 10px;
-        width: 70px;
+      &:nth-child(odd) {
         text-align: right;
-        margin-right: 5px;
-        color: #aaa;
+        padding: 0 5px 5px 0;
       }
-      .left-value {
-        width: 50px;
-        text-align: left;
-      }
-
-      .right-value {
-        margin-right: 5px;
-        text-align: right;
-        width: 50px;
-      }
-      .right-label {
-        text-align: left;
-        color: #aaa;
-        font-size: 11px;
-        line-height: 10px;
-        width: 70px;
-      }
-    }
-  }
-
-  .resist-row {
-    display: table-row;
-    width: 100%;
-    .col {
-      display: table-cell;
-      .flex-row {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        height: 10px;
-        .value {
-          width: 30px;
-          text-align: right;
-        }
-        .label {
-          width: 40px;
-          color: #aaa;
-          font-size: 11px;
-          text-align: left;
-          line-height: 10px;
-          margin-left: 5px;
+      &.col-2 {
+        width: 50%;
+        .stat-header {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          .stat-value {
+            font-size: 1.5rem;
+          }
+          .increase-stat {
+          }
+          .stat-label {
+            font-size: 1.2rem;
+            text-align: center;
+          }        
         }
       }
     }
@@ -756,14 +445,4 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-.inline {
-  font-size: 1rem;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.spacer {
-  width: 100%;
-  height: 10px;
-}
 </style>
