@@ -8,15 +8,16 @@
           <div class="level">
             Level <span class="bold-cyan">{{ player().level }}</span> {{ player().class }}
           </div>
-          <div class="exp">
+          <div v-if="player().level < 100" class="exp">
             <span class="bold-cyan">{{ player().xp }}</span><span class="black">/</span><span class="cyan">{{ player().xpForNextLevel }}</span> EXP
           </div>
-          <div class="tnl">
+          <div v-if="player().level < 100" class="tnl">
             <span class="bold-yellow">{{ player().xpForNextLevel - player().xp }}</span> TNL
           </div>
         </div>
-        <div class="experience"></div>
+        <div v-if="player().level < 100" class="experience"></div>
         <NProgress
+          v-if="player().level < 100"
           :percentage="getExpPercentage()"
           type="line"
           status="default"
@@ -299,7 +300,7 @@
             <div class="label"><span :class="getDamageColor()">{{ ucfirst(getDamageType()) }}</span>/Round</div>
           </div>        
           <div class="row">
-            <div class="value bold-white">{{ player().armorAbsorption }}</div>
+            <div class="value bold-white">{{ player().armorAbsorption }}%</div>
             <div class="label">Damage Absorption</div>
           </div>
           <div class="row">
@@ -319,20 +320,35 @@
             <div class="label">Interrupt Chance</div>
           </div>
           <div class="row">
-            <div class="value"><span class="bold-green">{{ player().numCharmies }}</span><span class="black">/</span><span class="green">{{ player().maxCharmies }}</span></div>
-            <div class="label">Charmed Followers</div>
+            <div class="value">+<span class="bold-green">{{ player().summonMultiplier }}</span>%</div>
+            <div class="label">Summon Power</div>
           </div>
-          <div class="row" v-if="player().bonusSkeletons > 0">
+
+          <div class="row" v-if="player().numSkeletons > 0">
             <div class="value">
-              <span class="bold-magenta">+{{ player().bonusSkeletons }}</span>
+              <span class="bold-magenta">{{ player().numSkeletons }}</span>
+              /
+              <span class="magenta">{{ player().maxSkeletons }}</span>
             </div>
-            <div class="label">Bonus Skeletons</div>
+            <div class="label">Skeletons</div>
           </div>
-          <div class="row" v-if="player().bonusTamed > 0">
+
+          <div class="row" v-if="player().numTamed > 0">
             <div class="value">
-              <span class="yellow">+{{ player().bonusTamed }}</span>
+              <span class="bold-yellow">{{ player().numTamed }}</span>
+              /
+              <span class="yellow">{{ player().maxTamed }}</span>
             </div>
-            <div class="label">Bonus Tamed</div>
+            <div class="label">Tamed</div>
+          </div>
+
+          <div class="row" v-if="player().numLivestock > 0">
+            <div class="value">
+              <span class="bold-green">{{ player().numLivestock }}</span>
+              /
+              <span class="green">{{ player().maxLivestock }}</span>
+            </div>
+            <div class="label">Livestock</div>
           </div>
 
         </div>
@@ -354,8 +370,8 @@
           </div>
 
           <div class="row">
-            <div class="value bold-cyan">{{ renderNumber(player().castingTime) }}<span class="black">s</span></div>
-            <div class="label">Casting Time</div>
+            <div class="value bold-cyan">{{ renderNumber(player().castingTime) }}<span class="black">%</span></div>
+            <div class="label">Faster Casting</div>
           </div>
 
           <div class="row">
