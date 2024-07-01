@@ -191,7 +191,7 @@
       <div class="row">
         <div>Command</div>
         <div class="bold-green">{{ renderNumber(player().command) }}</div>
-        <div>+<span class="bold-green">{{ renderNumber(player().summonMultiplier) }}</span><span class="white">%</span></div>
+        <div>+<span class="bold-green">{{ Math.round(player().summonMultiplier * 100) }}</span><span class="white">%</span></div>
         <div>summon power</div>
       </div>
 
