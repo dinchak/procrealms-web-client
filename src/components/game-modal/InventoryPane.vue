@@ -24,10 +24,9 @@
         </div>
       </NGi>
     </NGrid>
-
+    <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
     <div class="item-table">
       <div class="inventory" v-for="(e, i) in columns" :key="i">
-        <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
         <div v-for="(item, index) in getItems()" :key="item.iid">
           <div :class=itemClass(item.iid) v-if="index % columns === i">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
