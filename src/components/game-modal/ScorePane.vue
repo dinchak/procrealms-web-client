@@ -320,7 +320,7 @@
             <div class="label">Interrupt Chance</div>
           </div>
           <div class="row">
-            <div class="value">+<span class="bold-green">{{ player().summonMultiplier }}</span>%</div>
+            <div class="value">+<span class="bold-green">{{ Math.round(player().summonMultiplier * 100) }}</span>%</div>
             <div class="label">Summon Power</div>
           </div>
 
