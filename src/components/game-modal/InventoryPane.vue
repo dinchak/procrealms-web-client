@@ -24,6 +24,13 @@
         </div>
       </NGi>
     </NGrid>
+
+    <div class="sorting">
+      <span>Sort by </span>
+      <NPopselect v-model:value="value" :options="options">
+        <span class="dropdown">{{value}}</span>
+      </NPopselect>
+    </div>
     <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
     <div class="item-table">
       <div class="inventory" v-for="(e, i) in columns" :key="i">
@@ -40,7 +47,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NInput } from 'naive-ui'
+import {NGrid, NGi, NInput, NPopselect} from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
@@ -60,10 +67,43 @@ const items = ref([])
 const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
+const value = ref('name')
+
+const options = [
+  {
+    label: 'Name',
+    value: 'name'
+  },
+  {
+    label: 'Level',
+    value: 'level'
+  },
+  {
+    label: 'Type',
+    value: 'type'
+  },
+  {
+    label: 'Subtype',
+    value: 'subtype'
+  },
+  {
+    label: 'Weight',
+    value: 'weight'
+  },
+  {
+    label: 'Value',
+    value: 'value'
+  }
+]
 
 function getItems () {
   if (search.value) {
-    return items.value.filter(item => item.fullName.toLowerCase().includes(search.value.toLowerCase()))
+    return items.value.filter((item) => {
+      const validItem = item.fullName.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.type.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.subtype.toLowerCase().includes(search.value.toLowerCase())
+      return validItem
+    })
   } else {
     return items.value
   }
@@ -169,6 +209,10 @@ onMounted(async () => {
       watchCharmieInventory()
     })
   )
+
+  watchers.push(watch(value, () => {
+    items.value = items.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+  }))
 })
 
 onBeforeUnmount(() => {
@@ -225,6 +269,18 @@ onBeforeUnmount(() => {
           text-align: left;
         }
       }
+    }
+  }
+  .sorting {
+    margin-bottom: 20px;
+    margin-left: 5px;
+
+    .dropdown {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      padding: 5px;
+      display: inline-block;
+      text-align: center;
+      width: 5em;
     }
   }
   .inventory {
