@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { state, showHUD, getHUDHeight } from '@/static/state'
+import {getHUDHeight, showHUD, state} from '@/static/state'
 
 import HUDEffects from '@/components/hud/HUDEffects.vue'
 import HUDQuests from '@/components/hud/HUDQuests.vue'
@@ -22,7 +22,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
 .bottom-hud {
   display: flex;
   padding-top: 5px;
-  border-top: 1px solid #181818;
+  border-top: 3px solid #181818;
   background-color: rgb(16, 18, 22);
   overflow-x: auto;
 
