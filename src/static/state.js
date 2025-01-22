@@ -250,7 +250,7 @@ function resetOptions () {
 
     // audio
     autoplayMusic: false,
-    chatSounds: true,
+    chatSounds: false,
   }
 }
 
