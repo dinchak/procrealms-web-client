@@ -27,11 +27,13 @@
 
     <div class="sorting">
       <span>Sort by </span>
-      <NPopselect v-model:value="value" :options="options">
-        <span class="dropdown">{{value}}</span>
+      <NPopselect v-model:value="sortValue" :options="sortOptions" @change="onSortChange">
+        <span class="dropdown">{{ sortValue }}</span>
       </NPopselect>
     </div>
+
     <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
+
     <div class="item-table">
       <div class="inventory" v-for="(e, i) in columns" :key="i">
         <div v-for="(item, index) in getItems()" :key="item.iid">
@@ -42,7 +44,8 @@
         </div>
       </div>
     </div>
-  </div>
+
+</div>
 </template>
 
 <script setup>
@@ -67,9 +70,9 @@ const items = ref([])
 const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
-const value = ref('name')
 
-const options = [
+const sortValue = ref('name')
+const sortOptions = [
   {
     label: 'Name',
     value: 'name'
@@ -121,20 +124,20 @@ function selectItem (item) {
   selectedIid.value = item.iid
 }
 
-function getNumItems() {
+function getNumItems () {
   return state.gameState.player.numItems || 0
 }
 
-function getMaxNumItems() {
+function getMaxNumItems () {
   return state.gameState.player.maxNumItems || 0
 }
 
-function getWeight() {
+function getWeight () {
   const initialValue = state.gameState.player.weight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
-function getMaxWeight() {
+function getMaxWeight () {
   const initialValue = state.gameState.player.maxWeight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
@@ -168,15 +171,15 @@ function watchCharmieInventory () {
   charmieInventoryWatcher = watch(() => {
     return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
   }, async () => {
-    items.value = await fetchItems(getInventory())
+    items.value = sortItems(await fetchItems(getInventory()))
   })
 }
 
-function itemClass(itemIid) {
+function itemClass (itemIid) {
   return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
 }
 
-function onWidthChange() {
+function onWidthChange () {
   if (window.innerWidth < 600) {
     columns.value = 1
   } else if (window.innerWidth < 800) {
@@ -186,33 +189,38 @@ function onWidthChange() {
   }
 }
 
+async function onSortChange (value) {
+  items.value = sortItems(await fetchItems(getInventory()))
+}
+
+function sortItems (items) {
+  items.sort((a, b) => a[sortValue.value] > b[sortValue.value] ? 1 : -1)
+  return items
+}
+
 let watchers = []
 onMounted(async () => {
   onWidthChange()
   window.addEventListener('resize', onWidthChange)
 
-  items.value = await fetchItems(getInventory())
+  items.value = sortItems(await fetchItems(getInventory()))
   
   watchers.push(
     watch(() => state.gameState.inventory, async () => {
       if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
         return
       }
-      items.value = await fetchItems(state.gameState.inventory)
+      items.value = sortItems(await fetchItems(state.gameState.inventory))
     })
   )
 
   watchers.push(
     watch(() => state.gameModalAs, async () => {
-      items.value = await fetchItems(getInventory())
+      items.value = sortItems(await fetchItems(getInventory()))
       unwatchCharmieInventory()
       watchCharmieInventory()
     })
   )
-
-  watchers.push(watch(value, () => {
-    items.value = items.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
-  }))
 })
 
 onBeforeUnmount(() => {
