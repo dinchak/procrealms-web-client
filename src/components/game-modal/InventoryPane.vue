@@ -24,7 +24,16 @@
         </div>
       </NGi>
     </NGrid>
+
+    <div class="sorting">
+      <span>Sort by </span>
+      <NPopselect v-model:value="sortValue" :options="sortOptions" @change="onSortChange">
+        <span class="dropdown">{{ sortValue }}</span>
+      </NPopselect>
+    </div>
+
     <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
+
     <div class="item-table">
       <div class="inventory" v-for="(e, i) in columns" :key="i">
         <div v-for="(item, index) in getItems()" :key="item.iid">
@@ -35,12 +44,13 @@
         </div>
       </div>
     </div>
-  </div>
+
+</div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NInput } from 'naive-ui'
+import {NGrid, NGi, NInput, NPopselect} from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
@@ -61,9 +71,42 @@ const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
 
+const sortValue = ref('name')
+const sortOptions = [
+  {
+    label: 'Name',
+    value: 'name'
+  },
+  {
+    label: 'Level',
+    value: 'level'
+  },
+  {
+    label: 'Type',
+    value: 'type'
+  },
+  {
+    label: 'Subtype',
+    value: 'subtype'
+  },
+  {
+    label: 'Weight',
+    value: 'weight'
+  },
+  {
+    label: 'Value',
+    value: 'value'
+  }
+]
+
 function getItems () {
   if (search.value) {
-    return items.value.filter(item => item.fullName.toLowerCase().includes(search.value.toLowerCase()))
+    return items.value.filter((item) => {
+      const validItem = item.fullName.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.type.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.subtype.toLowerCase().includes(search.value.toLowerCase())
+      return validItem
+    })
   } else {
     return items.value
   }
@@ -81,20 +124,20 @@ function selectItem (item) {
   selectedIid.value = item.iid
 }
 
-function getNumItems() {
+function getNumItems () {
   return state.gameState.player.numItems || 0
 }
 
-function getMaxNumItems() {
+function getMaxNumItems () {
   return state.gameState.player.maxNumItems || 0
 }
 
-function getWeight() {
+function getWeight () {
   const initialValue = state.gameState.player.weight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
-function getMaxWeight() {
+function getMaxWeight () {
   const initialValue = state.gameState.player.maxWeight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
@@ -128,15 +171,15 @@ function watchCharmieInventory () {
   charmieInventoryWatcher = watch(() => {
     return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
   }, async () => {
-    items.value = await fetchItems(getInventory())
+    items.value = sortItems(await fetchItems(getInventory()))
   })
 }
 
-function itemClass(itemIid) {
+function itemClass (itemIid) {
   return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
 }
 
-function onWidthChange() {
+function onWidthChange () {
   if (window.innerWidth < 600) {
     columns.value = 1
   } else if (window.innerWidth < 800) {
@@ -146,25 +189,34 @@ function onWidthChange() {
   }
 }
 
+async function onSortChange (value) {
+  items.value = sortItems(await fetchItems(getInventory()))
+}
+
+function sortItems (items) {
+  items.sort((a, b) => a[sortValue.value] > b[sortValue.value] ? 1 : -1)
+  return items
+}
+
 let watchers = []
 onMounted(async () => {
   onWidthChange()
   window.addEventListener('resize', onWidthChange)
 
-  items.value = await fetchItems(getInventory())
+  items.value = sortItems(await fetchItems(getInventory()))
   
   watchers.push(
     watch(() => state.gameState.inventory, async () => {
       if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
         return
       }
-      items.value = await fetchItems(state.gameState.inventory)
+      items.value = sortItems(await fetchItems(state.gameState.inventory))
     })
   )
 
   watchers.push(
     watch(() => state.gameModalAs, async () => {
-      items.value = await fetchItems(getInventory())
+      items.value = sortItems(await fetchItems(getInventory()))
       unwatchCharmieInventory()
       watchCharmieInventory()
     })
@@ -225,6 +277,18 @@ onBeforeUnmount(() => {
           text-align: left;
         }
       }
+    }
+  }
+  .sorting {
+    margin-bottom: 20px;
+    margin-left: 5px;
+
+    .dropdown {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      padding: 5px;
+      display: inline-block;
+      text-align: center;
+      width: 5em;
     }
   }
   .inventory {
