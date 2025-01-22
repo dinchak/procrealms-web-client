@@ -46,10 +46,10 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import {NCollapseItem, NProgress} from 'naive-ui'
-import {state} from '@/static/state'
-import {useHelpers} from '@/composables/helpers'
+import { ref } from 'vue'
+import { NCollapseItem, NProgress } from 'naive-ui'
+import { state } from '@/static/state'
+import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml } = useHelpers()
 

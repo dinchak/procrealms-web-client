@@ -45,7 +45,6 @@ export function useHelpers () {
       class: 'bold-red',
       disabled: false
     }]
-    console.log(item)
 
     if (item.amount > 1) {
       actions.push({

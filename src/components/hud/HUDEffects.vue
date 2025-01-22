@@ -40,30 +40,31 @@
 
 <script setup>
 defineProps(['affects'])
-import {NCollapse, NCollapseItem, NProgress} from 'naive-ui'
-import {useHelpers} from '@/composables/helpers'
-import {ANSI, ITEM_EFFECTS} from '@/static/constants'
 
-const {ansiToHtml, progressStatus, effectBonuses} = useHelpers()
+import { NCollapse, NCollapseItem, NProgress } from 'naive-ui'
+import { useHelpers } from '@/composables/helpers'
+import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
-function getEffectName(effect) {
+const { ansiToHtml, progressStatus, effectBonuses } = useHelpers()
+
+function getEffectName (effect) {
   return effect.longFlag ?
       ansiToHtml(ANSI.reset + effect.longFlag) :
       ansiToHtml(ANSI.reset + effect.name)
 }
 
-function getTimeLeftPercentage(effect) {
+function getTimeLeftPercentage (effect) {
   return effect.timeLeft / effect.totalTimeLeft * 100
 }
 
-function getEffectBonusLabel(bonus) {
+function getEffectBonusLabel (bonus) {
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
     return itemEffect.label
   }
 }
 
-function getEffectBonusLabelClass(bonus) {
+function getEffectBonusLabelClass (bonus) {
   let classes = ['effect-bonus-label']
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {

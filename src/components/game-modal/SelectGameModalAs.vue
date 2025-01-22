@@ -12,9 +12,9 @@
 </template>
 
 <script setup>
-import {h} from 'vue'
-import {NButton, NDropdown} from 'naive-ui'
-import {state} from '@/static/state'
+import { h } from 'vue'
+import { NButton, NDropdown } from 'naive-ui'
+import { state } from '@/static/state'
 
 function handleSelect (selection) {
   state.gameModalAs = selection
