@@ -1,7 +1,7 @@
 <template>
   <div :class="getScrollContainerClass()">
     <NGrid class="quests" cols="1 800:2">
-      <NGi v-if="quests().length == 0">
+      <NGi v-if="quests().length === 0">
         <div>
           You don't have any quests.
         </div>
@@ -26,6 +26,7 @@
         </NProgress>
 
         <div class="objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
+        <div class="objective" v-if="quest.extra" v-html-safe="ansiToHtml(quest.extra)"></div>
 
         <NButton ghost size="tiny" class="selectable"
           v-if="quest.desc && !questsExpanded[quest.name]"
@@ -37,10 +38,18 @@
         <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
 
         <NButton ghost size="tiny" class="selectable"
-          v-if="quest.desc && questsExpanded[quest.name] && questsExpanded[quest.name]"
+          v-if="quest.desc && questsExpanded[quest.name]"
           @click="questsExpanded[quest.name] = false"
         >
           Less Info
+        </NButton>
+
+        <NButton ghost size="tiny" class="selectable"
+          v-if="quest.extra && quest.location.coords"
+          :disabled="quest.location.coords.areaId !== state.gameState.room.areaId"
+          @click="onWalk(quest.location.coords)"
+        >
+          Walk
         </NButton>
 
       </NGi>
@@ -49,15 +58,17 @@
 </template>
 
 <script setup>
-import { ref, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NProgress, NButton } from 'naive-ui'
-import { state } from '@/static/state'
-import { useHelpers } from '@/composables/helpers'
+import {defineProps, ref, toRefs} from 'vue'
+import {NButton, NGi, NGrid, NProgress} from 'naive-ui'
+import {state} from '@/static/state'
+import {useHelpers} from '@/composables/helpers'
+import {useWebSocket} from "@/composables/web_socket.js";
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 const { ansiToHtml } = useHelpers()
+const { cmd } = useWebSocket()
 
 const questsExpanded = ref({})
 
@@ -79,6 +90,12 @@ function getScrollContainerClass () {
     'mini-output-enabled': miniOutputEnabled.value
   }
 }
+
+function onWalk(coords) {
+  state.modals.gameModal = false
+  cmd(`walk ${coords.x} ${coords.y}`)
+}
+
 </script>
 <style lang="less" scoped>
 .scroll-container {
@@ -107,6 +124,9 @@ function getScrollContainerClass () {
       }
       .n-progress {
         max-width: 300px;
+      }
+      .n-button {
+        margin-right: 5px;
       }
     }
   }
