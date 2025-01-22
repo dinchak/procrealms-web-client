@@ -29,10 +29,11 @@ const webSocketHandlers = {
     try {
       // for (let operation of patch) {
       //   console.log(operation)
-      //   state.gameState = jiff.patch([operation], state.gameState)  
+      //   state.gameState = jiff.patch([operation], state.gameState)
       // }
       state.gameState = jiff.patch(patch, state.gameState)
     } catch (err) {
+      addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${err.message}`, 'output')
       console.log(err.stack)
     }
   },
