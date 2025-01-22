@@ -1,30 +1,30 @@
 <template>
   <NCollapseItem title="Effects">
     <div class="effects-collapse">
-      <div v-if="effects().length == 0">You are not affected by anything.</div>
+      <div v-if="effects().length === 0">You are not affected by anything.</div>
 
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
 
       <div class="effect" v-for="effect in effects()" :key="effect.name">
         <div class="effect-name" v-html-safe="getEffectName(effect)"></div>
-        <NProgress 
-          v-if="effect.name != 'charm'"
-          type="line"
-          :status="progressStatus(getEffectPercentage(effect))" 
-          :percentage="getEffectPercentage(effect)"
-          :border-radius="0"
-          :show-indicator="false"
-          :height="4"
+        <NProgress
+            v-if="effect.name !== 'charm'"
+            type="line"
+            :status="progressStatus(getEffectPercentage(effect))"
+            :percentage="getEffectPercentage(effect)"
+            :border-radius="0"
+            :show-indicator="false"
+            :height="4"
         >
         </NProgress>
-        <div v-if="effect.desc">{{ effect.desc }}</div>
+        <div v-if="effect.desc" v-html-safe="ansiToHtml(effect.desc)"></div>
         <div class="effect-bonuses">
           <div
-            class="effect-bonus"
-            v-for="{ name, value } in effectBonuses(effect)"
-            :key="name"
+              class="effect-bonus"
+              v-for="{ name, amount } in effectBonuses(effect)"
+              :key="name"
           >
-            <div class="effect-bonus-value bold-white" v-html-safe="getEffectValue(value)"></div>
+            <div class="effect-bonus-value bold-white" v-html-safe="getEffectValue(amount)"></div>
             <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
           </div>
         </div>
@@ -34,41 +34,41 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-import { NProgress, NCollapseItem } from 'naive-ui'
+import {defineProps} from 'vue'
+import {NCollapseItem, NProgress} from 'naive-ui'
 
-import { ITEM_EFFECTS } from '@/static/constants'
+import {ITEM_EFFECTS} from '@/static/constants'
 
-import { useHelpers } from '@/composables/helpers'
+import {useHelpers} from '@/composables/helpers'
 
-const { ansiToHtml, progressStatus, effectBonuses, renderNumber } = useHelpers()
+const {ansiToHtml, progressStatus, effectBonuses, renderNumber} = useHelpers()
 
 const props = defineProps(['effects', 'isPlayer'])
 
-function effects () {
+function effects() {
   return props.effects || []
 }
 
-function getEffectName (effect) {
+function getEffectName(effect) {
   return ansiToHtml(effect.longFlag || effect.name)
 }
 
-function getEffectValue (value) {
+function getEffectValue(value) {
   return (value > 0 ? '+' : '') + renderNumber(value)
 }
 
-function getEffectPercentage (effect) {
+function getEffectPercentage(effect) {
   return effect.timeLeft / effect.totalTimeLeft * 100
 }
 
-function getEffectBonusLabel (bonus) {
+function getEffectBonusLabel(bonus) {
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
     return itemEffect.label
   }
 }
 
-function getEffectBonusLabelClass (bonus) {
+function getEffectBonusLabelClass(bonus) {
   let classes = ['effect-bonus-label']
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
@@ -112,9 +112,11 @@ function getEffectBonusLabelClass (bonus) {
           &.success {
             background-color: #3F3;
           }
+
           &.warning {
             background-color: #FF3;
           }
+
           &.error {
             background-color: #F33;
           }
