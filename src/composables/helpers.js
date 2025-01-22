@@ -1,9 +1,9 @@
-import { AnsiUp } from 'ansi_up'
+import {AnsiUp} from 'ansi_up'
 
-import { state, getOrderCmd, updateCounter } from '@/static/state'
-import { ACTION_MAP, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
+import {getOrderCmd, state, updateCounter} from '@/static/state'
+import {ANSI_REPLACEMENTS, DIRECTION_MAP} from '@/static/constants'
 
-import { useWebSocket } from '@/composables/web_socket'
+import {useWebSocket} from '@/composables/web_socket'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
@@ -45,7 +45,17 @@ export function useHelpers () {
       class: 'bold-red',
       disabled: false
     }]
-  
+    console.log(item)
+
+    if (item.amount > 1) {
+      actions.push({
+        label: 'Drop All',
+        onClick: () => cmd(`${getOrderCmd()}drop all iid:${item.iid}`),
+        class: 'bold-red',
+        disabled: false
+      })
+    }
+
     if (item.keeping) {
       actions.push({
         label: 'Unkeep',

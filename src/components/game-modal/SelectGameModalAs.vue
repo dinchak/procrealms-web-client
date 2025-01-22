@@ -2,9 +2,9 @@
   <div class="select-game-modal-as" v-if="getGameModalAsOptions().length > 1">
     <NDropdown
       trigger="click"
-      v-model:value="state.gameModalAs"
       :options="getGameModalAsOptions()"
       :render-label="renderOption"
+      @select="handleSelect"
     >
       <NButton class="selectable">Select character</NButton>
     </NDropdown>
@@ -12,21 +12,25 @@
 </template>
 
 <script setup>
-import { h } from 'vue'
-import { NDropdown, NButton } from 'naive-ui'
-import { state } from '@/static/state'
+import {h} from 'vue'
+import {NButton, NDropdown} from 'naive-ui'
+import {state} from '@/static/state'
+
+function handleSelect (selection) {
+  state.gameModalAs = selection
+}
 
 function getGameModalAsOptions () {
   let values = [{
     label: state.gameState.player.name,
-    value: ''
+    key: ''
   }]
   .concat(Object.values(state.gameState.charmies)
     .filter(charmie => charmie.traits.includes('mercenary'))
     .map(merc => {
       return {
         label: merc.stats.name,
-        value: merc.stats.eid
+        key: merc.stats.eid
       }
     })
   )
