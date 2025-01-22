@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import {getHUDHeight, showHUD, state} from '@/static/state'
+import { getHUDHeight, showHUD, state } from '@/static/state'
 
 import HUDEffects from '@/components/hud/HUDEffects.vue'
 import HUDQuests from '@/components/hud/HUDQuests.vue'
