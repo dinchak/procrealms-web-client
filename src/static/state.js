@@ -558,7 +558,15 @@ export function resetInputMappings () {
           keyCode: 'Enter',
           shift: true,
           modes: ['input', 'modal-input'],
-        }],
+        }, {
+          keyCode: 'Return',
+          modes: ['input', 'modal-input'],
+        }, {
+          keyCode: 'Return',
+          shift: true,
+          modes: ['input', 'modal-input'],
+        }
+      ],
     },
 
     {
