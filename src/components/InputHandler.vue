@@ -184,7 +184,16 @@ function gamepadStateLoop () {
   requestAnimationFrame(gamepadStateLoop)
 }
 
+function removeEventListeners () {
+  window.removeEventListener('keydown', onKeyDown)
+  window.removeEventListener('keyup', onKeyUp)
+  window.removeEventListener('gamepadconnected', onGamePadConnected)
+  window.removeEventListener('gamepaddisconnected', onGamePadDisconnected)
+}
+
 onMounted(() => {
+  removeEventListeners()
+
   window.addEventListener('keydown', onKeyDown)
   window.addEventListener('keyup', onKeyUp)
   window.addEventListener('gamepadconnected', onGamePadConnected)
@@ -201,11 +210,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeyDown)
-  window.removeEventListener('keyup', onKeyUp)
-  window.removeEventListener('gamepadconnected', onGamePadConnected)
-  window.removeEventListener('gamepaddisconnected', onGamePadDisconnected)
-
+  removeEventListeners()
   gamepadStateLoopPaused = true
 })
 </script>
