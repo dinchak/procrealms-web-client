@@ -45,7 +45,7 @@
         </NButton>
 
         <NButton ghost size="tiny" class="selectable"
-          v-if="quest.extra && quest.location.coords"
+          v-if="quest.extra && quest.location && quest.location.coords"
           :disabled="quest.location.coords.areaId !== state.gameState.room.areaId"
           @click="onWalk(quest.location.coords)"
         >
