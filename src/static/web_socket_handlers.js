@@ -17,7 +17,6 @@ export function onWebSocketEvent (cmd, msg, reqId) {
   }
 
   if (!webSocketHandlers[cmd]) {
-    console.log(`unhandled websocket event: ${cmd}`)
     return
   }
 
@@ -171,7 +170,6 @@ const webSocketHandlers = {
     }
     state.gamepadHelpTab = entry
     if (!state.modals.helpModal) {
-      console.log(`opening help modal`)
       state.modals.helpModal = !state.modals.helpModal
       setMode('modal')
     }

@@ -239,7 +239,6 @@ function scrollDown () {
 }
 
 function showHideTabs () {
-  console.log(`show hide tabs`)
   let tabs = document.querySelector('.n-tabs-nav')
   if (tabs) {
     if (state.options.showTabs) {

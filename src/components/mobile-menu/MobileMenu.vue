@@ -12,7 +12,7 @@
       </div>
       <div class="map-area"
            v-if="!state.gameState.battle.active && (state.options.showMobileMenuMoveControls || state.options.showMobileMenuMap)">
-        <MovementControls is-mobile-menu="true" v-if="state.options.showMobileMenuMoveControls" />
+        <MovementControls :is-mobile-menu="true" v-if="state.options.showMobileMenuMoveControls" />
         <MiniMap v-if="state.options.showMobileMenuMap" />
       </div>
       <div class="mini-stats" v-if="state.options.showMobileMenuMiniStats">

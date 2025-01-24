@@ -246,7 +246,6 @@ const topicsFilter = ref('')
 const searchFilter = ref('')
 
 function filterTopics (topics) {
-  console.log(topicsFilter.value)
   if (!topicsFilter.value) {
     return topics
   }
@@ -331,7 +330,6 @@ function lineClick (ev) {
 }
 
 function lineClickRelated (ev) {
-  console.log(ev.srcElement)
   cmd(`help ${ev.srcElement.innerText}`)
 }
 

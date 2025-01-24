@@ -6,19 +6,19 @@ const watchers = []
 
 const sounds = {
   chat: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/info.mp3'),
+    audio: new Audio('/sounds/com/gossip.mp3'),
     enabled: () => !!state.options.chatSounds,
   },
   newbie: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/newbie.mp3'),
+    audio: new Audio('/sounds/com/newbie.mp3'),
     enabled: () => !!state.options.chatSounds,
   },
   announce: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/announcement.mp3'),
+    audio: new Audio('/sounds/com/announcement.mp3'),
     enabled: () => !!state.options.chatSounds,
   },
   tell: {
-    audio: new Audio('http://proceduralrealms.com:8080/sounds/com/gossip.mp3'),
+    audio: new Audio('/sounds/com/tell.mp3'),
     enabled: () => !!state.options.chatSounds,
   }
 }

@@ -5,7 +5,6 @@ import { onWebSocketEvent } from '@/static/web_socket_handlers'
 
 export function useWebSocket () {
   function initConnection ({ onConnect, onClose, url }) {
-    console.log(`mode=${import.meta.env.MODE}`)
     try {
       state.websocketConnection = new window.WebSocket(url)
 

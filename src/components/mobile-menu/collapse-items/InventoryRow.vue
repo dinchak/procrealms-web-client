@@ -54,7 +54,6 @@ onMounted(async () => {
 
   watchers.push(watch(() => iid.value, async () => {
     if (iid.value) {
-      console.log(`fetch item, iid=${iid.value}`)
       item.value = await fetchItem(iid.value)
     } else {
       item.value = {}
