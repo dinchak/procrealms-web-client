@@ -1,11 +1,11 @@
-import { reactive, ref } from 'vue'
-import { EventEmitter } from 'events'
+import {reactive, ref} from 'vue'
+import {EventEmitter} from 'events'
 
-import { loadSettingsByNameAndType } from '@/static/triggers'
+import {loadSettingsByNameAndType} from '@/static/triggers'
 
-import { useLocalStorageHandler } from '@/composables/local_storage_handler'
-import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
-import { playRandomTrack } from '@/static/sound'
+import {useLocalStorageHandler} from '@/composables/local_storage_handler'
+import {DEFAULT_TERMINAL_SIZE} from '@/static/constants'
+import {playRandomTrack} from '@/static/sound'
 
 const { addToken } = useLocalStorageHandler()
 
@@ -624,7 +624,7 @@ export function resetInputMappings () {
       bindings: [
         {
           keyCode: 'End',
-          modes: ['hotkey', 'input', 'modal-input'],
+          modes: ['hotkey'],
         }, {
           gamepadButton: 15,
           modes: ['hotkey', 'input', 'modal-input'],
