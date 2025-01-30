@@ -1,6 +1,8 @@
 <template>
   <div class="input-wrapper">
-    <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
+    <form @submit.prevent="onSubmit">
+      <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
+    </form>
     <MobileInputControls v-if="state.options.textInputMobileButtons" />
   </div>
 </template>
@@ -101,6 +103,10 @@ function nextCommand () {
   } else {
     text.value = commandHistory[historyIndex]
   }
+}
+
+function onSubmit () {
+  sendCommand()
 }
 
 function sendCommand () {
@@ -221,44 +227,48 @@ onBeforeUnmount(() => {
     }
   }
 
-  input {
-    background-color: #222;
-    border: 0;
+  form {
+    display: flex;
     flex-grow: 1;
-    flex-basis: 0;
-    border-radius: 4px;
-    padding: 1px 10px 0 10px;
-    height: 27px;
-    &.output {
-      &:focus-visible {
-        border: 0;
-        box-shadow: 0 0 5px #57edff;
-        background-color: #222;
-        outline: 1px solid #57edff;
+    input {
+      background-color: #222;
+      border: 0;
+      flex-basis: 0;
+      border-radius: 4px;
+      padding: 1px 10px 0 10px;
+      height: 27px;
+      flex-grow: 1;
+      &.output {
+        &:focus-visible {
+          border: 0;
+          box-shadow: 0 0 5px #57edff;
+          background-color: #222;
+          outline: 1px solid #57edff;
+        }
       }
-    }
-    &.chat {
-      &:focus-visible {
-        border: 0;
-        box-shadow: 0 0 5px #f8ff25;
-        background-color: #222;
-        outline: 1px solid #f8ff25;
+      &.chat {
+        &:focus-visible {
+          border: 0;
+          box-shadow: 0 0 5px #f8ff25;
+          background-color: #222;
+          outline: 1px solid #f8ff25;
+        }
       }
-    }
-    &.trade {
-      &:focus-visible {
-        border: 0;
-        box-shadow: 0 0 5px #2eff00;
-        background-color: #222;
-        outline: 1px solid #2eff00;
+      &.trade {
+        &:focus-visible {
+          border: 0;
+          box-shadow: 0 0 5px #2eff00;
+          background-color: #222;
+          outline: 1px solid #2eff00;
+        }
       }
-    }
-    &.newbie {
-      &:focus-visible {
-        border: 0;
-        box-shadow: 0 0 5px #ad00ff;
-        background-color: #222;
-        outline: 1px solid #ad00ff;
+      &.newbie {
+        &:focus-visible {
+          border: 0;
+          box-shadow: 0 0 5px #ad00ff;
+          background-color: #222;
+          outline: 1px solid #ad00ff;
+        }
       }
     }
   }
