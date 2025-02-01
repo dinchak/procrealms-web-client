@@ -123,22 +123,23 @@
 </template>
 
 <script setup>
-import {
-  NButton,
-  NTabs,
-  NTabPane,
-  NCard,
-  NFormItem,
-  NGrid,
-  NGridItem,
-  NInput,
-  NInputGroup,
+import { 
+  NButton, 
+  NTabs, 
+  NTabPane, 
+  NCard, 
+  NFormItem, 
+  NGrid, 
+  NGridItem, 
+  NInput, 
+  NInputGroup, 
   NModal,
+  // NSelect, 
   NScrollbar,
   NSpace,
-  NSwitch,
-  NCheckbox,
-  NTree
+  NSwitch, 
+  NCheckbox, 
+  NTree 
 } from 'naive-ui'
 
 import { state, prevMode } from '@/static/state'
