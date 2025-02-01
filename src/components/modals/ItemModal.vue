@@ -1,6 +1,7 @@
 <template>
   <Teleport to="body">
     <NCard v-if="item" :class="getClass()" style="max-height: 600px">
+      <p class="close" v-on:click="closeModal()">x</p>
       <h3 v-html-safe="ansiToHtml(getItemName())"></h3>
       <ItemDetails :item="item" :actions="getItemActions()" v-if="item"></ItemDetails>
     </NCard>
@@ -29,12 +30,19 @@ const props = defineProps({
 
 const { item, mode } = toRefs(props)
 
+const emit = defineEmits(['closeItemModal'])
+
 function getItemName () {
   if (!item.value.iid) {
     return ''
   }
 
   return `${ANSI.reset}L${ANSI.boldWhite}${item.value.level} ${item.value.colorName}`
+}
+
+function closeModal () {
+  console.log('closeModal')
+  emit('closeItemModal', mode.value)
 }
 
 function getClass() {

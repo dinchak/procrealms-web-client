@@ -21,6 +21,7 @@
       v-if="getEquipment()[selectedSlot]"
       :item="item"
       mode="equipment"
+      @closeItemModal="closeItemModal"
     ></ItemModal>
   </NCollapseItem>
 </template>
@@ -85,6 +86,15 @@ async function clickHandler (iid, slot) {
     selectedIid.value = iid
     selectedSlot.value = slot
     item.value = await fetchItem(iid)
+  }
+}
+
+function closeItemModal (value) {
+  console.log('closeItemModal eq', value)
+  if (value === 'equipment') {
+    selectedIid.value = ''
+    selectedSlot.value = ''
+    item.value = {}
   }
 }
 

@@ -30,6 +30,7 @@
       <ItemModal
         :item="items.find(item => item.iid === selectedIid)"
         mode="inventory"
+        @closeItemModal="closeItemModal"
       ></ItemModal>
     </div>
   </NCollapseItem>
@@ -132,6 +133,13 @@ function clickHandler (iid) {
     selectedIid.value = ''
   } else {
     selectedIid.value = iid
+  }
+}
+
+function closeItemModal (value) {
+  console.log('closeItemModal inv', value)
+  if (value === 'inventory') {
+    selectedIid.value = ''
   }
 }
 
