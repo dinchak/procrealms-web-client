@@ -624,7 +624,7 @@ export function resetInputMappings () {
       bindings: [
         {
           keyCode: 'End',
-          modes: ['hotkey', 'input', 'modal-input'],
+          modes: ['hotkey'],
         }, {
           gamepadButton: 15,
           modes: ['hotkey', 'input', 'modal-input'],
