@@ -30,12 +30,7 @@ const { iid, selected } = toRefs(props)
 const item = ref({})
 
 function getItemName () {
-  if (!item.value) {
-    return ''
-  }
-
-  const { amount, colorName, level } = item.value
-  return `${ANSI.boldWhite}${amount}${ANSI.reset}x L${ANSI.boldWhite}${level} ${colorName}`
+  return item.value ? item.value.fullName : ''
 }
 
 function getInventoryRowClass () {
