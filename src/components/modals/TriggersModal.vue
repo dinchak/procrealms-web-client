@@ -125,8 +125,9 @@
 <script setup>
 import {
   NButton,
+  NTabs,
+  NTabPane,
   NCard,
-  NCheckbox,
   NFormItem,
   NGrid,
   NGridItem,
@@ -136,14 +137,13 @@ import {
   NScrollbar,
   NSpace,
   NSwitch,
-  NTabPane,
-  NTabs,
+  NCheckbox,
   NTree
 } from 'naive-ui'
 
-import {prevMode, state} from '@/static/state'
-import {onBeforeUnmount, onMounted, ref} from "vue"
-import {getNextKey, loadSettingsByNameAndType, storeSettingsOfType} from "@/static/triggers"
+import { state, prevMode } from '@/static/state'
+import { onMounted, onBeforeUnmount, ref } from "vue"
+import { getNextKey, loadSettingsByNameAndType, storeSettingsOfType } from "@/static/triggers"
 
 const triggerModel = ref({ key: '-1', name: "", pattern: "", commands: "", active: false, shared: false })
 const triggerTreeData = ref([])
