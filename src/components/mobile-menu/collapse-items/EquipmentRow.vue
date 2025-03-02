@@ -23,7 +23,7 @@ const { iid, itemSlot, selected } = toRefs(props)
 const item = ref({})
 
 function getItemName () {
-  return `${ANSI.reset}L${ANSI.boldWhite}${item.value.level} ${item.value.colorName}`
+  return item.value ? item.value.fullName : ''
 }
 
 function getEquipmentRowClass () {
