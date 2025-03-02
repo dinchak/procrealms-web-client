@@ -235,7 +235,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 
-const { cmd, send } = useWebSocket()
+const { runCommand, send } = useWebSocket()
 const { ansiToHtml, renderNumber, ucfirst } = useHelpers()
 
 const tabs = ref(null)
@@ -325,12 +325,12 @@ function getTitle (content) {
 function lineClick (ev) {
   const el = ev.srcElement
   if (el.style['text-decoration-line']) {
-    cmd(el.innerText)
+    runCommand(el.innerText)
   }
 }
 
 function lineClickRelated (ev) {
-  cmd(`help ${ev.srcElement.innerText}`)
+  runCommand(`help ${ev.srcElement.innerText}`)
 }
 
 function handleCloseTab (name) {
