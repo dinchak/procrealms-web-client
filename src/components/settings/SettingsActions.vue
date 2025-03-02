@@ -20,6 +20,14 @@ function openLogoutModal () {
   state.modals.logoutModal = true
 }
 
+function toggleFullscreen () {
+  if (state.isFullscreen) {
+    document.exitFullscreen()
+  } else {
+    document.documentElement.requestFullscreen()
+  }
+}
+
 </script>
 <style lang="less" scoped>
 .settings-actions-container {

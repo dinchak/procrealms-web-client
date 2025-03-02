@@ -3,11 +3,19 @@ import { MUSIC_TRACKS } from '@/static/constants'
 
 let trackLoading = false
 
-export async function playTrackByName(name) {
-  const { currentTrack } = state.music;
-  if (currentTrack?.name === name) return;
+export async function playTrackByName (name) {
+  const { currentTrack } = state.music
+
+  if (currentTrack?.name === name) {
+    return
+  }
+
   let track = MUSIC_TRACKS.find(t => t.name === name)
-  if (!track) return;
+
+  if (!track) {
+    return
+  }
+
   await startPlaying(track)
 }
 
@@ -24,7 +32,7 @@ export function stopPlaying (pause) {
   if (!pause && musicSource) {
     musicSource.stop()
     musicSource.disconnect()
-    state.music.musicSource = null;
+    state.music.musicSource = null
   }
 
   state.music.playing = false
@@ -54,10 +62,16 @@ export async function startPlaying (track) {
     state.music.musicSource = musicSource
     musicSource.start()
 
-    musicSource.addEventListener('ended', async (ev) => {
-      if (track.name !== state.music.currentTrack.name) return;
-      if (state.music.musicSource !== ev.target) return;
-      await playRandomTrack();
+    musicSource.addEventListener('ended', async ev => {
+      if (track.name !== state.music.currentTrack.name) {
+        return
+      }
+
+      if (state.music.musicSource !== ev.target) {
+        return
+      }
+
+      await playRandomTrack()
     })
 
     state.music.currentTrack = track
@@ -71,7 +85,7 @@ export async function startPlaying (track) {
 }
 
 function loadTrack (track) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     trackLoading = true
     if (track.buffer) {
       trackLoading = false
@@ -89,7 +103,7 @@ function loadTrack (track) {
         return
       }
 
-      state.music.audioContext.decodeAudioData(request.response, (buffer) => {
+      state.music.audioContext.decodeAudioData(request.response, buffer => {
         track.buffer = buffer
         trackLoading = false
         resolve()
@@ -99,31 +113,37 @@ function loadTrack (track) {
     request.send()
   })
 }
-export const playMessageSound = ({ id, from, to, channel, timestamp, message }) => {
-  let sound = null;
-  // if (from === state.gameState.player.name || from === 'You') return;
+
+export const playMessageSound = ({ channel, /* id, from, to, timestamp, message */ }) => {
+  let sound = null
   if (channel === 'say') {
     // TODO: Filter NPCs
   }
+
   switch (channel) {
-    case 'newbie':
-    case 'tell':
-      sound = channel;
-      break;
-    case 'announce':
-    case 'info':
-      sound = 'announce';
-      break;
-    case 'events':
-      break;
-    default:
-      sound = 'chat';
-      break;
+  case 'newbie':
+  case 'tell':
+    sound = channel
+    break
+
+  case 'announce':
+  case 'info':
+    sound = 'announce'
+    break
+
+  case 'events':
+    break
+
+  default:
+    sound = 'chat'
+    break
   }
-  if (sound)
+
+  if (sound) {
     playSound(sound)
+  }
 }
 
-export const playSound = (name) => {
-  state.soundQueue = name;
+export const playSound = name => {
+  state.soundQueue = name
 }

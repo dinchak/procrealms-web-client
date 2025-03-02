@@ -47,7 +47,7 @@
 <script setup>
 
 import { watch, ref, onMounted } from 'vue'
-import {NCard, NTooltip, NCollapse, NProgress} from 'naive-ui'
+import { NCard, NTooltip, NCollapse, NProgress } from 'naive-ui'
 import CharacterCollapse from '@/components/mobile-menu/collapse-items/CharacterCollapse.vue'
 import EffectsCollapse from '@/components/mobile-menu/collapse-items/EffectsCollapse.vue'
 import EquipmentCollapse from '@/components/mobile-menu/collapse-items/EquipmentCollapse.vue'
@@ -67,7 +67,7 @@ const mercSkills = ref([])
 const mercInventory = ref([])
 const mercEquipment = ref({})
 
-watch(() => state.gameState.party, function() {
+watch(() => state.gameState.party, function () {
   findAndSetMerc()
 })
 
@@ -79,16 +79,17 @@ onMounted(() => {
   findAndSetMerc()
 })
 
-function closeModal() {	
+function closeModal () {
   state.modals.mercModal = false
 }
 
-async function findAndSetMerc() {
+function findAndSetMerc () {
   const merc = getMerc()
 
   if (!merc) {
-      return
+    return
   }
+
   state.mercEid = merc.stats.eid
   mercEntity.value = merc.stats
   mercVitals.value = merc.stats
@@ -107,12 +108,12 @@ function getMercExpPercentage () {
   return (mercEntity.value.xp - mercEntity.value.xpForCurrentLevel) / (mercEntity.value.xpForNextLevel - mercEntity.value.xpForCurrentLevel) * 100
 }
 
-function setAffects(affectList) {
+function setAffects (affectList) {
   const newAffects = []
   if (affectList) {
     affectList.map(affect => {
       if (!affect.shortFlag) {
-        affect.shortFlag = "\u001b[1;37m" + affect.name.substring(0,2).toUpperCase()
+        affect.shortFlag = "\u001b[1;37m" + affect.name.substring(0, 2).toUpperCase()
       }
       if (!affect.longFlag) {
         affect.longFlag = "\u001b[1;37m" + affect.name

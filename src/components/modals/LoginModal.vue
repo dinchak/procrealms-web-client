@@ -38,7 +38,7 @@
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
-import { state, prevMode, authenticationSuccess} from '@/static/state'
+import { state, prevMode, authenticationSuccess } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
@@ -82,24 +82,26 @@ const rules = {
     },
     {
       message: 'Invalid name or password',
-      asyncValidator: async () => {
-        return new Promise(async (resolve, reject) => {
-          let { cmd, msg } = await sendWithResponse('login', {
+      asyncValidator: () => {
+        return new Promise((resolve, reject) => {
+          sendWithResponse('login', {
             name: model.value.name,
             password: model.value.password,
             width: state.options.terminalWidth,
             height: state.options.terminalHeight,
             ttype: 'play.proceduralrealms.com'
+          }).then((cmd, msg) => {
+            if (cmd == 'login.validationFailed') {
+              reject(new Error('Invalid character name'))
+            } else if (cmd == 'login.fail') {
+              reject(new Error('Failed to create character'))
+            } else if (cmd == 'token.success') {
+              authenticationSuccess(msg)
+              resolve()
+            }
+          }).catch(e => {
+            reject(e)
           })
-
-          if (cmd == 'login.validationFailed') {
-            reject(new Error('Invalid character name'))
-          } else if (cmd == 'login.fail') {
-            reject(new Error('Failed to create character'))
-          } else if (cmd == 'token.success') {
-            authenticationSuccess(msg)
-            resolve()
-          }
         })
       }
     }

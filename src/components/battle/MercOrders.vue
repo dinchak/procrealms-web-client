@@ -27,7 +27,7 @@ import { state } from '@/static/state'
 import AddCommentOutlined from '@vicons/material/AddCommentOutlined'
 
 // const { getMerc } = useHelpers()
-const { fetchItems, cmd } = useWebSocket()
+const { fetchItems, runCommand } = useWebSocket()
 
 const props = defineProps({
   merc: Object
@@ -50,7 +50,7 @@ onMounted(async () => {
 })
 
 function handleSelect (order) {
-  cmd(`queue ${order}`)
+  runCommand(`queue ${order}`)
 }
 
 watch(() => state.gameState.party, () => {
@@ -67,7 +67,7 @@ async function setOptions () {
     type: 'divider',
     key: 'd1'
   }
-  
+
   options.length = 0
 
   if (!merc.value) {

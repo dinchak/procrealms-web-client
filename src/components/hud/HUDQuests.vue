@@ -8,13 +8,13 @@
 
       <div class="row">
         <div class="name" v-html-safe="getQuestName(quest)"></div>
-        
+
         <div class="objectives" v-if="questHasObjectives(quest)">
           <div class="objective" v-for="objective in getQuestObjectives(quest)" v-html-safe="objective" :key="objective"></div>
         </div>
 
         <NProgress
-          v-if="quest.amount" 
+          v-if="quest.amount"
           :status="quest.progress < quest.amount ? 'warning' : 'success'"
           type="line"
           :percentage="quest.progress / quest.amount * 100"

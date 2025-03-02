@@ -29,7 +29,7 @@
           tab-style="min-width: 80px;"
           ref="tabs"
         >
-          
+
           <NTabPane name="score" tab="Score">
             <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
           </NTabPane>
@@ -37,11 +37,11 @@
           <NTabPane name="skills" tab="Skills">
             <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
           </NTabPane>
-          
+
           <NTabPane name="inventory" tab="Inventory">
             <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
           </NTabPane>
-          
+
           <NTabPane name="equipment" tab="Equipment">
             <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
           </NTabPane>
@@ -49,11 +49,11 @@
           <NTabPane name="quests" tab="Quests">
             <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
           </NTabPane>
-          
+
           <NTabPane name="options" tab="Options">
             <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
           </NTabPane>
-          
+
           <NTabPane name="mappings" tab="Mappings">
             <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
           </NTabPane>

@@ -80,7 +80,7 @@ const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 const { triggerResize } = useWindowHandler()
 const { saveOptions } = useLocalStorageHandler()
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 let moveTimeout = null
 
@@ -130,7 +130,7 @@ function onFullscreenChange () {
   triggerResize()
 }
 
-function startAudioContext (ev) {
+function startAudioContext () {
   if (state.music.audioContext) {
     return
   }
@@ -158,7 +158,7 @@ function move (dir) {
   if (!room || !room.exits.includes(dir)) {
     return
   }
-  cmd(dir)
+  runCommand(dir)
 
   moveTimeout = setTimeout(() => {
     moveTimeout = null
@@ -174,7 +174,7 @@ function enter () {
   if (!room || !room.canEnter) {
     return
   }
-  cmd('enter')
+  runCommand('enter')
 
   moveTimeout = setTimeout(() => {
     moveTimeout = null

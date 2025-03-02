@@ -13,8 +13,6 @@
 import { defineProps, toRefs, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NPopover } from 'naive-ui'
 
-import { ANSI } from '@/static/constants'
-
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 

@@ -1,7 +1,7 @@
 <template>
   <div :class="{
     'quick-container': true,
-    'mobile-layout-mode': isMobileMenu ?? false
+    'mobile-layout-mode': false
   }">
     <div class="quick-scroller">
       <div :class="getAttackButtonClass()" v-if="state.gameState.battle.active"
@@ -82,24 +82,21 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs } from 'vue'
 import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
 import { state } from '@/static/state'
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 const { isGamepadConnected } = useHelpers()
-
-const props = defineProps({
-  isMobileMenu: Boolean,
-})
 
 let actionTimeout = null
 
 function conditionalCmd (condition, cmdString) {
-  if (condition()) cmd(cmdString)
+  if (condition()) {
+    runCommand(cmdString)
+  }
 }
 
 function isAttackButtonActive () {
@@ -108,7 +105,9 @@ function isAttackButtonActive () {
 
 function getAttackButtonClass () {
   let classes = ['quick-slot', 'attack']
-  if (isAttackButtonActive()) classes.push('active')
+  if (isAttackButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
@@ -118,7 +117,9 @@ function isDefendButtonActive () {
 
 function getDefendButtonClass () {
   let classes = ['quick-slot', 'defend']
-  if (isDefendButtonActive()) classes.push('active')
+  if (isDefendButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
@@ -128,7 +129,9 @@ function isFleeButtonActive () {
 
 function getFleeButtonClass () {
   let classes = ['quick-slot', 'flee']
-  if (isFleeButtonActive()) classes.push('active')
+  if (isFleeButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
@@ -138,7 +141,9 @@ function isBattleButtonActive () {
 
 function getBattleButtonClass () {
   let classes = ['quick-slot', 'battle']
-  if (isBattleButtonActive()) classes.push('active')
+  if (isBattleButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
@@ -148,7 +153,9 @@ function isHarvestButtonActive () {
 
 function getHarvestButtonClass () {
   let classes = ['quick-slot', 'harvest']
-  if (isHarvestButtonActive()) classes.push('active')
+  if (isHarvestButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
@@ -158,17 +165,21 @@ function isLootButtonActive () {
 
 function getLootButtonClass () {
   let classes = ['quick-slot', 'loot']
-  if (isLootButtonActive()) classes.push('active')
+  if (isLootButtonActive()) {
+    classes.push('active')
+  }
   return classes.join(' ')
 }
 
 function slots () {
-  let slots = state.gameState.slots || []
+  let quickSlots = state.gameState.slots || []
   let isNumberSlot = s => s.slot >= '1' && s.slot <= '9'
-  let numberSlots = slots.filter(isNumberSlot)
-  numberSlots.sort((a, b) => a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1)
+  let numberSlots = quickSlots.filter(isNumberSlot)
+  numberSlots.sort((a, b) => {
+    return a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1
+  })
 
-  let nonNumberSlotsMap = new Map(slots.filter(s => !isNumberSlot(s)).map((s) => [s.slot, s]))
+  let nonNumberSlotsMap = new Map(quickSlots.filter(s => !isNumberSlot(s)).map(s => [s.slot, s]))
 
   let addNonNumberSlot = slotChar => nonNumberSlotsMap.has(slotChar) &&
       numberSlots.push(nonNumberSlotsMap.get(slotChar))
@@ -182,7 +193,7 @@ function runQuickSlot (slot) {
   if (actionTimeout || !isActive(slot)) {
     return
   }
-  cmd(slot.slot)
+  runCommand(slot.slot)
   actionTimeout = setTimeout(() => {
     actionTimeout = null
   }, 100)
@@ -195,7 +206,9 @@ function getSkill (slot) {
 function isActive (slot) {
   let skill = getSkill(slot)
 
-  if (!skill) return true
+  if (!skill) {
+    return true
+  }
 
   if (skill.timeLeft) {
     return false

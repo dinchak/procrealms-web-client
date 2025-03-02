@@ -1,9 +1,9 @@
 <template>
   <div class="options-menu">
-    <template v-for="(options, title) in configurableOptions">
+    <template v-for="(options, title) in configurableOptions" :key="title">
       <h3>{{ title }}</h3>
 
-      <div class="option" v-for="(option, label) in options">
+      <div class="option" v-for="(option, label) in options" :key="label">
         <label :for="'option-' + option">{{ label }}</label>
         <n-switch :id="'option-' + option" v-model:value="state.options[option]" aria-label="{{ label }}" />
       </div>

@@ -2,7 +2,7 @@
   <n-modal
     v-model:show="state.modals.triggersModal"
     title="Triggers"
-  >    
+  >
     <n-card
       title="Automation"
       closable
@@ -123,23 +123,23 @@
 </template>
 
 <script setup>
-import { 
-  NButton, 
-  NTabs, 
-  NTabPane, 
-  NCard, 
-  NFormItem, 
-  NGrid, 
-  NGridItem, 
-  NInput, 
-  NInputGroup, 
+import {
+  NButton,
+  NTabs,
+  NTabPane,
+  NCard,
+  NFormItem,
+  NGrid,
+  NGridItem,
+  NInput,
+  NInputGroup,
   NModal,
-  // NSelect, 
+  // NSelect,
   NScrollbar,
   NSpace,
-  NSwitch, 
-  NCheckbox, 
-  NTree 
+  NSwitch,
+  NCheckbox,
+  NTree
 } from 'naive-ui'
 
 import { state, prevMode } from '@/static/state'
@@ -156,7 +156,9 @@ const variableTreeData = ref([])
 const selectedVariableKeys = ref([])
 
 function updateCheckedTriggerKeys (keys) {
-  Array.from(state.triggers.value.values()).forEach(t => t.active = false)
+  Array.from(state.triggers.value.values()).forEach(t => {
+    t.active = false
+  })
 
   for (let key of keys) {
     state.triggers.value.get(key).active = true

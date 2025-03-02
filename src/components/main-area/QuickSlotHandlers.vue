@@ -1,116 +1,119 @@
-<template></template>
+<template>
+  <div></div>
+</template>
+
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 function attack () {
-  cmd('attack')
+  runCommand('attack')
 }
 
 function defend () {
-  cmd('defend')
+  runCommand('defend')
 }
 
 function flee () {
-  cmd('flee')
+  runCommand('flee')
 }
 
 function battle () {
-  cmd('battle')
+  runCommand('battle')
 }
 
 function harvest () {
-  cmd('harvest')
+  runCommand('harvest')
 }
 
 function loot () {
-  cmd('loot')
+  runCommand('loot')
 }
 
 function quickSlot1 () {
   let slot = state.gameState.slots.find(s => s.slot == '1')
   if (slot) {
-    cmd('1')
+    runCommand('1')
   }
 }
 
 function quickSlot2 () {
   let slot = state.gameState.slots.find(s => s.slot == '2')
   if (slot) {
-    cmd('2')
+    runCommand('2')
   }
 }
 
 function quickSlot3 () {
   let slot = state.gameState.slots.find(s => s.slot == '3')
   if (slot) {
-    cmd('3')
+    runCommand('3')
   }
 }
 
 function quickSlot4 () {
   let slot = state.gameState.slots.find(s => s.slot == '4')
   if (slot) {
-    cmd('4')
+    runCommand('4')
   }
 }
 
 function quickSlot5 () {
   let slot = state.gameState.slots.find(s => s.slot == '5')
   if (slot) {
-    cmd('5')
+    runCommand('5')
   }
 }
 
 function quickSlot6 () {
   let slot = state.gameState.slots.find(s => s.slot == '6')
   if (slot) {
-    cmd('6')
+    runCommand('6')
   }
 }
 
 function quickSlot7 () {
   let slot = state.gameState.slots.find(s => s.slot == '7')
   if (slot) {
-    cmd('7')
+    runCommand('7')
   }
 }
 
 function quickSlot8 () {
   let slot = state.gameState.slots.find(s => s.slot == '8')
   if (slot) {
-    cmd('8')
+    runCommand('8')
   }
 }
 
 function quickSlot9 () {
   let slot = state.gameState.slots.find(s => s.slot == '9')
   if (slot) {
-    cmd('9')
+    runCommand('9')
   }
 }
 
 function quickSlot0 () {
   let slot = state.gameState.slots.find(s => s.slot == '0')
   if (slot) {
-    cmd('0')
+    runCommand('0')
   }
 }
 
 function quickSlotMinus () {
   let slot = state.gameState.slots.find(s => s.slot == '-')
   if (slot) {
-    cmd('-')
+    runCommand('-')
   }
 }
 
 function quickSlotEquals () {
   let slot = state.gameState.slots.find(s => s.slot == '=')
   if (slot) {
-    cmd('=')
+    runCommand('=')
   }
 }
 

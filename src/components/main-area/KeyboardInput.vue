@@ -33,7 +33,7 @@ const props = defineProps({
 
 const { focusMode, activeModes } = toRefs(props)
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 function focusTextInput () {
   if (activeModes.value.includes(state.mode)) {
@@ -133,7 +133,7 @@ function sendCommand () {
   }
 
   commandHistory.unshift(command)
-  command.split(';').forEach(c => cmd(c))
+  command.split(';').forEach(c => runCommand(c))
 
   if (state.options.keepSentCommands) {
     commandBuffer = ''

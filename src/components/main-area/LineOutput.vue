@@ -18,7 +18,7 @@
       </div>
     </n-tab-pane>
 
-    <n-tab-pane v-for="tabName in ['chat', 'trade', 'newbie']" :name="tabName" :tab="getTab(tabName)" display-directive="show">
+    <n-tab-pane v-for="tabName in ['chat', 'trade', 'newbie']" :name="tabName" :tab="getTab(tabName)" display-directive="show" :key="tabName">
       <div :id="tabName" class="output" :ref="refs[tabName]" @scroll="onScroll(tabName)">
         <div v-for="(line, i) in state[tabName]" class="message" :key="`line-${i}`">
           <div class="from">
@@ -47,7 +47,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { ref, watch, nextTick, onMounted, onBeforeUnmount, h } from 'vue'
 
-import { state, addLine } from '@/static/state'
+import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
@@ -64,10 +64,9 @@ const tabsInstance = ref(null)
 const currentPane = ref('output') // chat, trade, or newbie
 const refs = { output, chat, trade, newbie }
 
-const { send, cmd } = useWebSocket()
+const { send, runCommand } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
 
-let mapWasOpen = false
 let resizeTimeout = null
 
 function doResize () {
@@ -123,7 +122,9 @@ function onScroll (id) {
 
 function onBeforeChangeTab (activeName) {
   if (['chat', 'trade', 'newbie'].includes(activeName)) {
-    state[activeName].forEach(msg => msg.unread = false)
+    state[activeName].forEach(msg => {
+      msg.unread = false
+    })
   }
   state.activeTab = activeName
   return true
@@ -147,7 +148,7 @@ function getTab (name) {
 function lineClick (ev) {
   const el = ev.srcElement
   if (el.style['text-decoration-line']) {
-    cmd(el.innerText)
+    runCommand(el.innerText)
   }
 }
 

@@ -8,7 +8,7 @@
         <div v-if="quest.objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
         <div v-if="quest.extra" v-html-safe="ansiToHtml(quest.extra)"></div>
         <NProgress
-          v-if="quest.amount" 
+          v-if="quest.amount"
           :status="quest.progress < quest.amount ? 'default' : 'success'"
           type="line"
           :percentage="quest.progress / quest.amount * 100"

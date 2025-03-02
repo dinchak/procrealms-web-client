@@ -1,4 +1,6 @@
-<template />
+<template>
+  <div></div>
+</template>
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
@@ -58,9 +60,7 @@ function onKeyDown (ev) {
 }
 
 function onKeyUp (ev) {
-  if (handleMetaKey(ev, false)) {
-    return
-  }
+  handleMetaKey(ev, false)
 }
 
 function onGamePadConnected (ev) {
@@ -77,28 +77,28 @@ function onGamePadDisconnected (ev) {
 }
 
 function validMappings ({ keyCode, metaKeyState, gamepadButton, gamepadButtonReleased, gamepadAxis } = {}) {
-  return state.inputMappings.filter(m =>
-    m.bindings.find(m => 
+  return state.inputMappings.filter(map =>
+    map.bindings.find(m =>
       m.modes && m.modes.includes(state.mode) && (
-      (
-        keyCode && m.keyCode == keyCode && 
-        metaKeyState.shift == !!m.shift &&
-        metaKeyState.ctrl == !!m.ctrl &&
-        metaKeyState.alt == !!m.alt
-      ) || (
-        typeof gamepadButton != 'undefined' &&
-        m.gamepadButton == gamepadButton
-      ) || (
-        typeof gamepadButtonReleased != 'undefined' &&
-        m.gamepadButtonReleased == gamepadButtonReleased
-      ) || (
-        typeof gamepadAxis != 'undefined' &&
-        m.gamepadAxis == gamepadAxis
-      )
-    )) && (
-      typeof m.inBattle == 'undefined' ||
-      (m.inBattle === true && state.gameState.battle.active) ||
-      (m.inBattle === false && !state.gameState.battle.active)
+        (
+          keyCode && m.keyCode == keyCode &&
+          metaKeyState.shift == !!m.shift &&
+          metaKeyState.ctrl == !!m.ctrl &&
+          metaKeyState.alt == !!m.alt
+        ) || (
+          typeof gamepadButton != 'undefined' &&
+          m.gamepadButton == gamepadButton
+        ) || (
+          typeof gamepadButtonReleased != 'undefined' &&
+          m.gamepadButtonReleased == gamepadButtonReleased
+        ) || (
+          typeof gamepadAxis != 'undefined' &&
+          m.gamepadAxis == gamepadAxis
+        )
+      )) && (
+      typeof map.inBattle == 'undefined' ||
+        (map.inBattle === true && state.gameState.battle.active) ||
+        (map.inBattle === false && !state.gameState.battle.active)
     )
   )
 }
@@ -124,7 +124,7 @@ function gamepadStateLoop () {
     for (let i = 0; i < gamepad.buttons.length; i++) {
       let button = gamepad.buttons[i]
       if (button.pressed) {
-        if (!prevState.buttons[i]) {          
+        if (!prevState.buttons[i]) {
           prevState.buttons[i] = true
 
           state.inputEmitter.emit('gamepadButtonPressed', i)
@@ -134,16 +134,14 @@ function gamepadStateLoop () {
             state.inputEmitter.emit(mapping.event)
           }
         }
-      } else {
-        if (prevState.buttons[i]) {
-          prevState.buttons[i] = false
+      } else if (prevState.buttons[i]) {
+        prevState.buttons[i] = false
 
-          state.inputEmitter.emit('gamepadButtonReleased', i)
+        state.inputEmitter.emit('gamepadButtonReleased', i)
 
-          let mappings = validMappings({ gamepadButtonReleased: i })
-          for (let mapping of mappings) {
-            state.inputEmitter.emit(mapping.event)
-          }
+        let mappings = validMappings({ gamepadButtonReleased: i })
+        for (let mapping of mappings) {
+          state.inputEmitter.emit(mapping.event)
         }
       }
     }

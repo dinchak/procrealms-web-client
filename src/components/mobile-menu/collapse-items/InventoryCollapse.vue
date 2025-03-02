@@ -57,7 +57,6 @@ const items = ref([])
 const searchTerm = ref('')
 const filteredItems = ref([])
 const searchInput = ref(null)
-const clickedItem = ref({})
 const value = ref('name')
 const selectedIid = ref('')
 
@@ -105,7 +104,9 @@ onMounted(() => {
   }))
 
   watchers.push(watch(value, () => {
-    filteredItems.value = filteredItems.value.sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+    filteredItems.value = filteredItems.value.sort((a, b) => {
+      return a[value.value] > b[value.value] ? 1 : -1
+    })
   }))
 })
 
@@ -122,10 +123,15 @@ async function setItems (itemIIDs) {
 
   const input = searchTerm.value.toLowerCase()
 
-  filteredItems.value = items.value.filter((item) => (item.name.toLowerCase().includes(input) ||
-      item.colorName.toLowerCase().includes(input) || item.type.toLowerCase().includes(input)) ||
-      (item.subtype ? item.subtype.toLowerCase().includes(input) : false))
-      .sort((a, b) => a[value.value] > b[value.value] ? 1 : -1)
+  filteredItems.value = items.value.filter(item => {
+    return (item.name.toLowerCase().includes(input) ||
+      item.colorName.toLowerCase().includes(input) ||
+      item.type.toLowerCase().includes(input)) ||
+      (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
+  })
+    .sort((a, b) => {
+      return a[value.value] > b[value.value] ? 1 : -1
+    })
 }
 
 function clickHandler (iid) {
@@ -136,39 +142,38 @@ function clickHandler (iid) {
   }
 }
 
-function closeItemModal (value) {
-  console.log('closeItemModal inv', value)
-  if (value === 'inventory') {
+function closeItemModal (val) {
+  if (val === 'inventory') {
     selectedIid.value = ''
   }
 }
 
-function onFocus() {
+function onFocus () {
   setMode('input')
 }
 
-function onBlur() {
+function onBlur () {
   prevMode()
 }
 
-function getMoney() {
+function getMoney () {
   return props.character.money || 0
 }
 
-function getNumItems() {
+function getNumItems () {
   return props.character.numItems || 0
 }
 
-function getMaxNumItems() {
+function getMaxNumItems () {
   return props.character.maxNumItems || 0
 }
 
-function getWeight() {
+function getWeight () {
   const initialValue = props.character.weight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
-function getMaxWeight() {
+function getMaxWeight () {
   const initialValue = props.character.maxWeight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }

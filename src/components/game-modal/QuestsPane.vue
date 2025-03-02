@@ -11,7 +11,7 @@
         <div class="name" v-html-safe="getQuestName(quest)"></div>
         <div class="giver" v-html-safe="getGivenBy(quest)"></div>
         <NProgress
-          v-if="quest.amount" 
+          v-if="quest.amount"
           :status="quest.progress < quest.amount ? 'default' : 'success'"
           type="line"
           :percentage="quest.progress / quest.amount * 100"
@@ -34,7 +34,7 @@
         >
           More Info
         </NButton>
-        
+
         <div class="desc" v-if="quest.desc && questsExpanded[quest.name]" v-html-safe="ansiToHtml(quest.desc)"></div>
 
         <NButton ghost size="tiny" class="selectable"
@@ -62,13 +62,13 @@ import { defineProps, ref, toRefs } from 'vue'
 import { NButton, NGi, NGrid, NProgress } from 'naive-ui'
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
-import { useWebSocket } from "@/composables/web_socket.js";
+import { useWebSocket } from "@/composables/web_socket.js"
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 const { ansiToHtml } = useHelpers()
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 const questsExpanded = ref({})
 
@@ -93,7 +93,7 @@ function getScrollContainerClass () {
 
 function onWalk (coords) {
   state.modals.gameModal = false
-  cmd(`walk ${coords.x},${coords.y}`)
+  runCommand(`walk ${coords.x},${coords.y}`)
 }
 
 </script>

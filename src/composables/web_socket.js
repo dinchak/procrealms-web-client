@@ -15,7 +15,7 @@ export function useWebSocket () {
       console.log(err.stack)
     }
 
-    const _onMessage = (json) => {
+    const _onMessage = json => {
       try {
         let { cmd, msg, reqId } = JSON.parse(json)
         if (reqId) {
@@ -25,7 +25,11 @@ export function useWebSocket () {
           console.log(`%c<%c ${cmd}${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', msg)
         }
 
-        reqId ? onWebSocketEvent(cmd, msg, reqId) : onWebSocketEvent(cmd, msg)
+        if (reqId) {
+          onWebSocketEvent(cmd, msg, reqId)
+        } else {
+          onWebSocketEvent(cmd, msg)
+        }
       } catch (err) {
         console.log('error parsing message: %s', json)
         console.log(err.stack)
@@ -75,7 +79,7 @@ export function useWebSocket () {
     return responsePromise
   }
 
-  function cmd (command, id, fromTrigger) {
+  function runCommand (command, id, fromTrigger) {
     if (!id) {
       // Crude filter to avoid shouting the ugly 'look iid:123456' in the output
       const lcCmd = command.toLowerCase()
@@ -99,34 +103,35 @@ export function useWebSocket () {
     if (state.moveTimeout) {
       return
     }
-  
+
     let { room } = state.gameState
     if (!room || !room.exits.includes(dir)) {
       return
     }
-  
-    cmd(dir)
-  
+
+    runCommand(dir)
+
     state.moveTimeout = setTimeout(() => {
       state.moveTimeout = null
     }, 100)
   }
-  
+
   function enter () {
     if (state.moveTimeout) {
       return
     }
-  
+
     let { room } = state.gameState
     if (!room || !room.canEnter) {
       return
     }
-    cmd('enter')
-  
+
+    runCommand('enter')
+
     state.moveTimeout = setTimeout(() => {
       state.moveTimeout = null
     }, 100)
-  }  
+  }
 
   async function fetchEntity (eid, skipCache) {
     if (state.cache.entityCache[eid] && !skipCache) {
@@ -150,7 +155,11 @@ export function useWebSocket () {
       state.cache.entityCache[entity.eid] = { entity, date: Date.now() }
     }
     return eids
-      .map(eid => state.cache.entityCache[eid] ? state.cache.entityCache[eid].entity : false)
+      .map(eid => {
+        return state.cache.entityCache[eid] ?
+          state.cache.entityCache[eid].entity :
+          false
+      })
       .filter(entity => entity)
   }
 
@@ -178,13 +187,17 @@ export function useWebSocket () {
     }
 
     return iids
-      .map(iid => state.cache.itemCache[iid] ? state.cache.itemCache[iid].item : false)
+      .map(iid => {
+        return state.cache.itemCache[iid] ?
+          state.cache.itemCache[iid].item :
+          false
+      })
       .filter(item => item)
   }
 
   return {
     initConnection,
-    send, sendWithResponse, cmd,
+    send, sendWithResponse, runCommand,
     move, enter,
     fetchEntity, fetchEntities,
     fetchItem, fetchItems,

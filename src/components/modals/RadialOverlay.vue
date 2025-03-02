@@ -23,7 +23,7 @@ import { state, setMode, prevMode } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import RadialMenu from '@/components/modals/RadialMenu.vue'
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 const visible = ref(false)
 const selectedSlot = ref(0)
@@ -33,7 +33,7 @@ function getSelectedSlot (radialNum) {
   if (radialNum == selectedRadial.value) {
     return selectedSlot.value
   }
- 
+
   return 0
 }
 
@@ -92,7 +92,7 @@ function performRadialAction () {
     return
   }
 
-  cmd(action)
+  runCommand(action)
   state.inputEmitter.emit('closeRadialMenu')
   selectedSlot.value = 0
 }

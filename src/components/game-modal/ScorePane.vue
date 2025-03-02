@@ -298,7 +298,7 @@
           <div class="row">
             <div class="value bold-red">{{ renderNumber(player().dpr) }}</div>
             <div class="label"><span :class="getDamageColor()">{{ ucfirst(getDamageType()) }}</span>/Round</div>
-          </div>        
+          </div>
           <div class="row">
             <div class="value bold-white">{{ player().armorAbsorption }}%</div>
             <div class="label">Damage Absorption</div>

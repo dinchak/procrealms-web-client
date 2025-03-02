@@ -21,7 +21,7 @@ import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
 const { ansiToHtml, getActions } = useHelpers()
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 const props = defineProps({
   item: Object,
@@ -45,7 +45,7 @@ function closeModal () {
   emit('closeItemModal', mode.value)
 }
 
-function getClass() {
+function getClass () {
   const swapMobileMenuSide = state.options.swapMobileMenuSide
 
   if (swapMobileMenuSide) {
@@ -63,7 +63,7 @@ function getItemActions () {
   if (mode.value == 'equipment') {
     return [{
       label: 'Remove',
-      onClick: () => cmd(`${getOrderCmd()}remove iid:${item.value.iid}`),
+      onClick: () => runCommand(`${getOrderCmd()}remove iid:${item.value.iid}`),
       class: 'bold-red',
       disabled: false
     }]

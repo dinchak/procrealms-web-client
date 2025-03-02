@@ -1,7 +1,7 @@
 <template>
   <NCollapseItem title="Equipment">
     <EquipmentRow
-      v-for="{ iid, slot, label, color } in equipmentRows"
+      v-for="{ iid, slot } in equipmentRows"
       :key="slot"
       :itemSlot="slot"
       :iid="iid"
@@ -10,7 +10,7 @@
     ></EquipmentRow>
     <div class="equipment-header" v-if="petEquipmentRows?.length > 0">Pet equipment</div>
     <EquipmentRow
-        v-for="{ iid, slot, label, color } in petEquipmentRows"
+        v-for="{ iid, slot } in petEquipmentRows"
         :key="slot"
         :itemSlot="slot"
         :iid="iid"
@@ -102,6 +102,5 @@ function closeItemModal (value) {
 <style lang="less">
 .equipment-header {
   margin: 10px 0;
-  //text-align: center;
 }
 </style>

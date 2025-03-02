@@ -1,13 +1,13 @@
 <template>
   <div :class="getScrollContainerClass()">
     <div class="row">
-      <template v-for="(options, title) in configurableOptions">
+      <template v-for="(options, title) in configurableOptions" :key="title">
         <NGrid class="options" cols="1">
           <NGi>
             <h3>{{ title }}</h3>
           </NGi>
 
-          <NGi v-for="(option, label) in options">
+          <NGi v-for="(option, label) in options" :key="label">
             <div class="option">
               <label :for="'option-' + option">{{ label }}</label>
               <NSwitch :id="'option-' + option" v-model:value="state.options[option]" aria-label="{{ label }}"/>
@@ -101,7 +101,7 @@ function onSetFontSize () {
 }
 
 function onSetFontFamily () {
-  setFontFamily(state.options.fontFamily)
+  setFontFamily(selectedFontFamily.value)
 }
 
 function openTriggersModal () {

@@ -184,7 +184,6 @@
               <span class="black">[</span>
               <span class="bold-cyan">Modes</span>
               <span class="black">] </span>
-              
               <span class="bold-white"></span>{{ binding.modes.join(', ') }}
             </div>
 
@@ -382,7 +381,6 @@ function confirmRemoveBinding (binding, mapping) {
   })
   bindingToRemove.value = false
   saveInputMappings()
-  
 }
 
 function saveNewBinding () {

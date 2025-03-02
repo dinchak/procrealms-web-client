@@ -18,7 +18,7 @@ export function useWindowHandler () {
   }
 
   function calcTerminalSize () {
-    let output = document.getElementById('output')?.parentElement;
+    let output = document.getElementById('output')?.parentElement
 
     if (!output) {
       return DEFAULT_TERMINAL_SIZE
@@ -31,10 +31,10 @@ export function useWindowHandler () {
 
     const outputStyle = getComputedStyle(output)
 
-    let outputWidth = output.clientWidth;
-    let outputHeight = output.clientHeight;
-    outputWidth -= parseFloat(outputStyle.paddingLeft) + parseFloat(outputStyle.paddingRight);
-    outputHeight -= parseFloat(outputStyle.paddingTop) + parseFloat(outputStyle.paddingBottom);
+    let outputWidth = output.clientWidth
+    let outputHeight = output.clientHeight
+    outputWidth -= parseFloat(outputStyle.paddingLeft) + parseFloat(outputStyle.paddingRight)
+    outputHeight -= parseFloat(outputStyle.paddingTop) + parseFloat(outputStyle.paddingBottom)
 
     const lineStyle = getComputedStyle(outputLine)
 
@@ -48,8 +48,8 @@ export function useWindowHandler () {
     let width = Math.floor(outputWidth  / charWidth)
     let height = Math.floor(outputHeight  / charHeight)
 
-    state.options.terminalWidth = width;
-    state.options.terminalHeight = height;
+    state.options.terminalWidth = width
+    state.options.terminalHeight = height
     return { width, height }
   }
 
@@ -67,7 +67,7 @@ export function useWindowHandler () {
 
   function setFontFamily (fontFamily) {
     state.options.fontFamily = fontFamily
-    document.body.style.fontFamily = fontFamily;
+    document.body.style.fontFamily = fontFamily
     document.getElementById('app').style.fontFamily = fontFamily
 
     let modalContainers = document.getElementsByClassName('n-modal-container')

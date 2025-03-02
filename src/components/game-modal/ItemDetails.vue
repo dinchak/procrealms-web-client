@@ -119,7 +119,7 @@ function getBaseStats () {
       label: 'APR',
       value: renderNumber(item.value.apr),
       color: 'bold-yellow'
-    }, ]
+    }]
   } else if (item.value.type == 'consumable') {
     let stats = [{
       label: copperToMoneyString(item.value.value, true),
@@ -194,7 +194,7 @@ function getItemBonuses () {
           row.flag = flag.name
           continue
         }
-        
+
         row = {
           name: itemEffect ? itemEffect.label : bonus.name,
           amount: bonus.amount,
@@ -215,7 +215,7 @@ function getItemBonuses () {
         row.value += bonus.amount
         continue
       }
-      
+
       row = {
         name: itemEffect ? itemEffect.label : bonus.name,
         amount: bonus.amount
@@ -257,8 +257,8 @@ function numGemSlotsAvailable () {
 }
 
 function renderGemSlotBonus (slotNum) {
-  let flag = item.value.flags.find(flag => flag.gemSlot === slotNum)
-  if (!flag) { 
+  let flag = item.value.flags.find(flg => flg.gemSlot === slotNum)
+  if (!flag) {
     return ''
   }
 

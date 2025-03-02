@@ -12,43 +12,43 @@
   <div class="player-stats">
     <NCollapse>
       <CharacterCollapse
-          :character="state.gameState.player"
-          :equipment="state.gameState.equipment"
-          :is-player="true"
-          tabindex="0"
+        :character="state.gameState.player"
+        :equipment="state.gameState.equipment"
+        :is-player="true"
+        tabindex="0"
       ></CharacterCollapse>
 
       <EffectsCollapse
-          :effects="Object.values(state.gameState.affects)"
-          :isPlayer="true"
-          tabindex="0"
+        :effects="Object.values(state.gameState.affects)"
+        :isPlayer="true"
+        tabindex="0"
       ></EffectsCollapse>
 
       <InventoryCollapse
-          :character="state.gameState.player"
-          :inventory="state.gameState.inventory"
-          :isPlayer="true"
-          :affects="Object.values(state.gameState.affects)"
-          tabindex="0"
+        :character="state.gameState.player"
+        :inventory="state.gameState.inventory"
+        :isPlayer="true"
+        :affects="Object.values(state.gameState.affects)"
+        tabindex="0"
       ></InventoryCollapse>
 
       <EquipmentCollapse
-          tabindex="0"
+        tabindex="0"
       ></EquipmentCollapse>
 
       <QuestCollapse
-          tabindex="0"
+        tabindex="0"
       ></QuestCollapse>
 
       <SkillsCollapse
-          :character="state.gameState.player"
-          :skills="Object.values(state.gameState.skills)"
-          :isPlayer="true"
-          tabindex="0"
+        :character="state.gameState.player"
+        :skills="Object.values(state.gameState.skills)"
+        :isPlayer="true"
+        tabindex="0"
       ></SkillsCollapse>
 
       <OptionsCollapse
-          tabindex="0"
+        tabindex="0"
       ></OptionsCollapse>
     </NCollapse>
   </div>

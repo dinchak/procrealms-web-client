@@ -44,7 +44,7 @@ export function useLocalStorageHandler () {
         return
       }
       state.inputMappings = JSON.parse(json)
-    } catch (err) {
+    } catch {
       state.inputMappings = resetInputMappings()
     }
   }
@@ -56,14 +56,14 @@ export function useLocalStorageHandler () {
         return []
       }
       return JSON.parse(json)
-    } catch (err) {
+    } catch {
       return []
     }
   }
 
   function addToken (name, token) {
     let tokens = getTokens()
-    let existingToken = tokens.find(token => token.name == name)
+    let existingToken = tokens.find(tk => tk.name == name)
 
     if (existingToken) {
       existingToken.token = token
@@ -79,7 +79,6 @@ export function useLocalStorageHandler () {
     tokens = tokens.filter(token => token.name != name)
     localStorage.setItem('tokens', JSON.stringify(tokens))
   }
-
 
   return {
     saveOptions,
