@@ -29,7 +29,7 @@ import { state, prevMode } from '@/static/state'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 const { deleteToken } = useLocalStorageHandler()
 
 function closeModal () {
@@ -42,7 +42,7 @@ function closeModal () {
 
 function logout () {
   closeModal()
-  cmd('quit')
+  runCommand('quit')
   state.token = ''
   deleteToken(state.name)
 }

@@ -25,15 +25,15 @@ function getGameModalAsOptions () {
     label: state.gameState.player.name,
     key: ''
   }]
-  .concat(Object.values(state.gameState.charmies)
-    .filter(charmie => charmie.traits.includes('mercenary'))
-    .map(merc => {
-      return {
-        label: merc.stats.name,
-        key: merc.stats.eid
-      }
-    })
-  )
+    .concat(Object.values(state.gameState.charmies)
+      .filter(charmie => charmie.traits.includes('mercenary'))
+      .map(merc => {
+        return {
+          label: merc.stats.name,
+          key: merc.stats.eid
+        }
+      })
+    )
 
   return values
 }

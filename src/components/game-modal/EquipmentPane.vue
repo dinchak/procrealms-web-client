@@ -107,7 +107,7 @@ async function selectIid (iid) {
 }
 
 function getItemFullName (iid) {
-  const item = equipment.value.find(item => item.iid == iid)
+  const item = equipment.value.find(it => it.iid == iid)
   if (!item) {
     return ''
   }
@@ -134,13 +134,13 @@ let watchers = []
 onMounted(async () => {
   let fetchIids = Object.values(getEquipment()).filter(iid => iid)
   equipment.value = await fetchItems(fetchIids)
-  
+
   watchers.push(
-    watch(state.gameState, async (newVal) => {
+    watch(state.gameState, async () => {
       equipment.value = await fetchItems(Object.values(getEquipment()))
     }),
 
-    watch(() => state.gameModalAs, async (newVal) => {
+    watch(() => state.gameModalAs, async () => {
       equipment.value = await fetchItems(Object.values(getEquipment()))
     })
   )

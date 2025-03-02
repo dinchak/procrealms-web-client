@@ -1,9 +1,9 @@
-import {AnsiUp} from 'ansi_up'
+import { AnsiUp } from 'ansi_up'
 
-import {getOrderCmd, state, updateCounter} from '@/static/state'
-import {ANSI_REPLACEMENTS, DIRECTION_MAP} from '@/static/constants'
+import { getOrderCmd, state, updateCounter } from '@/static/state'
+import { ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
 
-import {useWebSocket} from '@/composables/web_socket'
+import { useWebSocket } from '@/composables/web_socket'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
@@ -80,7 +80,7 @@ export function useHelpers () {
         disabled: false
       })
     }
-  
+
     if (item.type == 'consumable') {
       if (item.subtype == 'food') {
         actions.push({
@@ -105,7 +105,7 @@ export function useHelpers () {
         })
       }
     }
-  
+
     if (state.gameState.room.flags.includes('store')) {
       actions.push({
         label: 'Sell',
@@ -121,7 +121,7 @@ export function useHelpers () {
         disabled: true
       })
     }
-  
+
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
@@ -130,7 +130,7 @@ export function useHelpers () {
         disabled: false
       })
     }
-  
+
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
@@ -139,7 +139,7 @@ export function useHelpers () {
         disabled: false
       })
     }
-  
+
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
@@ -148,7 +148,7 @@ export function useHelpers () {
         disabled: false
       })
     }
-  
+
     if (item.type == 'weapon' || item.type == 'armor' || item.type == 'tool' || item.type == 'bag') {
       if (hasSkillsRequired(item)) {
         actions.push({
@@ -167,7 +167,7 @@ export function useHelpers () {
         }
       }
     }
-  
+
     if (item.type == 'material') {
       if (item.subtype == 'hide') {
         actions.push({
@@ -177,7 +177,7 @@ export function useHelpers () {
           disabled: false
         })
       }
-      
+
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
@@ -186,7 +186,7 @@ export function useHelpers () {
           disabled: false
         })
       }
-  
+
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
@@ -195,7 +195,7 @@ export function useHelpers () {
           disabled: false
         })
       }
-  
+
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
@@ -205,7 +205,7 @@ export function useHelpers () {
         })
       }
     }
-  
+
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
@@ -214,7 +214,7 @@ export function useHelpers () {
         disabled: false
       })
     }
-  
+
     if (item.type == 'tool') {
       if (item.subtype == 'penned animal') {
         actions.push({
@@ -224,7 +224,7 @@ export function useHelpers () {
           disabled: false
         })
       }
-  
+
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
@@ -234,24 +234,24 @@ export function useHelpers () {
         })
       }
     }
-  
+
     return actions
   }
-  
+
   function hasSkillsRequired (item) {
     if (!item.skillsRequired || item.skillsRequired.length == 0) {
       return false
     }
-  
+
     for (let skill of item.skillsRequired) {
       let playerSkill = state.gameState.skills[skill.name]
       if (!playerSkill || playerSkill.level < skill.level) {
         return false
       }
     }
-  
+
     return true
-  }  
+  }
 
   function ansiToHtml (str) {
     if (typeof str !== 'string') {
@@ -277,7 +277,7 @@ export function useHelpers () {
   function getMerc () {
     let charmies = Object.values(state.gameState.charmies)
 
-    const merc = charmies.find(charmie => 
+    const merc = charmies.find(charmie =>
       charmie && charmie.traits && charmie.traits.includes('mercenary')
     )
 
@@ -353,23 +353,26 @@ export function useHelpers () {
       scrollParentToElement(selectedElement)
       return selectedElement
     }
-  
+
     if (degree === 'false' && selectDelay) {
       clearTimeout(selectDelayTimeout)
       selectDelay = false
     }
-  
+
     if (selectDelay) {
       return selectedElement
     }
-  
+
     selectDelay = true
     let delayTime = 175
-    selectDelayTimeout = setTimeout(() => selectDelay = false, delayTime)
-  
+
+    selectDelayTimeout = setTimeout(() => {
+      selectDelay = false
+    }, delayTime)
+
     let direction = degreeToDirection(degree)
     let nearestElement = findNearestSelectableElement(selectedElement, direction)
-  
+
     if (nearestElement) {
       selectedElement.classList.remove('selected')
       selectedElement = nearestElement
@@ -397,7 +400,7 @@ export function useHelpers () {
     let y = 0
     let width = element.offsetWidth
     let height = element.offsetHeight
-  
+
     while (element) {
       x += (element.offsetLeft - element.scrollLeft + element.clientLeft)
       y += (element.offsetTop - element.scrollTop + element.clientTop)
@@ -436,7 +439,7 @@ export function useHelpers () {
     let yPosition = 0
     let width = element.offsetWidth
     let height = element.offsetHeight
-  
+
     while (element) {
       xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft)
       yPosition += (element.offsetTop - element.scrollTop + element.clientTop)
@@ -445,7 +448,7 @@ export function useHelpers () {
 
     let x = xPosition + width / 2
     let y = yPosition + height / 2
-  
+
     return { x, y }
   }
 
@@ -475,7 +478,7 @@ export function useHelpers () {
         continue
       } else if (direction == 'down' && elY <= y) {
         continue
-      }      
+      }
 
       let rectDistance = calcRectDistance(rect1, rect2, direction)
       if (rectDistance < nearestDistance) {
@@ -484,7 +487,7 @@ export function useHelpers () {
       }
     }
 
-    return nearestElement  
+    return nearestElement
   }
 
   function ucfirst (str) {
@@ -498,11 +501,13 @@ export function useHelpers () {
     if (typeof value != 'number') {
       return value
     }
-    if (value == Math.floor(value)) return Math.round(value) + ''
+    if (value == Math.floor(value)) {
+      return Math.round(value) + ''
+    }
     return value.toFixed(digits)
   }
 
-  function listToString (list, seperator='and') {
+  function listToString (list, seperator = 'and') {
     if (!list) {
       return ''
     }
@@ -525,26 +530,26 @@ export function useHelpers () {
     if (state.gameState.battle.active) {
       return
     }
-  
+
     if (degree == false) {
       state.selectedDirection = DIRECTION_MAP[0]
       return
     }
-  
+
     let offsetDegree = degree + (45 / 2)
     if (offsetDegree > 360) {
       offsetDegree -= 360
     }
-  
+
     let itemNumber = Math.ceil(offsetDegree / 360 * 8)
     state.selectedDirection = DIRECTION_MAP[itemNumber]
   }
-  
+
   function moveInSelectedDirection () {
     if (state.gameState.battle.active) {
       return
     }
-  
+
     if (state.selectedDirection == 'enter') {
       enter()
     } else {
@@ -560,54 +565,54 @@ export function useHelpers () {
 
   function strToLines (str) {
     let lines = str.trim().split('\n')
-    return lines.map((line) => ansiToHtml(line))
+    return lines.map(line => ansiToHtml(line))
   }
 
   function progressStatus (percentage) {
     if (percentage > 50) {
       return 'success'
     }
-  
+
     if (percentage > 25) {
       return 'warning'
     }
-  
+
     return 'error'
   }
 
   function effectBonuses (effect) {
     let bonuses = []
-  
+
     if (effect.charges) {
       bonuses.push({
         value: `<span class="bold-white">${effect.charges}</span> charges remaining`
       })
     }
-  
+
     if (effect.healOverTime) {
       let { healLow, healHigh } = effect.healOverTime
       bonuses.push({
         value: `Heals <span class="bold-green">${healLow.toFixed(0)}</span>-<span class="bold-green">${healHigh.toFixed(0)}</span> every <span class="bold-yellow">${effect.triggerTime}</span>s`
       })
     }
-  
+
     if (effect.damageOverTime) {
       let { damLow, damHigh, damageType } = effect.damageOverTime
       bonuses.push({
         value: `Deals <span class="bold-red">${damLow.toFixed(0)}</span>-<span class="bold-red">${damHigh.toFixed(0)}</span> ${damageType} damage every <span class="bold-yellow">${effect.triggerTime}</span>s` })
     }
-  
+
     return bonuses.concat(effect.bonuses)
   }
 
-  function isOverflowX(element) {
+  function isOverflowX (element) {
     return element.scrollWidth !== Math.max(element.offsetWidth, element.clientWidth)
   }
 
-  function isOverflowY(element) {
+  function isOverflowY (element) {
     return element.scrollHeight !== Math.max(element.offsetHeight, element.clientHeight)
   }
-  
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,

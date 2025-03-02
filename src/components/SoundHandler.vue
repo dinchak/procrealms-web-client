@@ -1,3 +1,7 @@
+<template>
+  <div></div>
+</template>
+
 <script setup>
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 import { state } from '@/static/state.js'
@@ -23,31 +27,31 @@ const sounds = {
   }
 }
 
-const soundPlayback = (name) => {
-  if (!(name in sounds)) return;
-  if (!sounds[name].enabled()) return;
-  sounds[name].audio.play();
+const soundPlayback = name => {
+  if (!(name in sounds)) {
+    return
+  }
+  if (!sounds[name].enabled()) {
+    return
+  }
+  sounds[name].audio.play()
 }
 
 const processSoundQueue = () => {
-  if (!state.soundQueue) return;
+  if (!state.soundQueue) {
+    return
+  }
   soundPlayback(state.soundQueue)
-  state.soundQueue = null;
+  state.soundQueue = null
 }
 
 onMounted(() => {
   watchers.push(watch(() => state.soundQueue, () => processSoundQueue()))
-});
+})
 
 onBeforeUnmount(() => {
   for (const watcher of watchers) {
     watcher()
   }
-});
+})
 </script>
-
-<template />
-
-<style scoped lang="less">
-
-</style>

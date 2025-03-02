@@ -265,7 +265,10 @@ export function authenticationSuccess ({ name, token }) {
   state.modals.newPlayerModal = false
   loadSettingsByNameAndType(state.triggers, name, 'triggers')
   loadSettingsByNameAndType(state.variables, name, 'variables')
-  if (state.options.autoplayMusic) playRandomTrack()
+
+  if (state.options.autoplayMusic) {
+    playRandomTrack()
+  }
 }
 
 function addSuggestedCommand (command) {
@@ -368,11 +371,11 @@ export function addLine (line, bufferName) {
   }
 
   addLinesTimeout = setTimeout(() => {
-    for (let bufferName in preloadBuffers) {
-      state[bufferName].push(...preloadBuffers[bufferName])
-      preloadBuffers[bufferName] = []
-      if (state[bufferName].length > maxLines) {
-        state[bufferName].splice(0, removeLines)
+    for (let bufName in preloadBuffers) {
+      state[bufName].push(...preloadBuffers[bufName])
+      preloadBuffers[bufName] = []
+      if (state[bufName].length > maxLines) {
+        state[bufName].splice(0, removeLines)
       }
     }
     addLinesTimeout = null

@@ -118,8 +118,9 @@ function toggleSettings () {
 }
 
 function openGameModal (pane = null) {
-  if (pane)
+  if (pane) {
     state.gamepadTab = pane
+  }
   state.modals.gameModal = true
   setMode('modal')
 }

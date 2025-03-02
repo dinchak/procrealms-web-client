@@ -49,8 +49,8 @@ const { ansiToHtml, progressStatus, effectBonuses } = useHelpers()
 
 function getEffectName (effect) {
   return effect.longFlag ?
-      ansiToHtml(ANSI.reset + effect.longFlag) :
-      ansiToHtml(ANSI.reset + effect.name)
+    ansiToHtml(ANSI.reset + effect.longFlag) :
+    ansiToHtml(ANSI.reset + effect.name)
 }
 
 function getTimeLeftPercentage (effect) {

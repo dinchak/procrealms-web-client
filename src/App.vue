@@ -59,7 +59,7 @@ function onClose () {
   stopPlaying()
 }
 
-function clearCache(object) {
+function clearCache (object) {
   const now = Date.now()
   const objectKeys = Object.keys(object)
 

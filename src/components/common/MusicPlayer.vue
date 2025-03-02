@@ -1,4 +1,4 @@
-<template>    
+<template>
   <div class="music-player">
     <div class="track-controls">
       <div class="volume">
@@ -63,13 +63,12 @@ const trackName = ref(null)
 async function play () {
   if (!state.music.currentTrack) {
     await playRandomTrack()
-  }
-  else {
+  } else {
     startPlaying(state.music.currentTrack)
   }
 }
 
-async function pause () {
+function pause () {
   state.music.audioContext.suspend()
   state.music.playing = false
 }
@@ -115,7 +114,7 @@ function drawAnalyzer () {
     let green = Math.max(shade / 4, Math.abs(Math.cos(((greenCounter + (i + 1) * gradient) / 1129))) * shade)
     let blue = Math.max(shade / 4, Math.abs(Math.cos(((blueCounter + (i + 1) * gradient) / 1283))) * shade)
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`
-    ctx.fill()  
+    ctx.fill()
   }
 
   if (redCounter % 10 === 0) {

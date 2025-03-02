@@ -1,11 +1,11 @@
 <template>
   <NCollapseItem title="Effects">
     <div class="effects-collapse">
-      <div v-if="effects().length === 0">You are not affected by anything.</div>
+      <div v-if="getEffects().length === 0">You are not affected by anything.</div>
 
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
 
-      <div class="effect" v-for="effect in effects()" :key="effect.name">
+      <div class="effect" v-for="effect in getEffects()" :key="effect.name">
         <div class="effect-name" v-html-safe="getEffectName(effect)"></div>
         <NProgress
             v-if="effect.name !== 'charm'"
@@ -34,41 +34,41 @@
 </template>
 
 <script setup>
-import {defineProps} from 'vue'
-import {NCollapseItem, NProgress} from 'naive-ui'
+import { defineProps } from 'vue'
+import { NCollapseItem, NProgress } from 'naive-ui'
 
-import {ITEM_EFFECTS} from '@/static/constants'
+import { ITEM_EFFECTS } from '@/static/constants'
 
-import {useHelpers} from '@/composables/helpers'
+import { useHelpers } from '@/composables/helpers'
 
-const {ansiToHtml, progressStatus, effectBonuses, renderNumber} = useHelpers()
+const { ansiToHtml, progressStatus, effectBonuses, renderNumber } = useHelpers()
 
 const props = defineProps(['effects', 'isPlayer'])
 
-function effects() {
+function getEffects () {
   return props.effects || []
 }
 
-function getEffectName(effect) {
+function getEffectName (effect) {
   return ansiToHtml(effect.longFlag || effect.name)
 }
 
-function getEffectValue(value) {
+function getEffectValue (value) {
   return (value > 0 ? '+' : '') + renderNumber(value)
 }
 
-function getEffectPercentage(effect) {
+function getEffectPercentage (effect) {
   return effect.timeLeft / effect.totalTimeLeft * 100
 }
 
-function getEffectBonusLabel(bonus) {
+function getEffectBonusLabel (bonus) {
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
     return itemEffect.label
   }
 }
 
-function getEffectBonusLabelClass(bonus) {
+function getEffectBonusLabelClass (bonus) {
   let classes = ['effect-bonus-label']
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {

@@ -1,7 +1,7 @@
 <template>
   <div class="movement" :class="{
-    'is-mobile-menu': isMobileMenu ?? false,
-    'is-side': !isMobileMenu ?? true
+    'is-mobile-menu': false,
+    'is-side': true
   }">
     <div class="row">
       <NIcon :class="getMovementClass('northwest')" @click="move('northwest')"><NorthWestOutlined></NorthWestOutlined></NIcon>
@@ -36,13 +36,8 @@ import { NIcon } from 'naive-ui'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { state } from '@/static/state'
-import { defineProps } from 'vue'
 
 const { move, enter } = useWebSocket()
-
-const props = defineProps({
-  isMobileMenu: Boolean,
-})
 
 function getMovementClass (dir) {
   let { room } = state.gameState

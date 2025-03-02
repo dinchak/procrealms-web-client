@@ -50,7 +50,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import {NGrid, NGi, NInput, NPopselect} from 'naive-ui'
+import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
@@ -101,7 +101,7 @@ const sortOptions = [
 
 function getItems () {
   if (search.value) {
-    return items.value.filter((item) => {
+    return items.value.filter(item => {
       const validItem = item.fullName.toLowerCase().includes(search.value.toLowerCase()) ||
           item.type.toLowerCase().includes(search.value.toLowerCase()) ||
           item.subtype.toLowerCase().includes(search.value.toLowerCase())
@@ -189,13 +189,13 @@ function onWidthChange () {
   }
 }
 
-async function onSortChange (value) {
+async function onSortChange () {
   items.value = sortItems(await fetchItems(getInventory()))
 }
 
-function sortItems (items) {
-  items.sort((a, b) => a[sortValue.value] > b[sortValue.value] ? 1 : -1)
-  return items
+function sortItems (its) {
+  its.sort((a, b) => { return a[sortValue.value] > b[sortValue.value] ? 1 : -1 })
+  return its
 }
 
 let watchers = []
@@ -204,7 +204,7 @@ onMounted(async () => {
   window.addEventListener('resize', onWidthChange)
 
   items.value = sortItems(await fetchItems(getInventory()))
-  
+
   watchers.push(
     watch(() => state.gameState.inventory, async () => {
       if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {

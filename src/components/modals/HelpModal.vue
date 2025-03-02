@@ -30,7 +30,7 @@
           ref="tabs"
           @close="handleCloseTab"
         >
-          
+
           <NTabPane name="topics" tab="Topics" :closable="false">
             <div :class="getScrollContainerClass()">
               <div class="search-container">
@@ -56,22 +56,22 @@
 
               <h1 v-if="filterTopics(state.help.topics.newbie)">New Players</h1>
               <div v-if="filterTopics(state.help.topics.newbie)" class="help-topics">
-                <div v-for="topic in filterTopics(state.help.topics.newbie)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+                <div v-for="topic in filterTopics(state.help.topics.newbie)" @click="loadHelpEntry(topic)" :key="topic">{{ topic }}</div>
               </div>
 
               <h1 v-if="filterTopics(state.help.topics.general).length > 0">General</h1>
               <div v-if="filterTopics(state.help.topics.general).length > 0" class="help-topics">
-                <div v-for="topic in filterTopics(state.help.topics.general)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+                <div v-for="topic in filterTopics(state.help.topics.general)" @click="loadHelpEntry(topic)" :key="topic">{{ topic }}</div>
               </div>
 
               <h1 v-if="filterTopics(state.help.topics.skills).length > 0">Skills</h1>
               <div v-if="filterTopics(state.help.topics.skills).length > 0" class="help-topics">
-                <div v-for="topic in filterTopics(state.help.topics.skills)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+                <div v-for="topic in filterTopics(state.help.topics.skills)" @click="loadHelpEntry(topic)" :key="topic">{{ topic }}</div>
               </div>
 
               <h1 v-if="filterTopics(state.help.topics.commands).length > 0">Commands</h1>
               <div class="help-topics" v-if="filterTopics(state.help.topics.commands).length > 0">
-                <div v-for="topic in filterTopics(state.help.topics.commands)" @click="loadHelpEntry(topic)">{{ topic }}</div>
+                <div v-for="topic in filterTopics(state.help.topics.commands)" @click="loadHelpEntry(topic)" :key="topic">{{ topic }}</div>
               </div>
             </div>
           </NTabPane>
@@ -85,7 +85,7 @@
                 <h1 v-html-safe="getTitle(content)"></h1>
 
                 <div class="help-section"
-                  v-if="content.body && !content.skill"
+                  v-show="content.body && !content.skill"
                   v-for="key in Object.keys(content.body)" :key="key"
                 >
                   <h3 class="bold-green" v-if="key">{{ key }}</h3>
@@ -300,7 +300,7 @@ function addLinks (text) {
 
 function loadHelpTopics () {
   if (!state.help.topicsLoaded) {
-    send('help', { cmd: 'topics'})
+    send('help', { cmd: 'topics' })
   }
 }
 
@@ -312,7 +312,7 @@ function getTitle (content) {
   if (content.title) {
     return ansiToHtml(content.title)
   }
-  
+
   if (content.skill) {
     if (content.skillData.spell) {
       return `<span class="bold-cyan">Spell:</span> <span class="bold-white">${content.skill}</span>`
@@ -465,10 +465,9 @@ onMounted(() => {
       const tab = state.gamepadHelpTab
       currentPane.value = tab || "topics"
       if (!panes.value.includes(tab)) {
-        panes.value.push(tab);
+        panes.value.push(tab)
       }
-    }
-  ))
+    }))
 })
 
 onBeforeUnmount(() => {

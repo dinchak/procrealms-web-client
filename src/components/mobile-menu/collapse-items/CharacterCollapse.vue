@@ -377,9 +377,9 @@ function getDamageType () {
 }
 
 let watchers = []
-onMounted(async () => {
+onMounted(() => {
   watchers.push(
-    watch(() => state.gameState.equipment, async () => {
+    watch(() => state.gameState.equipment, () => {
       setWeapon()
     })
   )
@@ -426,12 +426,10 @@ onBeforeUnmount(() => {
           .damage-value {
             font-size: 1.2rem;
           }
-          .increase-stat {
-          }
           .stat-label {
             font-size: 1.0rem;
             text-align: center;
-          }        
+          }
         }
       }
     }

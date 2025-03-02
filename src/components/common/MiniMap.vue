@@ -3,7 +3,7 @@
     <div class="minimap">
       <div class="line"
         :style="{ height: state.options.fontSize }"
-        v-for="(line, i) in renderMinimap()" 
+        v-for="(line, i) in renderMinimap()"
         :key="'line-' + i"
         v-html-safe="line"
       ></div>

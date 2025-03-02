@@ -1,7 +1,7 @@
 <template>
   <div class="splashscreen">
     <h1>Procedural Realms</h1>
-    
+
     <div class="server-status" v-if="state.disconnected">
       You have been disconnected
     </div>
@@ -37,7 +37,7 @@
       >
         Login
       </NButton>
-      
+
       <NButton
         type="warning"
         size="large"
@@ -57,7 +57,7 @@ import { NButton, NIcon } from 'naive-ui'
 
 import DeleteFilled from '@vicons/material/DeleteFilled'
 
-import { state, setMode, authenticationSuccess} from '@/static/state'
+import { state, setMode, authenticationSuccess } from '@/static/state'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
     text-align: center;
     font-size: 96px;
     text-shadow: 0 0 20px rgba(0,153,255,1);
-    
+
   }
 
   .server-status {
@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
       padding-top: 100px;
       padding-bottom: 25px;
     }
-  } 
+  }
 }
 
 @media screen and (max-width: 900px) {
@@ -226,7 +226,7 @@ onBeforeUnmount(() => {
       font-size: 74px;
       padding-top: 100px;
     }
-  } 
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -235,7 +235,7 @@ onBeforeUnmount(() => {
       font-size: 48px;
       padding-top: 100px;
     }
-  } 
+  }
 }
 
 </style>

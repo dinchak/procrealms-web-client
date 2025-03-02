@@ -89,15 +89,17 @@ const rules = {
       message: 'Name is already taken, please choose another',
       trigger: ['blur'],
       asyncValidator: () => {
-        return new Promise(async (resolve, reject) => {
-          let { cmd } = await sendWithResponse('nameExists', { name: model.value.name })
-          if (cmd == 'login.nameExists') {
-            reject(new Error('Name is already taken, please choose another'))
-          } else if (cmd == 'login.validationFailed') {
-            reject(new Error('Invalid name'))
-          } else if (cmd == 'login.nameAvailable') {
-            resolve()
-          }
+        return new Promise((resolve, reject) => {
+          sendWithResponse('nameExists', { name: model.value.name })
+            .then(cmd => {
+              if (cmd == 'login.nameExists') {
+                reject(new Error('Name is already taken, please choose another'))
+              } else if (cmd == 'login.validationFailed') {
+                reject(new Error('Invalid name'))
+              } else if (cmd == 'login.nameAvailable') {
+                resolve()
+              }
+            })
         })
       }
     }
@@ -133,9 +135,9 @@ const rules = {
 
     {
       message: 'Invalid character name',
-      asyncValidator: async () => {
-        return new Promise(async (resolve, reject) => {
-          let { cmd, msg } = await sendWithResponse('create', {
+      asyncValidator: () => {
+        return new Promise((resolve, reject) => {
+          sendWithResponse('create', {
             name: model.value.name,
             password: model.value.password,
             width: state.options.terminalWidth,
@@ -143,15 +145,16 @@ const rules = {
             tutorial: model.value?.tutorial ? 'Y' : 'N',
             ttype: 'play.proceduralrealms.com'
           })
-
-          if (cmd == 'login.validationFailed') {
-            reject(new Error('Invalid character name'))
-          } else if (cmd == 'login.fail') {
-            reject(new Error('Failed to create character'))
-          } else if (cmd == 'token.success') {
-            authenticationSuccess(msg)
-            resolve()
-          }
+            .then((cmd, msg) => {
+              if (cmd == 'login.validationFailed') {
+                reject(new Error('Invalid character name'))
+              } else if (cmd == 'login.fail') {
+                reject(new Error('Failed to create character'))
+              } else if (cmd == 'token.success') {
+                authenticationSuccess(msg)
+                resolve()
+              }
+            })
         })
       }
     }
@@ -193,65 +196,65 @@ function handleValidation (e) {
 let chain = null
 let nodeLength = 3
 let names = [
-'Medea', 'Atlantes', 'Fitcher', 'Gwydion', 'Merlin',
-'Gandalf', 'Arthur', 'Drizzt', 'Rapunzel', 'Gideon',
-'Proteus', 'Conan', 'Mordenkainen', 'Nystul', 'Leomund',
-'Elminster', 'Khelben', 'Magius', 'Smeagol', 'Boramir',
-'Paladine', 'Blackwolf', 'Balthazar', 'Roland', 'Ghidorah',
-'Bilbo', 'Frodo', 'Aragorn', 'Araphant', 'Gwindor', 'Baldor',
-'Beren', 'Calmacil', 'Castamir', 'Denethor', 'Dorian', 'Elrond',
-'Eldarion', 'Forlong', 'Frumgar', 'Grimbold', 'Gimli', 'Hador',
-'Hirgon', 'Iorias', 'Ivorwen', 'Khamul', 'Legolas', 'Luthien',
-'Miriel', 'Nelias', 'Nimioth', 'Nelias', 'Orophin', 'Lucian',
-'Ondohor', 'Pallando', 'Pippin', 'Radagast', 'Rogash', 'Salmar',
-'Sauron', 'Targon', 'Thengel', 'Uldor', 'Ulric', 'Valandil',
-'Vardamir', 'Wulfgar', 'Waldo', 'Alfred', 'Dwayne', 'Welby',
-'Brady', 'Maurice', 'Ethan', 'Winfrey', 'Johan', 'Sherborne',
-'Kinnard', 'Orlando', 'Reynolds', 'Jackson', 'Marlow',
-'Helen', 'Kylarius', 'Alcott', 'Maidel', 'Karlee', 'Chelsie',
-'Katherine', 'Carson', 'Alysha', 'Destiney', 'Ana', 'Serena',
-'Loella', 'Gabriella', 'Cassidy', 'Justine', 'Elyssa',
-'Jessica', 'Katie', 'Colleen', 'Jazlyn', 'Makenzie', 'Saldon',
-'Jazmine', 'Carlton', 'Emilee', 'Hannah', 'Clovis', 'Kiya',
-'Olivia', 'Brenna', 'Laney', 'Nadia', 'Lexi',
-'Kemble', 'Lindsey', 'Chastity', 'Autumn', 'Juliette',
-'Maitane', 'Kimblee', 'Blanca', 'Manhattan', 'Honey', 'Ashli',
-'Kymberly', 'Tamara', 'Yazmin', 'Alysha', 'Kaila', 'Jasnah',
-'Beric', 'Logan', 'Isidora', 'Mira', 'Tielo', 'Aurora', 'Elowen',
-'Evender', 'Aria', 'Amethyst', 'Zelda', 'Twilio', 'Tabitha',
-'Samantha', 'Salvatore', 'Mikhale', 'Ambrose', 'Hawthorne',
-'Talmir', 'Khalon', 'Radvia', 'Kinnay', 'Salome', 'Varia',
-'Auren', 'Kinari', 'Alcari', 'Forgon', 'Kinioth', 'Khayne',
-'Procka', 'Medash', 'Fastidious', 'Calgary', 'Alberta', 'Montreal',
-'Anastasia', 'Aphrodite', 'Abraxas', 'Alastriona', 'Albion', 'Aeronwy',
-'Artemis', 'Arwen', 'Astraia', 'Astrid', 'Astoria', 'Ankhara', 'Asphodel',
-'Bronwyn', 'Belladonna', 'Chandra', 'Calliope', 'Corinda', 'Crescent',
-'Caelia', 'Clarion', 'Darius', 'Elara', 'Ethelinda', 'Evangelia', 'Evander',
-'Emrys', 'Eirian', 'Ferelith', 'Fiona', 'Galahad', 'Gawain', 'Guinevere',
-'Izora', 'Joliette', 'Jorinda', 'Khione', 'Lavinia', 'Lucienne', 'Lysander',
-'Lysandra', 'Lueclia', 'Melisandre', 'Morgaine', 'Miriam', 'Morrigan', 'Morgana',
-'Myrcella', 'Maelona', 'Oberon', 'Persephone', 'Rosabella', 'Taliesin', 'Tamora',
-'Titania', 'Tristan', 'Uther', 'Viviane', 'Willow'
+  'Medea', 'Atlantes', 'Fitcher', 'Gwydion', 'Merlin',
+  'Gandalf', 'Arthur', 'Drizzt', 'Rapunzel', 'Gideon',
+  'Proteus', 'Conan', 'Mordenkainen', 'Nystul', 'Leomund',
+  'Elminster', 'Khelben', 'Magius', 'Smeagol', 'Boramir',
+  'Paladine', 'Blackwolf', 'Balthazar', 'Roland', 'Ghidorah',
+  'Bilbo', 'Frodo', 'Aragorn', 'Araphant', 'Gwindor', 'Baldor',
+  'Beren', 'Calmacil', 'Castamir', 'Denethor', 'Dorian', 'Elrond',
+  'Eldarion', 'Forlong', 'Frumgar', 'Grimbold', 'Gimli', 'Hador',
+  'Hirgon', 'Iorias', 'Ivorwen', 'Khamul', 'Legolas', 'Luthien',
+  'Miriel', 'Nelias', 'Nimioth', 'Nelias', 'Orophin', 'Lucian',
+  'Ondohor', 'Pallando', 'Pippin', 'Radagast', 'Rogash', 'Salmar',
+  'Sauron', 'Targon', 'Thengel', 'Uldor', 'Ulric', 'Valandil',
+  'Vardamir', 'Wulfgar', 'Waldo', 'Alfred', 'Dwayne', 'Welby',
+  'Brady', 'Maurice', 'Ethan', 'Winfrey', 'Johan', 'Sherborne',
+  'Kinnard', 'Orlando', 'Reynolds', 'Jackson', 'Marlow',
+  'Helen', 'Kylarius', 'Alcott', 'Maidel', 'Karlee', 'Chelsie',
+  'Katherine', 'Carson', 'Alysha', 'Destiney', 'Ana', 'Serena',
+  'Loella', 'Gabriella', 'Cassidy', 'Justine', 'Elyssa',
+  'Jessica', 'Katie', 'Colleen', 'Jazlyn', 'Makenzie', 'Saldon',
+  'Jazmine', 'Carlton', 'Emilee', 'Hannah', 'Clovis', 'Kiya',
+  'Olivia', 'Brenna', 'Laney', 'Nadia', 'Lexi',
+  'Kemble', 'Lindsey', 'Chastity', 'Autumn', 'Juliette',
+  'Maitane', 'Kimblee', 'Blanca', 'Manhattan', 'Honey', 'Ashli',
+  'Kymberly', 'Tamara', 'Yazmin', 'Alysha', 'Kaila', 'Jasnah',
+  'Beric', 'Logan', 'Isidora', 'Mira', 'Tielo', 'Aurora', 'Elowen',
+  'Evender', 'Aria', 'Amethyst', 'Zelda', 'Twilio', 'Tabitha',
+  'Samantha', 'Salvatore', 'Mikhale', 'Ambrose', 'Hawthorne',
+  'Talmir', 'Khalon', 'Radvia', 'Kinnay', 'Salome', 'Varia',
+  'Auren', 'Kinari', 'Alcari', 'Forgon', 'Kinioth', 'Khayne',
+  'Procka', 'Medash', 'Fastidious', 'Calgary', 'Alberta', 'Montreal',
+  'Anastasia', 'Aphrodite', 'Abraxas', 'Alastriona', 'Albion', 'Aeronwy',
+  'Artemis', 'Arwen', 'Astraia', 'Astrid', 'Astoria', 'Ankhara', 'Asphodel',
+  'Bronwyn', 'Belladonna', 'Chandra', 'Calliope', 'Corinda', 'Crescent',
+  'Caelia', 'Clarion', 'Darius', 'Elara', 'Ethelinda', 'Evangelia', 'Evander',
+  'Emrys', 'Eirian', 'Ferelith', 'Fiona', 'Galahad', 'Gawain', 'Guinevere',
+  'Izora', 'Joliette', 'Jorinda', 'Khione', 'Lavinia', 'Lucienne', 'Lysander',
+  'Lysandra', 'Lueclia', 'Melisandre', 'Morgaine', 'Miriam', 'Morrigan', 'Morgana',
+  'Myrcella', 'Maelona', 'Oberon', 'Persephone', 'Rosabella', 'Taliesin', 'Tamora',
+  'Titania', 'Tristan', 'Uther', 'Viviane', 'Willow'
 ]
-let consonents = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x','z']
+let consonents = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x', 'z']
 
 function buildChain () {
-  let chain = {}
+  let chn = {}
   for (let i = 0; i < names.length; i++) {
     let name = names[i]
     for (let j = 0; j < name.length; j += nodeLength) {
-      if (!chain[j]) {
-        chain[j] = {}
+      if (!chn[j]) {
+        chn[j] = {}
       }
       let key = name.substr(j, nodeLength).toLowerCase()
-      if (!chain[j][key]) {
-        chain[j][key] = 1
+      if (!chn[j][key]) {
+        chn[j][key] = 1
       } else {
-        chain[j][key]++
+        chn[j][key]++
       }
     }
   }
-  return chain
+  return chn
 }
 
 function selectName () {

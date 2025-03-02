@@ -13,10 +13,10 @@ import { state } from '@/static/state'
 import { NButton } from 'naive-ui'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 function runAlias (alias) {
-  cmd(alias)
+  runCommand(alias)
 }
 
 function getAliases () {

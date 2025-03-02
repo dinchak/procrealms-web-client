@@ -57,15 +57,15 @@ import { NCollapseItem, NProgress } from 'naive-ui'
 const props = defineProps(['character', 'skills', 'isPlayer'])
 
 const { character, skills, isPlayer } = toRefs(props)
-const getSortedSkills = (type) => {
 
+function getSortedSkills (type) {
   const filtered = skills.value
-  .filter(sk => sk.type.includes(type))
-  .sort((a,b) => a.name.localeCompare(b.name))
+    .filter(sk => sk.type.includes(type))
+    .sort((a, b) => a.name.localeCompare(b.name))
 
-  if (type === 'weapon' || type === 'crafting') return filtered
-
-  if (type === 'artisan') return filtered
+  if (type === 'weapon' || type === 'crafting' || type === 'artisan') {
+    return filtered
+  }
 
   if (type === 'combat') {
     const reqOrder = ['strength', 'agility', 'magic', 'spirit',
@@ -73,20 +73,23 @@ const getSortedSkills = (type) => {
       'agility+magic', 'agility+spirit', 'magic+spirit']
 
     return filtered
-    .sort((a, b) => { // Sort by total required stat points
-      const sum = (obj) => Object.values(obj).reduce((a,b) => a + b.amount, 0)
-      return sum(a.requirements) - sum(b.requirements)
-    })
-    .sort((a, b) => { // Then sort by bespoke requirement order (array above)
-      const getReq = sk => {
-        const sortedReq = Object.values(sk.requirements).sort((a, b) => reqOrder.indexOf(a.stat) - reqOrder.indexOf(b.stat) )
-        return sortedReq.map(a => a.stat).join('+')
-      }
-      return reqOrder.indexOf(getReq(a)) - reqOrder.indexOf(getReq(b))
-    })
+      .sort((a, b) => { // Sort by total required stat points
+        const sum = obj => Object.values(obj).reduce((prev, cur) => prev + cur.amount, 0)
+        return sum(a.requirements) - sum(b.requirements)
+      })
+      .sort((a, b) => { // Then sort by bespoke requirement order (array above)
+        const getReq = sk => {
+          const sortedReq = Object.values(sk.requirements)
+            .sort((prev, cur) => reqOrder.indexOf(prev.stat) - reqOrder.indexOf(cur.stat))
+
+          return sortedReq.map(sorted => sorted.stat).join('+')
+        }
+
+        return reqOrder.indexOf(getReq(a)) - reqOrder.indexOf(getReq(b))
+      })
   }
 
-  return filtered;
+  return filtered
 }
 </script>
 

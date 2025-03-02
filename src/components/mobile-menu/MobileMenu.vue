@@ -31,7 +31,6 @@ import MiniMap from '@/components/common/MiniMap.vue'
 import PlayerStats from '@/components/mobile-menu/PlayerStats.vue'
 import MiniStats from '@/components/mobile-menu/MiniStats.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
-import { onMounted } from 'vue'
 import MovementControls from '@/components/common/MovementControls.vue'
 </script>
 

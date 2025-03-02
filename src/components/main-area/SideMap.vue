@@ -1,7 +1,7 @@
 <template>
   <div class="side-map" v-if="state.options.showSideMap && !state.gameState.battle.active">
     <div class="map-container">
-      <div 
+      <div
         class="map-line"
         v-for="(line, id) in state.gameState.sidemap"
         :key="id"

@@ -29,7 +29,7 @@ import { ANSI } from '@/static/constants'
 const { ansiToHtml } = useHelpers()
 
 function getRoomEntities () {
-  return state.gameState.room.entities.filter(en => 
+  return state.gameState.room.entities.filter(en =>
     !Object.keys(state.gameState.party).find(eid => eid == en.eid)
   )
 }

@@ -9,8 +9,6 @@
 <script setup>
 import { watch, defineProps, toRefs, ref, onMounted, onBeforeUnmount } from 'vue'
 
-import { ANSI } from '@/static/constants'
-
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 

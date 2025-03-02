@@ -62,7 +62,7 @@ function getShortFlags (member) {
 
 function getPartyMembers () {
   let members = Object.values(state.gameState.party)
-  members.sort((a, b) => a.sort < b.sort ? -1 : 1)
+  members.sort((a, b) => { return a.sort < b.sort ? -1 : 1 })
   return members
 }
 </script>
@@ -183,10 +183,6 @@ function getPartyMembers () {
 
       .food-bar-fill {
         background: linear-gradient(to right, #6c2020, #a42121);
-      }
-
-      .food-bar-content {
-
       }
     }
 

@@ -11,11 +11,6 @@
     'selected': isPlayerTarget(participant),
     'targeting-you': isTargetingPlayer(participant) && !isPlayer(participant),
   }" @click="target(participant)">
-<!--    <div class="prefix" v-show="hasPrefix(participant)" :class="{-->
-<!--      'casting': participant.isCasting,-->
-<!--    }">-->
-<!--      Casting...-->
-<!--    </div>-->
     <div class="main-card">
       <div class="card-layer-1">
         <div class="card-layer-2">
@@ -31,7 +26,7 @@
               <n-popover trigger="hover" placement="top-start">
                 <template #trigger>
                   <div className="affect-row popover">
-                    <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect"/>
+                    <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect" :key="affect.name" />
                   </div>
                 </template>
                 <HUDEffects :affects="participant.affects"/>
@@ -103,7 +98,7 @@
   </div>
 </template>
 <script setup>
-import { defineProps, toRefs, computed, reactive } from 'vue'
+import { defineProps, toRefs } from 'vue'
 import { NPopover, NProgress } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 
@@ -116,7 +111,7 @@ import { ANSI } from '@/static/constants'
 import HUDEffects from '@/components/hud/HUDEffects.vue'
 
 const { ansiToHtml } = useHelpers()
-const { cmd } = useWebSocket()
+const { runCommand } = useWebSocket()
 
 const props = defineProps({
   participant: Object,
@@ -126,86 +121,89 @@ const props = defineProps({
 
 const { participant, entity, side } = toRefs(props)
 
-const hasPrefix = (participant) => {
-  return participant.isCasting
+function target (part) {
+  if (part.hpPercent == 0) {
+    return
+  }
+  runCommand(`target ${stripAnsi(part.tag)}`)
 }
 
-function target (participant) {
-  if (participant.hpPercent == 0) return
-  cmd(`target ${stripAnsi(participant.tag)}`)
+function isAlive (part) {
+  return !part.isDead && !part.isIncapacitated
 }
 
-const isAlive = (participant) => {
-  return !participant.isDead && !participant.isIncapacitated
+function isPlayer (part) {
+  return part.eid === state.gameState.player.eid
 }
 
-const isPlayer = (participant) => {
-  return participant.eid === state.gameState.player.eid
-}
-
-const isPlayerTarget = (participant) => {
+function isPlayerTarget (part) {
   const player = Object.values(state.gameState.battle.participants).find(p => p.eid === state.gameState.player.eid)
-  if (!player || !player.targetName) return false
-  if (!participant.tag) return false
-  if (player.eid === participant.eid) return stripAnsi(player.targetName) === 'You'
-  return stripAnsi(participant.tag) === stripAnsi(player.targetName)
+  if (!player || !player.targetName) {
+    return false
+  }
+
+  if (!part.tag) {
+    return false
+  }
+
+  if (player.eid === part.eid) {
+    return stripAnsi(player.targetName) === 'You'
+  }
+
+  return stripAnsi(part.tag) === stripAnsi(player.targetName)
 }
 
-const isTargetingPlayer = (participant) => {
-  if (!participant.targetName) return false
-  const name = stripAnsi(participant.targetName)
+function isTargetingPlayer (part) {
+  if (!part.targetName) {
+    return false
+  }
+
+  const name = stripAnsi(part.targetName)
   return name === 'You'
 }
 
-function getAffects (participant) {
+function getAffects (part) {
   let affects = []
-  console.debug(participant)
-  if (participant.isDead) {
+  console.debug(part)
+  if (part.isDead) {
     affects.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
   }
-  if (participant.isIncapacitated) {
+  if (part.isIncapacitated) {
     affects.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
   }
-  if (participant.isHidden) {
+  if (part.isHidden) {
     affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
   }
 
-  affects = affects.concat(Object.entries(participant.affects)
-  .map(p => p[1].shortFlag))
-  affects = affects.map(s => ansiToHtml(s)).filter(s => s.trim().length)
+  affects = affects.concat(Object.entries(part.affects)
+    .map(p => p[1].shortFlag))
+
+  affects = affects.map(s => ansiToHtml(s))
+    .filter(s => s.trim().length)
 
   return affects
 }
 
-function isMercenary (entity) {
-  return entity && entity.traits && entity.traits.includes('mercenary')
+function isMercenary (ent) {
+  return ent && ent.traits && ent.traits.includes('mercenary')
 }
 
-function getMercenary (entity) {
-  return state.gameState.charmies[entity.eid]
+function getMercenary (ent) {
+  return state.gameState.charmies[ent.eid]
 }
 
-function getTarget (participant) {
-  if (!participant.targetName) return false
-  const target = Object.values(state.gameState.battle.participants).
-      find(p => stripAnsi(p.tag) === stripAnsi(participant.targetName))
-  return target ? `${target.tag} ${target.name}` : participant.targetName
+function getTarget (part) {
+  if (!part.targetName) {
+    return false
+  }
+
+  const tgt = Object.values(state.gameState.battle.participants)
+    .find(p => stripAnsi(p.tag) === stripAnsi(part.targetName))
+
+  return tgt ? `${tgt.tag} ${tgt.name}` : part.targetName
 }
-
-// function getStatus (participant) {
-//   if (participant.hpPercent == 0) {
-//     return ''
-//   }
-//   return participant.status
-// }
-
-// function getTargetName (participant) {
-//   if (participant.targetName) {
-//     return 'Target: ' + ansiToHtml(participant.targetName)
-//   }
-//   return ''
-// }
 </script>
+
 <style lang="less" scoped>
 @shadow-offset: 4px;
 @shadow-size: 8px;

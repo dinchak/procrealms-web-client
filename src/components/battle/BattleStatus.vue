@@ -1,10 +1,10 @@
 <template>
   <div class="battle-area">
     <div class="battle-status">
-      <template v-for="side in ['good', 'vs', 'evil']">
+      <template v-for="side in ['good', 'vs', 'evil']" :key="side">
         <div v-if="side === 'vs'" class="vs">VS</div>
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
-          <div v-for="row in getRows(side)" class="side-row">
+          <div v-for="row in getRows(side)" class="side-row" :key="row">
             <div v-for="participant in getSideInRow(side, row)" class="entity" :key="participant.eid">
               <TransitionGroup appear name="damage">
                 <div
@@ -57,31 +57,31 @@ function performBattleAction () {
 
 function getParticipants (side) {
   let participants = Object.values(state.gameState.battle.participants).filter(p => p.side == side)
-  participants.sort((a, b) => a.sort < b.sort ? -1 : 1)
+  participants.sort((a, b) => { return a.sort < b.sort ? -1 : 1 })
   return participants
 }
 
 function getParticipantsPerRow () {
-  var m = window.matchMedia("(max-width: 1075px)")
-  return !m.matches ? 3 : 2; // 2 per row on mobile
+  let m = window.matchMedia("(max-width: 1075px)")
+  return !m.matches ? 3 : 2 // 2 per row on mobile
 }
 
 // Gets the participants of a side which belong to a certain row.
 // Row begins at 1.
-function getSideInRow(side, row) {
-  const participants = getParticipants(side);
-  const perRow = getParticipantsPerRow();
+function getSideInRow (side, row) {
+  const participants = getParticipants(side)
+  const perRow = getParticipantsPerRow()
 
-  const startIndex = (row * perRow) - perRow;
-  const endIndex = (row * perRow);
+  const startIndex = (row * perRow) - perRow
+  const endIndex = (row * perRow)
 
-  return participants.slice(startIndex, Math.min(endIndex, participants.length)); // Clamp by amount of participants.
+  return participants.slice(startIndex, Math.min(endIndex, participants.length)) // Clamp by amount of participants.
 }
 
 // Gets the amount of participant rows per side.
 // Ex. 7 participants = 3 rows (3, 3, 2).
 function getRows (side) {
-  const perRow = getParticipantsPerRow();
+  const perRow = getParticipantsPerRow()
 
   const len = getParticipants(side).length
   const rows = Math.ceil(len / perRow)
