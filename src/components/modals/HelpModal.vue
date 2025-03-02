@@ -85,20 +85,21 @@
                 <h1 v-html-safe="getTitle(content)"></h1>
 
                 <div class="help-section"
-                  v-show="content.body && !content.skill"
-                  v-for="key in Object.keys(content.body)" :key="key"
+                  v-if="content.body && !content.skill"
                 >
-                  <h3 class="bold-green" v-if="key">{{ key }}</h3>
-                  <div class="help-text related"
-                    v-if="key == 'Related' && content.body[key].length"
-                    v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
-                    @click="lineClickRelated"
-                  ></div>
-                  <div class="help-text"
-                    v-else
-                    v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
-                    @click="lineClick"
-                  ></div>
+                  <div v-for="key in Object.keys(content.body)" :key="key">
+                    <h3 class="bold-green" v-if="key">{{ key }}</h3>
+                    <div class="help-text related"
+                      v-if="key == 'Related' && content.body[key].length"
+                      v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
+                      @click="lineClickRelated"
+                    ></div>
+                    <div class="help-text"
+                      v-else
+                      v-html-safe="addLinks(ansiToHtml(ANSI.reset + content.body[key]))"
+                      @click="lineClick"
+                    ></div>
+                  </div>
                 </div>
 
                 <div class="help-section"
