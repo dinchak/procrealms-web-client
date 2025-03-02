@@ -135,7 +135,7 @@ import {
   NInputGroup, 
   NModal,
   // NSelect, 
-  NScrollbar, 
+  NScrollbar,
   NSpace,
   NSwitch, 
   NCheckbox, 
@@ -336,11 +336,11 @@ function updateTriggerTree () {
 }
 
 function updateVariableTree () {
-  let triggers = state.triggers.value || new Map()
+  let variables = state.variables.value || new Map()
 
   variableTreeData.value = []
 
-  triggers.forEach((variable, key) => {
+  variables.forEach((variable, key) => {
     variableTreeData.value.push({
       key,
       label: (variable.shared ? '• ' : '') + variable.name
@@ -362,13 +362,33 @@ function onStorage (event) {
   if (event.key === 'triggers') {
     loadSettingsByNameAndType(state.triggers, state.name, 'triggers')
     updateTriggerTree()
-    updateSelectedTriggerKeys([triggerModel.value.key])
+    if (state.triggers.value.get([triggerModel.value.key])) {
+      updateSelectedTriggerKeys([triggerModel.value.key])
+    } else {
+      triggerModel.value = {
+        key: '-1',
+        name: '',
+        pattern: '',
+        commands: '',
+        active: false,
+        shared: false
+      }
+    }
   }
 
   if (event.key === 'variables') {
     loadSettingsByNameAndType(state.variables, state.name, 'variables')
     updateVariableTree()
-    updateSelectedVariableKeys([variableModel.value.key])
+    if (state.variables.value.get([variableModel.value.key])) {
+      updateSelectedVariableKeys([variableModel.value.key])
+    } else {
+      variableModel.value = {
+        key: '-1',
+        name: '',
+        values: '',
+        shared: false
+      }
+    }
   }
 }
 
