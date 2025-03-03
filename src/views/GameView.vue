@@ -359,8 +359,7 @@ onBeforeUnmount(() => {
     .row {
       box-sizing: border-box;
       display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
+      flex-direction: column;
       gap: 5px;
 
       &:first-child {

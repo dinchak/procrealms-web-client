@@ -206,7 +206,7 @@ function resetOptions () {
   return {
     // general options
     chatInMain: true,
-    roomDescriptionMinimap: true,
+    roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
     keepSentCommands: false,
     showMusicPlayer: false,
