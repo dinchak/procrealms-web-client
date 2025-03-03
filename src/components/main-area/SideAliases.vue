@@ -29,10 +29,10 @@ function getAliases () {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  height: 100%;
   max-width: 200px;
-  max-height: 130px;
   justify-content: center;
-  align-content: flex-start;
+  align-content: flex-end;
 
   @media screen and (max-width: 900px) {
     .game.show-mobile-menu & {
