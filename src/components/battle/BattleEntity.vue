@@ -14,83 +14,82 @@
     <div class="main-card">
       <div class="card-layer-1">
         <div class="card-layer-2">
-          <div class="name-area">
-            <div class="name-merc-col">
-              <div class="name-row" lang="en"
-                   v-html-safe="ansiToHtml(`${participant.hpPercent > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)">
-              </div>
-              <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
-            </div>
-
-            <div class="affect-area">
-              <n-popover trigger="hover" placement="top-start">
-                <template #trigger>
-                  <div className="affect-row popover">
-                    <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect" :key="affect.name" />
+          <div class="card-row">
+            <div class="info-column">
+              <div class="name-area">
+                <div class="name-merc-col">
+                  <div class="name-row" lang="en"
+                    v-html-safe="ansiToHtml(`${(participant.hpPercent && extendedInfo) > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)">
                   </div>
-                </template>
-                <HUDEffects :affects="participant.affects"/>
-              </n-popover>
-              <div class="bonus-row">
-        <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
-                <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
-              </span>
-                <span class="affect affect-back" v-if="side === 'good' && entity && entity.rage > 0">
-                <span class="amount bold-red">{{ entity.rage }}</span> <span class="label red">Rage</span>
-              </span>
+                  <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
+                </div>
+
+                <div v-if="extendedInfo" class="target-row" >
+                  <NIcon>
+                    <CrisisAlertFilled></CrisisAlertFilled>
+                  </NIcon>
+                  <div v-if="participant.targetName" v-html-safe="ansiToHtml(getTarget(participant))"></div>
+                </div>
+              </div>
+
+              <div class="vital-area" v-if="participant.hpPercent > 0">
+                <div class="vital-row">
+
+                  <div class="vital-bar hp bold-green">
+                    <div class="vital-fill hp" :style="getHpFillStyle(entity, participant, side)"></div>
+                    <div class="vital-value">
+                      {{ entity && side === 'good' ? entity.hp : `${participant.hpPercent}%` }}
+                    </div>
+                  </div>
+
+                  <div class="vital-bar energy bold-cyan">
+                    <div class="vital-fill energy" :style="getEnergyFillStyle(entity, participant, side)">
+                    </div>
+                    <div class="vital-value">
+                      {{ entity && side === 'good' ? entity.energy : `${participant.energyPercent}%` }}
+                    </div>
+                  </div>
+
+                  <div class="vital-bar stamina bold-yellow">
+                    <div class="vital-fill stamina" :style="getStaminaFillStyle(entity, participant, side)">
+                    </div>
+                    <div class="vital-value">
+                      {{ entity && side === 'good' ? entity.stamina : `${participant.staminaPercent}%` }}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div v-if="extendedInfo" class="affect-area">
+                <n-popover trigger="hover" placement="top-start">
+                  <template #trigger>
+                    <div className="affect-row popover">
+                      <span v-if="getAffects(participant).length == 0" class="affect">No Affects</span>
+                      <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect" :key="affect.name" />
+                    </div>
+                  </template>
+                  <HUDEffects :affects="participant.affects"/>
+                </n-popover>
+                <div class="bonus-row">
+                  <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
+                    <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
+                  </span>
+                  <span class="affect affect-back" v-if="side === 'good' && entity && entity.rage > 0">
+                    <span class="amount bold-red">{{ entity.rage }}</span> <span class="label red">Rage</span>
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div class="target-row" v-if="participant.hpPercent > 0">
-              <div v-if="participant.targetName" v-html-safe="ansiToHtml(`Target: ${getTarget(participant)}`)"></div>
-            </div>
-          </div>
-
-          <div class="vital-area" v-if="participant.hpPercent > 0">
-            <div class="vital-row">
-              <div class="vital-amount bold-green">
-                {{ entity && side === 'good' ? entity.hp : `${participant.hpPercent}%` }}
-              </div>
-
-              <NProgress
-                  class="vital-bar" type="line" status="success" aria-label="Health"
-                  :stroke-width="16"
-                  :percentage="entity && side === 'good' ? entity.hp / entity.maxHp * 100 : participant.hpPercent"
-                  :show-indicator="false"
-                  :border-radius="0"
-                  :height="10"
-              ></NProgress>
+            <div :class="getInfoBtnClass()">
+              <NIconWrapper :size="28">
+                <NIcon :size="24">
+                  <SearchFilled @click.stop="toggleInfo()"></SearchFilled>
+                </NIcon>
+              </NIconWrapper>
             </div>
 
-            <div class="vital-row">
-              <div class="vital-amount bold-cyan">
-                {{ entity && side === 'good' ? entity.energy : `${participant.energyPercent}%` }}
-              </div>
-
-              <NProgress
-                  class="vital-bar" type="line" status="default" aria-label="Energy"
-                  :stroke-width="16"
-                  :percentage="entity && side === 'good' ? entity.energy / entity.maxEnergy * 100 : participant.energyPercent"
-                  :show-indicator="false"
-                  :border-radius="0"
-                  :height="10"
-              ></NProgress>
-            </div>
-
-            <div class="vital-row">
-              <div class="vital-amount bold-yellow">
-                {{ entity && side === 'good' ? entity.stamina : `${participant.staminaPercent}%` }}
-              </div>
-
-              <NProgress
-                  class="vital-bar" type="line" status="warning" aria-label="Stamina"
-                  :stroke-width="16"
-                  :percentage="entity && side === 'good' ? entity.stamina / entity.maxStamina * 100 : participant.staminaPercent"
-                  :show-indicator="false"
-                  :border-radius="0"
-                  :height="10"
-              ></NProgress>
-            </div>
           </div>
         </div>
       </div>
@@ -98,8 +97,9 @@
   </div>
 </template>
 <script setup>
-import { defineProps, toRefs } from 'vue'
-import { NPopover, NProgress } from 'naive-ui'
+import { defineProps, toRefs, ref, nextTick } from 'vue'
+import { NPopover, NIcon, NIconWrapper } from 'naive-ui'
+import { CrisisAlertFilled, SearchFilled } from '@vicons/material'
 import stripAnsi from 'strip-ansi'
 
 import MercOrders from '@/components/battle/MercOrders.vue'
@@ -120,6 +120,8 @@ const props = defineProps({
 })
 
 const { participant, entity, side } = toRefs(props)
+
+const extendedInfo = ref(false)
 
 function target (part) {
   if (part.hpPercent == 0) {
@@ -164,13 +166,15 @@ function isTargetingPlayer (part) {
 
 function getAffects (part) {
   let affects = []
-  console.debug(part)
+
   if (part.isDead) {
     affects.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
   }
+
   if (part.isIncapacitated) {
     affects.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
   }
+
   if (part.isHidden) {
     affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
   }
@@ -180,6 +184,8 @@ function getAffects (part) {
 
   affects = affects.map(s => ansiToHtml(s))
     .filter(s => s.trim().length)
+
+  console.log(affects)
 
   return affects
 }
@@ -202,15 +208,246 @@ function getTarget (part) {
 
   return tgt ? `${tgt.tag} ${tgt.name}` : part.targetName
 }
+
+function getHpFillStyle (en, part, sd) {
+  if (sd == 'good') {
+    if (!en) {
+      return { width: '0' }
+    }
+    return { width: `${en.hp / en.maxHp * 100}%` }
+  } else {
+    if (!part) {
+      return { width: '0' }
+    }
+    return { width: `${part.hpPercent}%` }
+  }
+}
+
+function getEnergyFillStyle (en, part, sd) {
+  if (sd == 'good') {
+    if (!en) {
+      return { width: '0' }
+    }
+    return { width: `${en.energy / en.maxEnergy * 100}%` }
+  } else {
+    if (!part) {
+      return { width: '0' }
+    }
+    return { width: `${part.energyPercent}%` }
+  }
+}
+
+function getStaminaFillStyle (en, part, sd) {
+  if (sd == 'good') {
+    if (!en) {
+      return { width: '0' }
+    }
+    return { width: `${en.stamina / en.maxStamina * 100}%` }
+  } else {
+    if (!part) {
+      return { width: '0' }
+    }
+    return { width: `${part.staminaPercent}%` }
+  }
+}
+
+function toggleInfo () {
+  extendedInfo.value = !extendedInfo.value
+  nextTick(() => {
+    console.log('emit scrolldown')
+    state.inputEmitter.emit('scrollDown')
+  })
+}
+
+function getInfoBtnClass () {
+  return {
+    'info-btn': true,
+    'info-btn-active': extendedInfo.value,
+  }
+}
 </script>
 
 <style lang="less" scoped>
-@shadow-offset: 4px;
+@shadow-offset: 0px;
 @shadow-size: 8px;
 @shadow-transparency: 0.2;
 @border-transparency: 0.5;
 @border-radius: 2px;
 @triangle-size: 12px;
+
+.battle-entity {
+  display: flex;
+  flex-direction: row;
+}
+
+.card-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  .info-btn {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-left: 5px;
+
+    .n-icon-wrapper {
+      transition: all 0.3s;
+      background-color: #3bcdc0;
+
+      &:hover, &.info-btn-active {
+        color: #225522;
+        border-radius: 50%;
+        box-shadow: 0px 0px 4px #d4e648;
+        background-color: #7afff4;
+      }
+    }
+  }
+
+  .info-column {
+    width: 200px;
+
+    .name-area {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      flex-basis: 100%;
+
+      .name-affects-col {
+        width: 100%;
+      }
+
+      .name-row {
+        width: 100%;
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .name-merc-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    }
+
+    .affect-area {
+      display: flex;
+      min-height: 18px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .affect-row {
+      min-height: 22px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 4px 4px;
+      flex-grow: 1;
+      justify-content: flex-start;
+
+      &.popover {
+        cursor: help;
+      }
+    }
+
+    .bonus-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      justify-content: flex-end;
+    }
+
+    .affect {
+      text-wrap: nowrap;
+      padding: 2px 6px;
+      background: rgba(black, 0.2);
+      display: flex;
+      gap: 4px;
+    }
+
+    .order-dropdown {
+      margin-left: 5px;
+    }
+
+    .target-row {
+      width: 100%;
+      i {
+        color: #d45353;
+        margin-right: 5px;
+      }
+      display: flex;
+      flex-direction: row;
+      margin: 3px 0 3px 0;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .vital-area {
+      padding: 2px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(black, 0.2);
+    }
+
+    .vital-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 5px;
+      gap: 5px;
+
+      .vital-bar {
+        width: 100%;
+        line-height: 1;
+        border-radius: 2px;
+        position: relative;
+
+        &.hp {
+          border: 1px solid #005500;
+        }
+        &.energy {
+          border: 1px solid #005577;
+        }
+        &.stamina {
+          border: 1px solid #554400;
+        }
+
+        .vital-value {
+          position: relative;
+          width: 100%;
+          text-align: center;
+          z-index: 10;
+        }
+
+        .vital-fill {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          &.hp {
+            background: linear-gradient(to right, #003300, #004400);
+          }
+
+          &.energy {
+            background: linear-gradient(to right, #003344, #004455);
+          }
+
+          &.stamina {
+            background: linear-gradient(to right, #443300, #554400);
+          }
+        }
+      }
+    }
+  }
+}
 
 .main-card {
   position: relative;
@@ -224,25 +461,21 @@ function getTarget (part) {
   border-radius: @border-radius;
   border: 1px solid transparent;
 
+  *, * > * {
+    box-sizing: border-box;
+  }
+
   .card-layer-1 {
+    width: 100%;
     border-radius: @border-radius;
     border: 1px solid transparent;
   }
 
   .card-layer-2 {
+    width: 100%;
     border-radius: @border-radius;
     border: 1px solid transparent;
     padding: 5px 7px;
-  }
-
-  *, * > * {
-    box-sizing: border-box;
-  }
-
-  @media screen and (min-width: 801px) and (max-width: 1075px) {
-    .battle-status.mobile-menu-open & {
-      width: 200px;
-    }
   }
 
   &::before, .card-layer-1::before, .card-layer-2::before,
@@ -369,95 +602,7 @@ function getTarget (part) {
       &::after {
         border-color: transparent #ff5050 transparent transparent;
       }
-    }
-  }
 
-  .name-area {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    .name-affects-col {
-      width: 100%;
-    }
-
-    .name-row {
-      min-height: 36px;
-    }
-
-    .name-merc-col {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-
-    .affect-area {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-    }
-
-    .affect-row {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 4px 4px;
-      flex-grow: 1;
-      justify-content: flex-start;
-
-      &.popover {
-        cursor: help;
-      }
-    }
-
-    .bonus-row {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 4px 8px;
-      justify-content: flex-end;
-    }
-
-    .affect {
-      text-wrap: nowrap;
-      padding: 2px 6px;
-      background: rgba(black, 0.2);
-      display: flex;
-      gap: 4px;
-    }
-  }
-
-  .order-dropdown {
-    margin-left: 5px;
-  }
-
-  .target-row {
-    min-height: 36px;
-    margin: 6px 0 0;
-  }
-
-  .vital-area {
-    padding: 2px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: rgba(black, 0.2);
-  }
-
-  .vital-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-right: 5px;
-
-    .vital-amount {
-      width: 50px;
-      text-align: right;
-      padding-right: 5px;
-      line-height: 1;
     }
   }
 }
