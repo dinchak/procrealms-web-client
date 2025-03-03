@@ -19,18 +19,7 @@
         </div>
 
         <div class="bottom-bar">
-          <n-popover trigger="hover" placement="top-start">
-            <template #trigger>
-              <div class="shortflags" v-html-safe="getAffectFlags(member, member.affects)" />
-            </template>
-            <HUDEffects :affects="member.affects"/>
-          </n-popover>
-          <div class="food-bar" v-if="member.maxFood" :style="{ height: `calc(${state.options.fontSize})` }">
-            <div class="food-bar-fill" :style="{ width: (member.food / member.maxFood) * 100 + '%' }"></div>
-            <div class="food-bar-content">
-              {{ Math.round((member.food / member.maxFood) * 100) }} FD
-            </div>
-          </div>
+          <AffectsBar :entity="member" :affects="member.affects" />
         </div>
       </div>
     </div>
@@ -40,11 +29,10 @@
 import { ANSI } from '@/static/constants'
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
-import { NPopover } from 'naive-ui'
-import HUDEffects from '@/components/hud/HUDEffects.vue'
+import AffectsBar from '../common/AffectsBar.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
 
-const { ansiToHtml, getAffectFlags } = useHelpers()
+const { ansiToHtml } = useHelpers()
 
 function getPartyMembers () {
   let members = Object.values(state.gameState.party)
@@ -97,10 +85,6 @@ function getPartyMembers () {
       .food-bar-fill {
         background: linear-gradient(to right, #6c2020, #a42121);
       }
-    }
-
-    .name {
-      text-align: center;
     }
   }
 }

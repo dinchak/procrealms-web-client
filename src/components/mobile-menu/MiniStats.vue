@@ -24,37 +24,17 @@
     </span>
 
   </div>
-  <NPopover trigger="hover" placement="top-start">
-    <template #trigger>
-      <div className="affect-row popover">
-        <span v-if="affects.length == 0" class="affect">No Affects</span>
-        <div class="shortflags" v-html-safe="getAffectFlags(entity, affects)" />
-      </div>
-    </template>
-    <HUDEffects :affects="getAffects()"/>
-  </NPopover>
+  <AffectsBar :entity="entity" :affects="affects" />
 </template>
 
 <script setup>
 import { defineProps, toRefs } from 'vue'
-import { NPopover } from 'naive-ui'
-import { useHelpers } from '@/composables/helpers'
-import HUDEffects from '@/components/hud/HUDEffects.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
-
-const { getAffectFlags } = useHelpers()
+import AffectsBar from '@/components/common/AffectsBar.vue'
 
 const props = defineProps(['entity', 'affects'])
 
 const { entity, affects } = toRefs(props)
-
-function getAffects () {
-  return Object.values(affects.value).map(af => {
-    return {
-      name: af.longFlag
-    }
-  })
-}
 
 </script>
 

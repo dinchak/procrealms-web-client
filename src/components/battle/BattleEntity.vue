@@ -19,7 +19,7 @@
               <div class="name-area">
                 <div class="name-merc-col">
                   <div class="name-row" lang="en"
-                    v-html-safe="ansiToHtml(`${(participant.hpPercent && extendedInfo) > 0 ? participant.tag + ' ' : ''}L${ANSI.boldWhite}${participant.level} ${participant.name}`)">
+                    v-html-safe="ansiToHtml(`${(participant.hpPercent && extendedInfo) > 0 ? participant.tag + ' ' : ''}${ANSI.reset}L${ANSI.boldWhite}${participant.level} ${participant.colorName}`)">
                   </div>
                   <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
                 </div>
@@ -44,15 +44,7 @@
               </div>
 
               <div v-if="extendedInfo" class="affect-area">
-                <n-popover trigger="hover" placement="top-start">
-                  <template #trigger>
-                    <div className="affect-row popover">
-                      <span v-if="getAffectFlags(participant, participant.affects).length == 0" class="affect"></span>
-                      <div class="affect" v-html-safe="getAffectFlags(participant, participant.affects)" />
-                    </div>
-                  </template>
-                  <HUDEffects :affects="participant.affects"/>
-                </n-popover>
+                <AffectBar :entity="participant" :affects="participant.affects" />
                 <div class="bonus-row">
                   <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
                     <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
@@ -80,7 +72,7 @@
 </template>
 <script setup>
 import { defineProps, toRefs, ref, nextTick } from 'vue'
-import { NPopover, NIcon, NIconWrapper } from 'naive-ui'
+import { NIcon, NIconWrapper } from 'naive-ui'
 import { CrisisAlertFilled, SearchFilled } from '@vicons/material'
 import stripAnsi from 'strip-ansi'
 
@@ -90,10 +82,10 @@ import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { ANSI } from '@/static/constants'
-import HUDEffects from '@/components/hud/HUDEffects.vue'
+import AffectBar from '@/components/common/AffectsBar.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
 
-const { ansiToHtml, getAffectFlags } = useHelpers()
+const { ansiToHtml } = useHelpers()
 const { runCommand } = useWebSocket()
 
 const props = defineProps({
