@@ -4,34 +4,24 @@
       <div class="party-member" v-for="member in getPartyMembers()" :key="member.eid">
 
         <div class="name"
-             v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"></div>
+          v-html-safe="ansiToHtml(`${ANSI.reset}L${ANSI.boldWhite}${member.level} ${member.colorName}`)"
+        ></div>
 
-        <div class="health-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-          <div class="health-bar-fill" :style="{ width: (member.hp / member.maxHp) * 100 + '%' }"></div>
-          <div class="health-bar-content">
-            {{ member.hp }} HP
-          </div>
-        </div>
-        <div class="energy-stamina-bars">
-          <div class="energy-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-            <div class="energy-bar-fill" :style="{ width: (member.energy / member.maxEnergy) * 100 + '%' }"></div>
-            <div class="energy-bar-content">
-              {{ member.energy }} EN
-            </div>
-          </div>
-
-          <div class="stamina-bar" :style="{ height: `calc(${state.options.fontSize})` }">
-            <div class="stamina-bar-fill" :style="{ width: (member.stamina / member.maxStamina) * 100 + '%' }"></div>
-            <div class="stamina-bar-content">
-              {{ member.stamina }} ST
-            </div>
-          </div>
+        <div class="vital-row">
+          <VitalsBar
+            :hpLabel="member.hp"
+            :hpPercent="member.hp / member.maxHp * 100"
+            :energyLabel="member.energy"
+            :energyPercent="member.energy / member.maxEnergy * 100"
+            :staminaLabel="member.stamina"
+            :staminaPercent="member.stamina / member.maxStamina * 100"
+          ></VitalsBar>
         </div>
 
         <div class="bottom-bar">
           <n-popover trigger="hover" placement="top-start">
             <template #trigger>
-              <div class="shortflags" v-html-safe="getShortFlags(member)"/>
+              <div class="shortflags" v-html-safe="getAffectFlags(member, member.affects)" />
             </template>
             <HUDEffects :affects="member.affects"/>
           </n-popover>
@@ -52,13 +42,9 @@ import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { NPopover } from 'naive-ui'
 import HUDEffects from '@/components/hud/HUDEffects.vue'
+import VitalsBar from '@/components/common/VitalsBar.vue'
 
-const { ansiToHtml } = useHelpers()
-
-function getShortFlags (member) {
-  return ansiToHtml(Object.values(member.affects).map(affect => affect.shortFlag).join(' '),
-  )
-}
+const { ansiToHtml, getAffectFlags } = useHelpers()
 
 function getPartyMembers () {
   let members = Object.values(state.gameState.party)
@@ -87,79 +73,6 @@ function getPartyMembers () {
     flex: 0 0 auto;
     width: 201px;
     gap: 3px;
-
-    .health-bar, .food-bar {
-      background-color: #333;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid #59d162;
-
-      .health-bar-fill, .food-bar-fill {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: linear-gradient(to right, #206c2d, #21a425);
-      }
-
-      .health-bar-content, .food-bar-content {
-        width: 100%;
-        color: white;
-        text-align: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-    }
-
-    .energy-stamina-bars {
-      display: flex;
-      flex-direction: row;
-      gap: 3px;
-
-      .energy-bar, .stamina-bar {
-        flex-grow: 1;
-        background-color: #333;
-        overflow: hidden;
-        position: relative;
-
-        .energy-bar-fill, .stamina-bar-fill {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-        }
-
-        .energy-bar-fill {
-          background: linear-gradient(to right, #176a81, #1992b4);
-        }
-
-        .stamina-bar-fill {
-          background: linear-gradient(to right, #8b7421, #a89f27);
-        }
-
-        .energy-bar-content, .stamina-bar-content {
-          width: 100%;
-          color: #fff;
-          text-align: center;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        }
-      }
-
-      .energy-bar {
-        border: 1px solid #61d3df;
-      }
-
-      .stamina-bar {
-        border: 1px solid #cbcb0d;
-      }
-    }
 
     .bottom-bar {
       display: flex;

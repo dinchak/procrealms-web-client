@@ -16,7 +16,7 @@
         <span v-if="affect.desc">:&nbsp;{{affect.desc}}</span>
       </n-tooltip>
     </div>
-    <MiniStats :entity="mercVitals"></MiniStats>
+    <MiniStats :entity="mercVitals" :affects="affects"></MiniStats>
     <NCollapse>
       <CharacterCollapse
           :character="mercEntity"

@@ -16,7 +16,7 @@
         <MiniMap v-if="state.options.showMobileMenuMap" />
       </div>
       <div class="mini-stats" v-if="state.options.showMobileMenuMiniStats">
-        <MiniStats :entity="state.gameState.player" />
+        <MiniStats :entity="state.gameState.player" :affects="state.gameState.affects"/>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 import { AnsiUp } from 'ansi_up'
 
 import { getOrderCmd, state, updateCounter } from '@/static/state'
-import { ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
+import { ANSI, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -613,12 +613,36 @@ export function useHelpers () {
     return element.scrollHeight !== Math.max(element.offsetHeight, element.clientHeight)
   }
 
+  function getAffectFlags (entity, affects) {
+    let flags = []
+
+    if (entity.isDead) {
+      flags.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
+    }
+
+    if (entity.isIncapacitated) {
+      flags.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
+    }
+
+    if (entity.isHidden) {
+      flags.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
+    }
+
+    flags = flags.concat(Object.entries(affects)
+      .map(p => p[1].shortFlag))
+
+    flags = flags.map(s => ansiToHtml(s))
+      .filter(s => s.trim().length)
+
+    return flags.join(' ')
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
-    isOverflowX, isOverflowY
+    isOverflowX, isOverflowY, getAffectFlags
   }
 }

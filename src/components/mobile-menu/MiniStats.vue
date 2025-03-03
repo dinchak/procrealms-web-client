@@ -1,21 +1,14 @@
 <template>
   <div class="stats">
     <span class="left">
-      <span class="stat">
-        <div class="value bold-green">{{ entity.hp }}<span class="label green">HP</span></div>
-        <NProgress class="quick-stats" type="line" status="success" :percentage="entity.hp / entity.maxHp * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
-      </span>
-
-      <span class="stat">
-        <div class="value bold-cyan">{{ entity.energy }}<span class="label cyan">EN</span></div>
-        <NProgress class="quick-stats" type="line" status="default" :percentage="entity.energy / entity.maxEnergy * 100" :height="8" :border-radius="0" :show-indicator="false"></NProgress>
-      </span>
-
-      <span class="stat">
-        <div class="value bold-yellow">{{ entity.stamina }}<span class="label yellow">ST</span></div>
-        <NProgress class="quick-stats" type="line" status="warning" :percentage="entity.stamina / entity.maxStamina * 100" :height="8" :border-radius="0" :show-indicator="false"></NProgress>
-      </span>
-
+      <VitalsBar
+        :hpLabel="entity.hp"
+        :hpPercent="entity.hp / entity.maxHp * 100"
+        :energyLabel="entity.energy"
+        :energyPercent="entity.energy / entity.maxEnergy * 100"
+        :staminaLabel="entity.stamina"
+        :staminaPercent="entity.stamina / entity.maxStamina * 100"
+      ></VitalsBar>
     </span>
 
     <span class="right">
@@ -30,25 +23,39 @@
       </span>
     </span>
 
-    <span class="stat food">
-      <div class="value bold-red">{{ Math.round((entity.food / entity.maxFood) * 100) }}<span class="label red">FD</span></div>
-      <NProgress class="quick-stats" type="line" status="success" :percentage="entity.food / entity.maxFood * 100" :show-indicator="false" :height="8" :border-radius="0"></NProgress>
-    </span>
-
   </div>
+  <NPopover trigger="hover" placement="top-start">
+    <template #trigger>
+      <div className="affect-row popover">
+        <span v-if="affects.length == 0" class="affect">No Affects</span>
+        <div class="shortflags" v-html-safe="getAffectFlags(entity, affects)" />
+      </div>
+    </template>
+    <HUDEffects :affects="getAffects()"/>
+  </NPopover>
 </template>
 
 <script setup>
-import { NProgress } from 'naive-ui'
 import { defineProps, toRefs } from 'vue'
+import { NPopover } from 'naive-ui'
+import { useHelpers } from '@/composables/helpers'
+import HUDEffects from '@/components/hud/HUDEffects.vue'
+import VitalsBar from '@/components/common/VitalsBar.vue'
 
-const props = defineProps(['entity'])
+const { getAffectFlags } = useHelpers()
 
-const { entity } = toRefs(props)
+const props = defineProps(['entity', 'affects'])
 
-// function entity () {
-//   return props.entity || {}
-// }
+const { entity, affects } = toRefs(props)
+
+function getAffects () {
+  return Object.values(affects.value).map(af => {
+    return {
+      name: af.longFlag
+    }
+  })
+}
+
 </script>
 
 <style lang="less">
@@ -62,7 +69,7 @@ const { entity } = toRefs(props)
   .left, .right {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 2px;
   }
   .stat {
     width: 38px;
@@ -87,11 +94,15 @@ const { entity } = toRefs(props)
       width: 38px;
     }
   }
+}
 
-  .food {
-    .n-progress .n-progress-graph-line-rail .n-progress-graph-line-fill {
-      background: #ff6983;
-    }
-  }
+.shortflags {
+  flex-grow: 1;
+  text-align: left;
+  height: 18px;
+  display: flex;
+  gap: 3px;
+  overflow-x: hidden;
+  cursor: help;
 }
 </style>
