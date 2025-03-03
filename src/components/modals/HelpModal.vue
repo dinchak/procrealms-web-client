@@ -15,11 +15,6 @@
             <CloseOutlined />
           </NIcon>
         </p>
-        <p :class="getToggleMiniOutputClass()" @click="toggleMiniOutput()">
-          <NIcon size="24">
-            <KeyboardOutlined />
-          </NIcon>
-        </p>
 
         <NTabs
           v-if="state.help.topicsLoaded"
@@ -78,7 +73,7 @@
 
           <NTabPane v-for="{ entry, content } in state.help.openEntries" :key="entry" :name="entry">
             <template #tab>
-              <div @click.middle="() => handleCloseTab(entry)">{{ stripAnsi(content.title || entry) }}</div>
+              <div @click.middle="() => handleCloseTab(entry)">{{ getTabLabel(content.title || entry) }}</div>
             </template>
             <template #default>
               <div :class="getScrollContainerClass()">
@@ -228,7 +223,6 @@ import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NModal, NTabs, NTabPane, NIcon, NInput, NButton, NInputGroup } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 import CloseOutlined from '@vicons/material/CloseOutlined'
-import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
 
 import { state, prevMode } from '@/static/state'
 import { ANSI } from '@/static/constants'
@@ -353,6 +347,14 @@ function getRecentOutput () {
   return state.output.slice(-100)
 }
 
+function getTabLabel (title) {
+  return ucfirst(
+    stripAnsi(title)
+      .replace('Skill: ', '')
+      .replace('Command: ', '')
+  )
+}
+
 function getTabsClass () {
   return {
     'help-modal-tabs': true,
@@ -382,20 +384,6 @@ function onCloseModal () {
 function onOpenModal () {
   currentPane.value = state.gamepadHelpTab || "topics"
   scrollDown()
-}
-
-function getToggleMiniOutputClass () {
-  return {
-    'toggle-mini-output': true,
-    'active': miniOutputEnabled.value
-  }
-}
-
-function toggleMiniOutput () {
-  miniOutputEnabled.value = !miniOutputEnabled.value
-  nextTick(() => {
-    scrollDown()
-  })
 }
 
 function prevModalTab () {
@@ -469,6 +457,24 @@ onMounted(() => {
         panes.value.push(tab)
       }
     }))
+
+  // TODO why doesn't this work?
+  watchers.push(
+    watch(() => state.help.openEntries.length, () => {
+      let el = tabs.value?.$el
+      if (!el) {
+        return
+      }
+
+      let scrollContent = el.querySelector('.n-tabs-nav-scroll-content')
+
+      nextTick(() => {
+        scrollContent.scrollTo({
+          left: scrollContent.width,
+          behavior: 'smooth'
+        })
+      })
+    }))
 })
 
 onBeforeUnmount(() => {
@@ -496,7 +502,7 @@ onBeforeUnmount(() => {
       .n-tabs-tab {
         box-sizing: border-box;
         width: calc((100vw - 160px) / 14);
-        min-width: 80px;
+        min-width: 100px;
       }
       .n-tabs-tab[data-name="topics"] {
         width: auto;
@@ -513,7 +519,7 @@ onBeforeUnmount(() => {
         }
       }
       .n-tabs-nav {
-        width: calc(100vw - 100px);
+        width: calc(100vw - 60px);
       }
       .n-tab-pane {
         .scroll-container {
