@@ -87,7 +87,6 @@ async function doTokenAuth (name, token) {
   }
 }
 
-
 function onConnected () {
   tokens.value = getTokens()
 }

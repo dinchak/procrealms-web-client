@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
 
     &.evil {
       justify-content: start;
-      flex-direction: row;
+      // flex-direction: row;
     }
 
     .entity {

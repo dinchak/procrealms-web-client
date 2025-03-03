@@ -90,7 +90,6 @@ async function clickHandler (iid, slot) {
 }
 
 function closeItemModal (value) {
-  console.log('closeItemModal eq', value)
   if (value === 'equipment') {
     selectedIid.value = ''
     selectedSlot.value = ''

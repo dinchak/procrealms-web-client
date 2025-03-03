@@ -33,40 +33,22 @@
               </div>
 
               <div class="vital-area" v-if="participant.hpPercent > 0">
-                <div class="vital-row">
-
-                  <div class="vital-bar hp bold-green">
-                    <div class="vital-fill hp" :style="getHpFillStyle(entity, participant, side)"></div>
-                    <div class="vital-value">
-                      {{ entity && side === 'good' ? entity.hp : `${participant.hpPercent}%` }}
-                    </div>
-                  </div>
-
-                  <div class="vital-bar energy bold-cyan">
-                    <div class="vital-fill energy" :style="getEnergyFillStyle(entity, participant, side)">
-                    </div>
-                    <div class="vital-value">
-                      {{ entity && side === 'good' ? entity.energy : `${participant.energyPercent}%` }}
-                    </div>
-                  </div>
-
-                  <div class="vital-bar stamina bold-yellow">
-                    <div class="vital-fill stamina" :style="getStaminaFillStyle(entity, participant, side)">
-                    </div>
-                    <div class="vital-value">
-                      {{ entity && side === 'good' ? entity.stamina : `${participant.staminaPercent}%` }}
-                    </div>
-                  </div>
-
-                </div>
+                <VitalsBar
+                  :hp-percent="getHpPercent(entity, participant, side)"
+                  :energy-percent="getEnergyPercent(entity, participant, side)"
+                  :stamina-percent="getStaminaPercent(entity, participant, side)"
+                  :hp-label="entity && side === 'good' ? entity.hp : participant.hpPercent + '%'"
+                  :energy-label="entity && side === 'good' ? entity.energy : participant.energyPercent + '%'"
+                  :stamina-label="entity && side === 'good' ? entity.stamina : participant.staminaPercent + '%'">
+                </VitalsBar>
               </div>
 
               <div v-if="extendedInfo" class="affect-area">
                 <n-popover trigger="hover" placement="top-start">
                   <template #trigger>
                     <div className="affect-row popover">
-                      <span v-if="getAffects(participant).length == 0" class="affect">No Affects</span>
-                      <span className="affect" v-for="affect in getAffects(participant)" v-html-safe="affect" :key="affect.name" />
+                      <span v-if="getAffectFlags(participant, participant.affects).length == 0" class="affect"></span>
+                      <div class="affect" v-html-safe="getAffectFlags(participant, participant.affects)" />
                     </div>
                   </template>
                   <HUDEffects :affects="participant.affects"/>
@@ -109,8 +91,9 @@ import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { ANSI } from '@/static/constants'
 import HUDEffects from '@/components/hud/HUDEffects.vue'
+import VitalsBar from '@/components/common/VitalsBar.vue'
 
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, getAffectFlags } = useHelpers()
 const { runCommand } = useWebSocket()
 
 const props = defineProps({
@@ -164,32 +147,6 @@ function isTargetingPlayer (part) {
   return name === 'You'
 }
 
-function getAffects (part) {
-  let affects = []
-
-  if (part.isDead) {
-    affects.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
-  }
-
-  if (part.isIncapacitated) {
-    affects.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
-  }
-
-  if (part.isHidden) {
-    affects.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
-  }
-
-  affects = affects.concat(Object.entries(part.affects)
-    .map(p => p[1].shortFlag))
-
-  affects = affects.map(s => ansiToHtml(s))
-    .filter(s => s.trim().length)
-
-  console.log(affects)
-
-  return affects
-}
-
 function isMercenary (ent) {
   return ent && ent.traits && ent.traits.includes('mercenary')
 }
@@ -209,52 +166,51 @@ function getTarget (part) {
   return tgt ? `${tgt.tag} ${tgt.name}` : part.targetName
 }
 
-function getHpFillStyle (en, part, sd) {
+function getHpPercent (en, part, sd) {
   if (sd == 'good') {
     if (!en) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${en.hp / en.maxHp * 100}%` }
+    return en.hp / en.maxHp * 100
   } else {
     if (!part) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${part.hpPercent}%` }
+    return part.hpPercent
   }
 }
 
-function getEnergyFillStyle (en, part, sd) {
+function getEnergyPercent (en, part, sd) {
   if (sd == 'good') {
     if (!en) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${en.energy / en.maxEnergy * 100}%` }
+    return en.energy / en.maxEnergy * 100
   } else {
     if (!part) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${part.energyPercent}%` }
+    return part.energyPercent
   }
 }
 
-function getStaminaFillStyle (en, part, sd) {
+function getStaminaPercent (en, part, sd) {
   if (sd == 'good') {
     if (!en) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${en.stamina / en.maxStamina * 100}%` }
+    return en.stamina / en.maxStamina * 100
   } else {
     if (!part) {
-      return { width: '0' }
+      return 0
     }
-    return { width: `${part.staminaPercent}%` }
+    return part.staminaPercent
   }
 }
 
 function toggleInfo () {
   extendedInfo.value = !extendedInfo.value
   nextTick(() => {
-    console.log('emit scrolldown')
     state.inputEmitter.emit('scrollDown')
   })
 }
@@ -403,48 +359,6 @@ function getInfoBtnClass () {
       align-items: center;
       padding-right: 5px;
       gap: 5px;
-
-      .vital-bar {
-        width: 100%;
-        line-height: 1;
-        border-radius: 2px;
-        position: relative;
-
-        &.hp {
-          border: 1px solid #005500;
-        }
-        &.energy {
-          border: 1px solid #005577;
-        }
-        &.stamina {
-          border: 1px solid #554400;
-        }
-
-        .vital-value {
-          position: relative;
-          width: 100%;
-          text-align: center;
-          z-index: 10;
-        }
-
-        .vital-fill {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          &.hp {
-            background: linear-gradient(to right, #003300, #004400);
-          }
-
-          &.energy {
-            background: linear-gradient(to right, #003344, #004455);
-          }
-
-          &.stamina {
-            background: linear-gradient(to right, #443300, #554400);
-          }
-        }
-      }
     }
   }
 }

@@ -41,7 +41,6 @@ function getItemName () {
 }
 
 function closeModal () {
-  console.log('closeModal')
   emit('closeItemModal', mode.value)
 }
 
