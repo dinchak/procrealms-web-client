@@ -628,6 +628,15 @@ export function useHelpers () {
       flags.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
     }
 
+    let hungerLevel = getHungerLevel(entity)
+    if (hungerLevel == 0) {
+      flags.push(ANSI.red + 'S' + ANSI.reset)
+    } else if (hungerLevel == 1) {
+      flags.push(ANSI.boldRed + 'VH' + ANSI.reset)
+    } else if (hungerLevel == 2) {
+      flags.push(ANSI.boldYellow + 'H' + ANSI.reset)
+    }
+
     flags = flags.concat(Object.entries(affects)
       .map(p => p[1].shortFlag))
 
@@ -637,12 +646,49 @@ export function useHelpers () {
     return flags.join(' ')
   }
 
+  function getAffectNames (entity, affects) {
+    let names = []
+
+    if (entity.isDead) {
+      names.push('Dead')
+    }
+
+    if (entity.isIncapacitated) {
+      names.push('Down')
+    }
+
+    if (entity.isHidden) {
+      names.push('Hidden')
+    }
+
+    let hungerLevel = getHungerLevel(entity)
+    if (hungerLevel == 0) {
+      names.push('Starving')
+    } else if (hungerLevel == 1) {
+      names.push('Very Hungry')
+    } else if (hungerLevel == 2) {
+      names.push('Hungry')
+    }
+
+    names = names.concat(Object.entries(affects)
+      .map(p => p[1].longFlag || p[1].name))
+
+    names = names.map(s => ansiToHtml(s))
+      .filter(s => s.trim().length)
+
+    return names
+  }
+
+  function getHungerLevel (entity) {
+    return Math.floor(entity.food * 5 / entity.maxFood)
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
-    isOverflowX, isOverflowY, getAffectFlags
+    isOverflowX, isOverflowY, getAffectFlags, getAffectNames
   }
 }
