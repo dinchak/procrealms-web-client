@@ -207,8 +207,8 @@ export const configurableOptions = {
 function resetOptions () {
   return {
     // general options
-    battleAlwaysExpanded: false,
-    largeVitals: false,
+    battleAlwaysExpanded: true,
+    largeVitals: true,
     chatInMain: true,
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
