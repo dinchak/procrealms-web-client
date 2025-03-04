@@ -324,7 +324,7 @@ import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { cmd, fetchItem } = useWebSocket()
+const { runCommand, fetchItem } = useWebSocket()
 const { renderNumber } = useHelpers()
 
 const props = defineProps(['character', 'equipment', 'isPlayer'])
@@ -337,7 +337,7 @@ function player () {
 
 function addStatPoint (stat) {
   const command = props.isPlayer ? `point ${stat}` : `order eid:${props.character.eid} point ${stat}`
-  cmd(command)
+  runCommand(command)
 }
 
 async function setWeapon () {

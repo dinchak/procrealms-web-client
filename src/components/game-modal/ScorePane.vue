@@ -470,7 +470,7 @@ import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { cmd, fetchItem } = useWebSocket()
+const { runCommand, fetchItem } = useWebSocket()
 const { ucfirst, renderNumber } = useHelpers()
 
 const weapon = ref({})
@@ -480,9 +480,9 @@ const { miniOutputEnabled } = toRefs(props)
 
 function spendPoint (stat) {
   if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    cmd(`order eid:${state.gameModalAs} point ${stat}`)
+    runCommand(`order eid:${state.gameModalAs} point ${stat}`)
   } else {
-    cmd(`point ${stat}`)
+    runCommand(`point ${stat}`)
   }
 }
 
