@@ -91,7 +91,7 @@ const rules = {
       asyncValidator: () => {
         return new Promise((resolve, reject) => {
           sendWithResponse('nameExists', { name: model.value.name })
-            .then(cmd => {
+            .then(({ cmd }) => {
               if (cmd == 'login.nameExists') {
                 reject(new Error('Name is already taken, please choose another'))
               } else if (cmd == 'login.validationFailed') {
@@ -145,7 +145,7 @@ const rules = {
             tutorial: model.value?.tutorial ? 'Y' : 'N',
             ttype: 'play.proceduralrealms.com'
           })
-            .then((cmd, msg) => {
+            .then(({ cmd, msg }) => {
               if (cmd == 'login.validationFailed') {
                 reject(new Error('Invalid character name'))
               } else if (cmd == 'login.fail') {
