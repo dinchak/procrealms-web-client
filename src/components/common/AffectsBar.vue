@@ -22,3 +22,15 @@ const props = defineProps([
 
 const { entity, affects } = toRefs(props)
 </script>
+
+<style lang="less" scoped>
+.shortflags {
+  flex-grow: 1;
+  text-align: left;
+  height: 18px;
+  display: flex;
+  gap: 5px;
+  overflow-x: hidden;
+  cursor: help;
+}
+</style>

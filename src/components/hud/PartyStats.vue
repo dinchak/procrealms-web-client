@@ -68,16 +68,6 @@ function getPartyMembers () {
       gap: 3px;
     }
 
-    .shortflags {
-      flex-grow: 1;
-      text-align: left;
-      height: 18px;
-      display: flex;
-      gap: 3px;
-      overflow-x: hidden;
-      cursor: help;
-    }
-
     .food-bar {
       border: 1px solid #d15959;
       width: 75px;

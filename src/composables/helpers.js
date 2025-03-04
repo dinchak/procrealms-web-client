@@ -637,6 +637,14 @@ export function useHelpers () {
       flags.push(ANSI.boldYellow + 'H' + ANSI.reset)
     }
 
+    if (entity.combo > 0) {
+      flags.push(ANSI.boldYellow + entity.combo + ' ' + ANSI.yellow + 'Combo' + ANSI.reset)
+    }
+
+    if (entity.rage > 0) {
+      flags.push(ANSI.boldRed + entity.rage + ' ' + ANSI.red + 'Rage' + ANSI.reset)
+    }
+
     flags = flags.concat(Object.entries(affects)
       .map(p => p[1].shortFlag))
 
