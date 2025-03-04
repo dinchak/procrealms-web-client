@@ -676,6 +676,12 @@ export function useHelpers () {
       names.push('Very Hungry')
     } else if (hungerLevel == 2) {
       names.push('Hungry')
+    } else if (hungerLevel == 3) {
+      names.push('Satiated')
+    } else if (hungerLevel == 4) {
+      names.push('Satisfied')
+    } else if (hungerLevel == 5) {
+      names.push('Full')
     }
 
     names = names.concat(Object.entries(affects)

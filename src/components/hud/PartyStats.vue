@@ -15,6 +15,8 @@
             :energyPercent="member.energy / member.maxEnergy * 100"
             :staminaLabel="member.stamina"
             :staminaPercent="member.stamina / member.maxStamina * 100"
+            :showFoodBar="member.maxFood > 0"
+            :foodPercent="member.food / member.maxFood * 100"
           ></VitalsBar>
         </div>
 

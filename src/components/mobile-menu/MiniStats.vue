@@ -7,6 +7,8 @@
       :energyPercent="entity.energy / entity.maxEnergy * 100"
       :staminaLabel="entity.stamina"
       :staminaPercent="entity.stamina / entity.maxStamina * 100"
+      :showFoodBar="true"
+      :foodPercent="entity.food / entity.maxFood * 100"
     ></VitalsBar>
   </div>
   <AffectsBar :entity="entity" :affects="affects" />
