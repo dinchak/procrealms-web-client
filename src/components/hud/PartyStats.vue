@@ -61,8 +61,8 @@ function getPartyMembers () {
     justify-content: center;
     align-items: stretch;
     flex: 0 0 auto;
-    width: 201px;
     gap: 3px;
+    min-width: 200px;
 
     .bottom-bar {
       display: flex;
