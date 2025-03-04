@@ -78,7 +78,7 @@ function getFoodBarClass () {
   display: flex;
   flex-direction: row;
   width: 100%;
-  gap: 10px;
+  gap: 9px;
 
   .vital-row {
     display: flex;
@@ -104,10 +104,10 @@ function getFoodBarClass () {
   .food-bar-container {
     display: flex;
     flex-direction: column;
-    width: 16px;
+    width: 14px;
 
     .food-bar {
-      width: 16px;
+      width: 14px;
       height: 100%;
       border: 1px solid #000;
       border-radius: 2px;
