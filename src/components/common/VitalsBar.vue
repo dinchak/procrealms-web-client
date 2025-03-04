@@ -107,7 +107,7 @@ function getFoodBarClass () {
     width: 16px;
 
     .food-bar {
-      width: 100%;
+      width: 16px;
       height: 100%;
       border: 1px solid #000;
       border-radius: 2px;
