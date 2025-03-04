@@ -199,12 +199,16 @@ export const configurableOptions = {
     'Text Input Always Focused': 'textInputAlwaysFocused',
     'Chat Message Sounds': 'chatSounds',
     'Autoplay Music': 'autoplayMusic',
+    'Battle Always Expanded': 'battleAlwaysExpanded',
+    'Large Vitals': 'largeVitals',
   },
 }
 
 function resetOptions () {
   return {
     // general options
+    battleAlwaysExpanded: false,
+    largeVitals: false,
     chatInMain: true,
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,

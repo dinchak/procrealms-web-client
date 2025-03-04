@@ -45,18 +45,10 @@
 
               <div v-if="extendedInfo" class="affect-area">
                 <AffectBar :entity="participant" :affects="participant.affects" />
-                <div class="bonus-row">
-                  <span class="affect affect-back" v-if="side === 'good' && entity && entity.combo > 0">
-                    <span class="amount bold-yellow">{{ entity.combo }}</span> <span class="label yellow">Combo</span>
-                  </span>
-                  <span class="affect affect-back" v-if="side === 'good' && entity && entity.rage > 0">
-                    <span class="amount bold-red">{{ entity.rage }}</span> <span class="label red">Rage</span>
-                  </span>
-                </div>
               </div>
             </div>
 
-            <div :class="getInfoBtnClass()">
+            <div :class="getInfoBtnClass()" v-if="!state.options.battleAlwaysExpanded">
               <NIconWrapper :size="28">
                 <NIcon :size="24">
                   <SearchFilled @click.stop="toggleInfo()"></SearchFilled>
@@ -96,7 +88,7 @@ const props = defineProps({
 
 const { participant, entity, side } = toRefs(props)
 
-const extendedInfo = ref(false)
+const extendedInfo = ref(state.options.battleAlwaysExpanded)
 
 function target (part) {
   if (part.hpPercent == 0) {
@@ -239,11 +231,10 @@ function getInfoBtnClass () {
     align-items: flex-end;
     margin-left: 5px;
 
-    .n-icon-wrapper {
-      transition: all 0.3s;
-      background-color: #3bcdc0;
-
-      &:hover, &.info-btn-active {
+    &:hover, &.info-btn-active {
+      .n-icon-wrapper {
+        transition: all 0.3s;
+        background-color: #3bcdc0;
         color: #225522;
         border-radius: 50%;
         box-shadow: 0px 0px 4px #d4e648;
@@ -253,7 +244,7 @@ function getInfoBtnClass () {
   }
 
   .info-column {
-    width: 200px;
+    width: 100%;
 
     .name-area {
       display: flex;
