@@ -48,7 +48,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, getPetEid } = useHelpers()
-const { cmd, fetchItems, fetchItem } = useWebSocket()
+const { runCommand, fetchItems, fetchItem } = useWebSocket()
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -117,7 +117,7 @@ function getItemFullName (iid) {
 function getActions (iid) {
   return [{
     label: 'Remove',
-    onClick: () => cmd(`${getOrderCmd()}remove iid:${iid}`),
+    onClick: () => runCommand(`${getOrderCmd()}remove iid:${iid}`),
     class: 'bold-red',
     disabled: false
   }]

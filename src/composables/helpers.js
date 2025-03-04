@@ -8,7 +8,7 @@ import { useWebSocket } from '@/composables/web_socket'
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
-const { cmd, move, enter, fetchItem } = useWebSocket()
+const { runCommand, move, enter, fetchItem } = useWebSocket()
 
 export function useHelpers () {
   function copperToMoneyString (amount, short) {
@@ -41,7 +41,7 @@ export function useHelpers () {
   function getActions (item) {
     let actions = [{
       label: 'Drop',
-      onClick: () => cmd(`${getOrderCmd()}drop iid:${item.iid}`),
+      onClick: () => runCommand(`${getOrderCmd()}drop iid:${item.iid}`),
       class: 'bold-red',
       disabled: false
     }]
@@ -49,7 +49,7 @@ export function useHelpers () {
     if (item.amount > 1) {
       actions.push({
         label: 'Drop All',
-        onClick: () => cmd(`${getOrderCmd()}drop all iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}drop all iid:${item.iid}`),
         class: 'bold-red',
         disabled: false
       })
@@ -59,7 +59,7 @@ export function useHelpers () {
       actions.push({
         label: 'Unkeep',
         onClick: async () => {
-          cmd(`${getOrderCmd()}unkeep iid:${item.iid}`)
+          runCommand(`${getOrderCmd()}unkeep iid:${item.iid}`)
           delete state.cache.itemCache[item.iid]
           await fetchItem(item.iid)
           updateCounter.value++
@@ -71,7 +71,7 @@ export function useHelpers () {
       actions.push({
         label: 'Keep',
         onClick: async () => {
-          cmd(`${getOrderCmd()}keep iid:${item.iid}`)
+          runCommand(`${getOrderCmd()}keep iid:${item.iid}`)
           delete state.cache.itemCache[item.iid]
           await fetchItem(item.iid)
           updateCounter.value++
@@ -85,21 +85,21 @@ export function useHelpers () {
       if (item.subtype == 'food') {
         actions.push({
           label: 'Eat',
-          onClick: () => cmd(`${getOrderCmd()}eat iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}eat iid:${item.iid}`),
           class: 'bold-green',
           disabled: false
         })
       } else if (item.subtype == 'potion') {
         actions.push({
           label: 'Drink',
-          onClick: () => cmd(`${getOrderCmd()}drink iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}drink iid:${item.iid}`),
           class: 'bold-green',
           disabled: false
         })
       } else {
         actions.push({
           label: 'Consume',
-          onClick: () => cmd(`${getOrderCmd()}consume iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}consume iid:${item.iid}`),
           class: 'bold-green',
           disabled: false
         })
@@ -109,14 +109,14 @@ export function useHelpers () {
     if (state.gameState.room.flags.includes('store')) {
       actions.push({
         label: 'Sell',
-        onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}sell iid:${item.iid}`),
         class: 'bold-green',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Sell',
-        onClick: () => cmd(`${getOrderCmd()}sell iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}sell iid:${item.iid}`),
         class: 'bold-green',
         disabled: true
       })
@@ -125,7 +125,7 @@ export function useHelpers () {
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
-        onClick: () => cmd(`${getOrderCmd()}wield iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}wield iid:${item.iid}`),
         class: 'bold-red',
         disabled: false
       })
@@ -134,7 +134,7 @@ export function useHelpers () {
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
-        onClick: () => cmd(`${getOrderCmd()}wear iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}wear iid:${item.iid}`),
         class: 'bold-red',
         disabled: false
       })
@@ -143,7 +143,7 @@ export function useHelpers () {
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
-        onClick: () => cmd(`${getOrderCmd()}compare iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}compare iid:${item.iid}`),
         class: 'bold-yellow',
         disabled: false
       })
@@ -153,14 +153,14 @@ export function useHelpers () {
       if (hasSkillsRequired(item)) {
         actions.push({
           label: 'Salvage',
-          onClick: () => cmd(`${getOrderCmd()}salvage iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}salvage iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
         if (item.type == 'tool') {
           actions.push({
             label: 'Repair',
-            onClick: () => cmd(`${getOrderCmd()}repair iid:${item.iid}`),
+            onClick: () => runCommand(`${getOrderCmd()}repair iid:${item.iid}`),
             class: 'bold-yellow',
             disabled: false
           })
@@ -172,7 +172,7 @@ export function useHelpers () {
       if (item.subtype == 'hide') {
         actions.push({
           label: 'Tan',
-          onClick: () => cmd(`${getOrderCmd()}tan iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}tan iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -181,7 +181,7 @@ export function useHelpers () {
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
-          onClick: () => cmd(`${getOrderCmd()}plant iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}plant iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -190,7 +190,7 @@ export function useHelpers () {
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
-          onClick: () => cmd(`${getOrderCmd()}wrap iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}wrap iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -199,7 +199,7 @@ export function useHelpers () {
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
-          onClick: () => cmd(`${getOrderCmd()}filet iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}filet iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -209,7 +209,7 @@ export function useHelpers () {
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
-        onClick: () => cmd(`${getOrderCmd()}read iid:${item.iid}`),
+        onClick: () => runCommand(`${getOrderCmd()}read iid:${item.iid}`),
         class: 'bold-magenta',
         disabled: false
       })
@@ -219,7 +219,7 @@ export function useHelpers () {
       if (item.subtype == 'penned animal') {
         actions.push({
           label: 'Unpen',
-          onClick: () => cmd(`${getOrderCmd()}unpen iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}unpen iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
@@ -228,7 +228,7 @@ export function useHelpers () {
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
-          onClick: () => cmd(`${getOrderCmd()}unpack iid:${item.iid}`),
+          onClick: () => runCommand(`${getOrderCmd()}unpack iid:${item.iid}`),
           class: 'bold-yellow',
           disabled: false
         })
