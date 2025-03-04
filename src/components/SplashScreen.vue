@@ -69,22 +69,22 @@ const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
 
-async function doTokenAuth (name, token) {
-  let { cmd, msg } = await sendWithResponse('token', {
+function doTokenAuth (name, token) {
+  sendWithResponse('token', {
     name,
     token,
     width: state.options.terminalWidth,
     height: state.options.terminalHeight,
     ttype: 'play.proceduralrealms.com'
+  }).then(({ cmd, msg }) => {
+    if (cmd == 'login.validationFailed') {
+      console.log('Token validation failed')
+    } else if (cmd == 'login.fail') {
+      console.log('Token login failed')
+    } else if (cmd == 'token.success') {
+      authenticationSuccess(msg)
+    }
   })
-
-  if (cmd == 'login.validationFailed') {
-    console.log('Token validation failed')
-  } else if (cmd == 'login.fail') {
-    console.log('Token login failed')
-  } else if (cmd == 'token.success') {
-    authenticationSuccess(msg)
-  }
 }
 
 function onConnected () {

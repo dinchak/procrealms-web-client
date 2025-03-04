@@ -90,7 +90,7 @@ const rules = {
             width: state.options.terminalWidth,
             height: state.options.terminalHeight,
             ttype: 'play.proceduralrealms.com'
-          }).then((cmd, msg) => {
+          }).then(({ cmd, msg }) => {
             if (cmd == 'login.validationFailed') {
               reject(new Error('Invalid character name'))
             } else if (cmd == 'login.fail') {
