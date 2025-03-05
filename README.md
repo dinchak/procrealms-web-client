@@ -1,29 +1,20 @@
 # procedural-realms-client
 
-This template should help get you started developing with Vue 3 in Vite.
+This is the repository for the official Procedural Realms web client running at https://play.proceduralrealms.com
 
-## Recommended IDE Setup
+## Quickstart
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Copy the contents of `.env.production` into `.env` to point the code to the production server.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+- Run the following commands to start the application:
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+- Go to http://localhost:5173
 
-```sh
-npm run build
-```
+## Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
