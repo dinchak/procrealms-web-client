@@ -145,6 +145,10 @@ function sendCommand () {
     historyIndex = -1
   }
 
+  if (state.options.unfocusInputOnCommand) {
+    blurTextInput()
+  }
+
   setTimeout(() => {
     // TODO replace with scroll down event
     let output = document.getElementById(state.activeTab)
