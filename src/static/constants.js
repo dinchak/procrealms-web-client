@@ -691,6 +691,9 @@ export const MUSIC_TRACKS = [{
   name: 'Portal Sunrise',
   url: '/music/Portal Sunrise.mp3',
 }, {
+  name: 'Potato Farmer',
+  url: '/music/Potato Farmer.mp3',
+}, {
   name: 'Portal Sunset',
   url: '/music/Portal Sunset.mp3',
 }, {
@@ -708,6 +711,9 @@ export const MUSIC_TRACKS = [{
 }, {
   name: 'The Nexus',
   url: '/music/The Nexus.mp3',
+}, {
+  name: 'The Shore',
+  url: '/music/The Shore.mp3',
 }, {
   name: 'The Shrine',
   url: '/music/The Shrine.mp3',
