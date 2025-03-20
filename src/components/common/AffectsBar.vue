@@ -1,9 +1,17 @@
 <template>
   <NPopover trigger="hover" placement="top-start">
     <template #trigger>
-      <div class="shortflags" v-html-safe="getAffectFlags(entity, affects)" />
+      <div v-if="entity.dead" class="shortflags"><span class="red">D</span></div>
+      <div v-else-if="entity.incapacitated" class="shortflags"><span class="bold-red">I</span></div>
+      <div v-else class="shortflags" v-html-safe="getAffectFlags(entity, affects)" />
     </template>
-    <div v-for="affectName in getAffectNames(entity, affects)" :key="affectName">
+    <div v-if="entity.dead">
+      <div class="red">Dead</div>
+    </div>
+    <div v-else-if="entity.incapacitated">
+      <div class="bold-red">Incapacitated</div>
+    </div>
+    <div v-else v-for="affectName in getAffectNames(entity, affects)" :key="affectName">
       <div v-html-safe="affectName" />
     </div>
   </NPopover>
@@ -21,6 +29,7 @@ const props = defineProps([
 ])
 
 const { entity, affects } = toRefs(props)
+
 </script>
 
 <style lang="less" scoped>

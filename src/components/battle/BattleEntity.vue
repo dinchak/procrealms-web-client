@@ -44,7 +44,7 @@
               </div>
 
               <div v-if="extendedInfo" class="affect-area">
-                <AffectBar :entity="participant" :affects="participant.affects" />
+                <AffectsBar :entity="participant" :affects="participant.affects" />
               </div>
             </div>
 
@@ -74,7 +74,7 @@ import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { ANSI } from '@/static/constants'
-import AffectBar from '@/components/common/AffectsBar.vue'
+import AffectsBar from '@/components/common/AffectsBar.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
 
 const { ansiToHtml } = useHelpers()
@@ -155,7 +155,7 @@ function getHpPercent (en, part, sd) {
     if (!en) {
       return 0
     }
-    return en.hp / en.maxHp * 100
+    return Math.min(100, Math.max(0, en.hp / en.maxHp * 100))
   } else {
     if (!part) {
       return 0
@@ -169,7 +169,7 @@ function getEnergyPercent (en, part, sd) {
     if (!en) {
       return 0
     }
-    return en.energy / en.maxEnergy * 100
+    return Math.min(100, Math.max(0, en.energy / en.maxEnergy * 100))
   } else {
     if (!part) {
       return 0
@@ -183,7 +183,7 @@ function getStaminaPercent (en, part, sd) {
     if (!en) {
       return 0
     }
-    return en.stamina / en.maxStamina * 100
+    return Math.min(100, Math.max(0, en.stamina / en.maxStamina * 100))
   } else {
     if (!part) {
       return 0
