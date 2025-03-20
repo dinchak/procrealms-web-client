@@ -70,13 +70,14 @@
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
 
-      <div v-for="slot in slots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
+      <div v-for="slot in getSlots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
         <NProgress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success"
                    :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100"
                    :show-indicator="false"/>
         <div class="slot-label">{{ slot.label }}</div>
         <div class="slot-number">{{ slot.slot }}</div>
       </div>
+
     </div>
   </div>
 </template>
@@ -87,6 +88,8 @@ import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
 import { state } from '@/static/state'
+
+import { QUICKSLOTS } from '@/static/constants'
 
 const { runCommand } = useWebSocket()
 const { isGamepadConnected } = useHelpers()
@@ -171,22 +174,20 @@ function getLootButtonClass () {
   return classes.join(' ')
 }
 
-function slots () {
-  let quickSlots = state.gameState.slots || []
-  let isNumberSlot = s => s.slot >= '1' && s.slot <= '9'
-  let numberSlots = quickSlots.filter(isNumberSlot)
-  numberSlots.sort((a, b) => {
-    return a.slot.charCodeAt(0) > b.slot.charCodeAt(0) ? 1 : -1
-  })
-
-  let nonNumberSlotsMap = new Map(quickSlots.filter(s => !isNumberSlot(s)).map(s => [s.slot, s]))
-
-  let addNonNumberSlot = slotChar => nonNumberSlotsMap.has(slotChar) &&
-      numberSlots.push(nonNumberSlotsMap.get(slotChar))
-  addNonNumberSlot('0')
-  addNonNumberSlot('-')
-  addNonNumberSlot('=')
-  return numberSlots
+function getSlots () {
+  return [...state.gameState.slots]
+    .filter(s => {
+      if (s.slot.startsWith('a')) {
+        return state.metaKeyState.alt && !state.metaKeyState.ctrl
+      } else if (s.slot.startsWith('c')) {
+        return state.metaKeyState.ctrl && !state.metaKeyState.alt
+      } else {
+        return !state.metaKeyState.ctrl && !state.metaKeyState.alt
+      }
+    })
+    .sort((a, b) => {
+      return QUICKSLOTS.indexOf(a.slot) > QUICKSLOTS.indexOf(b.slot) ? 1 : -1
+    })
 }
 
 function runQuickSlot (slot) {

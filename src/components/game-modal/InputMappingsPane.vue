@@ -232,7 +232,8 @@ import { NGrid, NGi, NButton, NIcon, NSelect, NCheckbox, NCollapse, NCollapseIte
 import AddOutlined from '@vicons/material/AddCircleOutlined'
 import DeleteOutlined from '@vicons/material/DeleteOutlined'
 
-import { state, resetInputMappings } from '@/static/state'
+import { state } from '@/static/state'
+import { resetInputMappings } from '@/static/input_mappings'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 
