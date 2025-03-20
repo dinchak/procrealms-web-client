@@ -729,3 +729,9 @@ export const DEFAULT_TERMINAL_SIZE = {
   width: 80,
   height: 25,
 }
+
+export const QUICKSLOTS = [
+  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
+  'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c0', 'c-', 'c=',
+  'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a0', 'a-', 'a=',
+]

@@ -1,5 +1,6 @@
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
-import { state, resetInputMappings } from '@/static/state'
+import { state } from '@/static/state'
+import { resetInputMappings } from '@/static/input_mappings'
 
 export function useLocalStorageHandler () {
   function saveOptions () {
