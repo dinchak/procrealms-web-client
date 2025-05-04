@@ -697,6 +697,9 @@ export const MUSIC_TRACKS = [{
   name: 'Portal Sunset',
   url: '/music/Portal Sunset.mp3',
 }, {
+  name: 'Shelly\'s Theme',
+  url: '/music/Shellys Theme.mp3',
+}, {
   name: 'Spirit of the Shrine',
   url: '/music/Spirit of the Shrine.mp3',
 }, {
