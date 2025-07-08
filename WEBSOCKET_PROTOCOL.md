@@ -1,6 +1,10 @@
 # Procedural Realms Websocket Protocol
 
-This document outlines the websocket protocol used by the Procedural Realms game server.
+This document outlines the websocket protocol used by the Procedural Realms game server. You can connect to the websocket server at the following URL:
+
+[wss://play.proceduralrealms.com/ws](wss://play.proceduralrealms.com/ws)
+
+Note that the server uses the Secure WebSocket protocol (wss://).
 
 ## 1. Overview and Basic Flow
 
