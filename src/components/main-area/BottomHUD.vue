@@ -3,7 +3,7 @@
     <div class="center-hud">
       <MiniMap v-if="state.options.showMinimap" />
       <HUDRoomInfo class="hud-item" v-if="state.options.showRoomInfo" />
-      <HUDEffects :affects="state.gameState.affects" class="hud-item" v-if="state.options.showEffects" />
+      <HUDEffects :effects="state.gameState.effects" class="hud-item" v-if="state.options.showEffects" />
       <HUDQuests class="hud-item" v-if="state.options.showQuests" />
     </div>
   </div>

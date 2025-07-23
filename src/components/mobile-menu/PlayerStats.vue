@@ -19,7 +19,7 @@
       ></CharacterCollapse>
 
       <EffectsCollapse
-        :effects="Object.values(state.gameState.affects)"
+        :effects="Object.values(state.gameState.effects)"
         :isPlayer="true"
         tabindex="0"
       ></EffectsCollapse>
@@ -28,7 +28,7 @@
         :character="state.gameState.player"
         :inventory="state.gameState.inventory"
         :isPlayer="true"
-        :affects="Object.values(state.gameState.affects)"
+        :effects="Object.values(state.gameState.effects)"
         tabindex="0"
       ></InventoryCollapse>
 

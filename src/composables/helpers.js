@@ -613,7 +613,7 @@ export function useHelpers () {
     return element.scrollHeight !== Math.max(element.offsetHeight, element.clientHeight)
   }
 
-  function getAffectFlags (entity, affects) {
+  function getEffectFlags (entity, effects) {
     let flags = []
 
     if (entity.isDead) {
@@ -645,7 +645,7 @@ export function useHelpers () {
       flags.push(ANSI.boldRed + entity.rage + ' ' + ANSI.red + 'Rage' + ANSI.reset)
     }
 
-    flags = flags.concat(Object.entries(affects)
+    flags = flags.concat(Object.entries(effects)
       .map(p => p[1].shortFlag))
 
     flags = flags.map(s => ansiToHtml(s))
@@ -654,7 +654,7 @@ export function useHelpers () {
     return flags.join(' ')
   }
 
-  function getAffectNames (entity, affects) {
+  function getEffectNames (entity, effects) {
     let names = []
 
     if (entity.isDead) {
@@ -684,7 +684,7 @@ export function useHelpers () {
       names.push('Full')
     }
 
-    names = names.concat(Object.entries(affects)
+    names = names.concat(Object.entries(effects)
       .map(p => p[1].longFlag || p[1].name))
 
     names = names.map(s => ansiToHtml(s))
@@ -703,6 +703,6 @@ export function useHelpers () {
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
-    isOverflowX, isOverflowY, getAffectFlags, getAffectNames
+    isOverflowX, isOverflowY, getEffectFlags, getEffectNames
   }
 }
