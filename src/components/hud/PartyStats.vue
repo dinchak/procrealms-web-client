@@ -21,7 +21,7 @@
         </div>
 
         <div class="bottom-bar">
-          <AffectsBar :entity="member" :affects="member.affects" />
+          <EffectsBar :entity="member" :effects="member.effects" />
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
 import { ANSI } from '@/static/constants'
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
-import AffectsBar from '../common/AffectsBar.vue'
+import EffectsBar from '../common/EffectsBar.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
 
 const { ansiToHtml } = useHelpers()

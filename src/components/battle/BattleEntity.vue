@@ -43,8 +43,8 @@
                 </VitalsBar>
               </div>
 
-              <div v-if="extendedInfo" class="affect-area">
-                <AffectsBar :entity="participant" :affects="participant.affects" />
+              <div v-if="extendedInfo" class="effect-area">
+                <EffectsBar :entity="participant" :effects="participant.effects" />
               </div>
             </div>
 
@@ -74,7 +74,7 @@ import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { ANSI } from '@/static/constants'
-import AffectsBar from '@/components/common/AffectsBar.vue'
+import EffectsBar from '@/components/common/EffectsBar.vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
 
 const { ansiToHtml } = useHelpers()
@@ -252,7 +252,7 @@ function getInfoBtnClass () {
       flex-grow: 1;
       flex-basis: 100%;
 
-      .name-affects-col {
+      .name-effects-col {
         width: 100%;
       }
 
@@ -270,7 +270,7 @@ function getInfoBtnClass () {
       }
     }
 
-    .affect-area {
+    .effect-area {
       display: flex;
       min-height: 18px;
       flex-direction: row;
@@ -279,7 +279,7 @@ function getInfoBtnClass () {
       gap: 15px;
     }
 
-    .affect-row {
+    .effect-row {
       min-height: 22px;
       display: flex;
       flex-direction: row;
@@ -301,7 +301,7 @@ function getInfoBtnClass () {
       justify-content: flex-end;
     }
 
-    .affect {
+    .effect {
       text-wrap: nowrap;
       padding: 2px 6px;
       background: rgba(black, 0.2);

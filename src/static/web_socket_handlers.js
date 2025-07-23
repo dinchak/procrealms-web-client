@@ -83,7 +83,7 @@ const webSocketHandlers = {
     }, 1000)
   },
 
-  'affect.cure': ({ target, amount }) => {
+  'effect.cure': ({ target, amount }) => {
     let animation = { key: Math.random(), type: 'healing', eid: target, amount }
 
     setTimeout(() => {

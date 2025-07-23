@@ -18,7 +18,7 @@
       </NButton>
 
       <NButton size="medium"
-        title="Affects"
+        title="Effects"
         :type="getOptionType('showEffects')"
         @click="toggleOption('showEffects')"
       >

@@ -154,12 +154,13 @@ export function resetGameState () {
       active: false,
       myTurn: false,
       participants: {},
+      items: []
     },
 
     party: {},
     charmies: {},
     skills: {},
-    affects: {},
+    effects: {},
     equipment: {},
 
     channels: [],
@@ -344,7 +345,6 @@ export function getPartyStatsHeight () {
   } else if (state.options.fontSize == '18px') {
     return 90
   }
-
 }
 
 export function addLine (line, bufferName) {

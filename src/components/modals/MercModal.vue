@@ -7,16 +7,16 @@
       {{ getMercTNL() }} TNL
     </NProgress>
 
-    <div class="affects">
-      <n-tooltip trigger="hover" v-for="(affect, index) in affects" v-bind:key='index'>
+    <div class="effects">
+      <n-tooltip trigger="hover" v-for="(effect, index) in effects" v-bind:key='index'>
         <template #trigger>
-          <span v-html-safe="ansiToHtml(affect.shortFlag) + ' '"></span>
+          <span v-html-safe="ansiToHtml(effect.shortFlag) + ' '"></span>
         </template>
-        <span v-html-safe="ansiToHtml(affect.longFlag)" class="longflag"></span>
-        <span v-if="affect.desc">:&nbsp;{{affect.desc}}</span>
+        <span v-html-safe="ansiToHtml(effect.longFlag)" class="longflag"></span>
+        <span v-if="effect.desc">:&nbsp;{{effect.desc}}</span>
       </n-tooltip>
     </div>
-    <MiniStats :entity="mercVitals" :affects="affects"></MiniStats>
+    <MiniStats :entity="mercVitals" :effects="effects"></MiniStats>
     <NCollapse>
       <CharacterCollapse
           :character="mercEntity"
@@ -24,13 +24,13 @@
           :is-player="false"
       ></CharacterCollapse>
       <EffectsCollapse
-          :affects="affects"
+          :effects="effects"
           :isPlayer="false"
       ></EffectsCollapse>
       <InventoryCollapse
           :character="mercEntity"
           :inventory="mercInventory"
-          :affects="affects"
+          :effects="effects"
           :isPlayer="false"
       ></InventoryCollapse>
       <EquipmentCollapse
@@ -62,7 +62,7 @@ const { ansiToHtml, getMerc } = useHelpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})
-const affects = ref([])
+const effects = ref([])
 const mercSkills = ref([])
 const mercInventory = ref([])
 const mercEquipment = ref({})
@@ -97,7 +97,7 @@ function findAndSetMerc () {
   mercInventory.value = merc.items
   mercEquipment.value = merc.equipment
 
-  setAffects(Object.values(merc.affects))
+  setEffects(Object.values(merc.effects))
 }
 
 function getMercTNL () {
@@ -108,20 +108,20 @@ function getMercExpPercentage () {
   return (mercEntity.value.xp - mercEntity.value.xpForCurrentLevel) / (mercEntity.value.xpForNextLevel - mercEntity.value.xpForCurrentLevel) * 100
 }
 
-function setAffects (affectList) {
-  const newAffects = []
-  if (affectList) {
-    affectList.map(affect => {
-      if (!affect.shortFlag) {
-        affect.shortFlag = "\u001b[1;37m" + affect.name.substring(0, 2).toUpperCase()
+function setEffects (effectList) {
+  const newEffects = []
+  if (effectList) {
+    effectList.map(effect => {
+      if (!effect.shortFlag) {
+        effect.shortFlag = "\u001b[1;37m" + effect.name.substring(0, 2).toUpperCase()
       }
-      if (!affect.longFlag) {
-        affect.longFlag = "\u001b[1;37m" + affect.name
+      if (!effect.longFlag) {
+        effect.longFlag = "\u001b[1;37m" + effect.name
       }
-      newAffects.push(affect)
+      newEffects.push(effect)
     })
   }
-  affects.value = newAffects
+  effects.value = newEffects
 }
 
 </script>
