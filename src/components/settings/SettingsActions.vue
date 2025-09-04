@@ -35,7 +35,10 @@ function toggleFullscreen () {
   flex-direction: column;
   width: 100%;
   .settings-button {
-    margin-top: 5px;
+    margin-bottom: 5px;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

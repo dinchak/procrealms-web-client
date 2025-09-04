@@ -168,19 +168,21 @@ function openGameModal (pane = null) {
     color: #fff;
     cursor: pointer;
     transition: all 0.2s;
-    background: rgb(16, 16, 20);
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: #18181b;
+    border: 1px solid #18181b;
     user-select: none;
     transition: all 0.3s;
+    border-radius: 4px;
 
     &:hover {
-      border: 1px solid #0cc6c6;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
     }
 
     &.active {
-      border: 1px solid #0cc6c6;
-      background-color: #0cc6c6;
-      color: #000;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
+      color: #fff;
     }
   }
 }
@@ -211,20 +213,22 @@ function openGameModal (pane = null) {
     height: 24px;
     width: 24px;
     user-select: none;
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    border: 1px solid #18181b;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
-    background: rgb(16, 16, 20);
+    background: #18181b;
+    border-radius: 4px;
 
     &:last-child {
       margin-right: 0;
     }
 
     &:hover {
-      border: 1px solid #0cc6c6;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
     }
 
     .icon {

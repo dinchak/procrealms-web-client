@@ -36,7 +36,7 @@ const { entity, effects } = toRefs(props)
 .shortflags {
   flex-grow: 1;
   text-align: left;
-  height: 18px;
+  height: 20px;
   display: flex;
   gap: 5px;
   overflow-x: hidden;

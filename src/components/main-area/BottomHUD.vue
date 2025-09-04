@@ -22,8 +22,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
 .bottom-hud {
   display: flex;
   padding-top: 5px;
-  border-top: 3px solid #181818;
-  background-color: rgb(16, 18, 22);
+  background-color: #18181b;
   overflow-x: auto;
 
   .center-hud {

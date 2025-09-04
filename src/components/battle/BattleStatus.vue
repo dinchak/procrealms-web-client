@@ -1,6 +1,24 @@
 <template>
   <div class="battle-area">
+
+    <div class="battle-footer">
+      <div class="expand-btn" v-if="!state.options.battleAlwaysExpanded">
+        <NIconWrapper :size="28" :border-radius="4">
+          <NIcon :size="24" color="#f5f5f5">
+            <UnfoldMoreFilled v-if="!expandEntities" @click.stop="toggleInfo()"></UnfoldMoreFilled>
+            <UnfoldLessFilled v-if="expandEntities" @click.stop="toggleInfo()"></UnfoldLessFilled>
+          </NIcon>
+        </NIconWrapper>
+      </div>
+
+      <BattleField />
+
+      <div class="expand-btn"></div>
+    </div>
+
     <div class="battle-status">
+
+
       <template v-for="side in ['good', 'vs', 'evil']" :key="side">
         <div v-if="side === 'vs'" class="vs-container">
           <div class="vs">VS</div>
@@ -26,22 +44,33 @@
               >{{ anim.amount }}</div>
             </TransitionGroup>
 
-            <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="side"></BattleEntity>
+            <BattleEntity
+              :entity="getPartyEntity(participant)"
+              :participant="participant"
+              :side="side"
+              :expanded="expandEntities"
+            ></BattleEntity>
           </div>
         </div>
       </template>
     </div>
+
   </div>
 
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
+import { NIcon, NIconWrapper } from 'naive-ui'
+import { UnfoldMoreFilled, UnfoldLessFilled } from '@vicons/material'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/battle/BattleEntity.vue'
+import BattleField from '@/components/battle/BattleField.vue'
+
+const expandEntities = ref(state.options.battleAlwaysExpanded)
 
 const { selectNearestElement } = useHelpers()
 
@@ -80,6 +109,13 @@ function getSideClass (side) {
   return classes.join(' ')
 }
 
+function toggleInfo () {
+  expandEntities.value = !expandEntities.value
+  nextTick(() => {
+    state.inputEmitter.emit('scrollDown')
+  })
+}
+
 onMounted(() => {
   state.inputEmitter.on('selectBattleAction', selectBattleAction)
   state.inputEmitter.on('performBattleAction', performBattleAction)
@@ -94,7 +130,29 @@ onBeforeUnmount(() => {
 <style lang="less" scoped>
 .battle-area {
   margin-top: 5px;
-  border-top: 2px solid #333;
+
+  .battle-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .expand-btn {
+      border: 1px solid #777;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: flex-start;
+      .n-icon-wrapper {
+        background-color: #111111;
+        &:hover {
+          background-color: #333;
+        }
+      }
+    }
+  }
 }
 
 .battle-status {
@@ -295,7 +353,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 960px) {
   .battle-status {
     flex-direction: column;
     .side {

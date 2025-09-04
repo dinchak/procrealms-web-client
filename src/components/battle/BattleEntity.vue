@@ -1,8 +1,7 @@
 <template>
   <div class="battle-entity" :class="{
     'dead': !isAlive(participant),
-    'hidden': participant.isHidden,
-    'casting': participant.isCasting,
+    'hidden': participant.hidden,
     'selectable': isAlive(participant),
     'good': side === 'good' && isAlive(participant),
     'evil': side === 'evil' && isAlive(participant),
@@ -19,12 +18,12 @@
               <div class="name-area">
                 <div class="name-merc-col">
                   <div class="name-row" lang="en"
-                    v-html-safe="ansiToHtml(`${(participant.hpPercent && extendedInfo) > 0 ? participant.tag + ' ' : ''}${ANSI.reset}L${ANSI.boldWhite}${participant.level} ${participant.colorName}`)">
+                    v-html-safe="ansiToHtml(`${(participant.hpPercent) > 0 ? participant.tag + ' ' : ''}${ANSI.reset}L${ANSI.boldWhite}${participant.level} ${participant.colorName}`)">
                   </div>
                   <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
                 </div>
 
-                <div v-if="extendedInfo" class="target-row" >
+                <div v-if="expanded" class="target-row" >
                   <NIcon>
                     <CrisisAlertFilled></CrisisAlertFilled>
                   </NIcon>
@@ -43,17 +42,9 @@
                 </VitalsBar>
               </div>
 
-              <div v-if="extendedInfo" class="effect-area">
+              <div v-if="expanded" class="effect-area">
                 <EffectsBar :entity="participant" :effects="participant.effects" />
               </div>
-            </div>
-
-            <div :class="getInfoBtnClass()" v-if="!state.options.battleAlwaysExpanded">
-              <NIconWrapper :size="28">
-                <NIcon :size="24">
-                  <SearchFilled @click.stop="toggleInfo()"></SearchFilled>
-                </NIcon>
-              </NIconWrapper>
             </div>
 
           </div>
@@ -63,9 +54,9 @@
   </div>
 </template>
 <script setup>
-import { defineProps, toRefs, ref, nextTick } from 'vue'
-import { NIcon, NIconWrapper } from 'naive-ui'
-import { CrisisAlertFilled, SearchFilled } from '@vicons/material'
+import { defineProps, toRefs } from 'vue'
+import { NIcon } from 'naive-ui'
+import { CrisisAlertFilled } from '@vicons/material'
 import stripAnsi from 'strip-ansi'
 
 import MercOrders from '@/components/battle/MercOrders.vue'
@@ -84,11 +75,10 @@ const props = defineProps({
   participant: Object,
   entity: Object,
   side: String,
+  expanded: Boolean
 })
 
 const { participant, entity, side } = toRefs(props)
-
-const extendedInfo = ref(state.options.battleAlwaysExpanded)
 
 function target (part) {
   if (part.hpPercent == 0) {
@@ -98,7 +88,7 @@ function target (part) {
 }
 
 function isAlive (part) {
-  return !part.isDead && !part.isIncapacitated
+  return !part.dead && !part.incapacitated
 }
 
 function isPlayer (part) {
@@ -189,20 +179,6 @@ function getStaminaPercent (en, part, sd) {
       return 0
     }
     return part.staminaPercent
-  }
-}
-
-function toggleInfo () {
-  extendedInfo.value = !extendedInfo.value
-  nextTick(() => {
-    state.inputEmitter.emit('scrollDown')
-  })
-}
-
-function getInfoBtnClass () {
-  return {
-    'info-btn': true,
-    'info-btn-active': extendedInfo.value,
   }
 }
 </script>
@@ -354,7 +330,7 @@ function getInfoBtnClass () {
   flex-direction: column;
   justify-content: space-between;
   background-color: #462233;
-  width: 250px;
+  width: 265px;
   border-radius: @border-radius;
   border: 1px solid transparent;
 
