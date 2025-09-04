@@ -10,7 +10,7 @@
   >
     <div>
       <div class="modal-body">
-        <p class="close" @click="onCloseModal()">
+        <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
           </NIcon>
@@ -170,7 +170,7 @@
                   </div>
 
                   <div class="skill-info" v-if="content.skillData.recoveryTime">
-                    <div class="label">Recovery</div>
+                    <div class="label">Cooldown</div>
                     <div class="value">
                       +<span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
                   </div>
@@ -491,7 +491,7 @@ onBeforeUnmount(() => {
 .help-modal {
   min-height: 100vh;
   width: 100vw;
-  background: rgba(0, 0, 0, 1);
+  background: #18181b;
   padding-bottom: 0px;
 
   .modal-body {
@@ -629,13 +629,14 @@ onBeforeUnmount(() => {
               line-height: 20px;
               color: #fff;
               padding: 5px 10px;
-              background-color: #111;
+              background-color: #18181b;
               border: 1px solid #333;
               cursor: pointer;
               transition: all 0.2s;
               &:hover {
-                background-color: #63e2b7;
-                color: #000;
+                border: 1px solid #7fe7c4;
+                color: #7fe7c4;
+                // background-color: rgb(27 45 27 / 90%);
               }
             }
           }
@@ -668,23 +669,6 @@ onBeforeUnmount(() => {
       }
     }
 
-    .close {
-      margin: 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover {
-        background-color: #e88080;
-        color: #000;
-      }
-    }
-
     .toggle-mini-output {
       margin: 0 5px 0 0;
       padding: 5px;
@@ -697,11 +681,10 @@ onBeforeUnmount(() => {
       line-height: 16px;
       cursor: pointer;
       &:hover, &.active {
-        background-color: #63e2b7;
-        color: #000;
+        border: 1px solid rgb(69 119 69);
+        background-color: rgb(27 45 27 / 90%);
       }
     }
-
   }
 }
 

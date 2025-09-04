@@ -20,7 +20,7 @@
           ></VitalsBar>
         </div>
 
-        <div class="bottom-bar">
+        <div class="bottom-bar" v-if="Object.keys(member.effects).length > 0">
           <EffectsBar :entity="member" :effects="member.effects" />
         </div>
       </div>
@@ -44,7 +44,7 @@ function getPartyMembers () {
 </script>
 <style lang="less" scoped>
 .party-health-container {
-  background-color: rgb(16, 18, 22);
+  background-color: #18181b;
   overflow-x: auto;
 
   .party-health-inner {

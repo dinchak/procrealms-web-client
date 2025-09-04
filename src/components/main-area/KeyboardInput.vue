@@ -196,6 +196,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  background-color: #18181b;
 
   .menu-button {
     color: #fff;

@@ -3,8 +3,14 @@
           @update:value="onAfterChangeTab" :bar-width="20">
     <n-tab-pane name="output" tab="Main" display-directive="show">
       <div id="output" class="output" ref="output" @scroll="onScroll('output')">
-        <div v-for="(line, i) in state.output" class="line" v-html-safe="line" :key="`line-${i}`" @click="lineClick"
-             @mouseover="lineMouseover" @mouseleave="lineMouseleave"></div>
+        <div v-for="(line, i) in state.output"
+          class="line"
+          v-html-safe="line"
+          :key="`line-${i}`"
+          @click="lineClick"
+          @mouseover="lineMouseover"
+          @mouseleave="lineMouseleave">
+        </div>
         <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
       </div>
       <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDownTab('output')">

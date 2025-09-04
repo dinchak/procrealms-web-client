@@ -131,20 +131,20 @@
           </div>
 
           <div class="ability-bonus">
-            <div class="value bold-green">{{ player().strengthHpBonus }}</div>
+            <div class="value">+<span class="bold-red">{{ player().strengthDamageBonus }}</span></div>
+            <div class="label">Weapon Damage</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="red">{{ renderNumber(player().strengthCriticalMultiplierBonus) }}</span>x</div>
+            <div class="label">Critical Multiplier</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="bold-green">{{ player().strengthHpBonus }}</span></div>
             <div class="label">Max Health</div>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-yellow">{{ player().strengthStaminaBonus }}</div>
+            <div class="value">+<span class="bold-yellow">{{ player().strengthStaminaBonus }}</span></div>
             <div class="label">Max Stamina</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value bold-red">{{ player().strengthDamageBonus }}</div>
-            <div class="label">Damage</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value red">{{ player().strengthResistBonus }}</div>
-            <div class="label">Resist Physical</div>
           </div>
         </div>
       </NGi>
@@ -166,20 +166,20 @@
             </NButton>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-yellow">{{ player().agilitySpeedBonus }}</div>
-            <div class="label">Speed</div>
+            <div class="value">+<span class="bold-yellow">{{ player().agilityMovementBonus }}</span></div>
+            <div class="label">Movement</div>
           </div>
           <div class="ability-bonus">
-            <div class="value yellow">{{ renderNumber(player().agilitySkillCooldownBonus) }}<span class="black">s</span></div>
-            <div class="label">Skill Cooldown</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value bold-red">{{ renderNumber(player().agilityCriticalBonus) }}<span class="black">%</span></div>
+            <div class="value">+<span class="bold-red">{{ renderNumber(player().agilityCriticalBonus) }}</span>%</div>
             <div class="label">Critical Hit</div>
           </div>
           <div class="ability-bonus">
-            <div class="value red">{{ renderNumber(player().agilityCriticalMultiplierBonus) }}<span class="black">x</span></div>
-            <div class="label">Multiplier</div>
+            <div class="value">+<span class="bold-yellow">{{ renderNumber(player().agilitySpeedBonus) }}</span>s</div>
+            <div class="label">Speed</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="yellow">{{ renderNumber(player().agilitySkillCooldownBonus) }}</span>s</div>
+            <div class="label">Skill Cooldown</div>
           </div>
         </div>
       </NGi>
@@ -201,20 +201,20 @@
             </NButton>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-white">{{ player().magicEnergyBonus }}</div>
-            <div class="label">Max Energy</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value magenta">{{ renderNumber(player().magicSpellCooldownBonus) }}<span class="black">s</span></div>
-            <div class="label">Spell Cooldown</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value bold-magenta">{{ player().magicDamageBonus }}</div>
+            <div class="value">+<span class="bold-magenta">{{ player().magicDamageBonus }}</span></div>
             <div class="label">Magic Damage</div>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-cyan">{{ player().magicResistBonus }}</div>
-            <div class="label">Resist Magic</div>
+            <div class="value">+<span class="bold-white">{{ player().magicEnergyBonus }}</span></div>
+            <div class="label">Max Energy</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="bold-cyan">{{ renderNumber(player().magicFocusBonus) }}</span>s</div>
+            <div class="label">Focus</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="cyan">{{ renderNumber(player().magicSpellCooldownBonus) }}</span>s</div>
+            <div class="label">Recharge</div>
           </div>
         </div>
       </NGi>
@@ -236,223 +236,187 @@
             </NButton>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-white">{{ player().spiritEnergyBonus }}</div>
+            <div class="value">+<span class="green">{{ player().spiritHealingPowerBonus }}</span>%</div>
+            <div class="label">Healing</div>
+          </div>
+          <div class="ability-bonus">
+            <div class="value">+<span class="bold-white">{{ player().spiritEnergyBonus }}</span></div>
             <div class="label">Max Energy</div>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-blue">{{ player().spiritFocusBonus }}</div>
-            <div class="label">Focus</div>
+            <div class="value">+<span class="magenta">{{ player().spiritSummoningPowerBonus }}</span>%</div>
+            <div class="label">Summoning Power</div>
           </div>
           <div class="ability-bonus">
-            <div class="value bold-green">{{ player().spiritCommandBonus }}</div>
+            <div class="value">+<span class="bold-magenta">{{ player().spiritCommandBonus }}</span></div>
             <div class="label">Command</div>
-          </div>
-          <div class="ability-bonus">
-            <div class="value green">{{ player().spiritResistBonus }}</div>
-            <div class="label">Resist Spirit</div>
           </div>
         </div>
       </NGi>
 
     </NGrid>
 
-    <div class="space"></div>
-
-    <h3 class="bold-white">Statistics</h3>
-    <NGrid cols="1 600:2 800:3">
+    <NGrid cols="1 500:2">
       <NGi class="grid-item">
-        <div class="combat-stat">
-          <div class="row">
-            <div class="value bold-red">{{ player().damLow }}<span class="black">-</span>{{ player().damHigh }} <span class="black">+</span>{{ getDamageBonus() }}</div>
-            <div class="label">Damage</div>
+        <div class="weapon-stat">
+          <div :class="'value ' + getDamageColor()">
+            {{ player().damLow }}<span class="white">-</span>{{ player().damHigh }} <span class="white">+</span>{{ getDamageBonus() }}
           </div>
-          <div class="row">
-            <div class="value bold-white">{{ player().armor }}</div>
-            <div class="label">Armor</div>
-          </div>
-          <div class="row">
-            <div class="value bold-yellow">{{ player().speed }}</div>
-            <div class="label">Speed</div>
-          </div>
-          <div class="row">
-            <div class="value bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="black">s</span></div>
-            <div class="label">Recovery Time</div>
-          </div>
-          <div class="row">
-            <div class="value bold-red">{{ renderNumber(player().criticalChance) }}%</div>
-            <div class="label">Critical Chance</div>
-          </div>
-          <div class="row">
-            <div class="value bold-blue">{{ player().focus }}</div>
-            <div class="label">Focus</div>
-          </div>
-          <div class="row">
-            <div class="value green">{{ player().command }}</div>
-            <div class="label">Command</div>
+          <div class="label">
+            <span :class="getDamageColor()">{{ getDamageType() }}</span> damage
           </div>
         </div>
       </NGi>
-
       <NGi class="grid-item">
-        <div class="combat-stat">
-          <div class="row">
-            <div class="value bold-red">{{ renderNumber(player().dpr) }}</div>
-            <div class="label"><span :class="getDamageColor()">{{ ucfirst(getDamageType()) }}</span>/Round</div>
+        <div class="weapon-stat">
+          <div :class="'value ' + getDamageColor()">
+            {{ renderNumber(player().dpr) }}
           </div>
-          <div class="row">
-            <div class="value bold-white">{{ player().armorAbsorption }}%</div>
-            <div class="label">Damage Absorption</div>
-          </div>
-          <div class="row">
-            <div class="value bold-green">{{ renderNumber(player().recoveryTimeBonus) }}<span class="black">s</span></div>
-            <div class="label">Faster Recovery</div>
-          </div>
-          <div class="row">
-            <div class="value bold-yellow">{{ renderNumber(player().apr) }}</div>
-            <div class="label">Attacks/Round</div>
-          </div>
-          <div class="row">
-            <div class="value bold-red">{{ renderNumber(player().criticalMultiplier) }}<span class="black">x</span></div>
-            <div class="label">Critical Multiplier</div>
-          </div>
-          <div class="row">
-            <div class="value bold-blue">{{ renderNumber(player().interruptChance) }}<span class="black">%</span></div>
-            <div class="label">Interrupt Chance</div>
-          </div>
-          <div class="row">
-            <div class="value">+<span class="bold-green">{{ Math.round(player().summonMultiplier * 100) }}</span>%</div>
-            <div class="label">Summon Power</div>
-          </div>
-
-          <div class="row" v-if="player().numSkeletons > 0">
-            <div class="value">
-              <span class="bold-magenta">{{ player().numSkeletons }}</span>
-              /
-              <span class="magenta">{{ player().maxSkeletons }}</span>
-            </div>
-            <div class="label">Skeletons</div>
-          </div>
-
-          <div class="row" v-if="player().numTamed > 0">
-            <div class="value">
-              <span class="bold-yellow">{{ player().numTamed }}</span>
-              /
-              <span class="yellow">{{ player().maxTamed }}</span>
-            </div>
-            <div class="label">Tamed</div>
-          </div>
-
-          <div class="row" v-if="player().numLivestock > 0">
-            <div class="value">
-              <span class="bold-green">{{ player().numLivestock }}</span>
-              /
-              <span class="green">{{ player().maxLivestock }}</span>
-            </div>
-            <div class="label">Livestock</div>
-          </div>
-
-        </div>
-      </NGi>
-
-      <NGi class="grid-item">
-        <div class="combat-stat">
-          <div class="row">
-            <div class="value bold-green">{{ player().regeneration }}</div>
-            <div class="label">Regeneration</div>
-          </div>
-          <div class="row">
-            <div class="value yellow">{{ renderNumber(player().skillCooldown) }}<span class="black">s</span></div>
-            <div class="label">Skill Cooldown</div>
-          </div>
-          <div class="row">
-            <div class="value magenta">{{ renderNumber(player().spellCooldown) }}<span class="black">s</span></div>
-            <div class="label">Spell Cooldown</div>
-          </div>
-
-          <div class="row">
-            <div class="value bold-cyan">{{ renderNumber(player().castingTime) }}<span class="black">%</span></div>
-            <div class="label">Faster Casting</div>
-          </div>
-
-          <div class="row">
-            <div class="value bold-magenta">{{ player().magicDamage }}</div>
-            <div class="label">Magic Damage</div>
-          </div>
-
-          <div class="row">
-            <div class="value cyan">{{ player().magicFindBonus }}</div>
-            <div class="label">Magic Find</div>
-          </div>
-
-          <div class="row">
-            <div class="value bold-blue">{{ renderNumber(player().xpGainBonus * 100) }}<span class="black">%</span></div>
-            <div class="label">EXP Bonus</div>
+          <div class="label">
+            avg/round
           </div>
         </div>
       </NGi>
     </NGrid>
 
+
+    <NGrid cols="2 800:4">
+      <NGi class="grid-item">
+        <div class="combat-stat">
+          <div>+<span class="red">{{ renderNumber(player().damage) }}</span></div>
+          <div>Weapon Damage</div>
+        </div>
+        <div class="combat-stat">
+          <div>+<span class="red">{{ renderNumber(player().magicDamage) }}</span></div>
+          <div>Magic Damage</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-white">{{ player().armor }}</div>
+          <div>Armor</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-white">{{ renderNumber(player().armorAbsorption) }}<span class="white">%</span></div>
+          <div>absorb vs L<span class="bold-white">{{ player().level }}</span></div>
+        </div>
+      </NGi>
+
+      <NGi class="grid-item">
+        <div class="combat-stat">
+          <div class="bold-yellow">{{ renderNumber(player().recoveryTime) }}<span class="white">s</span></div>
+          <div>Attack Speed</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-yellow">{{ renderNumber(player().apr) }}</div>
+          <div>Attacks per Round</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
+          <div>Critical</div>
+        </div>
+        <div class="combat-stat">
+          <div class="red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
+          <div>Multiplier</div>
+        </div>
+      </NGi>
+
+      <NGi class="grid-item">
+        <div class="combat-stat">
+          <div><span class="bold-yellow">{{ renderNumber(player().speed) }}</span>s</div>
+          <div>Speed</div>
+        </div>
+        <div class="combat-stat">
+          <div><span class="yellow">{{ renderNumber(player().skillCooldown) }}</span>s</div>
+          <div>Skill Cooldown</div>
+        </div>
+        <div class="combat-stat">
+          <div><span class="bold-cyan">{{ renderNumber(player().focus) }}</span>s</div>
+          <div>Focus</div>
+        </div>
+        <div class="combat-stat">
+          <div><span class="cyan">{{ renderNumber(player().spellCooldown) }}</span>s</div>
+          <div>Spell Cooldown</div>
+        </div>
+      </NGi>
+
+      <NGi class="grid-item">
+        <div class="combat-stat">
+          <div class="bold-magenta">{{ renderNumber(player().command) }}</div>
+          <div>Command</div>
+        </div>
+        <div class="combat-stat">
+          <div>+<span class="magenta">{{ Math.round(player().summoningPower * 100) }}</span><span class="white">%</span></div>
+          <div>Summon Power</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-green">{{ renderNumber(player().regeneration) }}</div>
+          <div>Regeneration</div>
+        </div>
+        <div class="combat-stat">
+          <div>+<span class="green">{{ renderNumber(player().healingPower) }}</span>%</div>
+          <div>Healing Bonus</div>
+        </div>
+      </NGi>
+    </NGrid>
+
+    <div class="space"></div>
+    <h3>Damage / Resistance</h3>
     <div class="space"></div>
 
-    <NGrid cols="1 600:3">
+    <NGrid cols="2">
       <NGi class="grid-item">
-        <div class="resistance">
-          <div class="resistance-label"><span class="bold-red">Physical</span> Resistance</div>
-          <div class="resistance-row">
-            <div class="value bold-magenta">{{ player().resistBludgeoning }}</div>
-            <div class="label">Bludgeoning</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value red">{{ player().resistPiercing }}</div>
-            <div class="label">Piercing</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value bold-red">{{ player().resistSlashing }}</div>
-            <div class="label">Slashing</div>
-          </div>
+        <div class="resistance-stat">
+          <div>+<span class="green">{{ player().damageBonusAcid }}</span></div>
+          <div>-<span class="green">{{ player().resistAcid }}</span></div>
+          <div>Acid</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="magenta">{{ player().damageBonusBludgeoning }}</span></div>
+          <div>-<span class="magenta">{{ player().resistBludgeoning }}</span></div>
+          <div>Bludgeoning</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="red">{{ player().damageBonusPiercing }}</span></div>
+          <div>-<span class="red">{{ player().resistPiercing }}</span></div>
+          <div>Piercing</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-green">{{ player().damageBonusPoison }}</span></div>
+          <div>-<span class="bold-green">{{ player().resistPoison }}</span></div>
+          <div>Poison</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-red">{{ player().damageBonusSlashing }}</span></div>
+          <div>-<span class="bold-red">{{ player().resistSlashing }}</span></div>
+          <div>Slashing</div>
         </div>
       </NGi>
-
       <NGi class="grid-item">
-        <div class="resistance">
-          <div class="resistance-label"><span class="bold-cyan">Magic</span> Resistance</div>
-          <div class="resistance-row">
-            <div class="value bold-cyan">{{ player().resistArcane }}</div>
-            <div class="label">Arcane</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value bold-yellow">{{ player().resistElectric }}</div>
-            <div class="label">Electric</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value red">{{ player().resistFire }}</div>
-            <div class="label">Fire</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value bold-blue">{{ player().resistIce }}</div>
-            <div class="label">Ice</div>
-          </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-cyan">{{ player().damageBonusArcane }}</span></div>
+          <div>-<span class="bold-cyan">{{ player().resistArcane }}</span></div>
+          <div>Arcane</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-yellow">{{ player().damageBonusElectric }}</span></div>
+          <div>-<span class="bold-yellow">{{ player().resistElectric }}</span></div>
+          <div>Electric</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-red">{{ player().damageBonusFire }}</span></div>
+          <div>-<span class="bold-red">{{ player().resistFire }}</span></div>
+          <div>Fire</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-white">{{ player().damageBonusHoly }}</span></div>
+          <div>-<span class="bold-white">{{ player().resistHoly }}</span></div>
+          <div>Holy</div>
+        </div>
+        <div class="resistance-stat">
+          <div>+<span class="bold-blue">{{ player().damageBonusIce }}</span></div>
+          <div>-<span class="bold-blue">{{ player().resistIce }}</span></div>
+          <div>Ice</div>
         </div>
       </NGi>
-
-      <NGi class="grid-item">
-        <div class="resistance">
-          <div class="resistance-label"><span class="bold-green">Spirit</span> Resistance</div>
-          <div class="resistance-row">
-            <div class="value bold-white">{{ player().resistAcid }}</div>
-            <div class="label">Acid</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value bold-yellow">{{ player().resistHoly }}</div>
-            <div class="label">Holy</div>
-          </div>
-          <div class="resistance-row">
-            <div class="value green">{{ player().resistPoison }}</div>
-            <div class="label">Poison</div>
-          </div>
-        </div>
-      </NGi>
-
     </NGrid>
   </div>
 </template>
@@ -471,7 +435,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { runCommand, fetchItem } = useWebSocket()
-const { ucfirst, renderNumber } = useHelpers()
+const { renderNumber } = useHelpers()
 
 const weapon = ref({})
 
@@ -680,54 +644,61 @@ watch(state.gameState.equipment, () => {
 
   .combat-stat {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    .row {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      width: 100%;
-      .value {
-        text-align: right;
-        padding-right: 10px;
-        width: 40%;
-      }
-      .label {
-        text-align: left;
-        color: #cccccc;
-      }
+    > :nth-child(1) {
+      text-align: right;
+      padding-right: 10px;
+      width: 50%;
     }
-
+    > :nth-child(2) {
+      width: 100%;
+      text-align: left;
+    }
   }
 
-  .resistance {
+  .resistance-stat {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    > :nth-child(1) {
+      text-align: right;
+      padding-right: 10px;
+      width: 50%;
+    }
+    > :nth-child(2) {
+      padding-right: 10px;
+      width: 20px;
+    }
+    > :nth-child(3) {
+      width: 50%;
+      text-align: left;
+    }
+  }
+
+  .weapon-stat {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    .resistance-label {
+    justify-content: space-between;
+    align-items: center;
+    .value {
+      font-size: 24px;
+      line-height: 32px;
+      width: 100%;
+      text-align: center;
+      padding-right: 10px;
+      padding-bottom: 0px;
+      padding-top: 5px;
+    }
+    .label {
       width: 100%;
       text-align: center;
       font-size: 24px;
       padding-bottom: 5px;
     }
-    .resistance-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-      align-items: center;
-      width: 100%;
-      .value {
-        text-align: right;
-        padding-right: 10px;
-        width: 75%;
-      }
-      .label {
-        width: 100%;
-        text-align: left;
-      }
-    }
   }
+
 }
 </style>

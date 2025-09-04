@@ -11,12 +11,12 @@
 
     <div>
       <div class="modal-body">
-        <p class="close" @click="onCloseModal()">
+        <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
           </NIcon>
         </p>
-        <p :class="getToggleMiniOutputClass()" @click="toggleMiniOutput()">
+        <p :class="getModalKeyboardToggleClass()" @click="toggleMiniOutput()">
           <NIcon size="24">
             <KeyboardOutlined />
           </NIcon>
@@ -129,9 +129,9 @@ function onCloseModal () {
   prevMode()
 }
 
-function getToggleMiniOutputClass () {
+function getModalKeyboardToggleClass () {
   return {
-    'toggle-mini-output': true,
+    'modal-keyboard-toggle': true,
     'active': miniOutputEnabled.value
   }
 }
@@ -246,7 +246,7 @@ onBeforeUnmount(() => {
 .game-modal {
   min-height: 100vh;
   width: 100vw;
-  background: rgb(14, 20, 20);
+  background: #18181b;
   padding-bottom: 0px;
 
   .modal-body {
@@ -287,41 +287,6 @@ onBeforeUnmount(() => {
         }
       }
     }
-
-    .close {
-      margin: 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover {
-        background-color: #e88080;
-        color: #000;
-      }
-    }
-
-    .toggle-mini-output {
-      margin: 0 5px 0 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 44px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover, &.active {
-        background-color: #63e2b7;
-        color: #000;
-      }
-    }
-
   }
 }
 </style>

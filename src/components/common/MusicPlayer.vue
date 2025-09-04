@@ -113,6 +113,10 @@ function drawAnalyzer () {
     let red = Math.max(shade / 4, Math.abs(Math.cos(((redCounter + (i + 1) * gradient) / 1009))) * shade)
     let green = Math.max(shade / 4, Math.abs(Math.cos(((greenCounter + (i + 1) * gradient) / 1129))) * shade)
     let blue = Math.max(shade / 4, Math.abs(Math.cos(((blueCounter + (i + 1) * gradient) / 1283))) * shade)
+
+    red = Math.max(25, red)
+    green = Math.max(25, green)
+    blue = Math.max(25, blue)
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`
     ctx.fill()
   }
@@ -153,6 +157,10 @@ onBeforeUnmount(() => {
   z-index: 2;
   min-width: 190px;
   min-height: 78px;
+  padding: 5px;
+  background-color: rgb(27 38 45);
+  border: 1px solid rgb(69 100 119);
+  border-radius: 4px;
 
   .track-controls {
     display: flex;
@@ -169,18 +177,20 @@ onBeforeUnmount(() => {
 
     .play-pause, .skip-track {
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.24);
+      border: 1px solid rgb(69 100 119);
+      border-radius: 4px;
       font-size: 34px;
       margin-right: 5px;
       line-height: 34px;
       width: 34px;
       height: 34px;
-      background-color: #101014;
+      background-color: rgb(27 38 45 / 90%);
       color: #fff;
       transition: all 0.3s;
       user-select: none;
       &:hover {
-        border: 1px solid #0cc6c6;
+        background-color: rgb(27 38 45 / 90%);
+        border: 1px solid rgb(69 100 119);
       }
     }
   }

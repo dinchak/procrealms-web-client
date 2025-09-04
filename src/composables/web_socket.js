@@ -18,9 +18,11 @@ export function useWebSocket () {
     const _onMessage = json => {
       try {
         let { cmd, msg, reqId } = JSON.parse(json)
+
         if (reqId) {
           state.cache.commandCache[reqId] = msg
         }
+
         if (import.meta.env.MODE == 'development') {
           console.log(`%c<%c ${cmd}${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', msg)
         }

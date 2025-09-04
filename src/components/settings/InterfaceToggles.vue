@@ -161,6 +161,9 @@ function refreshMapSettings () {
     flex-direction: row;
     margin-bottom: 5px;
     justify-content: space-between;
+    &:last-child {
+      margin-bottom: 0;
+    }
     .n-button {
       margin-right: 7px;
       border-radius: 0;

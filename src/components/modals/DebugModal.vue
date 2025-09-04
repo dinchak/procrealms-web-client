@@ -10,7 +10,7 @@
   >
     <div>
       <div class="modal-body">
-        <p class="close" @click="onCloseModal()">
+        <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
           </NIcon>
@@ -91,24 +91,6 @@ onBeforeUnmount(() => {
   .modal-body {
     position: relative;
     padding: 10px;
-
-    .close {
-      margin: 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover {
-        background-color: #e88080;
-        color: #000;
-      }
-    }
-
   }
 }
 </style>

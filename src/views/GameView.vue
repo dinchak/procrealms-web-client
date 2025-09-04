@@ -320,14 +320,14 @@ onBeforeUnmount(() => {
 }
 
 .vertical-split {
+  background-color: #18181b;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding-bottom: 5px;
   flex: 1 1 auto;
 
   > * {
-    padding: 5px 10px;
+    padding: 0 10px;
     flex: 0 0 content;
   }
 }
@@ -343,10 +343,6 @@ onBeforeUnmount(() => {
   .line-area {
     flex: 1 1 auto;
     overflow: visible;
-
-    &:last-child {
-      padding-right: 34px + 10px;
-    }
   }
 
   .side-area {
@@ -386,10 +382,10 @@ onBeforeUnmount(() => {
 }
 
 .bottom-split {
-  padding: 0;
+  padding: 0 0 10px 0;
   flex: 0 0 content;
   > * {
-    padding: 5px 10px 5px 10px;
+    padding: 5px 10px;
   }
 }
 </style>

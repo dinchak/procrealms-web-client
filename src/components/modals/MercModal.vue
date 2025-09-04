@@ -1,6 +1,6 @@
 <template>
   <n-card :class="state.options.swapMobileMenuSide ? 'left' : 'right'" v-if="state.modals.mercModal && state.mercEid !== -1">
-    <p class="close" v-on:click="closeModal()">x</p>
+    <p class="modal-close-button" v-on:click="closeModal()">x</p>
     <h3 class="bold-green" style="display: inline;margin-right: 10px"> {{mercEntity.name}} </h3>
     <span style="color: #aaa">Level</span> <span class="bold-cyan">{{ mercEntity.level }}</span>
     <NProgress v-if="!isNaN(getMercTNL())" class="exp-row" type="line" status="default" :percentage="getMercExpPercentage()">
@@ -145,7 +145,7 @@ function setEffects (effectList) {
   left: 5px;
 }
 
-.close {
+.modal-close-button {
   position: absolute;
   top: -10px;
   right: 10px;

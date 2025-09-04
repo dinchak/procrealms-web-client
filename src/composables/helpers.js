@@ -616,15 +616,15 @@ export function useHelpers () {
   function getEffectFlags (entity, effects) {
     let flags = []
 
-    if (entity.isDead) {
+    if (entity.dead) {
       flags.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
     }
 
-    if (entity.isIncapacitated) {
+    if (entity.incapacitated) {
       flags.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
     }
 
-    if (entity.isHidden) {
+    if (entity.hidden) {
       flags.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
     }
 
@@ -657,15 +657,15 @@ export function useHelpers () {
   function getEffectNames (entity, effects) {
     let names = []
 
-    if (entity.isDead) {
+    if (entity.dead) {
       names.push('Dead')
     }
 
-    if (entity.isIncapacitated) {
+    if (entity.incapacitated) {
       names.push('Down')
     }
 
-    if (entity.isHidden) {
+    if (entity.hidden) {
       names.push('Hidden')
     }
 
@@ -697,12 +697,19 @@ export function useHelpers () {
     return Math.floor(entity.food * 5 / entity.maxFood)
   }
 
+  function range (start, end) {
+    return Array.from({
+      length: end - start + 1
+    }, (_, i) => start + i)
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
-    isOverflowX, isOverflowY, getEffectFlags, getEffectNames
+    isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
+    range
   }
 }
