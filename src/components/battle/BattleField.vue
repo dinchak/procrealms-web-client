@@ -42,7 +42,6 @@ function getBattleTags (position) {
 }
 
 function onPositionClick (position) {
-  console.log(`Position clicked: ${position}`)
   runCommand(`move ${position}`)
 }
 </script>
