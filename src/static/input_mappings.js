@@ -1,6 +1,32 @@
 export function resetInputMappings () {
   return [
     {
+      label: 'Move Forward',
+      event: 'moveForward',
+      inBattle: true,
+      bindings: [{
+        keyCode: 'Numpad6',
+        modes: ['hotkey', 'input'],
+      }, {
+        keyCode: 'ArrowRight',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Move Backward',
+      event: 'moveBackward',
+      inBattle: true,
+      bindings: [{
+        keyCode: 'Numpad4',
+        modes: ['hotkey', 'input'],
+      }, {
+        keyCode: 'ArrowLeft',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
       label: 'Move North',
       event: 'moveNorth',
       bindings: [{
