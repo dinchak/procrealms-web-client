@@ -195,6 +195,7 @@ export const configurableOptions = {
     'Keep Sent Commands': 'keepSentCommands',
     'Text Input Always Focused': 'textInputAlwaysFocused',
     'Unfocus Input On Command': 'unfocusInputOnCommand',
+    'Gamepad Enabled': 'gamepadEnabled'
   },
   'General': {
     'Minimap In Room Description': 'roomDescriptionMinimap',
@@ -215,6 +216,7 @@ function resetOptions () {
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
     unfocusInputOnCommand: false,
+    gamepadEnabled: false,
     keepSentCommands: false,
     showMusicPlayer: false,
     volume: 40,
@@ -248,7 +250,7 @@ function resetOptions () {
     showGameModalShortcuts: true,
 
     // font options
-    fontFamily: 'Ubuntu Mono, monospace',
+    fontFamily: 'Inconsolata, monospace',
     fontSize: '16px',
 
     // terminal size
