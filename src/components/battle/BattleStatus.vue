@@ -2,6 +2,20 @@
   <div class="battle-area">
 
     <div class="battle-footer">
+      <div class="my-turn">
+        <TransitionGroup appear name="my-turn">
+          <div v-if="state.gameState.battle.myTurn" key="myTurn" class="my-turn-icon">
+            <NIconWrapper :size="28" :border-radius="4" class="active">
+              <NIcon :size="24" color="#f5f500">
+                <PriorityHighFilled></PriorityHighFilled>
+              </NIcon>
+            </NIconWrapper>
+          </div>
+        </TransitionGroup>
+      </div>
+
+      <BattleField />
+
       <div class="expand-btn" v-if="!state.options.battleAlwaysExpanded">
         <NIconWrapper :size="28" :border-radius="4">
           <NIcon :size="24" color="#f5f5f5">
@@ -10,14 +24,9 @@
           </NIcon>
         </NIconWrapper>
       </div>
-
-      <BattleField />
-
-      <div class="expand-btn"></div>
     </div>
 
     <div class="battle-status">
-
 
       <template v-for="side in ['good', 'vs', 'evil']" :key="side">
         <div v-if="side === 'vs'" class="vs-container">
@@ -62,7 +71,7 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 import { NIcon, NIconWrapper } from 'naive-ui'
-import { UnfoldMoreFilled, UnfoldLessFilled } from '@vicons/material'
+import { UnfoldMoreFilled, UnfoldLessFilled, PriorityHighFilled } from '@vicons/material'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -137,6 +146,27 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: center;
 
+    .my-turn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      background-color: #18181b;
+
+      .my-turn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        transform-origin: center;
+
+        .n-icon-wrapper.active {
+          background-color: #18181b;
+          animation: myturn-glow 2000ms ease-in-out infinite;
+        }
+      }
+    }
+
     .expand-btn {
       border: 1px solid #777;
       border-radius: 5px;
@@ -146,12 +176,65 @@ onBeforeUnmount(() => {
       display: flex;
       justify-content: flex-start;
       .n-icon-wrapper {
-        background-color: #111111;
+        background-color: #18181b;
         &:hover {
           background-color: #333;
         }
       }
     }
+  }
+}
+
+.my-turn-enter-active,
+.my-turn-appear-active {
+  animation: myturn-in 700ms cubic-bezier(.2,.9,.2,1) both;
+}
+.my-turn-leave-active {
+  animation: myturn-out 350ms ease both;
+}
+
+@keyframes myturn-in {
+  0% {
+    transform: scale(0) rotate(-25deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0 rgba(245,245,0,0));
+  }
+  60% {
+    transform: scale(1.2) rotate(12deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(245,245,0,0.95));
+  }
+}
+
+@keyframes myturn-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(245,245,0,0.95));
+  }
+  100% {
+    transform: scale(0.6) rotate(10deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+  }
+}
+
+@keyframes myturn-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(245,245,0,0.30);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(245,245,0,0.95);
+    transform: translateY(-2px);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(245,245,0,0.30);
+    transform: translateY(0);
   }
 }
 
@@ -173,25 +256,12 @@ onBeforeUnmount(() => {
       margin: 0px 4px;
       flex: 0 0 0;
       position: relative;
-      font-family: 'DOS', monospace;
+      font-family: 'Inconsolata', monospace;
       animation: vs 0.4s ease-in forwards;
       font-size: 1.1rem;
       text-align: center;
       letter-spacing: 2px;
-      //color: #c50f1f;
       color: #f5f5f5;
-      //text-shadow:
-      //      0px -2px 2px black,
-      //      2px 0px 2px black,
-      //      -2px 0px 2px black,
-      //      0px -4px 4px #fff,
-      //      0px -4px 4px #fff,
-      //  0px -6px 6px #FF3,
-      //  0px -6px 6px #FF3,
-      //  0px -8px 8px #F90,
-      //  0px -8px 8px #F90,
-      //  0px -16px 12px #C33,
-      //  0px -16px 12px #C33;
       text-shadow:
             0px -2px 2px black,
             2px 0px 2px black,
@@ -241,35 +311,36 @@ onBeforeUnmount(() => {
 
     &.evil {
       justify-content: start;
-      // flex-direction: row;
     }
 
     .entity {
       align-self: stretch;
       position: relative;
-      // margin: 5px;
 
       .damage {
         position: absolute;
         top: 0;
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         color: #ff3333;
         padding: 5px 10px;
-        opacity: 0.8;
-        background-color: #101014;
-        z-index: 1;
+        font-weight: bold;
+        opacity: 1.0;
+        background-color: transparent;
+        z-index: 12;
+        pointer-events: none;
+        -webkit-font-smoothing: antialiased;
 
         &.crit {
           line-height: 1.2rem;
-          font-size: 1.9rem;
-          color: #ffcc33;
+          font-size: 2.0rem;
+          color: #ffd966;
         }
       }
 
       .healing {
         position: absolute;
         top: -40px;
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         color: #33ff33;
         padding: 5px 10px;
         opacity: 0.8;
