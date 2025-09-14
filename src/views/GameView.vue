@@ -181,6 +181,14 @@ function enter () {
   }, 100)
 }
 
+function moveForward () {
+  runCommand('move forward')
+}
+
+function moveBackward () {
+  runCommand('move backward')
+}
+
 function moveNorth () {
   move('north')
 }
@@ -223,6 +231,9 @@ onMounted(() => {
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
 
+  state.inputEmitter.on('moveForward', moveForward)
+  state.inputEmitter.on('moveBackward', moveBackward)
+
   state.inputEmitter.on('moveNorth', moveNorth)
   state.inputEmitter.on('moveSouth', moveSouth)
   state.inputEmitter.on('moveEast', moveEast)
@@ -262,6 +273,9 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.inputEmitter.off('moveForward', moveForward)
+  state.inputEmitter.off('moveBackward', moveBackward)
 
   state.inputEmitter.off('moveNorth', moveNorth)
   state.inputEmitter.off('moveSouth', moveSouth)
