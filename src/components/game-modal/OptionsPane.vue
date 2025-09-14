@@ -63,14 +63,20 @@
 
       <NGrid class="options" cols="1">
         <NGi style="text-align: center">
-          <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()"
-                   ghost>Triggers
+          <NButton style="margin-top: 30px" class="menu-button selectable" type="info" @click="openTriggersModal()" ghost>
+            Triggers
           </NButton>
         </NGi>
         <NGi style="text-align: center">
-          <NButton class="menu-button selectable" type="success" @click="toggleFullscreen()"
-                   :ghost="!state.isFullscreen">Full Screen
+          <NButton class="menu-button selectable" type="success" @click="toggleFullscreen()" :ghost="!state.isFullscreen">
+            Full Screen
           </NButton>
+        </NGi>
+        <NGi style="text-align: center">
+          <NButton class="menu-button selectable" type="primary" @click="exportOptionsToFile()" ghost>Export Options</NButton>
+        </NGi>
+        <NGi style="text-align: center">
+          <NButton class="menu-button selectable" type="info" @click="triggerImport()" ghost>Import Options</NButton>
         </NGi>
         <NGi style="text-align: center">
           <NButton class="menu-button selectable" type="error" @click="openLogoutModal()" ghost>Logout</NButton>
@@ -79,6 +85,7 @@
     </div>
 
   </div>
+  <input ref="fileInput" type="file" accept="application/json" style="display:none" @change="onFileSelected" />
 </template>
 
 <script setup>
@@ -86,12 +93,17 @@ import { ref, defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NSwitch, NRadioGroup, NRadioButton, NSelect, NButton } from 'naive-ui'
 import { state, setMode, configurableOptions } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 const { setFontFamily, setFontSize, toggleFullscreen } = useWindowHandler()
+
+const { exportOptions, importOptions } = useLocalStorageHandler()
+
+const fileInput = ref(null)
 
 const selectedFontSize = ref(state.options.fontSize)
 const selectedFontFamily = ref(state.options.fontFamily)
@@ -112,6 +124,26 @@ function openTriggersModal () {
 function openLogoutModal () {
   setMode('modal')
   state.modals.logoutModal = true
+}
+
+function triggerImport () {
+  if (fileInput.value) {
+    fileInput.value.click()
+  }
+}
+
+async function onFileSelected (event) {
+  const files = event.target.files || event.dataTransfer?.files
+  if (!files || files.length === 0) {
+    return
+  }
+  const file = files[0]
+  const text = await file.text()
+  importOptions(text)
+}
+
+function exportOptionsToFile () {
+  exportOptions()
 }
 
 function getScrollContainerClass () {

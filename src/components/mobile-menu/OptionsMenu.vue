@@ -37,9 +37,12 @@
 
     <n-button style="margin-top: 30px" class="menu-button" type="info" @click="openTriggersModal()" ghost>Triggers</n-button>
     <n-button class="menu-button" type="success" @click="goFullscreen()" ghost>Full Screen</n-button>
+    <n-button class="menu-button" type="primary" @click="exportOptionsToFile()" ghost>Export Options</n-button>
+    <n-button class="menu-button" type="info" @click="triggerImport()" ghost>Import Options</n-button>
     <n-button class="menu-button" type="warning" @click="openHelpModal()" ghost>Help</n-button>
     <n-button class="menu-button" type="error" @click="openLogoutModal()" ghost>Logout</n-button>
   </div>
+  <input ref="fileInput" type="file" accept="application/json" style="display:none" @change="onFileSelected" />
 </template>
 
 <script setup>
@@ -47,9 +50,30 @@ import { ref } from 'vue'
 import { NSwitch, NButton, NRadioGroup, NRadioButton, NSelect } from 'naive-ui'
 import { state, setMode, configurableOptions } from '@/static/state'
 import { useWindowHandler } from '@/composables/window_handler'
+import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { FONT_OPTIONS, FONT_SIZES } from '@/static/constants'
 
 const { triggerResize, setFontSize, setFontFamily } = useWindowHandler()
+const { exportOptions, importOptions } = useLocalStorageHandler()
+
+const fileInput = ref(null)
+
+function triggerImport () {
+  // open hidden file input
+  if (fileInput.value) {
+    fileInput.value.click()
+  }
+}
+
+async function onFileSelected (event) {
+  const files = event.target.files || event.dataTransfer?.files
+  if (!files || files.length === 0) {
+    return
+  }
+  const file = files[0]
+  const text = await file.text()
+  importOptions(text)
+}
 
 const selectedFontSize = ref(state.options.fontSize)
 const selectedFontFamily = ref(state.options.fontFamily)
@@ -81,6 +105,10 @@ function openHelpModal () {
 function openLogoutModal () {
   setMode('modal')
   state.modals.logoutModal = true
+}
+
+function exportOptionsToFile () {
+  exportOptions()
 }
 
 </script>
