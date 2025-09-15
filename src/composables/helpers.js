@@ -1,7 +1,7 @@
 import { AnsiUp } from 'ansi_up'
 
 import { getOrderCmd, state, updateCounter } from '@/static/state'
-import { ANSI, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
+import { ANSI, ANSI_REPLACEMENTS, CHANNEL_COLORS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -703,6 +703,26 @@ export function useHelpers () {
     }, (_, i) => start + i)
   }
 
+  function renderMessage ({ channel, from, to, message }) {
+    let out = ''
+
+    if (CHANNEL_COLORS[channel]) {
+      let color = CHANNEL_COLORS[channel] || 'white'
+      let channelOut = `<span class="${color}">[</span><span class="bold-${color}">${channel}</span><span class="${color}">]</span>`
+      let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
+      out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
+    } else if (channel == 'tell') {
+      if (from == 'You') {
+        out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
+      } else {
+        out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
+      }
+    } else {
+      out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+    }
+    return out
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
@@ -710,6 +730,6 @@ export function useHelpers () {
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
-    range
+    range, renderMessage
   }
 }
