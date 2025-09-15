@@ -1,5 +1,5 @@
 <template>
-  <div class="hud-settings-overlay" @click="state.settingsMode = false">
+  <div class="hud-settings-overlay" @click="state.modals.settingsModal = false">
     <div class="hud-settings-container" @click="$event.stopPropagation()">
       <MapResize v-if="state.options.showSideMap" />
       <InterfaceToggles />
@@ -9,12 +9,29 @@
   </div>
 </template>
 <script setup>
-import { state } from '@/static/state'
+import { onMounted, onBeforeUnmount } from 'vue'
+import { state, prevMode } from '@/static/state'
 
 import FontSelector from '@/components/settings/FontSelector.vue'
 import MapResize from '@/components/settings/MapResize.vue'
 import InterfaceToggles from '@/components/settings/InterfaceToggles.vue'
 import SettingsActions from '@/components/settings/SettingsActions.vue'
+
+function onCloseModal () {
+  if (!state.modals.settingsModal) {
+    return
+  }
+  state.modals.settingsModal = false
+  prevMode()
+}
+
+onMounted(() => {
+  state.inputEmitter.on('closeModal', onCloseModal)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('closeModal', onCloseModal)
+})
 </script>
 
 <style scoped lang="less">

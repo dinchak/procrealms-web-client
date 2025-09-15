@@ -3,7 +3,7 @@
     <div class="interface">
       <NIcon
           title="Settings"
-          :class="state.settingsMode ? 'active' : ''"
+          :class="state.modals.settingsModal ? 'active' : ''"
           size="24"
           @click="toggleSettings"
       >
@@ -85,7 +85,7 @@
       </div>
 
     </div>
-    <SettingsOverlay v-if="state.settingsMode"/>
+    <SettingsOverlay v-if="state.modals.settingsModal"/>
     <MusicPlayerOverlay v-if="state.options.showMusicPlayer"/>
   </div>
 </template>
@@ -114,7 +114,8 @@ function toggleHelp () {
 }
 
 function toggleSettings () {
-  state.settingsMode = !state.settingsMode
+  state.modals.settingsModal = !state.modals.settingsModal
+  setMode('modal')
 }
 
 function openGameModal (pane = null) {
