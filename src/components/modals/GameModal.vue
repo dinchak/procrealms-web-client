@@ -11,6 +11,10 @@
 
     <div>
       <div class="modal-body">
+        <div class="modal-turn-indicator">
+          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
+        </div>
+
         <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
@@ -79,6 +83,7 @@ import { useWindowHandler } from '@/composables/window_handler'
 
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
+import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
 
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
 import InputMappingsPane from '@/components/game-modal/InputMappingsPane.vue'
@@ -255,7 +260,7 @@ onBeforeUnmount(() => {
 
     .game-modal-tabs {
       .n-tabs-nav {
-        width: calc(100vw - 100px);
+        width: calc(100vw - 150px);
       }
       .n-tab-pane {
         .n-select {
@@ -267,6 +272,13 @@ onBeforeUnmount(() => {
       &.mini-output-hidden {
         height: calc(100vh - 20px);
       }
+    }
+
+    .modal-turn-indicator {
+      position: absolute;
+      top: 14px;
+      right: 95px;
+      z-index: 10;
     }
 
     .mini-output {

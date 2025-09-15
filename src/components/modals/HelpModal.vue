@@ -10,6 +10,9 @@
   >
     <div>
       <div class="modal-body">
+        <div class="modal-turn-indicator">
+          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
+        </div>
         <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
@@ -229,6 +232,7 @@ import { ANSI } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
+import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
 
 const { runCommand, send } = useWebSocket()
 const { ansiToHtml, renderNumber, ucfirst } = useHelpers()
@@ -497,6 +501,13 @@ onBeforeUnmount(() => {
   .modal-body {
     position: relative;
     padding: 10px;
+
+    .modal-turn-indicator {
+      position: absolute;
+      top: 14px;
+      right: 50px;
+      z-index: 10;
+    }
 
     .help-modal-tabs {
       .n-tabs-tab {
