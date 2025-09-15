@@ -390,6 +390,7 @@ onBeforeUnmount(() => {
     }
 
     .side-bottom {
+      justify-content: flex-end;
       flex-grow: 1;
     }
   }
