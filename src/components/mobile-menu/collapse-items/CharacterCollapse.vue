@@ -114,14 +114,14 @@
       <div class="row">
         <div><span class="white">+</span><span class="bold-cyan">{{ renderNumber(player().magicFocusBonus) }}</span>s</div>
         <div>Focus</div>
-        <div><span class="white">+</span><span class="magenta">{{ player().spiritCommandBonus }}</span></div>
-        <div>Command</div>
+        <div><span class="white">+</span><span class="magenta">{{ player().spiritSummoningPowerBonus }}</span>%</div>
+        <div>Summoning Power</div>
       </div>
       <div class="row">
         <div><span class="white">+</span><span class="cyan">{{ renderNumber(player().magicSpellCooldownBonus) }}</span>s</div>
         <div>Spell Cooldown</div>
-        <div><span class="white">+</span><span class="magenta">{{ player().spiritSummoningPowerBonus }}</span>%</div>
-        <div>Regeneration</div>
+        <div><span class="white">+</span><span class="magenta">{{ player().spiritCommandBonus }}</span></div>
+        <div>Command</div>
       </div>
     </div>
 
@@ -188,10 +188,10 @@
       </div>
 
       <div class="row">
-        <div>+<span class="magenta">{{ Math.round(player().summoningPower * 100) }}</span><span class="white">%</span></div>
-        <div>Summon Power</div>
+        <div>+<span class="magenta">{{ Math.round(player().summoningPower) }}</span><span class="white">%</span></div>
+        <div>Summoning Power</div>
         <div>+<span class="green">{{ renderNumber(player().healingPower) }}</span>%</div>
-        <div>Healing Bonus</div>
+        <div>Healing Power</div>
       </div>
 
       <div class="row">
@@ -213,48 +213,68 @@
 
     <div class="damage-types">
       <div class="row">
-        <div>+<span class="green">{{ player().damageBonusAcid }}</span></div>
-        <div>-<span class="green">{{ player().resistAcid }}</span></div>
-        <div>Acid</div>
-        <div>+<span class="bold-cyan">{{ player().damageBonusArcane }}</span></div>
-        <div>-<span class="bold-cyan">{{ player().resistArcane }}</span></div>
-        <div>Arcane</div>
+        <div>
+          <span class="white">Acid</span>
+          +<span class="green">{{ player().damageBonusAcid }}</span>
+          -<span class="green">{{ player().resistAcid }}</span>
+        </div>
+        <div>
+          <span class="white">Arcane</span>
+          +<span class="bold-cyan">{{ player().damageBonusArcane }}</span>
+          -<span class="bold-cyan">{{ player().resistArcane }}</span>
+        </div>
       </div>
 
       <div class="row">
-        <div>+<span class="magenta">{{ player().damageBonusBludgeoning }}</span></div>
-        <div>-<span class="magenta">{{ player().resistBludgeoning }}</span></div>
-        <div>Bludgeoning</div>
-        <div>+<span class="bold-yellow">{{ player().damageBonusElectric }}</span></div>
-        <div>-<span class="bold-yellow">{{ player().resistElectric }}</span></div>
-        <div>Electric</div>
+        <div>
+          <span class="white">Bludgeoning</span>
+          +<span class="magenta">{{ player().damageBonusBludgeoning }}</span>
+          -<span class="magenta">{{ player().resistBludgeoning }}</span>
+        </div>
+        <div>
+          <span class="white">Electric</span>
+          +<span class="bold-yellow">{{ player().damageBonusElectric }}</span>
+          -<span class="bold-yellow">{{ player().resistElectric }}</span>
+        </div>
       </div>
 
       <div class="row">
-        <div>+<span class="red">{{ player().damageBonusPiercing }}</span></div>
-        <div>-<span class="red">{{ player().resistPiercing }}</span></div>
-        <div>Piercing</div>
-        <div>+<span class="bold-red">{{ player().damageBonusFire }}</span></div>
-        <div>-<span class="bold-red">{{ player().resistFire }}</span></div>
-        <div>Fire</div>
+        <div>
+          <span class="white">Piercing</span>
+          +<span class="red">{{ player().damageBonusPiercing }}</span>
+          -<span class="red">{{ player().resistPiercing }}</span>
+        </div>
+        <div>
+          <span class="white">Fire</span>
+          +<span class="bold-red">{{ player().damageBonusFire }}</span>
+          -<span class="bold-red">{{ player().resistFire }}</span>
+        </div>
       </div>
 
       <div class="row">
-        <div>+<span class="bold-green">{{ player().damageBonusPoison }}</span></div>
-        <div>-<span class="bold-green">{{ player().resistPoison }}</span></div>
-        <div>Poison</div>
-        <div>+<span class="bold-white">{{ player().damageBonusHoly }}</span></div>
-        <div>-<span class="bold-white">{{ player().resistHoly }}</span></div>
-        <div>Holy</div>
+        <div>
+          <span class="white">Poison</span>
+          +<span class="bold-green">{{ player().damageBonusPoison }}</span>
+          -<span class="bold-green">{{ player().resistPoison }}</span>
+        </div>
+        <div>
+          <span class="white">Holy</span>
+          +<span class="bold-white">{{ player().damageBonusHoly }}</span>
+          -<span class="bold-white">{{ player().resistHoly }}</span>
+        </div>
       </div>
 
       <div class="row">
-        <div>+<span class="bold-red">{{ player().damageBonusSlashing }}</span></div>
-        <div>-<span class="bold-red">{{ player().resistSlashing }}</span></div>
-        <div>Slashing</div>
-        <div>+<span class="bold-blue">{{ player().damageBonusIce }}</span></div>
-        <div>-<span class="bold-blue">{{ player().resistIce }}</span></div>
-        <div>Ice</div>
+        <div>
+          <span class="white">Slashing</span>
+          +<span class="bold-red">{{ player().damageBonusSlashing }}</span>
+          -<span class="bold-red">{{ player().resistSlashing }}</span>
+        </div>
+        <div>
+          <span class="white">Ice</span>
+          +<span class="bold-blue">{{ player().damageBonusIce }}</span>
+          -<span class="bold-blue">{{ player().resistIce }}</span>
+        </div>
       </div>
 
     </div>
@@ -359,14 +379,7 @@ onBeforeUnmount(() => {
     display: table-row;
     > div {
       display: table-cell;
-      &:nth-child(3), &:nth-child(6) {
-        text-align: left;
-        padding: 0 0px 3px 3px;
-        width: 65px;
-      }
-      &:nth-child(1), &:nth-child(2), &:nth-child(4), &:nth-child(5) {
-        text-align: center;
-      }
+      text-align: center;
     }
   }
 }
@@ -381,7 +394,7 @@ onBeforeUnmount(() => {
       display: table-cell;
       &:nth-child(odd) {
         text-align: right;
-        padding: 0 3px 4px 0;
+        padding: 0 5px 4px 0;
       }
       &.col-2 {
         width: 50%;

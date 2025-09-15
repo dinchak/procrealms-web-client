@@ -237,7 +237,7 @@
           </div>
           <div class="ability-bonus">
             <div class="value">+<span class="green">{{ player().spiritHealingPowerBonus }}</span>%</div>
-            <div class="label">Healing</div>
+            <div class="label">Healing Power</div>
           </div>
           <div class="ability-bonus">
             <div class="value">+<span class="bold-white">{{ player().spiritEnergyBonus }}</span></div>
@@ -344,8 +344,8 @@
           <div>Command</div>
         </div>
         <div class="combat-stat">
-          <div>+<span class="magenta">{{ Math.round(player().summoningPower * 100) }}</span><span class="white">%</span></div>
-          <div>Summon Power</div>
+          <div>+<span class="magenta">{{ Math.round(player().summoningPower) }}</span><span class="white">%</span></div>
+          <div>Summoning Power</div>
         </div>
         <div class="combat-stat">
           <div class="bold-green">{{ renderNumber(player().regeneration) }}</div>
@@ -353,7 +353,7 @@
         </div>
         <div class="combat-stat">
           <div>+<span class="green">{{ renderNumber(player().healingPower) }}</span>%</div>
-          <div>Healing Bonus</div>
+          <div>Healing Power</div>
         </div>
       </NGi>
     </NGrid>
