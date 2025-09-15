@@ -323,6 +323,7 @@ onBeforeUnmount(() => {
     }
 
     .n-tabs-nav {
+      display: none;
       &.hide {
         display: none;
       }
