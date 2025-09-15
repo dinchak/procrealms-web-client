@@ -10,7 +10,7 @@
           <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">A</span><span class="bold-black">ttack</span>
+          <span class="white">A</span><span class="black">ttack</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
@@ -21,7 +21,7 @@
           <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">D</span><span class="bold-black">efend</span>
+          <span class="white">D</span><span class="black">efend</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
@@ -32,7 +32,7 @@
           <span class="bold-yellow">F</span><span class="yellow">lee</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">F</span><span class="bold-black">lee</span>
+          <span class="white">F</span><span class="black">lee</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
@@ -43,7 +43,7 @@
           <span class="bold-yellow">B</span><span class="bold-red">attle</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">B</span><span class="bold-black">attle</span>
+          <span class="white">B</span><span class="black">attle</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
@@ -54,7 +54,7 @@
           <span class="bold-yellow">H</span><span class="yellow">arvest</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">H</span><span class="bold-black">arvest</span>
+          <span class="white">H</span><span class="black">arvest</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
@@ -65,7 +65,7 @@
           <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">L</span><span class="bold-black">oot</span>
+          <span class="white">L</span><span class="black">oot</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>

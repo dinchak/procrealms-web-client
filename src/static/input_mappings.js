@@ -779,7 +779,7 @@ export function resetInputMappings () {
     },
 
     {
-      label: 'Show Game Modal',
+      label: 'Open Game Modal',
       event: 'openGameModal',
       bindings: [{
         keyCode: 'Escape',
