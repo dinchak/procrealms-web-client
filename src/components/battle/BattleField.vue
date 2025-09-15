@@ -53,7 +53,7 @@ function onPositionClick (position) {
   max-width: 800px;
   margin: 0 auto;
   display: flex;
-  margin: 0 5px;
+  margin: 0 20px;
   flex-direction: row;
   justify-content: space-around;
   align-items: stretch;
