@@ -152,9 +152,13 @@ export const DIRECTION_MAP = {
 }
 
 export const CHANNEL_COLORS = {
-  chat: 'bold-yellow',
-  trade: 'bold-green',
-  newbie: 'bold-magenta'
+  chat: 'yellow',
+  party: 'green',
+  trade: 'blue',
+  newbie: 'magenta',
+  info: 'cyan',
+  announce: 'red',
+  events: 'white'
 }
 
 export const TRAITS_MERCENARY = 'mercenary'
