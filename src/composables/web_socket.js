@@ -197,11 +197,23 @@ export function useWebSocket () {
       .filter(item => item)
   }
 
+  async function refreshEntity (eid) {
+    delete state.cache.entityCache[eid]
+    await fetchEntity(eid, true)
+    state.updateCounter++
+  }
+
+  async function refreshItem (iid) {
+    delete state.cache.itemCache[iid]
+    await fetchItem(iid, true)
+    state.updateCounter++
+  }
+
   return {
     initConnection,
     send, sendWithResponse, runCommand,
     move, enter,
-    fetchEntity, fetchEntities,
-    fetchItem, fetchItems,
+    fetchEntity, fetchEntities, refreshEntity,
+    fetchItem, fetchItems, refreshItem,
   }
 }
