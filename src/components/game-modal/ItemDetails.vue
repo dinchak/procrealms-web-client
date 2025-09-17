@@ -258,11 +258,15 @@ function numGemSlotsAvailable () {
 
 function renderGemSlotBonus (slotNum) {
   let flag = item.value.flags.find(flg => flg.gemSlot === slotNum)
-  if (!flag) {
+  if (!flag || !flag.bonuses) {
     return ''
   }
 
   let bonus = flag.bonuses[0]
+  if (!bonus) {
+    return ''
+  }
+
   let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
   if (!itemEffect) {
     return ''
