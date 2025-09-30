@@ -158,6 +158,26 @@
                     <div class="value bold-white">{{ content.skillData.pointCost }}</div>
                   </div>
 
+                  <div class="skill-info" v-if="content.skillData.commandNeeded">
+                    <div class="label">Command Needed</div>
+                    <div class="value bold-magenta">{{ content.skillData.commandNeeded }}</div>
+                  </div>
+
+                  <div class="skill-info" v-if="content.skillData.damLow && content.skillData.damHigh">
+                    <div class="label">Damage</div>
+                    <div class="value bold-red">{{ content.skillData.damLow }} <span class="white">-</span> {{ content.skillData.damHigh }} <span class="white">+</span> {{ content.skillData.damBonus }}</div>
+                  </div>
+
+                  <div class="skill-info" v-if="content.skillData.damageType">
+                    <div class="label">Damage Type</div>
+                    <div class="value bold-cyan">{{ content.skillData.damageType }}</div>
+                  </div>
+
+                  <div class="skill-info" v-if="content.skillData.areaEffectRadius">
+                    <div class="label">Area Effect Radius</div>
+                    <div class="value bold-yellow">{{ content.skillData.areaEffectRadius }}</div>
+                  </div>
+
                   <div class="skill-info" v-if="content.skillData.castingTime">
                     <div class="label">Casting Time</div>
                     <div class="value">
@@ -168,14 +188,14 @@
                   <div class="skill-info" v-if="content.skillData.cooldownTime">
                     <div class="label">Cooldown Time</div>
                     <div class="value">
-                      <span class="bold-white">{{ content.skillData.cooldownTime }}</span> seconds
+                      <span class="bold-white">{{ renderNumber(content.skillData.cooldownTime) }}</span> seconds
                     </div>
                   </div>
 
                   <div class="skill-info" v-if="content.skillData.recoveryTime">
-                    <div class="label">Cooldown</div>
+                    <div class="label">Recovery Time</div>
                     <div class="value">
-                      +<span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
+                      <span class="bold-yellow">{{ renderNumber(content.skillData.recoveryTime / 10) }}</span> seconds</div>
                   </div>
 
                   <div class="skill-info" v-if="content.skillData.spell">
@@ -193,6 +213,11 @@
                   <div class="skill-info" v-if="content.skillData.target">
                     <div class="label">Target</div>
                     <div class="value bold-white">{{ ucfirst(content.skillData.target) }}</div>
+                  </div>
+
+                  <div class="skill-info" v-if="content.skillData.range">
+                    <div class="label">Range</div>
+                    <div class="value bold-green">{{ content.skillData.range }}</div>
                   </div>
 
                   <div class="skill-info">
@@ -616,7 +641,7 @@ onBeforeUnmount(() => {
               font-size: 18px;
               padding: 0 20px;
               .label {
-                width: 120px;
+                width: 140px;
                 padding-right: 15px;
                 text-align: right;
               }
