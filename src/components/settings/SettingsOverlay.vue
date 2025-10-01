@@ -1,5 +1,5 @@
 <template>
-  <div class="hud-settings-overlay" @click="state.modals.settingsModal = false">
+  <div class="hud-settings-overlay" @click="onCloseModal()">
     <div class="hud-settings-container" @click="$event.stopPropagation()">
       <MapResize v-if="state.options.showSideMap" />
       <InterfaceToggles />
