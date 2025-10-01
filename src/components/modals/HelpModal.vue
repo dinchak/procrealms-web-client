@@ -641,7 +641,7 @@ onBeforeUnmount(() => {
               font-size: 18px;
               padding: 0 20px;
               .label {
-                width: 140px;
+                width: 165px;
                 padding-right: 15px;
                 text-align: right;
               }
