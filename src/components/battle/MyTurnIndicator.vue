@@ -7,6 +7,7 @@
             <PriorityHighFilled />
           </NIcon>
         </NIconWrapper>
+        <div class="my-turn-label">Your Turn</div>
       </div>
     </TransitionGroup>
   </div>
@@ -19,8 +20,6 @@ import { PriorityHighFilled } from '@vicons/material'
 
 <style lang="less" scoped>
 .my-turn {
-  width: 28px;
-  height: 28px;
   display: flex;
   background-color: #18181b;
 
@@ -28,13 +27,19 @@ import { PriorityHighFilled } from '@vicons/material'
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
     transform-origin: center;
+    flex-direction: column;
 
     .n-icon-wrapper.active {
       background-color: #18181b;
       animation: myturn-glow 2000ms ease-in-out infinite;
+    }
+
+    .my-turn-label {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #f5f500;
+      text-shadow: 0 0 6px rgba(245,245,0,0.75);
     }
   }
 }

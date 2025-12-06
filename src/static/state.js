@@ -212,6 +212,7 @@ function resetOptions () {
   return {
     // general options
     battleAlwaysExpanded: true,
+    battleExpanded: false,
     largeVitals: true,
     chatInMain: true,
     roomDescriptionMinimap: false,
@@ -329,16 +330,6 @@ export function showHUD () {
     showMinimap || showRoomInfo || showEffects || showQuests
   )
 }
-
-// export function getHUDHeight () {
-//   if (state.options.fontSize == '14px') {
-//     return 105
-//   } else if (state.options.fontSize == '16px') {
-//     return 120
-//   } else if (state.options.fontSize == '18px') {
-//     return 135
-//   }
-// }
 
 export function getPartyStatsHeight () {
   if (state.options.fontSize == '14px') {

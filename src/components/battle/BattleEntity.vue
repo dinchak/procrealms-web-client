@@ -330,7 +330,8 @@ function getStaminaPercent (en, part, sd) {
   flex-direction: column;
   justify-content: space-between;
   background-color: #462233;
-  width: 265px;
+  width: 100%;
+  max-width: 265px;
   border-radius: @border-radius;
   border: 1px solid transparent;
 

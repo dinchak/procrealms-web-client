@@ -2,18 +2,7 @@
   <div class="battle-area">
 
     <div class="battle-footer">
-      <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
-
       <BattleField />
-
-      <div class="expand-btn" v-if="!state.options.battleAlwaysExpanded">
-        <NIconWrapper :size="28" :border-radius="4">
-          <NIcon :size="24" color="#f5f5f5">
-            <UnfoldMoreFilled v-if="!expandEntities" @click.stop="toggleInfo()"></UnfoldMoreFilled>
-            <UnfoldLessFilled v-if="expandEntities" @click.stop="toggleInfo()"></UnfoldLessFilled>
-          </NIcon>
-        </NIconWrapper>
-      </div>
     </div>
 
     <div class="battle-status">
@@ -21,6 +10,8 @@
       <template v-for="side in ['good', 'vs', 'evil']" :key="side">
         <div v-if="side === 'vs'" class="vs-container">
           <div class="vs">VS</div>
+          <ExpandBattleInfo v-if="!state.options.battleAlwaysExpanded" />
+          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
         </div>
 
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
@@ -59,10 +50,9 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
-import { NIcon, NIconWrapper } from 'naive-ui'
-import { UnfoldMoreFilled, UnfoldLessFilled } from '@vicons/material'
+import { onMounted, onBeforeUnmount, computed } from 'vue'
 import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
+import ExpandBattleInfo from '@/components/battle/ExpandBattleInfo.vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -70,7 +60,9 @@ import { useHelpers } from '@/composables/helpers'
 import BattleEntity from '@/components/battle/BattleEntity.vue'
 import BattleField from '@/components/battle/BattleField.vue'
 
-const expandEntities = ref(state.options.battleAlwaysExpanded)
+const expandEntities = computed(() => {
+  return state.options.battleAlwaysExpanded ? true : state.options.battleExpanded
+})
 
 const { selectNearestElement } = useHelpers()
 
@@ -109,13 +101,6 @@ function getSideClass (side) {
   return classes.join(' ')
 }
 
-function toggleInfo () {
-  expandEntities.value = !expandEntities.value
-  nextTick(() => {
-    state.inputEmitter.emit('scrollDown')
-  })
-}
-
 onMounted(() => {
   state.inputEmitter.on('selectBattleAction', selectBattleAction)
   state.inputEmitter.on('performBattleAction', performBattleAction)
@@ -131,34 +116,22 @@ onBeforeUnmount(() => {
 .battle-area {
   margin-top: 5px;
 
+  .battle-controls {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 10px;
+  }
+
   .battle-footer {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 10px;
-
-    /* my-turn moved to a reusable component: src/components/battle/MyTurnIndicator.vue */
-
-    .expand-btn {
-      border: 1px solid #777;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      justify-content: flex-start;
-      .n-icon-wrapper {
-        background-color: #18181b;
-        &:hover {
-          background-color: #333;
-        }
-      }
-    }
-
+  }
 }
-
-/* my-turn transition styles moved to MyTurnIndicator.vue */
 
 .battle-status {
   display: flex;
@@ -167,12 +140,16 @@ onBeforeUnmount(() => {
   padding-bottom: 10px;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
   .vs-container {
+    margin-top: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 20px;
     .vs {
       z-index: 1;
       margin: 0px 4px;
@@ -221,14 +198,17 @@ onBeforeUnmount(() => {
   }
 
   .side {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 12px 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(265px, max-content));
+    grid-auto-rows: auto;
     gap: 4px;
+    margin: 12px 12px;
     align-self: flex-start;
+    width: fit-content;
+    max-width: calc(50% - 40px);
 
     &.good {
-      justify-content: flex-end;
+      justify-content: end;
     }
 
     &.evil {
@@ -236,8 +216,11 @@ onBeforeUnmount(() => {
     }
 
     .entity {
-      align-self: stretch;
+      display: inline-block;
+      vertical-align: top;
       position: relative;
+      align-self: start;
+      min-width: 0;
 
       .damage {
         position: absolute;
@@ -346,16 +329,30 @@ onBeforeUnmount(() => {
   }
 }
 
-@media screen and (max-width: 960px) {
+@media screen and (max-width: 640px) {
   .battle-status {
     flex-direction: column;
     .side {
-      flex-direction: column;
+      grid-template-columns: 1fr !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      justify-content: center;
+      justify-items: center;
       align-self: center;
+
+      .entity {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .main-card {
+        width: 100%;
+        max-width: 265px;
+        margin: 0 auto;
+      }
     }
   }
-}
-
 }
 
 </style>
