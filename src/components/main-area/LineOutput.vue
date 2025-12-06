@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
     justify-content: flex-end;
     overflow-y: auto;
-    width: 100%;
+    width: calc(100% - 42px);
     height: 100%;
   }
 }

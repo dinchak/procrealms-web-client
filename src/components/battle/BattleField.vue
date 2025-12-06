@@ -53,7 +53,6 @@ function onPositionClick (position) {
   max-width: 800px;
   margin: 0 auto;
   display: flex;
-  margin: 0 20px;
   flex-direction: row;
   justify-content: space-around;
   align-items: stretch;
@@ -81,7 +80,6 @@ function onPositionClick (position) {
 
     .battlefield-position {
       background-color: #2e0808;
-      // border-bottom: 1px solid #640000;
       flex-grow: 0;
       flex-shrink: 0;;
       width: 30px;
@@ -100,9 +98,6 @@ function onPositionClick (position) {
       flex: 1;
       flex-wrap: wrap;
       justify-content: space-around;
-      .battlefield-entity {
-
-      }
     }
   }
 }

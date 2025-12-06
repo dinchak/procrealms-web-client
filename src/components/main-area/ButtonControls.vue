@@ -137,14 +137,14 @@ function openGameModal (pane = null) {
   flex-direction: column;
   gap: 10px;
 
-  @media screen and (max-width: 650px) {
+  @media screen and (max-width: 960px) {
     .game.swap-mobile-menu & {
       flex-direction: column-reverse;
       top: auto;
       bottom: 5px;
     }
   }
-  @media screen and (min-width: 651px) {
+  @media screen and (min-width: 961px) {
     .game.swap-mobile-menu & {
       right: 272px + 5px;
     }
@@ -157,7 +157,7 @@ function openGameModal (pane = null) {
   justify-content: flex-end;
   gap: 5px;
 
-  @media screen and (max-width: 650px) {
+  @media screen and (max-width: 960px) {
     flex-direction: column-reverse;
     .game.swap-mobile-menu & {
       flex-direction: column;
@@ -201,7 +201,7 @@ function openGameModal (pane = null) {
   .game.swap-mobile-menu & {
     flex-direction: column;
   }
-  @media screen and (max-width: 650px) {
+  @media screen and (max-width: 960px) {
     position: static;
     .game.swap-mobile-menu & {
       flex-direction: column-reverse;
