@@ -23,11 +23,9 @@ const { ansiToHtml } = useHelpers()
 .side-map {
   display: flex;
   align-items: flex-end;
-  align-self: center;
   flex-direction: column;
   user-select: none;
   .map-container {
-    margin-top: 10px;
     .map-line {
       white-space: pre;
     }

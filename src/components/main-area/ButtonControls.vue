@@ -2,6 +2,15 @@
   <div class="interface-overlay">
     <div class="interface">
       <NIcon
+          title="Sidebar"
+          :class="state.options.showMobileMenu ? 'active' : ''"
+          size="24"
+          @click="state.options.showMobileMenu = !state.options.showMobileMenu"
+      >
+        <MenuOutlined/>
+      </NIcon>
+
+      <NIcon
           title="Settings"
           :class="state.modals.settingsModal ? 'active' : ''"
           size="24"
@@ -37,16 +46,8 @@
       >
         <QuestionMarkOutlined/>
       </NIcon>
-
-      <NIcon
-          title="Sidebar"
-          :class="state.options.showMobileMenu ? 'active' : ''"
-          size="24"
-          @click="state.options.showMobileMenu = !state.options.showMobileMenu"
-      >
-        <MenuOutlined/>
-      </NIcon>
     </div>
+
     <div class="game-modal-shortcuts" v-if="state.options.showGameModalShortcuts">
       <div class="shortcut" @click="openGameModal('score')">
         <div class="icon">
@@ -129,40 +130,19 @@ function openGameModal (pane = null) {
 </script>
 <style scoped lang="less">
 .interface-overlay {
-  z-index: 2;
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 10px;
-
-  @media screen and (max-width: 960px) {
-    .game.swap-mobile-menu & {
-      flex-direction: column-reverse;
-      top: auto;
-      bottom: 5px;
-    }
-  }
-  @media screen and (min-width: 961px) {
-    .game.swap-mobile-menu & {
-      right: 272px + 5px;
-    }
-  }
+  overflow-y: scroll;
 }
 
 .interface {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-end;
   gap: 5px;
-
-  @media screen and (max-width: 960px) {
-    flex-direction: column-reverse;
-    .game.swap-mobile-menu & {
-      flex-direction: column;
-    }
-  }
+  margin-left: 10px;
 
   .n-icon {
     padding: 5px 5px;
@@ -189,23 +169,16 @@ function openGameModal (pane = null) {
 }
 
 .game-modal-shortcuts {
-  position: absolute;
   flex-basis: 0;
   flex-grow: 0;
   right: 0;
-  top: 30px + 10px; // Offset from ButtonControls
   display: flex;
   gap: 5px;
   flex-direction: column;
+  margin-left: 10px;
 
   .game.swap-mobile-menu & {
     flex-direction: column;
-  }
-  @media screen and (max-width: 960px) {
-    position: static;
-    .game.swap-mobile-menu & {
-      flex-direction: column-reverse;
-    }
   }
 
   .shortcut {

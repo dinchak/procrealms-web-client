@@ -3,7 +3,7 @@
     <div v-if="getAliases().length === 0">
       No aliases
     </div>
-    <div v-for="alias in getAliases()" :key="alias.alias">
+    <div class="alias" v-for="alias in getAliases()" :key="alias.alias">
       <n-button size="small" @click="runAlias(alias.alias)">{{ alias.alias }}</n-button>
     </div>
   </div>
@@ -29,10 +29,16 @@ function getAliases () {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  height: 100%;
+  gap: 6px;
   max-width: 200px;
-  justify-content: center;
-  align-content: flex-end;
+  align-items: center;
+  justify-content: flex-end;
+  align-content: flex-start;
+  padding: 4px;
+
+  .alias {
+    display: inline-flex;
+  }
 
   @media screen and (max-width: 900px) {
     .game.show-mobile-menu & {
@@ -43,10 +49,9 @@ function getAliases () {
     max-width: 100px;
   }
 
-  overflow-y: scroll;
+  overflow-y: auto;
   .n-button {
-    margin-left: 5px;
-    margin-bottom: 5px;
+    margin: 0;
   }
 }
 </style>

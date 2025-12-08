@@ -53,7 +53,9 @@ onBeforeUnmount(() => {
   flex-direction: column;
   flex-basis: 200px;
   overflow-y: scroll;
-  flex-grow: 0;
+  flex-grow: 1;
+  height: 110px;
+  font-size: 0.8rem;
   .line {
     display: block;
     white-space: pre-wrap;

@@ -38,9 +38,9 @@
     <div class="toggles">
 
       <NButton size="medium"
-        title="Tabs"
-        :type="getOptionType('showTabs')"
-        @click="toggleOption('showTabs')"
+        title="Chat"
+        :type="getOptionType('showChat')"
+        @click="toggleOption('showChat')"
       >
         <NIcon size="24"><ChatOutlined/></NIcon>
       </NButton>

@@ -89,6 +89,7 @@ function getEffectBonusLabelClass (bonus) {
     flex-direction: column;
     margin-bottom: 5px;
     width: 100%;
+    font-size: 0.8rem;
 
     &:last-child {
       margin-bottom: 0;
