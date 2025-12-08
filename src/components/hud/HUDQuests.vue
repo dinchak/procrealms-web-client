@@ -67,7 +67,9 @@ function questHasObjectives (quest) {
 
 <style lang="less" scoped>
 .hud-quests {
-  flex-grow: 1.65;
+  height: 110px;
+  font-size: 0.8rem;
+  flex-basis: 200px;
   .quest {
     display: flex;
     flex-direction: column;
@@ -80,20 +82,15 @@ function questHasObjectives (quest) {
     }
     .row {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
       margin-bottom: 5px;
-      .name {
-        margin-right: 5px;
-        min-width: 150px;
-      }
       .n-progress {
         width: 125px;
+
         .progress-label {
           display: block;
           width: 75px;
-          text-align: center;
         }
 
         .n-progress-content {
@@ -114,14 +111,7 @@ function questHasObjectives (quest) {
         display: flex;
         flex-direction: column;
         max-width: 300px;
-        .objective {
-          font-size: 0.8rem;
-          line-height: 0.9;
-        }
       }
-    }
-    .objective {
-      text-align: right;
     }
   }
 }

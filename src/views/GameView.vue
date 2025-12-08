@@ -5,7 +5,6 @@
      'swap-mobile-menu': state.options.swapMobileMenuSide,
      'show-modal-shortcuts': state.options.showGameModalShortcuts
   }">
-    <ButtonControls/>
     <div class="game-layout">
       <MobileMenu/>
       <main class="vertical-split">
@@ -22,6 +21,7 @@
               <SideMovement/>
             </div>
           </div>
+          <ButtonControls/>
         </div>
         <div class="bottom-split">
           <BottomHUD v-if="!state.gameState.battle.active"/>
@@ -334,15 +334,20 @@ onBeforeUnmount(() => {
 }
 
 .vertical-split {
-  background-color: #18181b;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  background-color: #18181b;
+  height: 100%;
+  min-height: 0;
   flex: 1 1 auto;
+  align-items: stretch;
 
   > * {
     padding: 0 10px;
-    flex: 0 0 content;
+  }
+
+  > .content-split {
+    flex: 1 1 auto;
   }
 }
 
@@ -352,11 +357,16 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
   align-items: stretch;
   flex: 1 1 0;
-  overflow: auto;
+  overflow: hidden;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
 
   .line-area {
     flex: 1 1 auto;
-    overflow: visible;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .side-area {
@@ -371,36 +381,28 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       gap: 5px;
-
-      &:first-child {
-        padding-top: 34px + 10px;
-
-        .game.show-modal-shortcuts & {
-          padding-right: 34px + 10px;
-        }
-      }
     }
 
     .side-top {
-      min-height: 300px;
-
       &:last-child {
         flex-grow: 1;
       }
-    }
-
-    .side-bottom {
-      justify-content: flex-end;
-      flex-grow: 1;
     }
   }
 }
 
 .bottom-split {
-  padding: 0 0 10px 0;
-  flex: 0 0 content;
+  padding: 0 0 8px 0;
+  flex: 0 0 auto;
   > * {
-    padding: 5px 10px;
+    padding: 4px 10px;
   }
 }
+
+@media screen and (min-height: 621px) {
+  .content-split .side-area .row:first-child {
+    padding-top: 0;
+  }
+}
+
 </style>

@@ -5,7 +5,7 @@
       <HUDRoomInfo class="hud-item" v-if="state.options.showRoomInfo" />
       <HUDEffects :effects="state.gameState.effects" class="hud-item" v-if="state.options.showEffects" />
       <HUDQuests class="hud-item" v-if="state.options.showQuests" />
-      <HUDChat class="hud-item" v-if="state.options.showTabs" />
+      <HUDChat class="hud-item" v-if="state.options.showChat" />
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@ import MiniMap from '@/components/common/MiniMap.vue'
   overflow-x: auto;
 
   .center-hud {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

@@ -34,10 +34,14 @@ function renderMinimap () {
 .minimap-container {
   display: flex;
   align-items: center;
+  flex-basis: 65px;
   flex-grow: 0;
   .minimap {
     user-select: none;
     white-space: pre;
+    .line {
+      word-break: keep-all;
+    }
   }
 }
 </style>

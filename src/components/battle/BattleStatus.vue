@@ -114,7 +114,9 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .battle-area {
-  margin-top: 5px;
+  margin-top: 10px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
 
   .battle-controls {
     display: none;
@@ -150,6 +152,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
     flex: 0 0 auto;
     gap: 20px;
+    min-width: 50px;
     .vs {
       z-index: 1;
       margin: 0px 4px;

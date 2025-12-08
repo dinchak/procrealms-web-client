@@ -114,11 +114,6 @@ onBeforeUnmount(() => {
   --n-label-font-size: 16px;
 }
 
-// .selected {
-//   box-shadow: 0 0 5px #f8ff25;
-//   color: #f8ff25;
-// }
-
 body, html {
   margin: 0;
   padding: 0;
@@ -128,11 +123,8 @@ body, html {
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
-
-//*, * > * {
-  //overflow: auto;
-//}
 
 ::-webkit-scrollbar {
   background: transparent;

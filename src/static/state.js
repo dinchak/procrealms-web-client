@@ -26,8 +26,6 @@ export const state = reactive({
   options: resetOptions(),
   cache: resetCache(),
 
-  outputTabs: ['output', 'chat', 'trade', 'newbie'],
-  activeTab: 'output',
   validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
 
@@ -120,7 +118,6 @@ export const state = reactive({
 })
 
 export function resetState () {
-  state.activeTab = 'output'
   state.mode = 'hotkey'
   state.prevModes = ['login']
   state.pendingRequests = {}
@@ -241,7 +238,7 @@ function resetOptions () {
     showEffects: false,
     showQuests: false,
 
-    showTabs: true,
+    showChat: false,
     showQuickSlots: true,
     showPartyStats: true,
     textInputMobileButtons: true,
@@ -323,11 +320,11 @@ export function prevMode () {
 
 export function showHUD () {
   const {
-    showMinimap, showRoomInfo, showEffects, showQuests,
+    showMinimap, showRoomInfo, showEffects, showQuests, showChat,
   } = state.options
 
   return (
-    showMinimap || showRoomInfo || showEffects || showQuests
+    showMinimap || showRoomInfo || showEffects || showQuests || showChat
   )
 }
 
