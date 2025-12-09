@@ -7,46 +7,39 @@
     'evil': side === 'evil' && isAlive(participant),
     'merc': isMercenary(entity),
     'acting': participant.isActing,
-    'selected': isPlayerTarget(participant),
-    'targeting-you': isTargetingPlayer(participant) && !isPlayer(participant),
   }" @click="target(participant)">
     <div class="main-card">
-      <div class="card-layer-1">
-        <div class="card-layer-2">
-          <div class="card-row">
-            <div class="info-column">
-              <div class="name-area">
-                <div class="name-merc-col">
-                  <div class="name-row" lang="en"
-                    v-html-safe="ansiToHtml(`${(participant.hpPercent) > 0 ? participant.tag + ' ' : ''}${ANSI.reset}L${ANSI.boldWhite}${participant.level} ${participant.colorName}`)">
-                  </div>
-                  <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders>
-                </div>
-
-                <div v-if="expanded" class="target-row" >
-                  <NIcon>
-                    <CrisisAlertFilled></CrisisAlertFilled>
-                  </NIcon>
-                  <div v-if="participant.targetName" v-html-safe="ansiToHtml(getTarget(participant))"></div>
-                </div>
+      <div class="card-row">
+        <div class="info-column">
+          <div class="name-area">
+            <div class="name-merc-col">
+              <div class="name-row" lang="en"
+                v-html-safe="ansiToHtml(`${(participant.hpPercent) > 0 ? participant.tag + ' ' : ''}${ANSI.reset}L${ANSI.boldWhite}${participant.level} ${participant.colorName}`)">
               </div>
-
-              <div class="vital-area" v-if="participant.hpPercent > 0">
-                <VitalsBar
-                  :hp-percent="getHpPercent(entity, participant, side)"
-                  :energy-percent="getEnergyPercent(entity, participant, side)"
-                  :stamina-percent="getStaminaPercent(entity, participant, side)"
-                  :hp-label="entity && side === 'good' ? entity.hp : participant.hpPercent + '%'"
-                  :energy-label="entity && side === 'good' ? entity.energy : participant.energyPercent + '%'"
-                  :stamina-label="entity && side === 'good' ? entity.stamina : participant.staminaPercent + '%'">
-                </VitalsBar>
-              </div>
-
-              <div v-if="expanded" class="effect-area">
-                <EffectsBar :entity="participant" :effects="participant.effects" />
-              </div>
+              <!-- <MercOrders :merc="getMercenary(entity)" v-if="isMercenary(entity)"></MercOrders> -->
             </div>
 
+            <div v-if="expanded" class="target-row" >
+              <NIcon>
+                <CrisisAlertFilled></CrisisAlertFilled>
+              </NIcon>
+              <div v-if="participant.targetName" v-html-safe="ansiToHtml(getTarget(participant))"></div>
+            </div>
+          </div>
+
+          <div class="vital-area" v-if="participant.hpPercent > 0">
+            <VitalsBar
+              :hp-percent="getHpPercent(entity, participant, side)"
+              :energy-percent="getEnergyPercent(entity, participant, side)"
+              :stamina-percent="getStaminaPercent(entity, participant, side)"
+              :hp-label="entity && side === 'good' ? entity.hp : participant.hpPercent + '%'"
+              :energy-label="entity && side === 'good' ? entity.energy : participant.energyPercent + '%'"
+              :stamina-label="entity && side === 'good' ? entity.stamina : participant.staminaPercent + '%'">
+            </VitalsBar>
+          </div>
+
+          <div v-if="expanded" class="effect-area">
+            <EffectsBar :entity="participant" :effects="participant.effects" />
           </div>
         </div>
       </div>
@@ -59,7 +52,7 @@ import { NIcon } from 'naive-ui'
 import { CrisisAlertFilled } from '@vicons/material'
 import stripAnsi from 'strip-ansi'
 
-import MercOrders from '@/components/battle/MercOrders.vue'
+// import MercOrders from '@/components/battle/MercOrders.vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -91,43 +84,14 @@ function isAlive (part) {
   return !part.dead && !part.incapacitated
 }
 
-function isPlayer (part) {
-  return part.eid === state.gameState.player.eid
-}
-
-function isPlayerTarget (part) {
-  const player = Object.values(state.gameState.battle.participants).find(p => p.eid === state.gameState.player.eid)
-  if (!player || !player.targetName) {
-    return false
-  }
-
-  if (!part.tag) {
-    return false
-  }
-
-  if (player.eid === part.eid) {
-    return stripAnsi(player.targetName) === 'You'
-  }
-
-  return stripAnsi(part.tag) === stripAnsi(player.targetName)
-}
-
-function isTargetingPlayer (part) {
-  if (!part.targetName) {
-    return false
-  }
-
-  const name = stripAnsi(part.targetName)
-  return name === 'You'
-}
 
 function isMercenary (ent) {
   return ent && ent.traits && ent.traits.includes('mercenary')
 }
 
-function getMercenary (ent) {
-  return state.gameState.charmies[ent.eid]
-}
+// function getMercenary (ent) {
+//   return state.gameState.charmies[ent.eid]
+// }
 
 function getTarget (part) {
   if (!part.targetName) {
@@ -316,7 +280,6 @@ function getStaminaPercent (en, part, sd) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      padding-right: 5px;
       gap: 5px;
     }
   }
@@ -334,151 +297,50 @@ function getStaminaPercent (en, part, sd) {
   max-width: 265px;
   border-radius: @border-radius;
   border: 1px solid transparent;
+  padding: 5px 10px;
 
   *, * > * {
     box-sizing: border-box;
   }
+}
 
-  .card-layer-1 {
-    width: 100%;
-    border-radius: @border-radius;
-    border: 1px solid transparent;
+.battle-entity.selectable .main-card {
+  cursor: pointer;
+}
+
+.battle-entity.good .main-card {
+  background-color: #001800;
+}
+
+@media (hover: hover) {
+  .battle-entity.good .main-card {
+    transition: all 0.3s;
   }
-
-  .card-layer-2 {
-    width: 100%;
-    border-radius: @border-radius;
-    border: 1px solid transparent;
-    padding: 5px 7px;
+  .battle-entity.good .main-card:hover {
+    background-color: #002800;
   }
-
-  &::before, .card-layer-1::before, .card-layer-2::before,
-  &::after, .card-layer-1::after, .card-layer-2::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: @triangle-size;
-    border-color: transparent;
-    transform: rotate(0deg);
-    pointer-events: none;
+  .battle-entity.evil .main-card:hover {
+    background-color: #280000;
   }
+}
 
-  &::before, &::after {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
+.battle-entity.evil .main-card {
+  background-color: #180000;
+}
 
-  .card-layer-1::before, .card-layer-1::after {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
+.battle-entity.acting .main-card {
+  border-color: rgba(#ffed25, @border-transparency);
+  box-shadow: 0 0 @shadow-size rgba(#ffed25, @shadow-transparency);
+}
 
-  .card-layer-2::before, .card-layer-2::after {
-    top: 1px;
-    left: 1px;
-    right: 1px;
-    bottom: 1px;
-  }
+.battle-entity.good.acting .main-card {
+  border-color: rgba(#50ff50, @border-transparency);
+  box-shadow: 0 0 @shadow-size rgba(#50ff50, @shadow-transparency);
+}
 
-  .battle-entity.selectable & {
-    cursor: pointer;
-  }
-
-  .battle-entity.targeting-you & {
-    border-color: rgba(#ffa850, @border-transparency) !important;
-    box-shadow: -@shadow-offset -@shadow-offset @shadow-size rgba(#ffa850, @shadow-transparency);
-
-    &::after {
-      bottom: auto;
-      right: auto;
-      border-width: @triangle-size @triangle-size 0 0;
-      border-radius: @border-radius 0 0 0;
-      border-color: #ffa850 transparent transparent;
-    }
-  }
-
-  .battle-entity.selected & {
-    .card-layer-1 {
-      border-color: rgba(#ffed25, @border-transparency) !important;
-      box-shadow: -@shadow-offset @shadow-offset @shadow-size rgba(#ffed25, @shadow-transparency);
-
-      &::before {
-        top: auto;
-        right: auto;
-        border-width: @triangle-size 0 0 @triangle-size;
-        border-radius: 0 0 0 @border-radius;
-        border-color: transparent transparent transparent #ffed25;
-      }
-    }
-  }
-
-  .battle-entity.acting & {
-    .card-layer-2 {
-      &::after {
-        bottom: auto;
-        left: auto;
-        border-width: 0 @triangle-size @triangle-size 0;
-        border-radius: 0 @border-radius 0 0;
-      }
-    }
-  }
-
-  .battle-entity.good & {
-    background-color: #001800;
-
-    @media (hover: hover) {
-      transition: all 0.3s;
-      &:hover {
-        background-color: #002800;
-      }
-    }
-  }
-
-  .battle-entity.good.acting & {
-
-    .card-layer-2 {
-      border-color: rgba(#50ff50, @border-transparency);
-      box-shadow: @shadow-offset -@shadow-offset @shadow-size rgba(#50ff50, @shadow-transparency);
-    }
-
-    .card-layer-2 {
-      &::after {
-        border-color: transparent #50ff50 transparent transparent;
-      }
-    }
-  }
-
-  .battle-entity.evil & {
-    background-color: #180000;
-
-    @media (hover: hover) {
-      transition: all 0.3s;
-      &:hover {
-        background-color: #280000;
-      }
-    }
-  }
-
-  .battle-entity.evil.acting & {
-
-    .card-layer-2 {
-      border-color: rgba(#ff5050, @border-transparency);
-      box-shadow: @shadow-offset -@shadow-offset @shadow-size rgba(#ff5050, @shadow-transparency);
-    }
-
-    .card-layer-2 {
-      &::after {
-        border-color: transparent #ff5050 transparent transparent;
-      }
-
-    }
-  }
+.battle-entity.evil.acting .main-card {
+  border-color: rgba(#ff5050, @border-transparency);
+  box-shadow: 0 0 @shadow-size rgba(#ff5050, @shadow-transparency);
 }
 
 .prefix {

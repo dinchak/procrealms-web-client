@@ -79,7 +79,7 @@ const webSocketHandlers = {
     setTimeout(() => {
       state.animations = state.animations.filter(a => a.key != animation.key)
       state.nextAnimationDelay -= 200
-    }, 1000)
+    }, 2000)
   },
 
   'effect.cure': ({ target, amount }) => {
@@ -93,7 +93,7 @@ const webSocketHandlers = {
     setTimeout(() => {
       state.animations = state.animations.filter(a => a.key != animation.key)
       state.nextAnimationDelay -= 200
-    }, 1000)
+    }, 2000)
   },
 
   'channel.msg': ({ id, from, to, channel, timestamp, message }) => {

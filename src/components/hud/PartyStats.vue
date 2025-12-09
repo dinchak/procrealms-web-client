@@ -20,7 +20,7 @@
           ></VitalsBar>
         </div>
 
-        <div class="bottom-bar" v-if="Object.keys(member.effects).length > 0">
+        <div class="bottom-bar">
           <EffectsBar :entity="member" :effects="member.effects" />
         </div>
       </div>

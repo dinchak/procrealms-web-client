@@ -618,68 +618,6 @@ export function resetInputMappings () {
     },
 
     {
-      label: 'Select Output Tab',
-      event: 'selectOutputTab',
-      bindings: [{
-        keyCode: 'Digit1',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Chat Tab',
-      event: 'selectChatTab',
-      bindings: [{
-        keyCode: 'Digit2',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Trade Tab',
-      event: 'selectTradeTab',
-      bindings: [{
-        keyCode: 'Digit3',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Newbie Tab',
-      event: 'selectNewbieTab',
-      bindings: [{
-        keyCode: 'Digit4',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Prev Output Tab',
-      event: 'selectPrevOutputTab',
-      bindings: [{
-        gamepadButton: 14,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Next Output Tab',
-      event: 'selectNextOutputTab',
-      bindings: [{
-        gamepadButton: 15,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
       label: 'Show Side Map',
       event: 'showSideMap',
       bindings: [{

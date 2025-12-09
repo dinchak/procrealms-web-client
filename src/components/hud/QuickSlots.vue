@@ -211,11 +211,17 @@ function isActive (slot) {
     return true
   }
 
+  const { pendingReaction, myTurn, active } = state.gameState.battle
+
   if (skill.timeLeft) {
     return false
-  } else if (!skill.type.includes('combat') && state.gameState.battle.active) {
+  } else if (skill.type.includes('reaction') && !pendingReaction) {
     return false
-  } else if (!skill.type.includes('overworld') && (!state.gameState.battle.active || !state.gameState.battle.myTurn)) {
+  } else if (pendingReaction && !pendingReaction.validReactions.includes(skill.name)) {
+    return false
+  } else if (!skill.type.includes('battle') && active) {
+    return false
+  } else if (!skill.type.includes('overworld') && (!active || !myTurn)) {
     return false
   }
 

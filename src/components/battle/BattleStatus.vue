@@ -15,7 +15,8 @@
         </div>
 
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
-          <div v-for="participant in getParticipants(side)" class="entity" :key="participant.eid">
+          <TransitionGroup tag="div" name="entity" appear class="entities">
+            <div v-for="participant in getParticipants(side)" class="entity" :key="participant.eid">
             <TransitionGroup appear name="damage">
               <div
                 v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
@@ -39,8 +40,9 @@
               :participant="participant"
               :side="side"
               :expanded="expandEntities"
-            ></BattleEntity>
-          </div>
+            />
+            </div>
+          </TransitionGroup>
         </div>
       </template>
     </div>
@@ -218,6 +220,10 @@ onBeforeUnmount(() => {
       justify-content: start;
     }
 
+    .entities {
+      display: contents;
+    }
+
     .entity {
       display: inline-block;
       vertical-align: top;
@@ -227,7 +233,7 @@ onBeforeUnmount(() => {
 
       .damage {
         position: absolute;
-        top: 0;
+        top: -40px;
         font-size: 1.6rem;
         color: #ff3333;
         padding: 5px 10px;
@@ -247,7 +253,7 @@ onBeforeUnmount(() => {
 
       .healing {
         position: absolute;
-        top: -40px;
+        top: 0;
         font-size: 1.6rem;
         color: #33ff33;
         padding: 5px 10px;
@@ -261,39 +267,63 @@ onBeforeUnmount(() => {
 
 .damage-enter-active {
   animation: damage 2s ease-out;
+  animation-fill-mode: forwards;
+}
+
+.damage-leave-active {
+  animation: none;
+}
+
+/* entity fade transitions (2s fade-out on removal) */
+.entity-enter-from,
+.entity-leave-to {
+  opacity: 0;
+}
+.entity-enter-to,
+.entity-leave-from {
+  opacity: 1;
+}
+.entity-enter-active,
+.entity-leave-active {
+  transition: opacity 2s ease;
 }
 
 @keyframes damage {
   0% {
     opacity: 1;
-    top: 0;
+    transform: translateY(40px);
   }
   60% {
     opacity: 0.9;
-    top: -35px;
+    transform: translateY(5px);
   }
   100% {
     opacity: 0;
-    top: -40px;
+    transform: translateY(0);
   }
 }
 
 .healing-enter-active {
   animation: healing 2s ease-out;
+  animation-fill-mode: forwards;
+}
+
+.healing-leave-active {
+  animation: none;
 }
 
 @keyframes healing {
   0% {
     opacity: 1;
-    top: -40px;
+    transform: translateY(-40px);
   }
   60% {
     opacity: 0.9;
-    top: -5px;
+    transform: translateY(-5px);
   }
   100% {
     opacity: 0;
-    top: 0;
+    transform: translateY(0);
   }
 }
 
@@ -342,6 +372,10 @@ onBeforeUnmount(() => {
       justify-content: center;
       justify-items: center;
       align-self: center;
+
+      .entities {
+        display: contents;
+      }
 
       .entity {
         display: flex;
