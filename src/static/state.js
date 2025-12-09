@@ -152,7 +152,8 @@ export function resetGameState () {
       active: false,
       myTurn: false,
       participants: {},
-      items: []
+      items: [],
+      pendingReaction: null
     },
 
     party: {},

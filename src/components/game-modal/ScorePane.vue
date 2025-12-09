@@ -1,7 +1,7 @@
 <template>
   <div :class="getScrollContainerClass()">
     <SelectGameModalAs></SelectGameModalAs>
-    <NGrid cols="1 800:2">
+    <NGrid cols="1 800:2" class="stat-grid">
       <NGi class="grid-item">
         <div class="name">{{ player().name }}</div>
         <div class="exp-row">
@@ -111,7 +111,7 @@
 
     <div class="space"></div>
 
-    <NGrid cols="2 800:4">
+    <NGrid cols="2 800:4" class="stat-grid">
       <NGi class="grid-item">
         <div class="ability-point">
           <div class="ability-point-value">
@@ -256,7 +256,7 @@
 
     </NGrid>
 
-    <NGrid cols="1 500:2">
+    <NGrid cols="1 500:2" class="stat-grid">
       <NGi class="grid-item">
         <div class="weapon-stat">
           <div :class="'value ' + getDamageColor()">
@@ -280,7 +280,7 @@
     </NGrid>
 
 
-    <NGrid cols="2 800:4">
+    <NGrid cols="2 800:4" class="stat-grid">
       <NGi class="grid-item">
         <div class="combat-stat">
           <div>+<span class="red">{{ renderNumber(player().damage) }}</span></div>
@@ -362,7 +362,7 @@
     <h3>Damage / Resistance</h3>
     <div class="space"></div>
 
-    <NGrid cols="2">
+    <NGrid cols="2" class="stat-grid resistance">
       <NGi class="grid-item">
         <div class="resistance-stat">
           <div>+<span class="green">{{ player().damageBonusAcid }}</span></div>
@@ -517,6 +517,18 @@ watch(state.gameState.equipment, () => {
   setWeapon()
 })
 </script>
+
+<style lang="less">
+.scroll-container {
+  .stat-grid {
+    max-width: 850px;
+    margin: 0 auto;
+    &.resistance {
+      max-width: 500px;
+    }
+  }
+}
+</style>
 
 <style lang="less" scoped>
 .scroll-container {

@@ -15,14 +15,17 @@ import { useHelpers } from '@/composables/helpers'
 
 const { renderMessage } = useHelpers()
 
-// function getChannelClass (channel) {
-//   switch (channel) {
-//   case 'chat': return 'channel bold-yellow'
-//   case 'trade': return 'channel bold-cyan'
-//   case 'newbie': return 'channel bold-magenta'
-//   default: return 'channel'
-//   }
-// }
+function scrollDown () {
+  const chatBox = document.querySelector('.chat-box')
+  if (!chatBox) {
+    return
+  }
+
+  nextTick(() => {
+    chatBox.scrollTop = chatBox.scrollHeight
+  })
+}
+
 
 let chatWatcher
 onMounted(() => {
@@ -31,14 +34,11 @@ onMounted(() => {
       return state.messages[state.messages.length - 1] ? state.messages[state.messages.length - 1].id : ''
     },
     () => {
-      const chatBox = document.querySelector('.chat-box')
-      if (chatBox) {
-        nextTick(() => {
-          chatBox.scrollTop = chatBox.scrollHeight
-        })
-      }
+      scrollDown()
     }
   )
+
+  scrollDown()
 })
 
 onBeforeUnmount(() => {
