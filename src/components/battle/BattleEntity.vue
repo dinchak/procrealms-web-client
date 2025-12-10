@@ -20,9 +20,42 @@
             </div>
 
             <div v-if="expanded" class="target-row" >
-              <NIcon>
-                <CrisisAlertFilled></CrisisAlertFilled>
-              </NIcon>
+              <NIconWrapper
+                :size="14"
+                :border-radius="0"
+                color="rgba(0,0,0, 0.0)"
+                v-if="isCharmie(entity)"
+                :style="{ marginRight: '4px' }"
+              >
+                <NPopover trigger="hover">
+                  <template #trigger>
+                    <NIcon :size="14">
+                      <CrisisAlertFilled></CrisisAlertFilled>
+                    </NIcon>
+                  </template>
+                  <div>Set New Target:</div>
+                  <div
+                    v-for="enemy in getTargets()"
+                    :key="enemy.eid"
+                    class="target-name"
+                    @click="setTarget($event, enemy.eid)"
+                    v-html-safe="ansiToHtml(`${enemy.tag} ${enemy.name}`)"
+                  ></div>
+                </NPopover>
+              </NIconWrapper>
+
+              <NIconWrapper
+                :size="14"
+                :border-radius="0"
+                color="rgba(0,0,0, 0.0)"
+                v-if="!isMercenary(entity)"
+                :style="{ marginRight: '4px' }"
+              >
+                <NIcon :size="14">
+                  <CrisisAlertFilled></CrisisAlertFilled>
+                </NIcon>
+              </NIconWrapper>
+
               <div v-if="participant.targetName" v-html-safe="ansiToHtml(getTarget(participant))"></div>
             </div>
           </div>
@@ -48,7 +81,7 @@
 </template>
 <script setup>
 import { defineProps, toRefs } from 'vue'
-import { NIcon } from 'naive-ui'
+import { NIcon, NIconWrapper, NPopover } from 'naive-ui'
 import { CrisisAlertFilled } from '@vicons/material'
 import stripAnsi from 'strip-ansi'
 
@@ -89,9 +122,21 @@ function isMercenary (ent) {
   return ent && ent.traits && ent.traits.includes('mercenary')
 }
 
-// function getMercenary (ent) {
-//   return state.gameState.charmies[ent.eid]
-// }
+function isCharmie (ent) {
+  return state.gameState.charmies && ent && state.gameState.charmies[ent.eid]
+}
+
+function getTargets () {
+  return Object.values(state.gameState.battle.participants)
+    .filter(p => {
+      return isAlive(p)
+    })
+}
+
+function setTarget ($event, targetEid) {
+  $event.stopPropagation()
+  runCommand(`order eid:${entity.value.eid} target eid:${targetEid}`)
+}
 
 function getTarget (part) {
   if (!part.targetName) {
@@ -257,14 +302,23 @@ function getStaminaPercent (en, part, sd) {
       width: 100%;
       i {
         color: #d45353;
-        margin-right: 5px;
+        &.set-mercenary-target {
+          border: 1px solid #f5f5a3;
+          border-radius: 4px;
+          padding: 2px;
+          &:hover {
+            color: #f5f5a3;
+          }
+        }
       }
+
       display: flex;
       flex-direction: row;
       margin: 3px 0 3px 0;
       overflow-x: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      align-items: center;
     }
 
     .vital-area {
@@ -347,5 +401,14 @@ function getStaminaPercent (en, part, sd) {
   box-sizing: border-box;
   background: linear-gradient(to right, blue, transparent);
   padding: 5px;
+}
+
+.target-name {
+  cursor: pointer;
+  padding: 2px 4px;
+  user-select: none;
+  &:hover {
+    background-color: #131;
+  }
 }
 </style>
