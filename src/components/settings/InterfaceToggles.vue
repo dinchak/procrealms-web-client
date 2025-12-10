@@ -98,9 +98,9 @@
       </NButton>
 
       <NButton size="medium"
-        title="Game Modal Shortcuts"
-        :type="getOptionType('showGameModalShortcuts')"
-        @click="toggleOption('showGameModalShortcuts')"
+        title="Player Modal Shortcuts"
+        :type="getOptionType('showPlayerModalShortcuts')"
+        @click="toggleOption('showPlayerModalShortcuts')"
       >
         <NIcon size="24"><SplitscreenOutlined/></NIcon>
       </NButton>

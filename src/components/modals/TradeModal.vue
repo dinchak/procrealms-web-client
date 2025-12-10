@@ -140,8 +140,8 @@ onMounted(() => {
 
   watchers.push(
     watch(state.gameState.charmies, () => {
-      if (!state.gameState.charmies[state.gameModalAs]) {
-        state.gameModalAs = ''
+      if (!state.gameState.charmies[state.playerModalAs]) {
+        state.playerModalAs = ''
       }
     })
   )

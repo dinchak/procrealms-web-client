@@ -39,7 +39,7 @@ export const state = reactive({
 
   isFullscreen: false,
 
-  gameModalAs: '',
+  playerModalAs: '',
   mercEid: -1,
 
   gamepadPrevStates: {},
@@ -94,7 +94,7 @@ export const state = reactive({
     loginModal: false,
     logoutModal: false,
     newPlayerModal: false,
-    gameModal: false,
+    playerModal: false,
     settingsModal: false,
     tradeModal: false,
   },
@@ -251,7 +251,7 @@ function resetOptions () {
     showSideMap: true,
     showSideMovement: false,
     showSideAliases: false,
-    showGameModalShortcuts: true,
+    showPlayerModalShortcuts: true,
 
     // font options
     fontFamily: 'Inconsolata, monospace',
@@ -385,8 +385,8 @@ export function addLine (line, bufferName) {
 }
 
 export function getOrderCmd () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return `order eid:${state.gameModalAs} `
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return `order eid:${state.playerModalAs} `
   }
   return ''
 }

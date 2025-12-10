@@ -1,6 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
 
     <NGrid class="equipment" cols="1">
       <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
@@ -16,9 +16,9 @@
       </NGi>
     </NGrid>
 
-    <h3 v-if="state.gameModalAs == '' && getPetEid()">Pet Equipment</h3>
+    <h3 v-if="state.playerModalAs == '' && getPetEid()">Pet Equipment</h3>
 
-    <NGrid class="equipment" cols="1" v-if="state.gameModalAs == '' && getPetEid()">
+    <NGrid class="equipment" cols="1" v-if="state.playerModalAs == '' && getPetEid()">
       <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="slot">
         <div class="slot">
           <div class="row" @click="selectIid(iid)">
@@ -39,7 +39,7 @@ import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue
 import { NGrid, NGi } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
 import { state, getOrderCmd } from '@/static/state'
 import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
@@ -74,8 +74,8 @@ function getEquipmentIid (slot) {
 }
 
 function getEquipment () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].equipment
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].equipment
   }
   return state.gameState.equipment
 }
@@ -140,7 +140,7 @@ onMounted(async () => {
       equipment.value = await fetchItems(Object.values(getEquipment()))
     }),
 
-    watch(() => state.gameModalAs, async () => {
+    watch(() => state.playerModalAs, async () => {
       equipment.value = await fetchItems(Object.values(getEquipment()))
     })
   )

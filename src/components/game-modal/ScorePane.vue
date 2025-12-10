@@ -1,6 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
     <NGrid cols="1 800:2" class="stat-grid">
       <NGi class="grid-item">
         <div class="name">{{ player().name }}</div>
@@ -428,7 +428,7 @@ import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
 import AddFilled from '@vicons/material/AddFilled'
 
-import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
 import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
@@ -443,16 +443,16 @@ const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 function spendPoint (stat) {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    runCommand(`order eid:${state.gameModalAs} point ${stat}`)
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    runCommand(`order eid:${state.playerModalAs} point ${stat}`)
   } else {
     runCommand(`point ${stat}`)
   }
 }
 
 function player () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].stats || {}
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].stats || {}
   }
 
   return state.gameState.player || {}
