@@ -114,8 +114,6 @@ const webSocketHandlers = {
       state.messages.shift()
     }
 
-    // addLine({ id, from, to, timestamp, message }, 'output')
-
     if (state.options.chatInMain) {
       out = renderMessage({ channel, from, to, message })
       addLine(out, 'output')
@@ -162,6 +160,12 @@ const webSocketHandlers = {
 
   'help.search': ({ matches }) => {
     state.help.searchResults = matches
+  },
+
+  'shop.list': ({ items, shopkeeper, prices }) => {
+    state.shop.items = items
+    state.shop.shopkeeper = shopkeeper
+    state.shop.prices = prices
   },
 
   'client.media.play': ({ name }) => {

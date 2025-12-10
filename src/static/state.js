@@ -99,6 +99,12 @@ export const state = reactive({
     tradeModal: false,
   },
 
+  shop: {
+    items: [],
+    shopkeeper: '',
+    prices: {},
+  },
+
   help: {
     topics: {
       skills: [],

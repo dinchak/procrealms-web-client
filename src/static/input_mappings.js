@@ -705,6 +705,19 @@ export function resetInputMappings () {
     },
 
     {
+      label: 'Open Trade Modal',
+      event: 'openTradeModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyT',
+        modes: ['hotkey'],
+      }, {
+        gamepadButton: 4,
+        modes: ['hotkey', 'input'],
+      }],
+    },
+
+    {
       label: 'Close Modal',
       event: 'closeModal',
       bindings: [{
