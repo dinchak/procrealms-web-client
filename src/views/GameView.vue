@@ -38,6 +38,7 @@
     <TriggersModal/>
     <GameModal/>
     <MercModal/>
+    <TradeModal/>
     <RadialOverlay/>
   </n-el>
 </template>
@@ -52,6 +53,7 @@ import HelpModal from '@/components/modals/HelpModal.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
+import TradeModal from '@/components/modals/TradeModal.vue'
 import TriggersModal from '@/components/modals/TriggersModal.vue'
 
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
