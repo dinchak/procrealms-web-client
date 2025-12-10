@@ -38,7 +38,7 @@ export function useHelpers () {
     return valueString
   }
 
-  async function runAndUpdate (command, item) {
+  async function runItemAction (command, item) {
     let commandStr = `${getOrderCmd()}${command} iid:${item.iid}`
     let outputId = `inventory-output-${item.iid}`
     let result = await runCommand(commandStr, outputId)
@@ -47,17 +47,37 @@ export function useHelpers () {
   }
 
   function getActions (item) {
-    let actions = [{
+    let actions = []
+
+    if (state.gameState.room.flags.includes('store')) {
+      actions.push({
+        label: 'Sell',
+        onClick: () => runItemAction('sell', item),
+        class: 'bold-yellow',
+        disabled: false
+      })
+
+      if (item.amount > 1) {
+        actions.push({
+          label: 'Sell All',
+          onClick: () => runItemAction('sell all', item),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
+    }
+
+    actions.push({
       label: 'Drop',
-      onClick: () => runAndUpdate('drop', item),
+      onClick: () => runItemAction('drop', item),
       class: 'bold-red',
       disabled: false
-    }]
+    })
 
     if (item.amount > 1) {
       actions.push({
         label: 'Drop All',
-        onClick: () => runAndUpdate('drop all', item),
+        onClick: () => runItemAction('drop all', item),
         class: 'bold-red',
         disabled: false
       })
@@ -66,15 +86,15 @@ export function useHelpers () {
     if (item.keeping) {
       actions.push({
         label: 'Unkeep',
-        onClick: () => runAndUpdate('unkeep', item),
-        class: 'bold-yellow',
+        onClick: () => runItemAction('unkeep', item),
+        class: 'bold-blue',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Keep',
-        onClick: () => runAndUpdate('keep', item),
-        class: 'bold-green',
+        onClick: () => runItemAction('keep', item),
+        class: 'bold-blue',
         disabled: false
       })
     }
@@ -83,48 +103,32 @@ export function useHelpers () {
       if (item.subtype == 'food') {
         actions.push({
           label: 'Eat',
-          onClick: () => runAndUpdate('eat', item),
+          onClick: () => runItemAction('eat', item),
           class: 'bold-green',
           disabled: false
         })
       } else if (item.subtype == 'potion') {
         actions.push({
           label: 'Drink',
-          onClick: () => runAndUpdate('drink', item),
+          onClick: () => runItemAction('drink', item),
           class: 'bold-green',
           disabled: false
         })
       } else {
         actions.push({
           label: 'Consume',
-          onClick: () => runAndUpdate('consume', item),
+          onClick: () => runItemAction('consume', item),
           class: 'bold-green',
           disabled: false
         })
       }
     }
 
-    if (state.gameState.room.flags.includes('store')) {
-      actions.push({
-        label: 'Sell',
-        onClick: () => runAndUpdate('sell', item),
-        class: 'bold-green',
-        disabled: false
-      })
-    } else {
-      actions.push({
-        label: 'Sell',
-        onClick: () => runAndUpdate('sell', item),
-        class: 'bold-green',
-        disabled: true
-      })
-    }
-
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
-        onClick: () => runAndUpdate('wield', item),
-        class: 'bold-red',
+        onClick: () => runItemAction('wield', item),
+        class: 'bold-white',
         disabled: false
       })
     }
@@ -132,8 +136,8 @@ export function useHelpers () {
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
-        onClick: () => runAndUpdate('wear', item),
-        class: 'bold-red',
+        onClick: () => runItemAction('wear', item),
+        class: 'bold-white',
         disabled: false
       })
     }
@@ -141,8 +145,8 @@ export function useHelpers () {
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
-        onClick: () => runAndUpdate('compare', item),
-        class: 'bold-yellow',
+        onClick: () => runItemAction('compare', item),
+        class: 'bold-cyan',
         disabled: false
       })
     }
@@ -151,15 +155,15 @@ export function useHelpers () {
       if (hasSkillsRequired(item)) {
         actions.push({
           label: 'Salvage',
-          onClick: () => runAndUpdate('salvage', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('salvage', item),
+          class: 'bold-magenta',
           disabled: false
         })
         if (item.type == 'tool') {
           actions.push({
             label: 'Repair',
-            onClick: () => runAndUpdate('repair', item),
-            class: 'bold-yellow',
+            onClick: () => runItemAction('repair', item),
+            class: 'yellow',
             disabled: false
           })
         }
@@ -170,8 +174,8 @@ export function useHelpers () {
       if (item.subtype == 'hide') {
         actions.push({
           label: 'Tan',
-          onClick: () => runAndUpdate('tan', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('tan', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -179,8 +183,8 @@ export function useHelpers () {
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
-          onClick: () => runAndUpdate('plant', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('plant', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -188,8 +192,8 @@ export function useHelpers () {
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
-          onClick: () => runAndUpdate('wrap', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('wrap', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -197,8 +201,8 @@ export function useHelpers () {
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
-          onClick: () => runAndUpdate('filet', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('filet', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -207,7 +211,7 @@ export function useHelpers () {
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
-        onClick: () => runAndUpdate('read', item),
+        onClick: () => runItemAction('read', item),
         class: 'bold-magenta',
         disabled: false
       })
@@ -217,8 +221,8 @@ export function useHelpers () {
       if (item.subtype == 'penned animal') {
         actions.push({
           label: 'Unpen',
-          onClick: () => runAndUpdate('unpen', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('unpen', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -226,8 +230,8 @@ export function useHelpers () {
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
-          onClick: () => runAndUpdate('unpack', item),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('unpack', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -728,6 +732,6 @@ export function useHelpers () {
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
-    range, renderMessage, runAndUpdate
+    range, renderMessage, runItemAction
   }
 }

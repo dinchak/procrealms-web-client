@@ -88,6 +88,8 @@ function onModalClosed () {
   state.gamepadTab = currentPane.value
   watchers.forEach(unwatch => unwatch())
   watchers = []
+
+  state.inventoryOutput = {}
 }
 
 function prevModalTab () {

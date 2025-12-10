@@ -369,9 +369,11 @@ export function addLine (line, bufferName) {
   if (bufferName == 'output') {
     Object.freeze(line)
   }
+
   if (!line) {
     line = '<br/>'
   }
+
   preloadBuffers[bufferName].push(line)
 
   if (addLinesTimeout) {
