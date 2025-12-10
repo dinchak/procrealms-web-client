@@ -54,6 +54,9 @@ export const state = reactive({
   nameExistsResolve: null,
   nameExistsReject: null,
 
+  inventorySortValue: 'type',
+  inventoryOutput: {},
+
   scrolledBack: {
     output: false,
     chat: false,

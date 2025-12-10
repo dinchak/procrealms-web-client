@@ -99,7 +99,7 @@ function assignValueToVariable (assignmentParts, isTriggerShared) {
 
 function executeCommand (commandWithMatches) {
   let commandWithMatchesAndVariables = substituteVariables(commandWithMatches)
-  runCommand(commandWithMatchesAndVariables, null, true)
+  runCommand(commandWithMatchesAndVariables)
 }
 
 function substitutePatternMatches (matches, command) {

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { addLine, state } from '@/static/state'
+import { state } from '@/static/state'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
 
 export function useWebSocket () {
@@ -81,24 +81,12 @@ export function useWebSocket () {
     return responsePromise
   }
 
-  function runCommand (command, id, fromTrigger) {
-    if (!id) {
-      // Crude filter to avoid shouting the ugly 'look iid:123456' in the output
-      const lcCmd = command.toLowerCase()
-      const excludeIIDCommand = (lcCmd.includes('iid:') || lcCmd.includes('eid:')) && !lcCmd.includes('chat ') && !lcCmd.includes('say ')
-          && !lcCmd.includes('trade ') && !lcCmd.includes('newbie ')
-      if (!excludeIIDCommand) {
-        if (fromTrigger) {
-          addLine(`<span class="player-cmd-caret">> ${command}</span>`, 'output')
-        } else {
-          addLine('', 'output')
-          addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
-          addLine('', 'output')
-        }
-      }
+  function runCommand (command, reqId = null) {
+    if (reqId) {
+      return sendWithResponse('cmd', command, reqId)
+    } else {
+      send('cmd', command)
     }
-
-    send('cmd', command, id)
   }
 
   function move (dir) {

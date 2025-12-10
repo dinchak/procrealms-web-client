@@ -27,8 +27,8 @@
 
     <div class="sorting">
       <span>Sort by </span>
-      <NPopselect v-model:value="sortValue" :options="sortOptions" @change="onSortChange">
-        <span class="dropdown">{{ sortValue }}</span>
+      <NPopselect v-model:value="state.inventorySortValue" :options="sortOptions" @change="onSortChange">
+        <span class="dropdown">{{ state.inventorySortValue }}</span>
       </NPopselect>
     </div>
 
@@ -36,7 +36,7 @@
 
     <div class="item-table">
       <div class="inventory" v-for="(e, i) in columns" :key="i">
-        <div v-for="(item, index) in getItems()" :key="item.iid">
+        <div v-for="(item, index) in getItems()" :key="item.iid" class="item-row">
           <div :class=itemClass(item.iid) v-if="index % columns === i">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
               <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
@@ -71,7 +71,6 @@ const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
 
-const sortValue = ref('name')
 const sortOptions = [
   {
     label: 'Name',
@@ -182,7 +181,7 @@ function itemClass (itemIid) {
 function onWidthChange () {
   if (window.innerWidth < 600) {
     columns.value = 1
-  } else if (window.innerWidth < 800) {
+  } else if (window.innerWidth < 1200) {
     columns.value = 2
   } else {
     columns.value = 3
@@ -194,7 +193,7 @@ async function onSortChange () {
 }
 
 function sortItems (its) {
-  its.sort((a, b) => { return a[sortValue.value] > b[sortValue.value] ? 1 : -1 })
+  its.sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
   return its
 }
 
@@ -297,21 +296,21 @@ onBeforeUnmount(() => {
     justify-content: flex-start;
     align-items: flex-start;
     flex-direction: column;
-    .selected-item {
-      border-style: solid;
-      border-width: 0.2rem;
-      border-color: #121;
-    }
-    .item {
-      .name {
-        padding: 5px 10px;
-        cursor: pointer;
-        &.selected {
-          background: #121;
-        }
+    flex-grow: 1;
+    .item-row {
+      width: 100%;
+      .item {
+        width: 100%;
+        .name {
+          padding: 5px 10px;
+          cursor: pointer;
+          &.selected {
+            background: #121;
+          }
 
-        &:hover, &.selected {
-          background: #121;
+          &:hover, &.selected {
+            background: #121;
+          }
         }
       }
     }

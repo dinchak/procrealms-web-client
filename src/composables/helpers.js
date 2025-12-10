@@ -38,13 +38,18 @@ export function useHelpers () {
     return valueString
   }
 
+  async function runAndUpdate (command, item) {
+    let commandStr = `${getOrderCmd()}${command} iid:${item.iid}`
+    let outputId = `inventory-output-${item.iid}`
+    let result = await runCommand(commandStr, outputId)
+    state.inventoryOutput[item.iid] = result.msg
+    await refreshItem(item.iid)
+  }
+
   function getActions (item) {
     let actions = [{
       label: 'Drop',
-      onClick: async () => {
-        runCommand(`${getOrderCmd()}drop iid:${item.iid}`)
-        await refreshItem(item.iid)
-      },
+      onClick: () => runAndUpdate('drop', item),
       class: 'bold-red',
       disabled: false
     }]
@@ -52,7 +57,7 @@ export function useHelpers () {
     if (item.amount > 1) {
       actions.push({
         label: 'Drop All',
-        onClick: () => runCommand(`${getOrderCmd()}drop all iid:${item.iid}`),
+        onClick: () => runAndUpdate('drop all', item),
         class: 'bold-red',
         disabled: false
       })
@@ -61,20 +66,14 @@ export function useHelpers () {
     if (item.keeping) {
       actions.push({
         label: 'Unkeep',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}unkeep iid:${item.iid}`)
-          await refreshItem(item.iid)
-        },
+        onClick: () => runAndUpdate('unkeep', item),
         class: 'bold-yellow',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Keep',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}keep iid:${item.iid}`)
-          await refreshItem(item.iid)
-        },
+        onClick: () => runAndUpdate('keep', item),
         class: 'bold-green',
         disabled: false
       })
@@ -84,30 +83,21 @@ export function useHelpers () {
       if (item.subtype == 'food') {
         actions.push({
           label: 'Eat',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}eat iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('eat', item),
           class: 'bold-green',
           disabled: false
         })
       } else if (item.subtype == 'potion') {
         actions.push({
           label: 'Drink',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}drink iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('drink', item),
           class: 'bold-green',
           disabled: false
         })
       } else {
         actions.push({
           label: 'Consume',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}consume iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('consume', item),
           class: 'bold-green',
           disabled: false
         })
@@ -117,20 +107,14 @@ export function useHelpers () {
     if (state.gameState.room.flags.includes('store')) {
       actions.push({
         label: 'Sell',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}sell iid:${item.iid}`)
-          await refreshItem(item.iid)
-        },
+        onClick: () => runAndUpdate('sell', item),
         class: 'bold-green',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Sell',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}sell iid:${item.iid}`)
-          await refreshItem(item.iid)
-        },
+        onClick: () => runAndUpdate('sell', item),
         class: 'bold-green',
         disabled: true
       })
@@ -139,7 +123,7 @@ export function useHelpers () {
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
-        onClick: () => runCommand(`${getOrderCmd()}wield iid:${item.iid}`),
+        onClick: () => runAndUpdate('wield', item),
         class: 'bold-red',
         disabled: false
       })
@@ -148,7 +132,7 @@ export function useHelpers () {
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
-        onClick: () => runCommand(`${getOrderCmd()}wear iid:${item.iid}`),
+        onClick: () => runAndUpdate('wear', item),
         class: 'bold-red',
         disabled: false
       })
@@ -157,7 +141,7 @@ export function useHelpers () {
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
-        onClick: () => runCommand(`${getOrderCmd()}compare iid:${item.iid}`),
+        onClick: () => runAndUpdate('compare', item),
         class: 'bold-yellow',
         disabled: false
       })
@@ -167,14 +151,14 @@ export function useHelpers () {
       if (hasSkillsRequired(item)) {
         actions.push({
           label: 'Salvage',
-          onClick: () => runCommand(`${getOrderCmd()}salvage iid:${item.iid}`),
+          onClick: () => runAndUpdate('salvage', item),
           class: 'bold-yellow',
           disabled: false
         })
         if (item.type == 'tool') {
           actions.push({
             label: 'Repair',
-            onClick: () => runCommand(`${getOrderCmd()}repair iid:${item.iid}`),
+            onClick: () => runAndUpdate('repair', item),
             class: 'bold-yellow',
             disabled: false
           })
@@ -186,10 +170,7 @@ export function useHelpers () {
       if (item.subtype == 'hide') {
         actions.push({
           label: 'Tan',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}tan iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('tan', item),
           class: 'bold-yellow',
           disabled: false
         })
@@ -198,10 +179,7 @@ export function useHelpers () {
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}plant iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('plant', item),
           class: 'bold-yellow',
           disabled: false
         })
@@ -210,10 +188,7 @@ export function useHelpers () {
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}wrap iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('wrap', item),
           class: 'bold-yellow',
           disabled: false
         })
@@ -222,10 +197,7 @@ export function useHelpers () {
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
-          onClick: async () => {
-            runCommand(`${getOrderCmd()}filet iid:${item.iid}`)
-            await refreshItem(item.iid)
-          },
+          onClick: () => runAndUpdate('filet', item),
           class: 'bold-yellow',
           disabled: false
         })
@@ -235,10 +207,7 @@ export function useHelpers () {
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}read iid:${item.iid}`)
-          await refreshItem(item.iid)
-        },
+        onClick: () => runAndUpdate('read', item),
         class: 'bold-magenta',
         disabled: false
       })
@@ -248,7 +217,7 @@ export function useHelpers () {
       if (item.subtype == 'penned animal') {
         actions.push({
           label: 'Unpen',
-          onClick: () => runCommand(`${getOrderCmd()}unpen iid:${item.iid}`),
+          onClick: () => runAndUpdate('unpen', item),
           class: 'bold-yellow',
           disabled: false
         })
@@ -257,7 +226,7 @@ export function useHelpers () {
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
-          onClick: () => runCommand(`${getOrderCmd()}unpack iid:${item.iid}`),
+          onClick: () => runAndUpdate('unpack', item),
           class: 'bold-yellow',
           disabled: false
         })
