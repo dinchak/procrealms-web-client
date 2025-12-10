@@ -25,13 +25,14 @@
           </NIcon>
         </p>
 
-        <slot :mini-output-enabled="miniOutputEnabled"></slot>
-
         <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
+        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']" :style="{ marginBottom: '10px' }"></KeyboardInput>
+
+        <slot :mini-output-enabled="miniOutputEnabled"></slot>
+
       </div>
     </div>
   </NModal>
@@ -237,7 +238,7 @@ onBeforeUnmount(() => {
       height: 200px;
       overflow-y: scroll;
       padding: 10px 10px 0 10px;
-      margin: 0 8px 10px 8px;
+      margin: 40px 8px 10px 8px;
       background-color: rgb(16, 16, 20);
       .line {
         font-size: 16px;

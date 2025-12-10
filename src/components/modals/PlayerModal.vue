@@ -5,6 +5,7 @@
     modal-class="game-modal"
     modal-key="playerModal"
     :has-tab-navigation="true"
+    @opened="onModalOpened"
     @closed="onModalClosed"
     @prev-tab="prevModalTab"
     @next-tab="nextModalTab"
@@ -69,8 +70,24 @@ const tabs = ref(null)
 const currentPane = ref("score")
 const panes = ref(['score', 'skills', 'inventory', 'equipment', 'quests', 'options', 'mappings'])
 
+let watchers = []
+
+function onModalOpened () {
+  if (state.gamepadTab && panes.value.includes(state.gamepadTab)) {
+    currentPane.value = state.gamepadTab
+  } else {
+    currentPane.value = "score"
+  }
+
+  watchers.push(watch(() => state.gamepadTab, () => {
+    currentPane.value = state.gamepadTab
+  }))
+}
+
 function onModalClosed () {
   state.gamepadTab = currentPane.value
+  watchers.forEach(unwatch => unwatch())
+  watchers = []
 }
 
 function prevModalTab () {
@@ -102,9 +119,6 @@ function getPlayerModalTabsClass (miniOutputEnabled) {
   }
 }
 
-watch(() => state.gamepadTab, () => {
-  currentPane.value = state.gamepadTab
-})
 </script>
 
 <style lang="less">

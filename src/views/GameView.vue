@@ -114,6 +114,11 @@ function openHelpModal () {
   state.modals.helpModal = true
 }
 
+function openTradeModal () {
+  setMode('modal')
+  state.modals.tradeModal = true
+}
+
 function showDebug () {
   setMode('modal')
   state.modals.debugModal = true
@@ -227,6 +232,7 @@ let watchers = []
 onMounted(() => {
   state.inputEmitter.on('openPlayerModal', openPlayerModal)
   state.inputEmitter.on('openHelpModal', openHelpModal)
+  state.inputEmitter.on('openTradeModal', openTradeModal)
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
@@ -272,6 +278,7 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openInventory', openInventory)
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
+  state.inputEmitter.off('openTradeModal', openTradeModal)
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)

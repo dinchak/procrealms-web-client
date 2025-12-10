@@ -15,8 +15,8 @@ export function useHelpers () {
     let valueString = ''
     let copperString = (amount || 0).toString()
 
-    const gold = short ? 'g ' : ' gold, '
-    const silver = short ? 's ' : ' silver, '
+    const gold = short ? 'g ' : ' gold '
+    const silver = short ? 's ' : ' silver '
     const copper = short ? 'c ' : ' copper '
 
     if (copperString.length > 4) {
@@ -728,6 +728,6 @@ export function useHelpers () {
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
-    range, renderMessage
+    range, renderMessage, runAndUpdate
   }
 }
