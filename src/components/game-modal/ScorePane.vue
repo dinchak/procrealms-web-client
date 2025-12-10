@@ -521,7 +521,7 @@ watch(state.gameState.equipment, () => {
 <style lang="less">
 .scroll-container {
   .stat-grid {
-    max-width: 850px;
+    max-width: 1000px;
     margin: 0 auto;
     &.resistance {
       max-width: 500px;

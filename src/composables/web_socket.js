@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { state } from '@/static/state'
+import { addLine, state } from '@/static/state'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
 
 export function useWebSocket () {
@@ -82,6 +82,7 @@ export function useWebSocket () {
   }
 
   function runCommand (command, reqId = null) {
+    addLine(`<span class="black">></span> <span class="bold-yellow">${command}</span>`, 'output')
     if (reqId) {
       return sendWithResponse('cmd', command, reqId)
     } else {

@@ -35,11 +35,11 @@
     <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
 
     <div class="item-table">
-      <div class="inventory" v-for="(e, i) in columns" :key="i">
-        <div v-for="(item, index) in getItems()" :key="item.iid" class="item-row">
-          <div :class=itemClass(item.iid) v-if="index % columns === i">
+      <div class="inventory" v-for="i in columns" :key="i">
+        <div v-for="item in getColumnItems(i - 1)" :key="item.iid" class="item-row">
+          <div :class="itemClass(item.iid)">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-              <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+            <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
           </div>
         </div>
       </div>
@@ -195,6 +195,16 @@ async function onSortChange () {
 function sortItems (its) {
   its.sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
   return its
+}
+
+function getColumnItems (colIndex) {
+  const its = getItems()
+  if (!its || its.length === 0) {
+    return []
+  }
+  const perCol = Math.ceil(its.length / columns.value) || 1
+  const start = colIndex * perCol
+  return its.slice(start, start + perCol)
 }
 
 let watchers = []
