@@ -1,36 +1,28 @@
 <template>
-  <NModal
-    v-model:show="state.modals.helpModal"
+  <GameModal
+    v-model="state.modals.helpModal"
     title="Help"
-    @after-enter="onOpenModal"
-    @after-leave="onCloseModal"
-    class="help-modal"
-    :auto-focus="false"
-    :close-on-esc="false"
+    modal-class="help-modal"
+    modal-key="helpModal"
+    :has-tab-navigation="true"
+    @opened="onModalOpened"
+    @closed="onModalClosed"
+    @prev-tab="prevModalTab"
+    @next-tab="nextModalTab"
   >
-    <div>
-      <div class="modal-body">
-        <div class="modal-turn-indicator">
-          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
-        </div>
-        <p class="modal-close-button" @click="onCloseModal()">
-          <NIcon size="24">
-            <CloseOutlined />
-          </NIcon>
-        </p>
-
-        <NTabs
-          v-if="state.help.topicsLoaded"
-          v-model:value="currentPane"
-          :class="getTabsClass()"
-          :closable="true"
-          type="card"
-          ref="tabs"
-          @close="handleCloseTab"
-        >
+    <template #default="{ miniOutputEnabled }">
+      <NTabs
+        v-if="state.help.topicsLoaded"
+        v-model:value="currentPane"
+        :class="getTabsClass(miniOutputEnabled)"
+        :closable="true"
+        type="card"
+        ref="tabs"
+        @close="handleCloseTab"
+      >
 
           <NTabPane name="topics" tab="Topics" :closable="false">
-            <div :class="getScrollContainerClass()">
+            <div :class="getScrollContainerClass(miniOutputEnabled)">
               <div class="search-container">
                 <NInput placeholder="Filter Topics" v-model:value="topicsFilter"></NInput>
 
@@ -79,7 +71,7 @@
               <div @click.middle="() => handleCloseTab(entry)">{{ getTabLabel(content.title || entry) }}</div>
             </template>
             <template #default>
-              <div :class="getScrollContainerClass()">
+              <div :class="getScrollContainerClass(miniOutputEnabled)">
                 <h1 v-html-safe="getTitle(content)"></h1>
 
                 <div class="help-section"
@@ -235,36 +227,27 @@
             </template>
           </NTabPane>
 
-          <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
-            <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
-          </div>
-
-          <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
         </NTabs>
-      </div>
-    </div>
-  </NModal>
+    </template>
+  </GameModal>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon, NInput, NButton, NInputGroup } from 'naive-ui'
+import { ref, nextTick, onMounted, watch } from 'vue'
+import { NTabs, NTabPane, NInput, NButton, NInputGroup } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
-import CloseOutlined from '@vicons/material/CloseOutlined'
 
-import { state, prevMode } from '@/static/state'
+import { state } from '@/static/state'
 import { ANSI } from '@/static/constants'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
-import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
-import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
+import GameModal from '@/components/modals/GameModal.vue'
 
 const { runCommand, send } = useWebSocket()
 const { ansiToHtml, renderNumber, ucfirst } = useHelpers()
 
 const tabs = ref(null)
 const currentPane = ref("topics")
-const miniOutputEnabled = ref(false)
 const panes = ref(['topics'])
 const topicsFilter = ref('')
 const searchFilter = ref('')
@@ -372,10 +355,6 @@ function handleCloseTab (name) {
   }
 }
 
-function getRecentOutput () {
-  return state.output.slice(-100)
-}
-
 function getTabLabel (title) {
   return ucfirst(
     stripAnsi(title)
@@ -384,35 +363,26 @@ function getTabLabel (title) {
   )
 }
 
-function getTabsClass () {
+function getTabsClass (miniOutputEnabled) {
   return {
     'help-modal-tabs': true,
-    'mini-output-hidden': !miniOutputEnabled.value
+    'mini-output-hidden': !miniOutputEnabled
   }
 }
 
-function getScrollContainerClass () {
+function getScrollContainerClass (miniOutputEnabled) {
   return {
     'scroll-container': true,
-    'mini-output-enabled': miniOutputEnabled.value
+    'mini-output-enabled': miniOutputEnabled
   }
 }
 
-function onCloseModal () {
-  if (!state.modals.helpModal) {
-    return
-  }
-  state.modals.helpModal = false
+function onModalClosed () {
   state.gamepadHelpTab = currentPane.value
-  if (state.mode == 'modal-input') {
-    prevMode()
-  }
-  prevMode()
 }
 
-function onOpenModal () {
+function onModalOpened () {
   currentPane.value = state.gamepadHelpTab || "topics"
-  scrollDown()
 }
 
 function prevModalTab () {
@@ -437,46 +407,11 @@ function nextModalTab () {
   nextTick(() => tabs.value?.syncBarPosition())
 }
 
-function onOutputChanged () {
-  let el = document.getElementById('mini-output')
-  if (!el) {
-    return
-  }
-
-  let { scrollTop, scrollHeight, offsetHeight } = el
-
-  let scrollPosition = Math.round(scrollTop + offsetHeight + 5)
-  let scrolledBack = scrollPosition <= scrollHeight
-
-  if (scrolledBack) {
-    return
-  }
-
-  scrollDown()
-}
-
-function scrollDown () {
-  nextTick(() => {
-    let output = document.getElementById('mini-output')
-    if (output) {
-      output.scrollTop = output.scrollHeight
-    }
-  })
-}
-
 let watchers = []
 onMounted(() => {
   loadHelpTopics()
 
-  state.inputEmitter.on('closeModal', onCloseModal)
-  state.inputEmitter.on('prevModalTab', prevModalTab)
-  state.inputEmitter.on('nextModalTab', nextModalTab)
-
   currentPane.value = state.gamepadHelpTab || "topics"
-
-  watchers.push(
-    watch(state.output, () => onOutputChanged())
-  )
 
   watchers.push(
     watch(() => state.gamepadHelpTab, () => {
@@ -487,7 +422,6 @@ onMounted(() => {
       }
     }))
 
-  // TODO why doesn't this work?
   watchers.push(
     watch(() => state.help.openEntries.length, () => {
       let el = tabs.value?.$el
@@ -506,34 +440,11 @@ onMounted(() => {
     }))
 })
 
-onBeforeUnmount(() => {
-  state.inputEmitter.off('closeModal', onCloseModal)
-  state.inputEmitter.off('prevModalTab', prevModalTab)
-  state.inputEmitter.off('nextModalTab', nextModalTab)
-
-  watchers.forEach(w => w())
-})
-
 </script>
 
 <style lang="less">
 .help-modal {
-  min-height: 100vh;
-  width: 100vw;
-  background: #18181b;
-  padding-bottom: 0px;
-
   .modal-body {
-    position: relative;
-    padding: 10px;
-
-    .modal-turn-indicator {
-      position: absolute;
-      top: 14px;
-      right: 50px;
-      z-index: 10;
-    }
-
     .help-modal-tabs {
       .n-tabs-tab {
         box-sizing: border-box;
@@ -678,47 +589,10 @@ onBeforeUnmount(() => {
           }
         }
       }
-      height: calc(100vh - 170px);
+      height: calc(100vh - 270px);
       overflow-y: hidden;
       &.mini-output-hidden {
         height: calc(100vh - 20px);
-      }
-    }
-
-    .mini-output {
-      height: 100px;
-      overflow-y: scroll;
-      padding: 10px 10px 0 10px;
-      margin-bottom: 10px;
-      background-color: #000;
-      border-top: 1px solid rgba(255, 255, 255, 0.09);
-      .line {
-        font-size: 16px;
-        line-height: 14px;
-        color: #fff;
-        margin-bottom: 5px;
-        white-space: pre-wrap;
-        font-weight: normal !important;
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    }
-
-    .toggle-mini-output {
-      margin: 0 5px 0 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 44px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover, &.active {
-        border: 1px solid rgb(69 119 69);
-        background-color: rgb(27 45 27 / 90%);
       }
     }
   }
