@@ -70,6 +70,16 @@
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
 
+      <div :class="getTradeButtonClass()" v-if="isTradeButtonActive()" @click="openTradeModal()">
+        <div class="slot-label" v-if="isTradeButtonActive()">
+          <span class="bold-yellow">T</span><span class="bold-magenta">rade</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">T</span><span class="black">rade</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/a.png" class="icon"/>
+      </div>
+
       <div v-for="slot in getSlots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
         <NProgress v-if="getSkill(slot) && getSkill(slot).timeLeft" type="line" status="success"
                    :percentage="100 - getSkill(slot).timeLeft / getSkill(slot).cooldownTime * 100"
@@ -87,7 +97,7 @@ import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
-import { state } from '@/static/state'
+import { state, setMode } from '@/static/state'
 
 import { QUICKSLOTS } from '@/static/constants'
 
@@ -172,6 +182,23 @@ function getLootButtonClass () {
     classes.push('active')
   }
   return classes.join(' ')
+}
+
+function isTradeButtonActive () {
+  return state.gameState.room.entities.some(e => e.traits.includes('shopkeeper'))
+}
+
+function getTradeButtonClass () {
+  let classes = ['quick-slot', 'shop']
+  if (isTradeButtonActive()) {
+    classes.push('active')
+  }
+  return classes.join(' ')
+}
+
+function openTradeModal () {
+  setMode('modal')
+  state.modals.tradeModal = true
 }
 
 function getSlots () {
@@ -432,6 +459,31 @@ function getSlotClass (slot) {
 
       &:hover {
         background-color: darken(#0cc6c6, 33%);
+      }
+    }
+
+    .slot-label {
+      font-size: 16px;
+      line-height: 16px;
+      text-align: center;
+    }
+  }
+
+  &.shop {
+    background-color: #111;
+    border: 1px solid #808080;
+    justify-content: center;
+
+    &.active {
+      background-color: #111515;
+      border: 1px solid #c60cc6;
+
+      &.selected {
+        border: 1px solid #f8ff25;
+      }
+
+      &:hover {
+        background-color: darken(#c60cc6, 33%);
       }
     }
 

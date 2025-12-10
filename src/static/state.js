@@ -96,6 +96,7 @@ export const state = reactive({
     newPlayerModal: false,
     gameModal: false,
     settingsModal: false,
+    tradeModal: false,
   },
 
   help: {
