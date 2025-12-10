@@ -1,6 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
 
     <NGrid class="inventory-summary" cols="1 600:2">
       <NGi class="cell search">
@@ -53,7 +53,7 @@ import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue
 import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
 import { state } from '@/static/state'
 
@@ -149,8 +149,8 @@ function getScrollContainerClass () {
 }
 
 function getInventory () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].items || []
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].items || []
   }
   return state.gameState.inventory || []
 }
@@ -163,12 +163,12 @@ function unwatchCharmieInventory () {
 }
 
 function watchCharmieInventory () {
-  if (!state.gameModalAs || !state.gameState.charmies[state.gameModalAs]) {
+  if (!state.playerModalAs || !state.gameState.charmies[state.playerModalAs]) {
     return
   }
 
   charmieInventoryWatcher = watch(() => {
-    return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
+    return state.gameState.charmies[state.playerModalAs] ? state.gameState.charmies[state.playerModalAs].items : []
   }, async () => {
     items.value = sortItems(await fetchItems(getInventory()))
   })
@@ -206,7 +206,7 @@ onMounted(async () => {
 
   watchers.push(
     watch(() => state.gameState.inventory, async () => {
-      if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+      if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
       items.value = sortItems(await fetchItems(state.gameState.inventory))
@@ -214,7 +214,7 @@ onMounted(async () => {
   )
 
   watchers.push(
-    watch(() => state.gameModalAs, async () => {
+    watch(() => state.playerModalAs, async () => {
       items.value = sortItems(await fetchItems(getInventory()))
       unwatchCharmieInventory()
       watchCharmieInventory()

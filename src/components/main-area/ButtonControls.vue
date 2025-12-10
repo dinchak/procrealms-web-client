@@ -29,11 +29,11 @@
       </NIcon>
 
       <NIcon
-          v-if="!state.options.showGameModalShortcuts"
+          v-if="!state.options.showPlayerModalShortcuts"
           title="Game Menu"
-          :class="state.modals.gameModal ? 'active' : ''"
+          :class="state.modals.playerModal ? 'active' : ''"
           size="24"
-          @click="openGameModal()"
+          @click="openPlayerModal()"
       >
         <AssessmentOutlined/>
       </NIcon>
@@ -48,38 +48,38 @@
       </NIcon>
     </div>
 
-    <div class="game-modal-shortcuts" v-if="state.options.showGameModalShortcuts">
-      <div class="shortcut" @click="openGameModal('score')">
+    <div class="game-modal-shortcuts" v-if="state.options.showPlayerModalShortcuts">
+      <div class="shortcut" @click="openPlayerModal('score')">
         <div class="icon">
           <img src="@/assets/icons/character.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('skills')">
+      <div class="shortcut" @click="openPlayerModal('skills')">
         <div class="icon">
           <img src="@/assets/icons/skills.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('quests')">
+      <div class="shortcut" @click="openPlayerModal('quests')">
         <div class="icon">
           <img src="@/assets/icons/trophy.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('inventory')">
+      <div class="shortcut" @click="openPlayerModal('inventory')">
         <div class="icon">
           <img src="@/assets/icons/backpack.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('equipment')">
+      <div class="shortcut" @click="openPlayerModal('equipment')">
         <div class="icon">
           <img src="@/assets/icons/battle-gear.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('options')">
+      <div class="shortcut" @click="openPlayerModal('options')">
         <div class="icon">
           <img src="@/assets/icons/toggles.svg">
         </div>
@@ -119,11 +119,11 @@ function toggleSettings () {
   setMode('modal')
 }
 
-function openGameModal (pane = null) {
+function openPlayerModal (pane = null) {
   if (pane) {
     state.gamepadTab = pane
   }
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   setMode('modal')
 }
 

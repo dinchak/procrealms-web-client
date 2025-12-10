@@ -61,8 +61,8 @@ onBeforeUnmount(() => {
 })
 
 function getEquipment () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].equipment
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].equipment
   }
   return state.gameState.equipment
 }

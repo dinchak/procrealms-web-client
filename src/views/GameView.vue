@@ -3,7 +3,7 @@
         class="game" :class="{
      'show-mobile-menu': state.options.showMobileMenu,
      'swap-mobile-menu': state.options.swapMobileMenuSide,
-     'show-modal-shortcuts': state.options.showGameModalShortcuts
+     'show-modal-shortcuts': state.options.showPlayerModalShortcuts
   }">
     <div class="game-layout">
       <MobileMenu/>
@@ -36,7 +36,7 @@
     <LogoutModal/>
     <HelpModal/>
     <TriggersModal/>
-    <GameModal/>
+    <PlayerModal/>
     <MercModal/>
     <TradeModal/>
     <RadialOverlay/>
@@ -48,7 +48,7 @@ import { onMounted, onBeforeUnmount, watch } from 'vue'
 import { NEl } from 'naive-ui'
 
 import DebugModal from '@/components/modals/DebugModal.vue'
-import GameModal from '@/components/modals/GameModal.vue'
+import PlayerModal from '@/components/modals/PlayerModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
@@ -86,26 +86,26 @@ const { runCommand } = useWebSocket()
 
 let moveTimeout = null
 
-function openGameModal () {
+function openPlayerModal () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
 }
 
 function openScore () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'score'
 }
 
 function openInventory () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'inventory'
 }
 
 function openQuests () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'quests'
 }
 
@@ -225,7 +225,7 @@ function moveSouthWest () {
 
 let watchers = []
 onMounted(() => {
-  state.inputEmitter.on('openGameModal', openGameModal)
+  state.inputEmitter.on('openPlayerModal', openPlayerModal)
   state.inputEmitter.on('openHelpModal', openHelpModal)
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
@@ -268,7 +268,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  state.inputEmitter.off('openGameModal', openGameModal)
+  state.inputEmitter.off('openPlayerModal', openPlayerModal)
   state.inputEmitter.off('openInventory', openInventory)
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)

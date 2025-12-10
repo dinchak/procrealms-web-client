@@ -717,8 +717,8 @@ export function resetInputMappings () {
     },
 
     {
-      label: 'Open Game Modal',
-      event: 'openGameModal',
+      label: 'Open Player Modal',
+      event: 'openPlayerModal',
       bindings: [{
         keyCode: 'Escape',
         modes: ['hotkey'],

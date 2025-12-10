@@ -1,6 +1,6 @@
 <template>
   <NModal
-    v-model:show="state.modals.gameModal"
+    v-model:show="state.modals.playerModal"
     title="Game Menu"
     @after-enter="onOpenModal"
     @after-leave="onCloseModal"
@@ -28,7 +28,7 @@
 
         <NTabs
           v-model:value="currentPane"
-          :class="getGameModalTabsClass()"
+          :class="getPlayerModalTabsClass()"
           type="card"
           tab-style="min-width: 80px;"
           ref="tabs"
@@ -123,10 +123,10 @@ function onOpenModal () {
 }
 
 function onCloseModal () {
-  if (!state.modals.gameModal) {
+  if (!state.modals.playerModal) {
     return
   }
-  state.modals.gameModal = false
+  state.modals.playerModal = false
   state.gamepadTab = currentPane.value
   if (state.mode == 'modal-input') {
     prevMode()
@@ -201,7 +201,7 @@ function onOutputChanged () {
   scrollDown()
 }
 
-function getGameModalTabsClass () {
+function getPlayerModalTabsClass () {
   return {
     'game-modal-tabs': true,
     'mini-output-hidden': !miniOutputEnabled.value
@@ -226,8 +226,8 @@ onMounted(() => {
 
   watchers.push(
     watch(state.gameState.charmies, () => {
-      if (!state.gameState.charmies[state.gameModalAs]) {
-        state.gameModalAs = ''
+      if (!state.gameState.charmies[state.playerModalAs]) {
+        state.playerModalAs = ''
       }
     })
   )

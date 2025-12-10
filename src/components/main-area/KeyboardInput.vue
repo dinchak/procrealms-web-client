@@ -122,8 +122,8 @@ function sendCommand () {
   }
 
   if (focusMode.value == 'modal-input') {
-    if (state.gameModalAs) {
-      command = `order eid:${state.gameModalAs} ${command}`
+    if (state.playerModalAs) {
+      command = `order eid:${state.playerModalAs} ${command}`
     }
   }
 

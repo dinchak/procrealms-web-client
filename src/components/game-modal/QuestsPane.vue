@@ -92,7 +92,7 @@ function getScrollContainerClass () {
 }
 
 function onWalk (coords) {
-  state.modals.gameModal = false
+  state.modals.playerModal = false
   runCommand(`walk ${coords.x},${coords.y}`)
 }
 

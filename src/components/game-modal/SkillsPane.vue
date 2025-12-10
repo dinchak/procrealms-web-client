@@ -1,6 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
 
     <NGrid class="skills" cols="1 800:2">
 
@@ -73,23 +73,23 @@
 import { defineProps, toRefs } from 'vue'
 import { NGrid, NGi, NProgress } from 'naive-ui'
 
-import SelectGameModalAs from './SelectGameModalAs.vue'
+import SelectPlayerModalAs from './SelectPlayerModalAs.vue'
 import { state } from '@/static/state'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 function player () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].stats || {}
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].stats || {}
   }
 
   return state.gameState.player || {}
 }
 
 function skills () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].skills || {}
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].skills || {}
   }
 
   return state.gameState.skills || {}
