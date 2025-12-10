@@ -1,151 +1,76 @@
 <template>
-  <NModal
-    v-model:show="state.modals.playerModal"
+  <GameModal
+    v-model="state.modals.playerModal"
     title="Game Menu"
-    @after-enter="onOpenModal"
-    @after-leave="onCloseModal"
-    class="game-modal"
-    :auto-focus="false"
-    :close-on-esc="false"
+    modal-class="game-modal"
+    modal-key="playerModal"
+    :has-tab-navigation="true"
+    @closed="onModalClosed"
+    @prev-tab="prevModalTab"
+    @next-tab="nextModalTab"
   >
+    <template #default="{ miniOutputEnabled }">
+      <NTabs
+        v-model:value="currentPane"
+        :class="getPlayerModalTabsClass(miniOutputEnabled)"
+        type="card"
+        tab-style="min-width: 80px;"
+        ref="tabs"
+      >
 
-    <div>
-      <div class="modal-body">
-        <div class="modal-turn-indicator">
-          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
-        </div>
+        <NTabPane name="score" tab="Score">
+          <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
+        </NTabPane>
 
-        <p class="modal-close-button" @click="onCloseModal()">
-          <NIcon size="24">
-            <CloseOutlined />
-          </NIcon>
-        </p>
-        <p :class="getModalKeyboardToggleClass()" @click="toggleMiniOutput()">
-          <NIcon size="24">
-            <KeyboardOutlined />
-          </NIcon>
-        </p>
+        <NTabPane name="skills" tab="Skills">
+          <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
+        </NTabPane>
 
-        <NTabs
-          v-model:value="currentPane"
-          :class="getPlayerModalTabsClass()"
-          type="card"
-          tab-style="min-width: 80px;"
-          ref="tabs"
-        >
+        <NTabPane name="inventory" tab="Inventory">
+          <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
+        </NTabPane>
 
-          <NTabPane name="score" tab="Score">
-            <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
-          </NTabPane>
+        <NTabPane name="equipment" tab="Equipment">
+          <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
+        </NTabPane>
 
-          <NTabPane name="skills" tab="Skills">
-            <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
-          </NTabPane>
+        <NTabPane name="quests" tab="Quests">
+          <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
+        </NTabPane>
 
-          <NTabPane name="inventory" tab="Inventory">
-            <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
-          </NTabPane>
+        <NTabPane name="options" tab="Options">
+          <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
+        </NTabPane>
 
-          <NTabPane name="equipment" tab="Equipment">
-            <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
-          </NTabPane>
+        <NTabPane name="mappings" tab="Mappings">
+          <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
+        </NTabPane>
 
-          <NTabPane name="quests" tab="Quests">
-            <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
-          </NTabPane>
-
-          <NTabPane name="options" tab="Options">
-            <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
-          </NTabPane>
-
-          <NTabPane name="mappings" tab="Mappings">
-            <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
-          </NTabPane>
-
-        </NTabs>
-
-        <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
-          <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
-        </div>
-
-        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
-      </div>
-    </div>
-  </NModal>
+      </NTabs>
+    </template>
+  </GameModal>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
-import { state, prevMode } from '@/static/state'
-import { useHelpers } from '@/composables/helpers'
-import { useWindowHandler } from '@/composables/window_handler'
+import { ref, nextTick, watch } from 'vue'
+import { NTabs, NTabPane } from 'naive-ui'
+import { state } from '@/static/state'
 
-import CloseOutlined from '@vicons/material/CloseOutlined'
-import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
-import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
-
+import GameModal from '@/components/modals/GameModal.vue'
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
 import InputMappingsPane from '@/components/game-modal/InputMappingsPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
-import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 import OptionsPane from '@/components/game-modal/OptionsPane.vue'
 import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
-const { selectNearestElement } = useHelpers()
-const { setFontSize, setFontFamily } = useWindowHandler()
-
-let selectedElement = null
-function selectModalAction (degree) {
-  selectedElement = selectNearestElement(selectedElement, degree)
-  if (selectedElement) {
-    selectedElement.focus()
-  }
-}
-
-function performModalAction () {
-  if (selectedElement) {
-    selectedElement.click()
-  }
-}
-
 const tabs = ref(null)
 const currentPane = ref("score")
-const miniOutputEnabled = ref(false)
 const panes = ref(['score', 'skills', 'inventory', 'equipment', 'quests', 'options', 'mappings'])
 
-function onOpenModal () {
-  setFontSize(state.options.fontSize)
-  setFontFamily(state.options.fontFamily)
-  scrollDown()
-}
-
-function onCloseModal () {
-  if (!state.modals.playerModal) {
-    return
-  }
-  state.modals.playerModal = false
+function onModalClosed () {
   state.gamepadTab = currentPane.value
-  if (state.mode == 'modal-input') {
-    prevMode()
-  }
-  prevMode()
-}
-
-function getModalKeyboardToggleClass () {
-  return {
-    'modal-keyboard-toggle': true,
-    'active': miniOutputEnabled.value
-  }
-}
-
-function toggleMiniOutput () {
-  miniOutputEnabled.value = !miniOutputEnabled.value
-  nextTick(() => {
-    scrollDown()
-  })
 }
 
 function prevModalTab () {
@@ -170,133 +95,29 @@ function nextModalTab () {
   nextTick(() => tabs.value?.syncBarPosition())
 }
 
-function getRecentOutput () {
-  return state.output.slice(-100)
-}
-
-function scrollDown () {
-  nextTick(() => {
-    let output = document.getElementById('mini-output')
-    if (output) {
-      output.scrollTop = output.scrollHeight
-    }
-  })
-}
-
-function onOutputChanged () {
-  let el = document.getElementById('mini-output')
-  if (!el) {
-    return
-  }
-
-  let { scrollTop, scrollHeight, offsetHeight } = el
-
-  let scrollPosition = Math.round(scrollTop + offsetHeight + 5)
-  let scrolledBack = scrollPosition <= scrollHeight
-
-  if (scrolledBack) {
-    return
-  }
-
-  scrollDown()
-}
-
-function getPlayerModalTabsClass () {
+function getPlayerModalTabsClass (miniOutputEnabled) {
   return {
     'game-modal-tabs': true,
-    'mini-output-hidden': !miniOutputEnabled.value
+    'mini-output-hidden': !miniOutputEnabled
   }
 }
 
 watch(() => state.gamepadTab, () => {
   currentPane.value = state.gamepadTab
 })
-
-let watchers = []
-onMounted(() => {
-  state.inputEmitter.on('closeModal', onCloseModal)
-  state.inputEmitter.on('prevModalTab', prevModalTab)
-  state.inputEmitter.on('nextModalTab', nextModalTab)
-  state.inputEmitter.on('selectModalAction', selectModalAction)
-  state.inputEmitter.on('performModalAction', performModalAction)
-
-  watchers.push(
-    watch(state.output, () => onOutputChanged())
-  )
-
-  watchers.push(
-    watch(state.gameState.charmies, () => {
-      if (!state.gameState.charmies[state.playerModalAs]) {
-        state.playerModalAs = ''
-      }
-    })
-  )
-
-  setFontSize(state.options.fontSize)
-  setFontFamily(state.options.fontFamily)
-})
-
-onBeforeUnmount(() => {
-  state.inputEmitter.off('closeModal', onCloseModal)
-  state.inputEmitter.off('prevModalTab', prevModalTab)
-  state.inputEmitter.off('nextModalTab', nextModalTab)
-  state.inputEmitter.off('selectModalAction', selectModalAction)
-  state.inputEmitter.off('performModalAction', performModalAction)
-
-  watchers.forEach(w => w())
-})
 </script>
 
 <style lang="less">
 .game-modal {
-  min-height: 100vh;
-  width: 100vw;
-  background: #18181b;
-  padding-bottom: 0px;
-
   .modal-body {
-    position: relative;
-    padding: 10px;
-
     .game-modal-tabs {
       .n-tabs-nav {
         width: calc(100vw - 150px);
-      }
-      .n-tab-pane {
-        .n-select {
-          // max-width: 200px;
-        }
       }
       height: calc(100vh - 270px);
       overflow-y: hidden;
       &.mini-output-hidden {
         height: calc(100vh - 20px);
-      }
-    }
-
-    .modal-turn-indicator {
-      position: absolute;
-      top: 14px;
-      right: 95px;
-      z-index: 10;
-    }
-
-    .mini-output {
-      height: 200px;
-      overflow-y: scroll;
-      padding: 10px 10px 0 10px;
-      margin: 0 8px 10px 8px;
-      background-color: rgb(16, 16, 20);
-      .line {
-        font-size: 16px;
-        line-height: 14px;
-        color: #fff;
-        margin-bottom: 5px;
-        white-space: pre-wrap;
-        font-weight: normal !important;
-        &:last-child {
-          margin-bottom: 0;
-        }
       }
     }
   }
