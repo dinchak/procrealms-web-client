@@ -155,6 +155,8 @@ onBeforeUnmount(() => {
     flex: 0 0 auto;
     gap: 20px;
     min-width: 50px;
+    align-self: center;
+
     .vs {
       z-index: 1;
       margin: 0px 4px;
