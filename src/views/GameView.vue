@@ -26,6 +26,7 @@
         <div class="bottom-split">
           <BottomHUD v-if="!state.gameState.battle.active"/>
           <QuickSlots v-if="state.options.showQuickSlots"/>
+          <PlayerPrompt v-if="state.gameState.prompt"/>
           <QuickSlotHandlers/>
           <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
           <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"/>
@@ -68,6 +69,7 @@ import SideMap from '@/components/main-area/SideMap.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
 
 import PartyStats from '@/components/hud/PartyStats.vue'
+import PlayerPrompt from '@/components/hud/PlayerPrompt.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
 
 import { state, setMode } from '@/static/state'

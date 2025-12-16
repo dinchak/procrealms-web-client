@@ -189,6 +189,7 @@ export function resetGameState () {
       entrances: [],
     },
     slots: [],
+    prompt: '',
   }
 }
 

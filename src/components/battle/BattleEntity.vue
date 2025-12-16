@@ -314,7 +314,7 @@ function getStaminaPercent (en, part, sd) {
 
       display: flex;
       flex-direction: row;
-      margin: 3px 0 3px 0;
+      min-height: 20px;
       overflow-x: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
