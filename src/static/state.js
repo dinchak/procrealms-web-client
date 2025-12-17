@@ -7,6 +7,12 @@ import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 import { playRandomTrack } from '@/static/sound'
 
+import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
+
+const { ansiToHtml } = useHelpers()
+const { fetchItems, fetchEntities } = useWebSocket()
+
 const { addToken } = useLocalStorageHandler()
 
 export const updateCounter = ref(0)
@@ -57,12 +63,7 @@ export const state = reactive({
   inventorySortValue: 'type',
   inventoryOutput: {},
 
-  scrolledBack: {
-    output: false,
-    chat: false,
-    trade: false,
-    newbie: false,
-  },
+  scrolledBack: false,
 
   output: [],
   chat: [],
@@ -212,8 +213,12 @@ export const configurableOptions = {
     'Chat In Main Output': 'chatInMain',
     'Chat Message Sounds': 'chatSounds',
     'Autoplay Music': 'autoplayMusic',
-    'Battle Always Expanded': 'battleAlwaysExpanded',
     'Large Vitals': 'largeVitals',
+  },
+  'Battle': {
+    'Battle Table Mode': 'battleTableMode',
+    'Battle Always Expanded': 'battleAlwaysExpanded',
+    'Damage Animations': 'damageAnimations',
   },
 }
 
@@ -221,6 +226,8 @@ function resetOptions () {
   return {
     // general options
     battleAlwaysExpanded: true,
+    battleTableMode: true,
+    damageAnimations: true,
     battleExpanded: false,
     largeVitals: true,
     chatInMain: true,
@@ -245,17 +252,17 @@ function resetOptions () {
     sideMapHeight: 25,
 
     // interface options
-    showMinimap: false,
+    showMinimap: true,
     showRoomInfo: false,
     showEffects: false,
     showQuests: false,
 
-    showChat: false,
+    showChat: true,
     showQuickSlots: true,
-    showPartyStats: true,
+    showPartyStats: false,
     textInputMobileButtons: true,
 
-    showSideMap: true,
+    showSideMap: false,
     showSideMovement: false,
     showSideAliases: false,
     showPlayerModalShortcuts: true,
@@ -350,7 +357,7 @@ export function getPartyStatsHeight () {
   }
 }
 
-export function addLine (line, bufferName) {
+export async function addLine (line, bufferName) {
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
@@ -366,6 +373,8 @@ export function addLine (line, bufferName) {
   if (!preloadBuffers[bufferName]) {
     preloadBuffers[bufferName] = []
   }
+
+  line = await replaceIds(line)
 
   if (bufferName == 'output') {
     Object.freeze(line)
@@ -392,6 +401,43 @@ export function addLine (line, bufferName) {
     addLinesTimeout = null
   }, 10)
 }
+
+async function replaceIds (command) {
+  const eidMatches = [...command.matchAll(/eid:(\w+)/g)].map(m => m[1])
+  const uniqueEids = [...new Set(eidMatches)]
+
+  if (uniqueEids.length) {
+    const entities = await fetchEntities(uniqueEids)
+    const byEid = Object.fromEntries(entities.map(e => [e.eid, e]))
+
+    command = command.replace(/eid:(\w+)/g, (match, eid) => {
+      const ent = byEid[eid]
+      if (ent) {
+        if (ent.colorBattleTag) {
+          return ansiToHtml(ent.colorBattleTag + ' ' + ent.name)
+        }
+        return ent.name
+      }
+      return match
+    })
+  }
+
+  const iidMatches = [...command.matchAll(/iid:(\w+)/g)].map(m => m[1])
+  const uniqueIids = [...new Set(iidMatches)]
+
+  if (uniqueIids.length) {
+    const items = await fetchItems(uniqueIids)
+    const byIid = Object.fromEntries(items.map(i => [i.iid, i]))
+
+    command = command.replace(/iid:(\w+)/g, (match, iid) => {
+      const item = byIid[iid]
+      return item ? item.name : match
+    })
+  }
+
+  return command
+}
+
 
 export function getOrderCmd () {
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {

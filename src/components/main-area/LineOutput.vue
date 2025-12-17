@@ -8,7 +8,8 @@
       @mouseover="lineMouseover"
       @mouseleave="lineMouseleave">
     </div>
-    <BattleStatus v-if="state.gameState.battle.active"></BattleStatus>
+    <BattleStatus v-if="state.gameState.battle.active && !state.options.battleTableMode"></BattleStatus>
+    <BattleTable v-if="state.gameState.battle.active && state.options.battleTableMode"></BattleTable>
   </div>
   <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDown()">
     <NIcon>
@@ -32,6 +33,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
 
 import BattleStatus from '@/components/battle/BattleStatus.vue'
+import BattleTable from '@/components/battle/BattleTable.vue'
 
 import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon } from 'naive-ui'
@@ -40,6 +42,7 @@ const { send, runCommand } = useWebSocket()
 const { onResize, calcTerminalSize } = useWindowHandler()
 
 const outputId = 'output'
+const scrollbackThreshold = 30
 
 let resizeTimeout = null
 
@@ -63,10 +66,11 @@ function onChanged () {
 
   let { scrollTop, scrollHeight, offsetHeight } = el
 
-  let scrollPosition = Math.round(scrollTop + offsetHeight + 5)
-  let scrolledBack = scrollPosition <= scrollHeight
+  let atBottom = Math.round(scrollTop + offsetHeight) >= Math.round(scrollHeight - scrollbackThreshold)
 
-  if (!scrolledBack) {
+  state.scrolledBack = !atBottom
+
+  if (atBottom) {
     nextTick(() => scrollDown())
   }
 }
@@ -74,7 +78,8 @@ function onChanged () {
 function scrollDown () {
   let el = document.getElementById(outputId)
   if (el) {
-    el.scrollTo(0, el.scrollHeight)
+    let target = Math.max(0, el.scrollHeight - el.clientHeight)
+    el.scrollTop = target
   }
 }
 
@@ -82,7 +87,7 @@ function onScroll () {
   let el = document.getElementById(outputId)
   if (el) {
     let { scrollTop, scrollHeight, offsetHeight } = el
-    state.scrolledBack = Math.round(scrollTop + offsetHeight + 5) <= scrollHeight
+    state.scrolledBack = Math.round(scrollTop + offsetHeight + scrollbackThreshold) <= scrollHeight
   }
 }
 
@@ -109,12 +114,12 @@ function lineMouseleave (ev) {
 
 function pageUp () {
   let activeTabElement = document.getElementById(outputId)
-  activeTabElement.scrollTo(0, activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10)
+  activeTabElement.scrollTop = activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10
 }
 
 function pageDown () {
   let activeTabElement = document.getElementById(outputId)
-  activeTabElement.scrollTo(0, activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10)
+  activeTabElement.scrollTop = activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10
 }
 
 let watchers = []
@@ -124,7 +129,7 @@ onMounted(() => {
 
   let el = document.getElementById(outputId)
   if (el) {
-    el.scrollTo(0, el.scrollHeight)
+    el.scrollTop = el.scrollHeight
   }
 
   doResize()

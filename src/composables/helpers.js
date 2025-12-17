@@ -640,11 +640,11 @@ export function useHelpers () {
     }
 
     if (entity.combo > 0) {
-      flags.push(ANSI.boldYellow + entity.combo + ' ' + ANSI.yellow + 'Combo' + ANSI.reset)
+      flags.push(ANSI.boldYellow + entity.combo + ANSI.reset)
     }
 
     if (entity.rage > 0) {
-      flags.push(ANSI.boldRed + entity.rage + ' ' + ANSI.red + 'Rage' + ANSI.reset)
+      flags.push(ANSI.boldRed + entity.rage + ANSI.reset)
     }
 
     flags = flags.concat(Object.entries(effects)
@@ -686,6 +686,14 @@ export function useHelpers () {
       names.push('Full')
     }
 
+    if (entity.combo > 0) {
+      names.push(`${entity.combo} Combo`)
+    }
+
+    if (entity.rage > 0) {
+      names.push(`${entity.rage} Rage`)
+    }
+
     names = names.concat(Object.entries(effects)
       .map(p => p[1].longFlag || p[1].name))
 
@@ -725,6 +733,26 @@ export function useHelpers () {
     return out
   }
 
+  function renderColorGradient (colors, percent) {
+    let idx = Math.round(percent * colors.length)
+    if (idx >= colors.length) {
+      idx = colors.length - 1
+    }
+    return colors[idx] || '{{w'
+  }
+
+  function getHpColorByPercent (percent) {
+    return renderColorGradient(['red', 'bold-red', 'bold-yellow', 'green', 'bold-green'], percent)
+  }
+
+  function getEnergyColorByPercent (percent) {
+    return renderColorGradient(['blue', 'bold-blue', 'cyan', 'bold-cyan', 'bold-white'], percent)
+  }
+
+  function getStaminaColorByPercent (percent) {
+    return renderColorGradient(['red', 'bold-red', 'magenta', 'bold-magenta', 'bold-yellow'], percent)
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
@@ -732,6 +760,7 @@ export function useHelpers () {
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
-    range, renderMessage, runItemAction
+    range, renderMessage, runItemAction,
+    getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
   }
 }

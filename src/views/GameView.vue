@@ -370,7 +370,7 @@ onBeforeUnmount(() => {
   flex: 1 1 0;
   overflow: hidden;
   border-bottom: 1px solid #333;
-  padding-bottom: 4px;
+  padding-bottom: 10px;
 
   .line-area {
     flex: 1 1 auto;
@@ -403,10 +403,13 @@ onBeforeUnmount(() => {
 }
 
 .bottom-split {
-  padding: 0 0 8px 0;
+  padding: 0 0 10px 0;
   flex: 0 0 auto;
   > * {
-    padding: 4px 10px;
+    padding: 5px 10px;
+    &:first-child {
+      padding-top: 10px;
+    }
   }
 }
 

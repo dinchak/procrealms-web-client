@@ -1,5 +1,6 @@
 <template>
   <div class="battle-area">
+    <ReactionModal v-if="showReactionModal()" />
 
     <div class="battle-footer">
       <BattleField />
@@ -17,7 +18,11 @@
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
           <TransitionGroup tag="div" name="entity" appear class="entities">
             <div v-for="participant in getParticipants(side)" class="entity" :key="participant.eid">
-            <TransitionGroup appear name="damage">
+            <TransitionGroup
+              name="damage"
+              :appear="state.options.damageAnimations"
+              :css="state.options.damageAnimations"
+            >
               <div
                 v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
                 :key="anim.key"
@@ -26,7 +31,11 @@
               >{{ anim.amount }}</div>
             </TransitionGroup>
 
-            <TransitionGroup appear name="healing">
+            <TransitionGroup
+              :appear="state.options.damageAnimations"
+              :css="state.options.damageAnimations"
+              name="healing"
+            >
               <div
                 v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
                 :key="anim.key"
@@ -53,14 +62,15 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, computed } from 'vue'
-import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
-import ExpandBattleInfo from '@/components/battle/ExpandBattleInfo.vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/battle/BattleEntity.vue'
 import BattleField from '@/components/battle/BattleField.vue'
+import ReactionModal from '@/components/battle/ReactionModal.vue'
+import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
+import ExpandBattleInfo from '@/components/battle/ExpandBattleInfo.vue'
 
 const expandEntities = computed(() => {
   return state.options.battleAlwaysExpanded ? true : state.options.battleExpanded
@@ -101,6 +111,11 @@ function getSideClass (side) {
   let classes = ["side"]
   classes.push(side)
   return classes.join(' ')
+}
+
+function showReactionModal () {
+  const { battle } = state.gameState
+  return battle.pendingReaction ? true : false
 }
 
 onMounted(() => {
