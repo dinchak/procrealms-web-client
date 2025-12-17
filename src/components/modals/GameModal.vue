@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
     .modal-turn-indicator {
       position: absolute;
       top: 14px;
-      right: 95px;
+      right: 85px;
       z-index: 10;
     }
 

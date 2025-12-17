@@ -147,7 +147,7 @@ function sendCommand () {
   setTimeout(() => {
     // TODO replace with scroll down event
     let output = document.getElementById('output')
-    output.scrollTo(0, output.scrollHeight)
+    output.scrollTop = output.scrollHeight
   })
 }
 
