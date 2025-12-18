@@ -50,7 +50,7 @@
 
         <div>
           <EffectsBar
-            v-if="participant.effects.length > 0"
+            v-if="participant.effects.length > 0 || participant.combo > 0 || participant.rage > 0"
             :entity="participant"
             :effects="participant.effects"
           />

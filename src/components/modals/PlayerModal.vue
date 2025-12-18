@@ -27,24 +27,16 @@
           <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
         </NTabPane>
 
+        <NTabPane name="quests" tab="Quests">
+          <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
+        </NTabPane>
+
         <NTabPane name="inventory" tab="Inventory">
           <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
         </NTabPane>
 
         <NTabPane name="equipment" tab="Equipment">
           <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
-        </NTabPane>
-
-        <NTabPane name="quests" tab="Quests">
-          <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
-        </NTabPane>
-
-        <NTabPane name="options" tab="Options">
-          <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
-        </NTabPane>
-
-        <NTabPane name="mappings" tab="Mappings">
-          <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
         </NTabPane>
 
       </NTabs>
@@ -59,9 +51,7 @@ import { state } from '@/static/state'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
-import InputMappingsPane from '@/components/game-modal/InputMappingsPane.vue'
 import InventoryPane from '@/components/game-modal/InventoryPane.vue'
-import OptionsPane from '@/components/game-modal/OptionsPane.vue'
 import QuestsPane from '@/components/game-modal/QuestsPane.vue'
 import ScorePane from '@/components/game-modal/ScorePane.vue'
 import SkillsPane from '@/components/game-modal/SkillsPane.vue'

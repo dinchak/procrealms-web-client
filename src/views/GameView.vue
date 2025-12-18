@@ -40,6 +40,7 @@
     <PlayerModal/>
     <MercModal/>
     <TradeModal/>
+    <InputMappingModal/>
     <RadialOverlay/>
   </n-el>
 </template>
@@ -51,6 +52,7 @@ import { NEl } from 'naive-ui'
 import DebugModal from '@/components/modals/DebugModal.vue'
 import PlayerModal from '@/components/modals/PlayerModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
+import InputMappingModal from '@/components/modals/InputMappingModal.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'

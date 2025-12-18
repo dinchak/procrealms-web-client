@@ -49,7 +49,7 @@ export const state = reactive({
   mercEid: -1,
 
   gamepadPrevStates: {},
-  gamepads: {},
+  gamepads: { },
   gamepadTab: false,
   gamepadHelpTab: false,
   suggestedCommands: [],
@@ -64,6 +64,7 @@ export const state = reactive({
   inventoryOutput: {},
 
   scrolledBack: false,
+  showMoreOptions: false,
 
   output: [],
   chat: [],
@@ -98,6 +99,7 @@ export const state = reactive({
     playerModal: false,
     settingsModal: false,
     tradeModal: false,
+    inputMappingModal: false,
   },
 
   shop: {
@@ -229,7 +231,7 @@ function resetOptions () {
     battleTableMode: true,
     damageAnimations: true,
     battleExpanded: false,
-    largeVitals: true,
+    largeVitals: false,
     chatInMain: true,
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
