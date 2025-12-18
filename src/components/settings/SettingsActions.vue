@@ -13,7 +13,7 @@
 </template>
 <script setup>
 import { ref } from 'vue'
-import { state, setMode } from '@/static/state'
+import { state, setMode, prevMode } from '@/static/state'
 import { NButton } from 'naive-ui'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
@@ -27,11 +27,15 @@ function openTriggersModal () {
 }
 
 function openInputMappingModal () {
+  state.modals.settingsModal = false
+  prevMode()
   setMode('modal')
   state.modals.inputMappingModal = true
 }
 
 function openHelpModal () {
+  state.modals.settingsModal = false
+  prevMode()
   setMode('modal')
   state.modals.helpModal = true
 }
