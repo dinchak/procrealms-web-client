@@ -6,7 +6,7 @@
       <NSlider class="slider" v-model:value="state.options.sideMapWidth" @update:value="refreshMapSettings" :step="1" :min="1" :max="25">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
-            <NIcon :size="18" :component="SwapHorizOutlined" />
+            <NIcon :size="24" :component="SwapHorizOutlined" />
           </NIconWrapper>
         </template>
       </NSlider>
@@ -16,7 +16,7 @@
       <NSlider class="slider" v-model:value="state.options.sideMapHeight" @update:value="refreshMapSettings" :step="1" :min="1" :max="25">
         <template #thumb>
           <NIconWrapper :size="24" :border-radius="12">
-            <NIcon :size="18" :component="SwapVertOutlined" />
+            <NIcon :size="24" :component="SwapVertOutlined" />
           </NIconWrapper>
         </template>
       </NSlider>
@@ -63,10 +63,8 @@ function refreshMapSettings () {
 
   h3 {
     padding: 0;
-    margin-top: 5px;
-    margin-bottom: 16px;
-    font-weight: normal;
-    font-size: 16px;
+    margin: 0;
+    font-size: 0.9em;
     color: #fff;
   }
 
@@ -77,7 +75,7 @@ function refreshMapSettings () {
     justify-content: space-between;
     .slider {
       margin-top: 10px;
-      margin-bottom: 3px;
+      margin-bottom: 0px;
       width: 150px;
     }
   }

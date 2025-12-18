@@ -157,10 +157,6 @@ onBeforeUnmount(() => {
   z-index: 2;
   min-width: 190px;
   min-height: 78px;
-  padding: 5px;
-  background-color: rgb(27 38 45);
-  border: 1px solid rgb(69 100 119);
-  border-radius: 4px;
 
   .track-controls {
     display: flex;

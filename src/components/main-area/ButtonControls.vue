@@ -20,15 +20,6 @@
       </NIcon>
 
       <NIcon
-          title="Music Player"
-          :class="state.options.showMusicPlayer ? 'active' : ''"
-          size="24"
-          @click="toggleMusicPlayer"
-      >
-        <MusicNoteOutlined/>
-      </NIcon>
-
-      <NIcon
           v-if="!state.options.showPlayerModalShortcuts"
           title="Game Menu"
           :class="state.modals.playerModal ? 'active' : ''"
@@ -36,15 +27,6 @@
           @click="openPlayerModal()"
       >
         <AssessmentOutlined/>
-      </NIcon>
-
-      <NIcon
-          title="Help"
-          :class="state.modals.helpModal ? 'active' : ''"
-          size="24"
-          @click="toggleHelp"
-      >
-        <QuestionMarkOutlined/>
       </NIcon>
     </div>
 
@@ -79,40 +61,21 @@
         </div>
       </div>
 
-      <div class="shortcut" @click="openPlayerModal('options')">
-        <div class="icon">
-          <img src="@/assets/icons/toggles.svg">
-        </div>
-      </div>
-
     </div>
     <SettingsOverlay v-if="state.modals.settingsModal"/>
-    <MusicPlayerOverlay v-if="state.options.showMusicPlayer"/>
   </div>
 </template>
 
 <script setup>
 import { NIcon } from 'naive-ui'
 
-import MusicPlayerOverlay from '@/components/settings/MusicPlayerOverlay.vue'
 import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
-import MusicNoteOutlined from '@vicons/material/MusicNoteOutlined'
-import QuestionMarkOutlined from '@vicons/material/QuestionMarkOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
 import { setMode, state } from '@/static/state'
-
-function toggleMusicPlayer () {
-  state.options.showMusicPlayer = !state.options.showMusicPlayer
-}
-
-function toggleHelp () {
-  state.modals.helpModal = !state.modals.helpModal
-  setMode('modal')
-}
 
 function toggleSettings () {
   state.modals.settingsModal = !state.modals.settingsModal
@@ -133,7 +96,7 @@ function openPlayerModal (pane = null) {
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
-  gap: 10px;
+  margin-top: 10px;
   overflow-y: scroll;
 }
 
@@ -141,8 +104,8 @@ function openPlayerModal (pane = null) {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 5px;
   margin-left: 10px;
+  gap: 5px;
 
   .n-icon {
     padding: 5px 5px;
@@ -176,6 +139,7 @@ function openPlayerModal (pane = null) {
   gap: 5px;
   flex-direction: column;
   margin-left: 10px;
+  margin-top: 5px;
 
   .game.swap-mobile-menu & {
     flex-direction: column;
