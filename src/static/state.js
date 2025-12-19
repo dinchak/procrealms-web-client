@@ -174,6 +174,7 @@ export function resetGameState () {
     skills: {},
     effects: {},
     equipment: {},
+    tools: {},
 
     channels: [],
     inventory: [],
@@ -255,9 +256,9 @@ function resetOptions () {
 
     // interface options
     showMinimap: true,
-    showRoomInfo: false,
-    showEffects: false,
-    showQuests: false,
+    showRoomInfo: true,
+    showEffects: true,
+    showQuests: true,
 
     showChat: true,
     showQuickSlots: true,
@@ -440,7 +441,6 @@ async function replaceIds (command) {
 
   return command
 }
-
 
 export function getOrderCmd () {
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {

@@ -2,9 +2,6 @@ import { nanoid } from 'nanoid'
 
 import { addLine, state } from '@/static/state'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
-import { useHelpers } from '@/composables/helpers'
-
-const { ansiToHtml } = useHelpers()
 
 export function useWebSocket () {
   function initConnection ({ onConnect, onClose, url }) {

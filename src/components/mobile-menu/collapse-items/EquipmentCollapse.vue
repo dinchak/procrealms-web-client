@@ -34,7 +34,7 @@ import EquipmentRow from '@/components/mobile-menu/collapse-items/EquipmentRow.v
 import ItemModal from '@/components/modals/ItemModal.vue'
 
 import { state } from "@/static/state"
-import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
+import { EQUIPMENT_LABELS, PET_EQUIPMENT_LABELS } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -48,11 +48,11 @@ const item = ref({})
 
 let watchers = []
 onMounted(() => {
-  equipmentRows.value = getEquipmentRows(equipmentLabels)
-  petEquipmentRows.value = getEquipmentRows(petEquipmentLabels)
+  equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
+  petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
   watchers.push(watch(() => state.gameState.equipment, () => {
-    equipmentRows.value = getEquipmentRows(equipmentLabels)
-    petEquipmentRows.value = getEquipmentRows(petEquipmentLabels)
+    equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
+    petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
   }))
 })
 

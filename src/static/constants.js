@@ -556,7 +556,7 @@ export const ANSI = {
   reset: String.fromCharCode(27) + '[0m'
 }
 
-export const equipmentLabels = [{
+export const EQUIPMENT_LABELS = [{
   slot: 'weapon',
   label: 'Weapon',
   color: 'bold-red'
@@ -606,7 +606,7 @@ export const equipmentLabels = [{
   color: 'bold-white'
 }]
 
-export const petEquipmentLabels = [{
+export const PET_EQUIPMENT_LABELS = [{
   slot: 'collar',
   label: 'Collar',
   color: 'bold-green'
@@ -618,6 +618,72 @@ export const petEquipmentLabels = [{
   slot: 'charm2',
   label: 'Charm',
   color: 'bold-green'
+}]
+
+export const TOOL_LABELS = [{
+  slot: 'alembic',
+  label: 'Alembic',
+  color: 'bold-yellow'
+}, {
+  slot: 'axe',
+  label: 'Axe',
+  color: 'bold-yellow'
+}, {
+  slot: 'boat',
+  label: 'Boat',
+  color: 'bold-yellow'
+}, {
+  slot: 'cooking pot',
+  label: 'Cooking Pot',
+  color: 'bold-yellow'
+}, {
+  slot: 'cooking utensils',
+  label: 'Cooking Utensils',
+  color: 'bold-yellow'
+}, {
+  slot: 'enchanting kit',
+  label: 'Enchanting Kit',
+  color: 'bold-yellow'
+}, {
+  slot: 'filet knife',
+  label: 'Filet Knife',
+  color: 'bold-yellow'
+}, {
+  slot: 'fishing pole',
+  label: 'Fishing Pole',
+  color: 'bold-yellow'
+}, {
+  slot: 'hammer',
+  label: 'Hammer',
+  color: 'bold-yellow'
+}, {
+  slot: 'hoe',
+  label: 'Hoe',
+  color: 'bold-yellow'
+}, {
+  slot: 'mining pick',
+  label: 'Mining Pick',
+  color: 'bold-yellow'
+}, {
+  slot: 'quill',
+  label: 'Quill',
+  color: 'bold-yellow'
+}, {
+  slot: 'saw',
+  label: 'Saw',
+  color: 'bold-yellow'
+}, {
+  slot: 'sewing kit',
+  label: 'Sewing Kit',
+  color: 'bold-yellow'
+}, {
+  slot: 'shovel',
+  label: 'Shovel',
+  color: 'bold-yellow'
+}, {
+  slot: 'tanning knife',
+  label: 'Tanning Knife',
+  color: 'bold-yellow'
 }]
 
 export const ANSI_REPLACEMENTS = [
