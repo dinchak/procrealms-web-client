@@ -67,38 +67,6 @@ export function useHelpers () {
       }
     }
 
-    actions.push({
-      label: 'Drop',
-      onClick: () => runItemAction('drop', item),
-      class: 'bold-red',
-      disabled: false
-    })
-
-    if (item.amount > 1) {
-      actions.push({
-        label: 'Drop All',
-        onClick: () => runItemAction('drop all', item),
-        class: 'bold-red',
-        disabled: false
-      })
-    }
-
-    if (item.keeping) {
-      actions.push({
-        label: 'Unkeep',
-        onClick: () => runItemAction('unkeep', item),
-        class: 'bold-blue',
-        disabled: false
-      })
-    } else {
-      actions.push({
-        label: 'Keep',
-        onClick: () => runItemAction('keep', item),
-        class: 'bold-blue',
-        disabled: false
-      })
-    }
-
     if (item.type == 'consumable') {
       if (item.subtype == 'food') {
         actions.push({
@@ -217,6 +185,18 @@ export function useHelpers () {
       })
     }
 
+    if (
+      item.type == 'bag' ||
+      (item.type == 'tool' && Object.keys(state.gameState.tools).includes(item.subtype))
+    ) {
+      actions.push({
+        label: 'Hold',
+        onClick: () => runItemAction('hold', item),
+        class: 'bold-magenta',
+        disabled: false
+      })
+    }
+
     if (item.type == 'tool') {
       if (item.subtype == 'penned animal') {
         actions.push({
@@ -235,6 +215,38 @@ export function useHelpers () {
           disabled: false
         })
       }
+    }
+
+    if (item.keeping) {
+      actions.push({
+        label: 'Unkeep',
+        onClick: () => runItemAction('unkeep', item),
+        class: 'bold-blue',
+        disabled: false
+      })
+    } else {
+      actions.push({
+        label: 'Keep',
+        onClick: () => runItemAction('keep', item),
+        class: 'bold-blue',
+        disabled: false
+      })
+    }
+
+    actions.push({
+      label: 'Drop',
+      onClick: () => runItemAction('drop', item),
+      class: 'bold-red',
+      disabled: false
+    })
+
+    if (item.amount > 1) {
+      actions.push({
+        label: 'Drop All',
+        onClick: () => runItemAction('drop all', item),
+        class: 'bold-red',
+        disabled: false
+      })
     }
 
     return actions
