@@ -223,7 +223,7 @@ The server responds with the requested information, which the client can then ca
 The protocol includes several other messages to enhance the client experience:
 
 *   **`room.describe`**: Provides a detailed description of the current room, including an ASCII map.
-*   **`entity.attack`** and **`affect.cure`**: Trigger client-side animations for combat and healing.
+*   **`entity.attack`** and **`effect.cure`**: Trigger client-side animations for combat and healing.
 *   **`channel.msg`**: Handles all chat and communication channels.
 *   **`map.settings`**: Configures the client's map display.
 *   **`help.topics`**, **`help.entry`**, **`help.search`**: Provide access to the in-game help system.
@@ -506,7 +506,7 @@ Notifies the client that an entity has been attacked, for animation purposes.
 
 ---
 
-### `affect.cure`
+### `effect.cure`
 
 Notifies the client that an entity has been healed, for animation purposes.
 
@@ -517,7 +517,7 @@ Notifies the client that an entity has been healed, for animation purposes.
 *Example:*
 ```json
 {
-  "cmd": "affect.cure",
+  "cmd": "effect.cure",
   "msg": {
     "target": 12345,
     "amount": 10

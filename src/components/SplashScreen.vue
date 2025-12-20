@@ -10,6 +10,10 @@
       Connecting to server...
     </div>
 
+    <div class="server-status" v-if="error">
+      {{ error }}
+    </div>
+
     <div class="login-controls" v-if="state.connected">
       <div class="token" v-for="token in tokens" :key="token.name">
         <NButton
@@ -68,8 +72,10 @@ const { selectNearestElement } = useHelpers()
 const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
+let error = ref('')
 
 function doTokenAuth (name, token) {
+  error.value = ''
   sendWithResponse('token', {
     name,
     token,
@@ -78,11 +84,15 @@ function doTokenAuth (name, token) {
     ttype: 'play.proceduralrealms.com'
   }).then(({ cmd, msg }) => {
     if (cmd == 'login.validationFailed') {
-      console.log('Token validation failed')
+      error.value = 'Token validation failed'
     } else if (cmd == 'login.fail') {
-      console.log('Token login failed')
+      error.value = 'Login failed'
+    } else if (cmd == 'token.fail') {
+      error.value = 'Token login failed'
     } else if (cmd == 'token.success') {
       authenticationSuccess(msg)
+    } else {
+      error.value = 'Unexpected response from server'
     }
   })
 }

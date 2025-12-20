@@ -7,6 +7,12 @@ import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 import { playRandomTrack } from '@/static/sound'
 
+import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
+
+const { ansiToHtml } = useHelpers()
+const { fetchItems, fetchEntities } = useWebSocket()
+
 const { addToken } = useLocalStorageHandler()
 
 export const updateCounter = ref(0)
@@ -26,8 +32,6 @@ export const state = reactive({
   options: resetOptions(),
   cache: resetCache(),
 
-  outputTabs: ['output', 'chat', 'trade', 'newbie'],
-  activeTab: 'output',
   validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
 
@@ -41,11 +45,11 @@ export const state = reactive({
 
   isFullscreen: false,
 
-  gameModalAs: '',
+  playerModalAs: '',
   mercEid: -1,
 
   gamepadPrevStates: {},
-  gamepads: {},
+  gamepads: { },
   gamepadTab: false,
   gamepadHelpTab: false,
   suggestedCommands: [],
@@ -56,17 +60,18 @@ export const state = reactive({
   nameExistsResolve: null,
   nameExistsReject: null,
 
-  scrolledBack: {
-    output: false,
-    chat: false,
-    trade: false,
-    newbie: false,
-  },
+  inventorySortValue: 'type',
+  inventoryOutput: {},
+
+  scrolledBack: false,
+  showMoreOptions: false,
 
   output: [],
   chat: [],
   trade: [],
   newbie: [],
+
+  messages: [],
 
   animations: [],
   nextAnimationDelay: 0,
@@ -78,8 +83,6 @@ export const state = reactive({
 
   name: '',
   token: '',
-
-  settingsMode: false,
 
   modals: {
     debugModal: false,
@@ -93,7 +96,16 @@ export const state = reactive({
     loginModal: false,
     logoutModal: false,
     newPlayerModal: false,
-    gameModal: false,
+    playerModal: false,
+    settingsModal: false,
+    tradeModal: false,
+    inputMappingModal: false,
+  },
+
+  shop: {
+    items: [],
+    shopkeeper: '',
+    prices: {},
   },
 
   help: {
@@ -119,7 +131,6 @@ export const state = reactive({
 })
 
 export function resetState () {
-  state.activeTab = 'output'
   state.mode = 'hotkey'
   state.prevModes = ['login']
   state.pendingRequests = {}
@@ -154,13 +165,16 @@ export function resetGameState () {
       active: false,
       myTurn: false,
       participants: {},
+      items: [],
+      pendingReaction: null
     },
 
     party: {},
     charmies: {},
     skills: {},
-    affects: {},
+    effects: {},
     equipment: {},
+    tools: {},
 
     channels: [],
     inventory: [],
@@ -179,6 +193,7 @@ export function resetGameState () {
       entrances: [],
     },
     slots: [],
+    prompt: '',
   }
 }
 
@@ -194,14 +209,19 @@ export const configurableOptions = {
     'Keep Sent Commands': 'keepSentCommands',
     'Text Input Always Focused': 'textInputAlwaysFocused',
     'Unfocus Input On Command': 'unfocusInputOnCommand',
+    'Gamepad Enabled': 'gamepadEnabled'
   },
   'General': {
     'Minimap In Room Description': 'roomDescriptionMinimap',
     'Chat In Main Output': 'chatInMain',
     'Chat Message Sounds': 'chatSounds',
     'Autoplay Music': 'autoplayMusic',
-    'Battle Always Expanded': 'battleAlwaysExpanded',
     'Large Vitals': 'largeVitals',
+  },
+  'Battle': {
+    'Battle Table Mode': 'battleTableMode',
+    'Battle Always Expanded': 'battleAlwaysExpanded',
+    'Damage Animations': 'damageAnimations',
   },
 }
 
@@ -209,11 +229,15 @@ function resetOptions () {
   return {
     // general options
     battleAlwaysExpanded: true,
-    largeVitals: true,
+    battleTableMode: true,
+    damageAnimations: true,
+    battleExpanded: false,
+    largeVitals: false,
     chatInMain: true,
     roomDescriptionMinimap: false,
     textInputAlwaysFocused: false,
     unfocusInputOnCommand: false,
+    gamepadEnabled: false,
     keepSentCommands: false,
     showMusicPlayer: false,
     volume: 40,
@@ -231,23 +255,23 @@ function resetOptions () {
     sideMapHeight: 25,
 
     // interface options
-    showMinimap: false,
-    showRoomInfo: false,
-    showEffects: false,
-    showQuests: false,
+    showMinimap: true,
+    showRoomInfo: true,
+    showEffects: true,
+    showQuests: true,
 
-    showTabs: true,
+    showChat: true,
     showQuickSlots: true,
-    showPartyStats: true,
+    showPartyStats: false,
     textInputMobileButtons: true,
 
-    showSideMap: true,
+    showSideMap: false,
     showSideMovement: false,
     showSideAliases: false,
-    showGameModalShortcuts: true,
+    showPlayerModalShortcuts: true,
 
     // font options
-    fontFamily: 'Ubuntu Mono, monospace',
+    fontFamily: 'Inconsolata, monospace',
     fontSize: '16px',
 
     // terminal size
@@ -301,39 +325,30 @@ export function resetMode () {
 
 export function setMode (newMode) {
   if (state.mode == newMode) {
+    // console.trace(`setMode(${newMode}) - already in that mode`)
     return
   }
 
   state.prevModes.push(state.mode)
   state.mode = newMode
-  // console.trace(`state.mode set to ${newMode} (${state.prevModes.length} prev)`)
+  // console.trace(`setMode(${newMode}) - prevModes: ${state.prevModes.join(', ')}`)
 }
 
 export function prevMode () {
   if (state.prevModes.length) {
     state.mode = state.prevModes.pop()
-    // console.trace(`state.mode set to ${state.mode} (prevMode, ${state.prevModes.length} left)`)
+    // console.trace(`prevMode() - new mode: ${state.mode}, prevModes: ${state.prevModes.join(', ')}`)
   }
 }
 
 export function showHUD () {
   const {
-    showMinimap, showRoomInfo, showEffects, showQuests,
+    showMinimap, showRoomInfo, showEffects, showQuests, showChat,
   } = state.options
 
   return (
-    showMinimap || showRoomInfo || showEffects || showQuests
+    showMinimap || showRoomInfo || showEffects || showQuests || showChat
   )
-}
-
-export function getHUDHeight () {
-  if (state.options.fontSize == '14px') {
-    return 105
-  } else if (state.options.fontSize == '16px') {
-    return 120
-  } else if (state.options.fontSize == '18px') {
-    return 135
-  }
 }
 
 export function getPartyStatsHeight () {
@@ -344,10 +359,9 @@ export function getPartyStatsHeight () {
   } else if (state.options.fontSize == '18px') {
     return 90
   }
-
 }
 
-export function addLine (line, bufferName) {
+export async function addLine (line, bufferName) {
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
@@ -364,12 +378,16 @@ export function addLine (line, bufferName) {
     preloadBuffers[bufferName] = []
   }
 
+  line = await replaceIds(line)
+
   if (bufferName == 'output') {
     Object.freeze(line)
   }
+
   if (!line) {
     line = '<br/>'
   }
+
   preloadBuffers[bufferName].push(line)
 
   if (addLinesTimeout) {
@@ -388,9 +406,45 @@ export function addLine (line, bufferName) {
   }, 10)
 }
 
+async function replaceIds (command) {
+  const eidMatches = [...command.matchAll(/eid:(\w+)/g)].map(m => m[1])
+  const uniqueEids = [...new Set(eidMatches)]
+
+  if (uniqueEids.length) {
+    const entities = await fetchEntities(uniqueEids)
+    const byEid = Object.fromEntries(entities.map(e => [e.eid, e]))
+
+    command = command.replace(/eid:(\w+)/g, (match, eid) => {
+      const ent = byEid[eid]
+      if (ent) {
+        if (ent.colorBattleTag) {
+          return ansiToHtml(ent.colorBattleTag + ' ' + ent.name)
+        }
+        return ent.name
+      }
+      return match
+    })
+  }
+
+  const iidMatches = [...command.matchAll(/iid:(\w+)/g)].map(m => m[1])
+  const uniqueIids = [...new Set(iidMatches)]
+
+  if (uniqueIids.length) {
+    const items = await fetchItems(uniqueIids)
+    const byIid = Object.fromEntries(items.map(i => [i.iid, i]))
+
+    command = command.replace(/iid:(\w+)/g, (match, iid) => {
+      const item = byIid[iid]
+      return item ? item.name : match
+    })
+  }
+
+  return command
+}
+
 export function getOrderCmd () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return `order eid:${state.gameModalAs} `
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return `order eid:${state.playerModalAs} `
   }
   return ''
 }

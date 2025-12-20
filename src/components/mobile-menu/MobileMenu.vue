@@ -16,7 +16,7 @@
         <MiniMap v-if="state.options.showMobileMenuMap" />
       </div>
       <div class="mini-stats" v-if="state.options.showMobileMenuMiniStats">
-        <MiniStats :entity="state.gameState.player" :affects="state.gameState.affects"/>
+        <MiniStats :entity="state.gameState.player" :effects="state.gameState.effects"/>
       </div>
     </div>
   </div>
@@ -41,7 +41,7 @@ import MovementControls from '@/components/common/MovementControls.vue'
   opacity: 1;
   min-width: 290px;
   width: 290px;
-  padding: 10px;
+  padding: 10px 0px 10px 10px;
   flex: 0 0 auto;
 
   &.hide {

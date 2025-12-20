@@ -18,9 +18,11 @@ export function useWebSocket () {
     const _onMessage = json => {
       try {
         let { cmd, msg, reqId } = JSON.parse(json)
+
         if (reqId) {
           state.cache.commandCache[reqId] = msg
         }
+
         if (import.meta.env.MODE == 'development') {
           console.log(`%c<%c ${cmd}${reqId ? ` (reqId=${reqId})` : ''}`, 'background-color: #226622; color: #fff', 'color: #33ff33', msg)
         }
@@ -79,24 +81,13 @@ export function useWebSocket () {
     return responsePromise
   }
 
-  function runCommand (command, id, fromTrigger) {
-    if (!id) {
-      // Crude filter to avoid shouting the ugly 'look iid:123456' in the output
-      const lcCmd = command.toLowerCase()
-      const excludeIIDCommand = (lcCmd.includes('iid:') || lcCmd.includes('eid:')) && !lcCmd.includes('chat ') && !lcCmd.includes('say ')
-          && !lcCmd.includes('trade ') && !lcCmd.includes('newbie ')
-      if (!excludeIIDCommand) {
-        if (fromTrigger) {
-          addLine(`<span class="player-cmd-caret">> ${command}</span>`, 'output')
-        } else {
-          addLine('', 'output')
-          addLine(`<span class="player-cmd-caret">></span> <span class="player-cmd">${command}</span>`, 'output')
-          addLine('', 'output')
-        }
-      }
+  function runCommand (command, reqId = null) {
+    addLine(`<span class="black">></span> <span class="bold-yellow">${command}</span>`, 'output')
+    if (reqId) {
+      return sendWithResponse('cmd', command, reqId)
+    } else {
+      send('cmd', command)
     }
-
-    send('cmd', command, id)
   }
 
   function move (dir) {
@@ -195,11 +186,23 @@ export function useWebSocket () {
       .filter(item => item)
   }
 
+  async function refreshEntity (eid) {
+    delete state.cache.entityCache[eid]
+    await fetchEntity(eid, true)
+    state.updateCounter++
+  }
+
+  async function refreshItem (iid) {
+    delete state.cache.itemCache[iid]
+    await fetchItem(iid, true)
+    state.updateCounter++
+  }
+
   return {
     initConnection,
     send, sendWithResponse, runCommand,
     move, enter,
-    fetchEntity, fetchEntities,
-    fetchItem, fetchItems,
+    fetchEntity, fetchEntities, refreshEntity,
+    fetchItem, fetchItems, refreshItem,
   }
 }

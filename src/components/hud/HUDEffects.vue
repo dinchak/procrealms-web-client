@@ -1,57 +1,59 @@
 <template>
   <div class="effects">
-    <div class="affect" v-if="!affects || !Object.keys(affects).length">
+    <div class="effect" v-if="!effects || !Object.keys(effects).length">
       <div class="name">No effects</div>
     </div>
+    <div
+      v-for="effect in Object.values(effects)"
+      :key="effect.name"
+      class="effect"
+    >
 
-    <NCollapse v-else>
-      <template
-        v-for="affect in Object.values(affects)"
-        :key="affect.name"
-      >
-        <div class="affect" v-if="!(affect.bonuses && affect.timeLeft)">
-          <div class="affects-header" v-html-safe="getAffectName(affect)" />
+      <div class="effects-header">
+        <div class="name" v-html-safe="getEffectName(effect)" />
+        <NProgress
+          v-if="effect.timeLeft > 0"
+          type="line"
+          :show-indicator="false"
+          :border-radius="0"
+          :height="4"
+          v-show="typeof effect.timeLeft == 'number'"
+          :status="progressStatus(getTimeLeftPercentage(effect))"
+          :percentage="getTimeLeftPercentage(effect)"
+        />
+      </div>
+
+      <div class="effect-bonuses">
+        <div class="effect-bonus" v-if="effect.desc">
+          <div class="effect-bonus-label">
+            <div v-html-safe="ansiToHtml(effect.desc)"></div>
+          </div>
         </div>
 
-        <NCollapseItem class="affect" v-if="affect.bonuses && affect.timeLeft">
-          <template #header>
-            <div class="affects-header">
-              <div class="name" v-html-safe="getAffectName(affect)" />
-              <NProgress
-                type="line" :show-indicator="false" :border-radius="0" :height="4"
-                v-show="typeof affect.timeLeft == 'number'"
-                :status="progressStatus(getTimeLeftPercentage(affect))"
-                :percentage="getTimeLeftPercentage(affect)"
-              />
-            </div>
-          </template>
+        <div
+          class="effect-bonus"
+          v-for="{ name, amount } in effectBonuses(effect)"
+          :key="name"
+        >
+          <div class="effect-bonus-value bold-white" v-html-safe="(amount > 0 ? '+' : '') + amount"></div>
+          <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
+        </div>
+      </div>
+    </div>
 
-          <div class="affect-bonuses">
-            <div
-              class="affect-bonus"
-              v-for="{ name, amount } in affectBonuses(affect)"
-              :key="name"
-            >
-              <div class="affect-bonus-value bold-white" v-html-safe="(amount > 0 ? '+' : '') + amount"></div>
-              <div :class="getAffectBonusLabelClass(name)">{{ getAffectBonusLabel(name) }}</div>
-            </div>
-          </div>
-        </NCollapseItem>
-      </template>
-    </NCollapse>
-  </div>
+</div>
 </template>
 
 <script setup>
-defineProps(['affects'])
+defineProps(['effects'])
 
-import { NCollapse, NCollapseItem, NProgress } from 'naive-ui'
+import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
-const { ansiToHtml, progressStatus, effectBonuses: affectBonuses } = useHelpers()
+const { ansiToHtml, progressStatus, effectBonuses: effectBonuses } = useHelpers()
 
-function getAffectName (effect) {
+function getEffectName (effect) {
   return effect.longFlag ?
     ansiToHtml(ANSI.reset + effect.longFlag) :
     ansiToHtml(ANSI.reset + effect.name)
@@ -61,15 +63,15 @@ function getTimeLeftPercentage (effect) {
   return effect.timeLeft / effect.totalTimeLeft * 100
 }
 
-function getAffectBonusLabel (bonus) {
+function getEffectBonusLabel (bonus) {
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
     return itemEffect.label
   }
 }
 
-function getAffectBonusLabelClass (bonus) {
-  let classes = ['affect-bonus-label']
+function getEffectBonusLabelClass (bonus) {
+  let classes = ['effect-bonus-label']
   let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
   if (itemEffect) {
     classes.push(itemEffect.color)
@@ -83,12 +85,18 @@ function getAffectBonusLabelClass (bonus) {
 .effects {
   display: flex;
   flex-direction: column;
+  font-size: 0.8rem;
+  flex-basis: 200px;
 
-  .affect {
+  .effect {
     display: flex;
     flex-direction: column;
     margin-bottom: 5px;
     width: 100%;
+    font-size: 0.8rem;
+    border-top: 0;
+    padding: 0;
+    margin-top: 5px;
 
     &:last-child {
       margin-bottom: 0;
@@ -96,7 +104,7 @@ function getAffectBonusLabelClass (bonus) {
       border-bottom: 0;
     }
 
-    .affects-header {
+    .effects-header {
       width: 100%;
       display: flex;
       flex-direction: row;
@@ -109,18 +117,19 @@ function getAffectBonusLabelClass (bonus) {
       }
     }
 
-    .affect-bonuses {
+    .effect-bonuses {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+      margin-left: 10px;
 
-      .affect-bonus {
+      .effect-bonus {
         display: flex;
         flex-direction: row;
         align-items: center;
         margin-right: 10px;
 
-        .affect-bonus-value {
+        .effect-bonus-value {
           margin-right: 5px;
         }
       }

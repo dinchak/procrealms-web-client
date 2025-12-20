@@ -18,7 +18,7 @@
       </NButton>
 
       <NButton size="medium"
-        title="Affects"
+        title="Effects"
         :type="getOptionType('showEffects')"
         @click="toggleOption('showEffects')"
       >
@@ -38,9 +38,9 @@
     <div class="toggles">
 
       <NButton size="medium"
-        title="Tabs"
-        :type="getOptionType('showTabs')"
-        @click="toggleOption('showTabs')"
+        title="Chat"
+        :type="getOptionType('showChat')"
+        @click="toggleOption('showChat')"
       >
         <NIcon size="24"><ChatOutlined/></NIcon>
       </NButton>
@@ -98,9 +98,9 @@
       </NButton>
 
       <NButton size="medium"
-        title="Game Modal Shortcuts"
-        :type="getOptionType('showGameModalShortcuts')"
-        @click="toggleOption('showGameModalShortcuts')"
+        title="Player Modal Shortcuts"
+        :type="getOptionType('showPlayerModalShortcuts')"
+        @click="toggleOption('showPlayerModalShortcuts')"
       >
         <NIcon size="24"><SplitscreenOutlined/></NIcon>
       </NButton>
@@ -161,6 +161,9 @@ function refreshMapSettings () {
     flex-direction: row;
     margin-bottom: 5px;
     justify-content: space-between;
+    &:last-child {
+      margin-bottom: 0;
+    }
     .n-button {
       margin-right: 7px;
       border-radius: 0;

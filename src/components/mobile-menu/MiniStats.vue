@@ -11,17 +11,17 @@
       :foodPercent="entity.food / entity.maxFood * 100"
     ></VitalsBar>
   </div>
-  <AffectsBar :entity="entity" :affects="affects" />
+  <EffectsBar :entity="entity" :effects="effects" />
 </template>
 
 <script setup>
 import { defineProps, toRefs } from 'vue'
 import VitalsBar from '@/components/common/VitalsBar.vue'
-import AffectsBar from '@/components/common/AffectsBar.vue'
+import EffectsBar from '@/components/common/EffectsBar.vue'
 
-const props = defineProps(['entity', 'affects'])
+const props = defineProps(['entity', 'effects'])
 
-const { entity, affects } = toRefs(props)
+const { entity, effects } = toRefs(props)
 
 </script>
 

@@ -10,7 +10,7 @@
           <span class="bold-yellow">A</span><span class="bold-red">ttack</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">A</span><span class="bold-black">ttack</span>
+          <span class="white">A</span><span class="black">ttack</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
@@ -21,7 +21,7 @@
           <span class="bold-yellow">D</span><span class="bold-cyan">efend</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">D</span><span class="bold-black">efend</span>
+          <span class="white">D</span><span class="black">efend</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
@@ -32,7 +32,7 @@
           <span class="bold-yellow">F</span><span class="yellow">lee</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">F</span><span class="bold-black">lee</span>
+          <span class="white">F</span><span class="black">lee</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
       </div>
@@ -43,7 +43,7 @@
           <span class="bold-yellow">B</span><span class="bold-red">attle</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">B</span><span class="bold-black">attle</span>
+          <span class="white">B</span><span class="black">attle</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/x.png" class="icon"/>
       </div>
@@ -54,7 +54,7 @@
           <span class="bold-yellow">H</span><span class="yellow">arvest</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">H</span><span class="bold-black">arvest</span>
+          <span class="white">H</span><span class="black">arvest</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/y.png" class="icon"/>
       </div>
@@ -65,9 +65,19 @@
           <span class="bold-yellow">L</span><span class="bold-cyan">oot</span>
         </div>
         <div class="slot-label" v-else>
-          <span class="white">L</span><span class="bold-black">oot</span>
+          <span class="white">L</span><span class="black">oot</span>
         </div>
         <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/b.png" class="icon"/>
+      </div>
+
+      <div :class="getTradeButtonClass()" v-if="isTradeButtonActive()" @click="openTradeModal()">
+        <div class="slot-label" v-if="isTradeButtonActive()">
+          <span class="bold-yellow">T</span><span class="bold-magenta">rade</span>
+        </div>
+        <div class="slot-label" v-else>
+          <span class="white">T</span><span class="black">rade</span>
+        </div>
+        <img v-if="isGamepadConnected()" src="@/assets/icons/xbox/a.png" class="icon"/>
       </div>
 
       <div v-for="slot in getSlots()" :key="slot.slot" :class="getSlotClass(slot)" @click="runQuickSlot(slot)">
@@ -87,7 +97,7 @@ import { NProgress } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
-import { state } from '@/static/state'
+import { state, setMode } from '@/static/state'
 
 import { QUICKSLOTS } from '@/static/constants'
 
@@ -174,6 +184,23 @@ function getLootButtonClass () {
   return classes.join(' ')
 }
 
+function isTradeButtonActive () {
+  return state.gameState.room.entities.some(e => e.traits.includes('shopkeeper'))
+}
+
+function getTradeButtonClass () {
+  let classes = ['quick-slot', 'shop']
+  if (isTradeButtonActive()) {
+    classes.push('active')
+  }
+  return classes.join(' ')
+}
+
+function openTradeModal () {
+  setMode('modal')
+  state.modals.tradeModal = true
+}
+
 function getSlots () {
   return [...state.gameState.slots]
     .filter(s => {
@@ -211,11 +238,17 @@ function isActive (slot) {
     return true
   }
 
+  const { pendingReaction, myTurn, active } = state.gameState.battle
+
   if (skill.timeLeft) {
     return false
-  } else if (!skill.type.includes('combat') && state.gameState.battle.active) {
+  } else if (skill.type.includes('reaction') && !pendingReaction) {
     return false
-  } else if (!skill.type.includes('overworld') && (!state.gameState.battle.active || !state.gameState.battle.myTurn)) {
+  } else if (pendingReaction && !pendingReaction.validReactions.includes(skill.name)) {
+    return false
+  } else if (!skill.type.includes('battle') && active) {
+    return false
+  } else if (!skill.type.includes('overworld') && (!active || !myTurn)) {
     return false
   }
 
@@ -241,6 +274,7 @@ function getSlotClass (slot) {
   padding: 5px 0;
   user-select: none;
   overflow-x: scroll;
+  background-color: #18181b;
 
   .quick-scroller {
     display: flex;
@@ -425,6 +459,31 @@ function getSlotClass (slot) {
 
       &:hover {
         background-color: darken(#0cc6c6, 33%);
+      }
+    }
+
+    .slot-label {
+      font-size: 16px;
+      line-height: 16px;
+      text-align: center;
+    }
+  }
+
+  &.shop {
+    background-color: #111;
+    border: 1px solid #808080;
+    justify-content: center;
+
+    &.active {
+      background-color: #111515;
+      border: 1px solid #c60cc6;
+
+      &.selected {
+        border: 1px solid #f8ff25;
+      }
+
+      &:hover {
+        background-color: darken(#c60cc6, 33%);
       }
     }
 

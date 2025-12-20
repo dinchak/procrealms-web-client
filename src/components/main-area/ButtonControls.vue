@@ -2,43 +2,6 @@
   <div class="interface-overlay">
     <div class="interface">
       <NIcon
-          title="Settings"
-          :class="state.settingsMode ? 'active' : ''"
-          size="24"
-          @click="toggleSettings"
-      >
-        <SettingsFilled/>
-      </NIcon>
-
-      <NIcon
-          title="Music Player"
-          :class="state.options.showMusicPlayer ? 'active' : ''"
-          size="24"
-          @click="toggleMusicPlayer"
-      >
-        <MusicNoteOutlined/>
-      </NIcon>
-
-      <NIcon
-          v-if="!state.options.showGameModalShortcuts"
-          title="Game Menu"
-          :class="state.modals.gameModal ? 'active' : ''"
-          size="24"
-          @click="openGameModal()"
-      >
-        <AssessmentOutlined/>
-      </NIcon>
-
-      <NIcon
-          title="Help"
-          :class="state.modals.helpModal ? 'active' : ''"
-          size="24"
-          @click="toggleHelp"
-      >
-        <QuestionMarkOutlined/>
-      </NIcon>
-
-      <NIcon
           title="Sidebar"
           :class="state.options.showMobileMenu ? 'active' : ''"
           size="24"
@@ -46,163 +9,140 @@
       >
         <MenuOutlined/>
       </NIcon>
+
+      <NIcon
+          title="Settings"
+          :class="state.modals.settingsModal ? 'active' : ''"
+          size="24"
+          @click="toggleSettings"
+      >
+        <SettingsFilled/>
+      </NIcon>
+
+      <NIcon
+          v-if="!state.options.showPlayerModalShortcuts"
+          title="Game Menu"
+          :class="state.modals.playerModal ? 'active' : ''"
+          size="24"
+          @click="openPlayerModal()"
+      >
+        <AssessmentOutlined/>
+      </NIcon>
     </div>
-    <div class="game-modal-shortcuts" v-if="state.options.showGameModalShortcuts">
-      <div class="shortcut" @click="openGameModal('score')">
+
+    <div class="game-modal-shortcuts" v-if="state.options.showPlayerModalShortcuts">
+      <div class="shortcut" @click="openPlayerModal('score')">
         <div class="icon">
           <img src="@/assets/icons/character.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('skills')">
+      <div class="shortcut" @click="openPlayerModal('skills')">
         <div class="icon">
           <img src="@/assets/icons/skills.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('quests')">
+      <div class="shortcut" @click="openPlayerModal('quests')">
         <div class="icon">
           <img src="@/assets/icons/trophy.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('inventory')">
+      <div class="shortcut" @click="openPlayerModal('inventory')">
         <div class="icon">
           <img src="@/assets/icons/backpack.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('equipment')">
+      <div class="shortcut" @click="openPlayerModal('equipment')">
         <div class="icon">
           <img src="@/assets/icons/battle-gear.svg">
         </div>
       </div>
 
-      <div class="shortcut" @click="openGameModal('options')">
-        <div class="icon">
-          <img src="@/assets/icons/toggles.svg">
-        </div>
-      </div>
-
     </div>
-    <SettingsOverlay v-if="state.settingsMode"/>
-    <MusicPlayerOverlay v-if="state.options.showMusicPlayer"/>
+    <SettingsOverlay v-if="state.modals.settingsModal"/>
   </div>
 </template>
 
 <script setup>
 import { NIcon } from 'naive-ui'
 
-import MusicPlayerOverlay from '@/components/settings/MusicPlayerOverlay.vue'
 import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import MenuOutlined from '@vicons/material/MenuOutlined'
-import MusicNoteOutlined from '@vicons/material/MusicNoteOutlined'
-import QuestionMarkOutlined from '@vicons/material/QuestionMarkOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
 import { setMode, state } from '@/static/state'
 
-function toggleMusicPlayer () {
-  state.options.showMusicPlayer = !state.options.showMusicPlayer
-}
-
-function toggleHelp () {
-  state.modals.helpModal = !state.modals.helpModal
+function toggleSettings () {
+  state.modals.settingsModal = !state.modals.settingsModal
   setMode('modal')
 }
 
-function toggleSettings () {
-  state.settingsMode = !state.settingsMode
-}
-
-function openGameModal (pane = null) {
+function openPlayerModal (pane = null) {
   if (pane) {
     state.gamepadTab = pane
   }
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   setMode('modal')
 }
 
 </script>
 <style scoped lang="less">
 .interface-overlay {
-  z-index: 2;
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
-  gap: 10px;
-
-  @media screen and (max-width: 650px) {
-    .game.swap-mobile-menu & {
-      flex-direction: column-reverse;
-      top: auto;
-      bottom: 5px;
-    }
-  }
-  @media screen and (min-width: 651px) {
-    .game.swap-mobile-menu & {
-      right: 272px + 5px;
-    }
-  }
+  margin-top: 10px;
+  overflow-y: scroll;
 }
 
 .interface {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-end;
+  margin-left: 10px;
   gap: 5px;
-
-  @media screen and (max-width: 650px) {
-    flex-direction: column-reverse;
-    .game.swap-mobile-menu & {
-      flex-direction: column;
-    }
-  }
 
   .n-icon {
     padding: 5px 5px;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s;
-    background: rgb(16, 16, 20);
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: #18181b;
+    border: 1px solid #18181b;
     user-select: none;
     transition: all 0.3s;
+    border-radius: 4px;
 
     &:hover {
-      border: 1px solid #0cc6c6;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
     }
 
     &.active {
-      border: 1px solid #0cc6c6;
-      background-color: #0cc6c6;
-      color: #000;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
+      color: #fff;
     }
   }
 }
 
 .game-modal-shortcuts {
-  position: absolute;
   flex-basis: 0;
   flex-grow: 0;
   right: 0;
-  top: 30px + 10px; // Offset from ButtonControls
   display: flex;
   gap: 5px;
   flex-direction: column;
+  margin-left: 10px;
+  margin-top: 5px;
 
   .game.swap-mobile-menu & {
     flex-direction: column;
-  }
-  @media screen and (max-width: 650px) {
-    position: static;
-    .game.swap-mobile-menu & {
-      flex-direction: column-reverse;
-    }
   }
 
   .shortcut {
@@ -211,20 +151,22 @@ function openGameModal (pane = null) {
     height: 24px;
     width: 24px;
     user-select: none;
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    border: 1px solid #18181b;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
-    background: rgb(16, 16, 20);
+    background: #18181b;
+    border-radius: 4px;
 
     &:last-child {
       margin-right: 0;
     }
 
     &:hover {
-      border: 1px solid #0cc6c6;
+      border: 1px solid rgb(69 100 119);
+      background-color: rgb(27 38 45 / 90%);
     }
 
     .icon {

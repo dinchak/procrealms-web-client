@@ -25,7 +25,7 @@ function renderMinimap () {
     }
   }
 
-  return minimap
+  return minimap.slice(0, 7)
 }
 
 </script>
@@ -33,10 +33,15 @@ function renderMinimap () {
 <style scoped lang="less">
 .minimap-container {
   display: flex;
+  align-items: center;
+  flex-basis: 65px;
   flex-grow: 0;
   .minimap {
     user-select: none;
     white-space: pre;
+    .line {
+      word-break: keep-all;
+    }
   }
 }
 </style>

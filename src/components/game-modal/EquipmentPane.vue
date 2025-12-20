@@ -1,71 +1,101 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
 
-    <NGrid class="equipment" cols="1">
-      <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
-        <div class="slot">
-          <div class="row" @click="selectIid(iid)">
-            <div :class="'label ' + color">{{ label }}</div>
-            <div :class="getItemClass(slot)" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
-          </div>
-          <div class="row details">
-            <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
-          </div>
-        </div>
+    <NGrid class="equipment-grid"  cols="1 800:2">
+      <NGi>
+        <h3>Equipment</h3>
+        <NGrid class="equipment" cols="1">
+          <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
+            <div class="slot">
+              <div class="row" @click="selectIid(iid)">
+                <div :class="'label ' + color">{{ label }}</div>
+                <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
+              </div>
+              <div class="row details">
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+              </div>
+            </div>
+          </NGi>
+        </NGrid>
+
+        <h3 v-if="state.playerModalAs == '' && getPetEid()">Pet Equipment</h3>
+        <NGrid class="equipment" cols="1" v-if="state.playerModalAs == '' && getPetEid()">
+          <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="slot">
+            <div class="slot">
+              <div class="row" @click="selectIid(iid)">
+                <div :class="'label ' + color">{{ label }}</div>
+                <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
+              </div>
+              <div class="row details">
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+              </div>
+            </div>
+          </NGi>
+        </NGrid>
+
       </NGi>
-    </NGrid>
-
-    <h3 v-if="state.gameModalAs == '' && getPetEid()">Pet Equipment</h3>
-
-    <NGrid class="equipment" cols="1" v-if="state.gameModalAs == '' && getPetEid()">
-      <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="slot">
-        <div class="slot">
-          <div class="row" @click="selectIid(iid)">
-            <div :class="'label ' + color">{{ label }}</div>
-            <div :class="getItemClass(slot)" v-html-safe="iid ? getItemFullName(iid) : 'nothing'"></div>
-          </div>
-          <div class="row details">
-            <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
-          </div>
-        </div>
+      <NGi>
+        <h3>Tools</h3>
+        <NGrid class="equipment" cols="1">
+          <NGi v-for="{ iid, slot, label, color } in getToolLabels()" :key="slot">
+            <div class="slot">
+              <div class="row" @click="selectIid(iid)">
+                <div :class="'label ' + color">{{ label }}</div>
+                <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
+              </div>
+              <div class="row details">
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+              </div>
+            </div>
+          </NGi>
+        </NGrid>
       </NGi>
     </NGrid>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
+import { ref, onMounted, onBeforeUnmount, defineProps, toRefs, watch } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
-import { state, getOrderCmd } from '@/static/state'
-import { equipmentLabels, petEquipmentLabels } from '@/static/constants'
+import { state } from '@/static/state'
+
+import {
+  EQUIPMENT_LABELS,
+  PET_EQUIPMENT_LABELS,
+  TOOL_LABELS
+} from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, getPetEid } = useHelpers()
-const { runCommand, fetchItems, fetchItem } = useWebSocket()
+const { ansiToHtml, getPetEid, getActions } = useHelpers()
+const { fetchItems, fetchItem } = useWebSocket()
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
 const selectedIid = ref(0)
 const selectedItem = ref({})
-const equipment = ref([])
+
+const cacheCounter = ref(0)
 
 function getItemClass (slot) {
-  let iid = getEquipmentIid(slot)
+  let iid = getEquipmentIid(slot) || getToolIid(slot)
   let classes = ['item']
+
   if (iid) {
     classes.push('selectable')
   }
+
   if (iid && selectedIid.value == iid) {
     classes.push('selected')
   }
+
   return classes.join(' ')
 }
 
@@ -74,21 +104,38 @@ function getEquipmentIid (slot) {
 }
 
 function getEquipment () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].equipment
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].equipment
   }
   return state.gameState.equipment
 }
 
+function getToolIid (slot) {
+  return getTools()[slot]
+}
+
+function getTools () {
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return {}
+  }
+  return state.gameState.tools
+}
+
 function getEquipmentLabels () {
-  return equipmentLabels.map(({ label, slot, color }) => {
+  return EQUIPMENT_LABELS.map(({ label, slot, color }) => {
     return { slot, label, color, iid: getEquipmentIid(slot) }
   })
 }
 
 function getPetEquipmentLabels () {
-  return petEquipmentLabels.map(({ label, slot, color }) => {
+  return PET_EQUIPMENT_LABELS.map(({ label, slot, color }) => {
     return { slot, label, color, iid: getEquipmentIid(slot) }
+  })
+}
+
+function getToolLabels () {
+  return TOOL_LABELS.map(({ label, slot, color }) => {
+    return { slot, label, color, iid: getToolIid(slot) }
   })
 }
 
@@ -107,20 +154,15 @@ async function selectIid (iid) {
 }
 
 function getItemFullName (iid) {
-  const item = equipment.value.find(it => it.iid == iid)
-  if (!item) {
-    return ''
+  if (!iid) {
+    return 'nothing'
   }
-  return ansiToHtml(item.fullName)
-}
 
-function getActions (iid) {
-  return [{
-    label: 'Remove',
-    onClick: () => runCommand(`${getOrderCmd()}remove iid:${iid}`),
-    class: 'bold-red',
-    disabled: false
-  }]
+  if (state.cache.itemCache[iid]) {
+    return ansiToHtml(state.cache.itemCache[iid].item.fullName)
+  }
+
+  return 'nothing'
 }
 
 function getScrollContainerClass () {
@@ -131,18 +173,46 @@ function getScrollContainerClass () {
 }
 
 let watchers = []
-onMounted(async () => {
-  let fetchIids = Object.values(getEquipment()).filter(iid => iid)
-  equipment.value = await fetchItems(fetchIids)
+onMounted(() => {
+  let fetchIids = Object.values(getEquipment())
+    .filter(iid => iid)
+    .concat(
+      Object.values(getTools())
+        .filter(iid => iid)
+    )
+
+  fetchItems(fetchIids).then(() => {
+    cacheCounter.value += 1
+  })
 
   watchers.push(
-    watch(state.gameState, async () => {
-      equipment.value = await fetchItems(Object.values(getEquipment()))
-    }),
+    watch(
+      state.gameState.equipment,
+      async () => {
+        await fetchItems(Object.values(getEquipment()))
+        cacheCounter.value += 1
+      }
+    )
+  )
 
-    watch(() => state.gameModalAs, async () => {
-      equipment.value = await fetchItems(Object.values(getEquipment()))
-    })
+  watchers.push(
+    watch(
+      () => state.playerModalAs,
+      async () => {
+        await fetchItems(Object.values(getEquipment()))
+        cacheCounter.value += 1
+      }
+    )
+  )
+
+  watchers.push(
+    watch(
+      () => state.gameState.tools,
+      async () => {
+        await fetchItems(Object.values(getTools()))
+        cacheCounter.value += 1
+      }
+    )
   )
 })
 
@@ -167,6 +237,7 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       cursor: pointer;
+
       .row {
         display: flex;
         flex-direction: row;
@@ -176,10 +247,12 @@ onBeforeUnmount(() => {
         }
 
         .label {
-          width: 75px;
+          width: 120px;
           text-align: right;
+          font-size: 0.9rem;
           padding: 5px 10px;
         }
+
         .item {
           text-align: left;
           padding: 5px 10px;

@@ -1,22 +1,22 @@
 import { AnsiUp } from 'ansi_up'
 
-import { getOrderCmd, state, updateCounter } from '@/static/state'
-import { ANSI, ANSI_REPLACEMENTS, DIRECTION_MAP } from '@/static/constants'
+import { getOrderCmd, state } from '@/static/state'
+import { ANSI, ANSI_REPLACEMENTS, CHANNEL_COLORS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
-const { runCommand, move, enter, fetchItem } = useWebSocket()
+const { runCommand, move, enter, refreshItem } = useWebSocket()
 
 export function useHelpers () {
   function copperToMoneyString (amount, short) {
     let valueString = ''
     let copperString = (amount || 0).toString()
 
-    const gold = short ? 'g ' : ' gold, '
-    const silver = short ? 's ' : ' silver, '
+    const gold = short ? 'g ' : ' gold '
+    const silver = short ? 's ' : ' silver '
     const copper = short ? 'c ' : ' copper '
 
     if (copperString.length > 4) {
@@ -38,95 +38,65 @@ export function useHelpers () {
     return valueString
   }
 
+  async function runItemAction (command, item) {
+    let commandStr = `${getOrderCmd()}${command} iid:${item.iid}`
+    let outputId = `inventory-output-${item.iid}`
+    let result = await runCommand(commandStr, outputId)
+    state.inventoryOutput[item.iid] = result.msg
+    await refreshItem(item.iid)
+  }
+
   function getActions (item) {
-    let actions = [{
-      label: 'Drop',
-      onClick: () => runCommand(`${getOrderCmd()}drop iid:${item.iid}`),
-      class: 'bold-red',
-      disabled: false
-    }]
+    let actions = []
 
-    if (item.amount > 1) {
+    if (state.gameState.room.flags.includes('store')) {
       actions.push({
-        label: 'Drop All',
-        onClick: () => runCommand(`${getOrderCmd()}drop all iid:${item.iid}`),
-        class: 'bold-red',
-        disabled: false
-      })
-    }
-
-    if (item.keeping) {
-      actions.push({
-        label: 'Unkeep',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}unkeep iid:${item.iid}`)
-          delete state.cache.itemCache[item.iid]
-          await fetchItem(item.iid)
-          updateCounter.value++
-        },
+        label: 'Sell',
+        onClick: () => runItemAction('sell', item),
         class: 'bold-yellow',
         disabled: false
       })
-    } else {
-      actions.push({
-        label: 'Keep',
-        onClick: async () => {
-          runCommand(`${getOrderCmd()}keep iid:${item.iid}`)
-          delete state.cache.itemCache[item.iid]
-          await fetchItem(item.iid)
-          updateCounter.value++
-        },
-        class: 'bold-green',
-        disabled: false
-      })
+
+      if (item.amount > 1) {
+        actions.push({
+          label: 'Sell All',
+          onClick: () => runItemAction('sell all', item),
+          class: 'bold-yellow',
+          disabled: false
+        })
+      }
     }
 
     if (item.type == 'consumable') {
       if (item.subtype == 'food') {
         actions.push({
           label: 'Eat',
-          onClick: () => runCommand(`${getOrderCmd()}eat iid:${item.iid}`),
+          onClick: () => runItemAction('eat', item),
           class: 'bold-green',
           disabled: false
         })
       } else if (item.subtype == 'potion') {
         actions.push({
           label: 'Drink',
-          onClick: () => runCommand(`${getOrderCmd()}drink iid:${item.iid}`),
+          onClick: () => runItemAction('drink', item),
           class: 'bold-green',
           disabled: false
         })
       } else {
         actions.push({
           label: 'Consume',
-          onClick: () => runCommand(`${getOrderCmd()}consume iid:${item.iid}`),
+          onClick: () => runItemAction('consume', item),
           class: 'bold-green',
           disabled: false
         })
       }
     }
 
-    if (state.gameState.room.flags.includes('store')) {
-      actions.push({
-        label: 'Sell',
-        onClick: () => runCommand(`${getOrderCmd()}sell iid:${item.iid}`),
-        class: 'bold-green',
-        disabled: false
-      })
-    } else {
-      actions.push({
-        label: 'Sell',
-        onClick: () => runCommand(`${getOrderCmd()}sell iid:${item.iid}`),
-        class: 'bold-green',
-        disabled: true
-      })
-    }
-
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
-        onClick: () => runCommand(`${getOrderCmd()}wield iid:${item.iid}`),
-        class: 'bold-red',
+        onClick: () => runItemAction('wield', item),
+        class: 'bold-white',
         disabled: false
       })
     }
@@ -134,8 +104,8 @@ export function useHelpers () {
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
-        onClick: () => runCommand(`${getOrderCmd()}wear iid:${item.iid}`),
-        class: 'bold-red',
+        onClick: () => runItemAction('wear', item),
+        class: 'bold-white',
         disabled: false
       })
     }
@@ -143,8 +113,8 @@ export function useHelpers () {
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
-        onClick: () => runCommand(`${getOrderCmd()}compare iid:${item.iid}`),
-        class: 'bold-yellow',
+        onClick: () => runItemAction('compare', item),
+        class: 'bold-cyan',
         disabled: false
       })
     }
@@ -153,15 +123,15 @@ export function useHelpers () {
       if (hasSkillsRequired(item)) {
         actions.push({
           label: 'Salvage',
-          onClick: () => runCommand(`${getOrderCmd()}salvage iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('salvage', item),
+          class: 'bold-magenta',
           disabled: false
         })
         if (item.type == 'tool') {
           actions.push({
             label: 'Repair',
-            onClick: () => runCommand(`${getOrderCmd()}repair iid:${item.iid}`),
-            class: 'bold-yellow',
+            onClick: () => runItemAction('repair', item),
+            class: 'yellow',
             disabled: false
           })
         }
@@ -172,8 +142,8 @@ export function useHelpers () {
       if (item.subtype == 'hide') {
         actions.push({
           label: 'Tan',
-          onClick: () => runCommand(`${getOrderCmd()}tan iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('tan', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -181,8 +151,8 @@ export function useHelpers () {
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
-          onClick: () => runCommand(`${getOrderCmd()}plant iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('plant', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -190,8 +160,8 @@ export function useHelpers () {
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
-          onClick: () => runCommand(`${getOrderCmd()}wrap iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('wrap', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -199,8 +169,8 @@ export function useHelpers () {
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
-          onClick: () => runCommand(`${getOrderCmd()}filet iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('filet', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -209,7 +179,19 @@ export function useHelpers () {
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
-        onClick: () => runCommand(`${getOrderCmd()}read iid:${item.iid}`),
+        onClick: () => runItemAction('read', item),
+        class: 'bold-magenta',
+        disabled: false
+      })
+    }
+
+    if (
+      item.type == 'bag' ||
+      (item.type == 'tool' && Object.keys(state.gameState.tools).includes(item.subtype))
+    ) {
+      actions.push({
+        label: 'Hold',
+        onClick: () => runItemAction('hold', item),
         class: 'bold-magenta',
         disabled: false
       })
@@ -219,8 +201,8 @@ export function useHelpers () {
       if (item.subtype == 'penned animal') {
         actions.push({
           label: 'Unpen',
-          onClick: () => runCommand(`${getOrderCmd()}unpen iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('unpen', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
@@ -228,11 +210,43 @@ export function useHelpers () {
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
-          onClick: () => runCommand(`${getOrderCmd()}unpack iid:${item.iid}`),
-          class: 'bold-yellow',
+          onClick: () => runItemAction('unpack', item),
+          class: 'bold-magenta',
           disabled: false
         })
       }
+    }
+
+    if (item.keeping) {
+      actions.push({
+        label: 'Unkeep',
+        onClick: () => runItemAction('unkeep', item),
+        class: 'bold-blue',
+        disabled: false
+      })
+    } else {
+      actions.push({
+        label: 'Keep',
+        onClick: () => runItemAction('keep', item),
+        class: 'bold-blue',
+        disabled: false
+      })
+    }
+
+    actions.push({
+      label: 'Drop',
+      onClick: () => runItemAction('drop', item),
+      class: 'bold-red',
+      disabled: false
+    })
+
+    if (item.amount > 1) {
+      actions.push({
+        label: 'Drop All',
+        onClick: () => runItemAction('drop all', item),
+        class: 'bold-red',
+        disabled: false
+      })
     }
 
     return actions
@@ -613,18 +627,18 @@ export function useHelpers () {
     return element.scrollHeight !== Math.max(element.offsetHeight, element.clientHeight)
   }
 
-  function getAffectFlags (entity, affects) {
+  function getEffectFlags (entity, effects) {
     let flags = []
 
-    if (entity.isDead) {
+    if (entity.dead) {
       flags.push(ANSI.boldRed + 'DEAD' + ANSI.reset)
     }
 
-    if (entity.isIncapacitated) {
+    if (entity.incapacitated) {
       flags.push(ANSI.boldRed + 'DOWN' + ANSI.reset)
     }
 
-    if (entity.isHidden) {
+    if (entity.hidden) {
       flags.push(ANSI.boldYellow + 'HIDDEN' + ANSI.reset)
     }
 
@@ -638,14 +652,14 @@ export function useHelpers () {
     }
 
     if (entity.combo > 0) {
-      flags.push(ANSI.boldYellow + entity.combo + ' ' + ANSI.yellow + 'Combo' + ANSI.reset)
+      flags.push(ANSI.boldYellow + entity.combo + ANSI.reset)
     }
 
     if (entity.rage > 0) {
-      flags.push(ANSI.boldRed + entity.rage + ' ' + ANSI.red + 'Rage' + ANSI.reset)
+      flags.push(ANSI.boldRed + entity.rage + ANSI.reset)
     }
 
-    flags = flags.concat(Object.entries(affects)
+    flags = flags.concat(Object.entries(effects)
       .map(p => p[1].shortFlag))
 
     flags = flags.map(s => ansiToHtml(s))
@@ -654,18 +668,18 @@ export function useHelpers () {
     return flags.join(' ')
   }
 
-  function getAffectNames (entity, affects) {
+  function getEffectNames (entity, effects) {
     let names = []
 
-    if (entity.isDead) {
+    if (entity.dead) {
       names.push('Dead')
     }
 
-    if (entity.isIncapacitated) {
+    if (entity.incapacitated) {
       names.push('Down')
     }
 
-    if (entity.isHidden) {
+    if (entity.hidden) {
       names.push('Hidden')
     }
 
@@ -684,7 +698,15 @@ export function useHelpers () {
       names.push('Full')
     }
 
-    names = names.concat(Object.entries(affects)
+    if (entity.combo > 0) {
+      names.push(`${entity.combo} Combo`)
+    }
+
+    if (entity.rage > 0) {
+      names.push(`${entity.rage} Rage`)
+    }
+
+    names = names.concat(Object.entries(effects)
       .map(p => p[1].longFlag || p[1].name))
 
     names = names.map(s => ansiToHtml(s))
@@ -697,12 +719,60 @@ export function useHelpers () {
     return Math.floor(entity.food * 5 / entity.maxFood)
   }
 
+  function range (start, end) {
+    return Array.from({
+      length: end - start + 1
+    }, (_, i) => start + i)
+  }
+
+  function renderMessage ({ channel, from, to, message }) {
+    let out = ''
+
+    if (CHANNEL_COLORS[channel]) {
+      let color = CHANNEL_COLORS[channel] || 'white'
+      let channelOut = `<span class="${color}">[</span><span class="bold-${color}">${channel}</span><span class="${color}">]</span>`
+      let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
+      out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
+    } else if (channel == 'tell') {
+      if (from == 'You') {
+        out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
+      } else {
+        out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
+      }
+    } else {
+      out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+    }
+    return out
+  }
+
+  function renderColorGradient (colors, percent) {
+    let idx = Math.round(percent * colors.length)
+    if (idx >= colors.length) {
+      idx = colors.length - 1
+    }
+    return colors[idx] || '{{w'
+  }
+
+  function getHpColorByPercent (percent) {
+    return renderColorGradient(['red', 'bold-red', 'bold-yellow', 'green', 'bold-green'], percent)
+  }
+
+  function getEnergyColorByPercent (percent) {
+    return renderColorGradient(['blue', 'bold-blue', 'cyan', 'bold-cyan', 'bold-white'], percent)
+  }
+
+  function getStaminaColorByPercent (percent) {
+    return renderColorGradient(['red', 'bold-red', 'magenta', 'bold-magenta', 'bold-yellow'], percent)
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
     selectNearestElement, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
-    isOverflowX, isOverflowY, getAffectFlags, getAffectNames
+    isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
+    range, renderMessage, runItemAction,
+    getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
   }
 }

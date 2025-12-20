@@ -1,7 +1,7 @@
 <template>
   <NCollapseItem title="Effects">
     <div class="effects-collapse">
-      <div v-if="getEffects().length === 0">You are not affected by anything.</div>
+      <div v-if="getEffects().length === 0">You are not effected by anything.</div>
 
       <div v-if="!isPlayer" class="hired bold-yellow">Hired</div>
 

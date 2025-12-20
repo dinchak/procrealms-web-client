@@ -1,8 +1,8 @@
 <template>
-  <div class="select-game-modal-as" v-if="getGameModalAsOptions().length > 1">
+  <div class="select-game-modal-as" v-if="getPlayerModalAsOptions().length > 1">
     <NDropdown
       trigger="click"
-      :options="getGameModalAsOptions()"
+      :options="getPlayerModalAsOptions()"
       :render-label="renderOption"
       @select="handleSelect"
     >
@@ -17,10 +17,10 @@ import { NButton, NDropdown } from 'naive-ui'
 import { state } from '@/static/state'
 
 function handleSelect (selection) {
-  state.gameModalAs = selection
+  state.playerModalAs = selection
 }
 
-function getGameModalAsOptions () {
+function getPlayerModalAsOptions () {
   let values = [{
     label: state.gameState.player.name,
     key: ''

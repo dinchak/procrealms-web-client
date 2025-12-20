@@ -19,7 +19,7 @@
       ></CharacterCollapse>
 
       <EffectsCollapse
-        :effects="Object.values(state.gameState.affects)"
+        :effects="Object.values(state.gameState.effects)"
         :isPlayer="true"
         tabindex="0"
       ></EffectsCollapse>
@@ -28,7 +28,7 @@
         :character="state.gameState.player"
         :inventory="state.gameState.inventory"
         :isPlayer="true"
-        :affects="Object.values(state.gameState.affects)"
+        :effects="Object.values(state.gameState.effects)"
         tabindex="0"
       ></InventoryCollapse>
 
@@ -46,10 +46,6 @@
         :isPlayer="true"
         tabindex="0"
       ></SkillsCollapse>
-
-      <OptionsCollapse
-        tabindex="0"
-      ></OptionsCollapse>
     </NCollapse>
   </div>
 </template>
@@ -58,7 +54,6 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import { NProgress, NCollapse } from 'naive-ui'
 import CharacterCollapse from '@/components/mobile-menu/collapse-items/CharacterCollapse.vue'
-import OptionsCollapse from '@/components/mobile-menu/collapse-items/OptionsCollapse.vue'
 import QuestCollapse from '@/components/mobile-menu/collapse-items/QuestCollapse.vue'
 import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollapse.vue'
 import EffectsCollapse from '@/components/mobile-menu/collapse-items/EffectsCollapse.vue'

@@ -50,5 +50,7 @@ function getRoomTitle () {
   display: flex;
   flex-direction: column;
   flex-basis: 200px;
+  height: 110px;
+  font-size: 0.8rem;
 }
 </style>

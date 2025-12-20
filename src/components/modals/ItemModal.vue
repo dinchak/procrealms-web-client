@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <NCard v-if="item" :class="getClass()" style="max-height: 600px">
-      <p class="close" v-on:click="closeModal()">x</p>
+      <p class="modal-close-button" v-on:click="closeModal()">x</p>
       <h3 v-html-safe="ansiToHtml(getItemName())"></h3>
       <ItemDetails :item="item" :actions="getItemActions()" v-if="item"></ItemDetails>
     </NCard>
@@ -119,7 +119,7 @@ h3 {
   font-size: 1.4em;
 }
 
-.close {
+.modal-close-button {
   position: absolute;
   top: -20px;
   right: 10px;

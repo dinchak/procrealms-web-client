@@ -1,98 +1,92 @@
 <template>
   <NModal
-    v-model:show="state.modals.gameModal"
-    title="Game Menu"
+    v-model:show="showModal"
+    :title="title"
     @after-enter="onOpenModal"
     @after-leave="onCloseModal"
-    class="game-modal"
+    :class="['game-modal', modalClass]"
     :auto-focus="false"
     :close-on-esc="false"
   >
-
     <div>
       <div class="modal-body">
-        <p class="close" @click="onCloseModal()">
+        <div class="modal-turn-indicator">
+          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
+        </div>
+
+        <p class="modal-close-button" @click="onCloseModal()">
           <NIcon size="24">
             <CloseOutlined />
           </NIcon>
         </p>
-        <p :class="getToggleMiniOutputClass()" @click="toggleMiniOutput()">
+        <p :class="getModalKeyboardToggleClass()" @click="toggleMiniOutput()">
           <NIcon size="24">
             <KeyboardOutlined />
           </NIcon>
         </p>
 
-        <NTabs
-          v-model:value="currentPane"
-          :class="getGameModalTabsClass()"
-          type="card"
-          tab-style="min-width: 80px;"
-          ref="tabs"
-        >
-
-          <NTabPane name="score" tab="Score">
-            <ScorePane :mini-output-enabled="miniOutputEnabled"></ScorePane>
-          </NTabPane>
-
-          <NTabPane name="skills" tab="Skills">
-            <SkillsPane :mini-output-enabled="miniOutputEnabled"></SkillsPane>
-          </NTabPane>
-
-          <NTabPane name="inventory" tab="Inventory">
-            <InventoryPane :mini-output-enabled="miniOutputEnabled"></InventoryPane>
-          </NTabPane>
-
-          <NTabPane name="equipment" tab="Equipment">
-            <EquipmentPane :mini-output-enabled="miniOutputEnabled"></EquipmentPane>
-          </NTabPane>
-
-          <NTabPane name="quests" tab="Quests">
-            <QuestsPane :mini-output-enabled="miniOutputEnabled"></QuestsPane>
-          </NTabPane>
-
-          <NTabPane name="options" tab="Options">
-            <OptionsPane :mini-output-enabled="miniOutputEnabled"></OptionsPane>
-          </NTabPane>
-
-          <NTabPane name="mappings" tab="Mappings">
-            <InputMappingsPane :mini-output-enabled="miniOutputEnabled"></InputMappingsPane>
-          </NTabPane>
-
-        </NTabs>
-
         <div v-if="miniOutputEnabled" class="mini-output" ref="mini-output" id="mini-output">
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']"></KeyboardInput>
+        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']" :style="{ marginBottom: '10px' }"></KeyboardInput>
+
+        <slot :mini-output-enabled="miniOutputEnabled"></slot>
+
       </div>
     </div>
   </NModal>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { NModal, NTabs, NTabPane, NIcon } from 'naive-ui'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from 'vue'
+import { NModal, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWindowHandler } from '@/composables/window_handler'
 
 import CloseOutlined from '@vicons/material/CloseOutlined'
 import KeyboardOutlined from '@vicons/material/KeyboardOutlined'
-
-import EquipmentPane from '@/components/game-modal/EquipmentPane.vue'
-import InputMappingsPane from '@/components/game-modal/InputMappingsPane.vue'
-import InventoryPane from '@/components/game-modal/InventoryPane.vue'
+import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
-import OptionsPane from '@/components/game-modal/OptionsPane.vue'
-import QuestsPane from '@/components/game-modal/QuestsPane.vue'
-import ScorePane from '@/components/game-modal/ScorePane.vue'
-import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
-const { selectNearestElement } = useHelpers()
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  modalClass: {
+    type: String,
+    default: ''
+  },
+  modalKey: {
+    type: String,
+    required: true
+  },
+  hasTabNavigation: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['update:modelValue', 'opened', 'closed', 'prevTab', 'nextTab'])
+
 const { setFontSize, setFontFamily } = useWindowHandler()
+const { selectNearestElement } = useHelpers()
+
+const miniOutputEnabled = ref(false)
 
 let selectedElement = null
+
+const showModal = computed({
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value)
+})
+
 function selectModalAction (degree) {
   selectedElement = selectNearestElement(selectedElement, degree)
   if (selectedElement) {
@@ -106,32 +100,39 @@ function performModalAction () {
   }
 }
 
-const tabs = ref(null)
-const currentPane = ref("score")
-const miniOutputEnabled = ref(false)
-const panes = ref(['score', 'skills', 'inventory', 'equipment', 'quests', 'options', 'mappings'])
+function prevModalTab () {
+  emit('prevTab')
+}
+
+function nextModalTab () {
+  emit('nextTab')
+}
 
 function onOpenModal () {
   setFontSize(state.options.fontSize)
   setFontFamily(state.options.fontFamily)
   scrollDown()
+  emit('opened')
 }
 
 function onCloseModal () {
-  if (!state.modals.gameModal) {
+  if (!showModal.value) {
     return
   }
-  state.modals.gameModal = false
-  state.gamepadTab = currentPane.value
+
+  showModal.value = false
+
   if (state.mode == 'modal-input') {
     prevMode()
   }
+
   prevMode()
+  emit('closed')
 }
 
-function getToggleMiniOutputClass () {
+function getModalKeyboardToggleClass () {
   return {
-    'toggle-mini-output': true,
+    'modal-keyboard-toggle': true,
     'active': miniOutputEnabled.value
   }
 }
@@ -141,28 +142,6 @@ function toggleMiniOutput () {
   nextTick(() => {
     scrollDown()
   })
-}
-
-function prevModalTab () {
-  let index = panes.value.indexOf(currentPane.value)
-  if (index == 0) {
-    currentPane.value = panes.value[panes.value.length - 1]
-  } else {
-    currentPane.value = panes.value[index - 1]
-  }
-  state.gamepadTab = currentPane.value
-  nextTick(() => tabs.value?.syncBarPosition())
-}
-
-function nextModalTab () {
-  let index = panes.value.indexOf(currentPane.value)
-  if (index == panes.value.length - 1) {
-    currentPane.value = panes.value[0]
-  } else {
-    currentPane.value = panes.value[index + 1]
-  }
-  state.gamepadTab = currentPane.value
-  nextTick(() => tabs.value?.syncBarPosition())
 }
 
 function getRecentOutput () {
@@ -196,24 +175,16 @@ function onOutputChanged () {
   scrollDown()
 }
 
-function getGameModalTabsClass () {
-  return {
-    'game-modal-tabs': true,
-    'mini-output-hidden': !miniOutputEnabled.value
-  }
-}
-
-watch(() => state.gamepadTab, () => {
-  currentPane.value = state.gamepadTab
-})
-
 let watchers = []
 onMounted(() => {
   state.inputEmitter.on('closeModal', onCloseModal)
-  state.inputEmitter.on('prevModalTab', prevModalTab)
-  state.inputEmitter.on('nextModalTab', nextModalTab)
   state.inputEmitter.on('selectModalAction', selectModalAction)
   state.inputEmitter.on('performModalAction', performModalAction)
+
+  if (props.hasTabNavigation) {
+    state.inputEmitter.on('prevModalTab', prevModalTab)
+    state.inputEmitter.on('nextModalTab', nextModalTab)
+  }
 
   watchers.push(
     watch(state.output, () => onOutputChanged())
@@ -221,8 +192,8 @@ onMounted(() => {
 
   watchers.push(
     watch(state.gameState.charmies, () => {
-      if (!state.gameState.charmies[state.gameModalAs]) {
-        state.gameModalAs = ''
+      if (!state.gameState.charmies[state.playerModalAs]) {
+        state.playerModalAs = ''
       }
     })
   )
@@ -233,10 +204,13 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   state.inputEmitter.off('closeModal', onCloseModal)
-  state.inputEmitter.off('prevModalTab', prevModalTab)
-  state.inputEmitter.off('nextModalTab', nextModalTab)
   state.inputEmitter.off('selectModalAction', selectModalAction)
   state.inputEmitter.off('performModalAction', performModalAction)
+
+  if (props.hasTabNavigation) {
+    state.inputEmitter.off('prevModalTab', prevModalTab)
+    state.inputEmitter.off('nextModalTab', nextModalTab)
+  }
 
   watchers.forEach(w => w())
 })
@@ -246,34 +220,25 @@ onBeforeUnmount(() => {
 .game-modal {
   min-height: 100vh;
   width: 100vw;
-  background: rgb(14, 20, 20);
+  background: #18181b;
   padding-bottom: 0px;
 
   .modal-body {
     position: relative;
     padding: 10px;
 
-    .game-modal-tabs {
-      .n-tabs-nav {
-        width: calc(100vw - 100px);
-      }
-      .n-tab-pane {
-        .n-select {
-          // max-width: 200px;
-        }
-      }
-      height: calc(100vh - 270px);
-      overflow-y: hidden;
-      &.mini-output-hidden {
-        height: calc(100vh - 20px);
-      }
+    .modal-turn-indicator {
+      position: absolute;
+      top: 14px;
+      right: 85px;
+      z-index: 10;
     }
 
     .mini-output {
       height: 200px;
       overflow-y: scroll;
       padding: 10px 10px 0 10px;
-      margin: 0 8px 10px 8px;
+      margin: 40px 8px 10px 8px;
       background-color: rgb(16, 16, 20);
       .line {
         font-size: 16px;
@@ -287,41 +252,6 @@ onBeforeUnmount(() => {
         }
       }
     }
-
-    .close {
-      margin: 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover {
-        background-color: #e88080;
-        color: #000;
-      }
-    }
-
-    .toggle-mini-output {
-      margin: 0 5px 0 0;
-      padding: 5px;
-      background-color: #111;
-      position: absolute;
-      top: 10px;
-      right: 44px;
-      font-size: 32px;
-      z-index: 2;
-      line-height: 16px;
-      cursor: pointer;
-      &:hover, &.active {
-        background-color: #63e2b7;
-        color: #000;
-      }
-    }
-
   }
 }
 </style>
