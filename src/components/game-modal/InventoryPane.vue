@@ -1,6 +1,6 @@
 <template>
   <div :class="getScrollContainerClass()">
-    <SelectGameModalAs></SelectGameModalAs>
+    <SelectPlayerModalAs></SelectPlayerModalAs>
 
     <NGrid class="inventory-summary" cols="1 600:2">
       <NGi class="cell search">
@@ -27,19 +27,19 @@
 
     <div class="sorting">
       <span>Sort by </span>
-      <NPopselect v-model:value="sortValue" :options="sortOptions" @change="onSortChange">
-        <span class="dropdown">{{ sortValue }}</span>
+      <NPopselect v-model:value="state.inventorySortValue" :options="sortOptions" @change="onSortChange">
+        <span class="dropdown">{{ state.inventorySortValue }}</span>
       </NPopselect>
     </div>
 
     <div v-if="getItems().length == 0">You don't have anything in your inventory.</div>
 
     <div class="item-table">
-      <div class="inventory" v-for="(e, i) in columns" :key="i">
-        <div v-for="(item, index) in getItems()" :key="item.iid">
-          <div :class=itemClass(item.iid) v-if="index % columns === i">
+      <div class="inventory" v-for="i in columns" :key="i">
+        <div v-for="item in getColumnItems(i - 1)" :key="item.iid" class="item-row">
+          <div :class="itemClass(item.iid)">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-              <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+            <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@ import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue
 import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectGameModalAs from '@/components/game-modal/SelectGameModalAs.vue'
+import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
 import { state } from '@/static/state'
 
@@ -71,7 +71,6 @@ const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
 
-const sortValue = ref('name')
 const sortOptions = [
   {
     label: 'Name',
@@ -150,8 +149,8 @@ function getScrollContainerClass () {
 }
 
 function getInventory () {
-  if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
-    return state.gameState.charmies[state.gameModalAs].items || []
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].items || []
   }
   return state.gameState.inventory || []
 }
@@ -164,12 +163,12 @@ function unwatchCharmieInventory () {
 }
 
 function watchCharmieInventory () {
-  if (!state.gameModalAs || !state.gameState.charmies[state.gameModalAs]) {
+  if (!state.playerModalAs || !state.gameState.charmies[state.playerModalAs]) {
     return
   }
 
   charmieInventoryWatcher = watch(() => {
-    return state.gameState.charmies[state.gameModalAs] ? state.gameState.charmies[state.gameModalAs].items : []
+    return state.gameState.charmies[state.playerModalAs] ? state.gameState.charmies[state.playerModalAs].items : []
   }, async () => {
     items.value = sortItems(await fetchItems(getInventory()))
   })
@@ -182,7 +181,7 @@ function itemClass (itemIid) {
 function onWidthChange () {
   if (window.innerWidth < 600) {
     columns.value = 1
-  } else if (window.innerWidth < 800) {
+  } else if (window.innerWidth < 1200) {
     columns.value = 2
   } else {
     columns.value = 3
@@ -194,8 +193,18 @@ async function onSortChange () {
 }
 
 function sortItems (its) {
-  its.sort((a, b) => { return a[sortValue.value] > b[sortValue.value] ? 1 : -1 })
+  its.sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
   return its
+}
+
+function getColumnItems (colIndex) {
+  const its = getItems()
+  if (!its || its.length === 0) {
+    return []
+  }
+  const perCol = Math.ceil(its.length / columns.value) || 1
+  const start = colIndex * perCol
+  return its.slice(start, start + perCol)
 }
 
 let watchers = []
@@ -207,7 +216,7 @@ onMounted(async () => {
 
   watchers.push(
     watch(() => state.gameState.inventory, async () => {
-      if (state.gameModalAs && state.gameState.charmies[state.gameModalAs]) {
+      if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
       items.value = sortItems(await fetchItems(state.gameState.inventory))
@@ -215,7 +224,7 @@ onMounted(async () => {
   )
 
   watchers.push(
-    watch(() => state.gameModalAs, async () => {
+    watch(() => state.playerModalAs, async () => {
       items.value = sortItems(await fetchItems(getInventory()))
       unwatchCharmieInventory()
       watchCharmieInventory()
@@ -297,21 +306,21 @@ onBeforeUnmount(() => {
     justify-content: flex-start;
     align-items: flex-start;
     flex-direction: column;
-    .selected-item {
-      border-style: solid;
-      border-width: 0.2rem;
-      border-color: #121;
-    }
-    .item {
-      .name {
-        padding: 5px 10px;
-        cursor: pointer;
-        &.selected {
-          background: #121;
-        }
+    flex-grow: 1;
+    .item-row {
+      width: 100%;
+      .item {
+        width: 100%;
+        .name {
+          padding: 5px 10px;
+          cursor: pointer;
+          &.selected {
+            background: #121;
+          }
 
-        &:hover, &.selected {
-          background: #121;
+          &:hover, &.selected {
+            background: #121;
+          }
         }
       }
     }

@@ -1,6 +1,5 @@
 <template>
   <div class="font-selector-container">
-    <h3>Font Settings</h3>
     <NSelect
       class="font-selector"
       v-model:value="selectedFontFamily"
@@ -10,7 +9,7 @@
       @update:value="onSetFontFamily"
     />
 
-    <NRadioGroup v-model:value="selectedFontSize" name="radiobuttongroup1" class="font-size-selector">
+    <NRadioGroup v-model:value="selectedFontSize" name="fontsize" class="font-size-selector">
       <NRadioButton
         v-for="fontSize in FONT_SIZES"
         :key="fontSize.value"
@@ -62,6 +61,9 @@ function onSetFontSize () {
 
   .n-select {
     margin-bottom: 5px;
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

@@ -3,9 +3,8 @@
         class="game" :class="{
      'show-mobile-menu': state.options.showMobileMenu,
      'swap-mobile-menu': state.options.swapMobileMenuSide,
-     'show-modal-shortcuts': state.options.showGameModalShortcuts
+     'show-modal-shortcuts': state.options.showPlayerModalShortcuts
   }">
-    <ButtonControls/>
     <div class="game-layout">
       <MobileMenu/>
       <main class="vertical-split">
@@ -22,10 +21,12 @@
               <SideMovement/>
             </div>
           </div>
+          <ButtonControls/>
         </div>
         <div class="bottom-split">
           <BottomHUD v-if="!state.gameState.battle.active"/>
           <QuickSlots v-if="state.options.showQuickSlots"/>
+          <PlayerPrompt v-if="state.gameState.prompt"/>
           <QuickSlotHandlers/>
           <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
           <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"/>
@@ -36,8 +37,10 @@
     <LogoutModal/>
     <HelpModal/>
     <TriggersModal/>
-    <GameModal/>
+    <PlayerModal/>
     <MercModal/>
+    <TradeModal/>
+    <InputMappingModal/>
     <RadialOverlay/>
   </n-el>
 </template>
@@ -47,11 +50,13 @@ import { onMounted, onBeforeUnmount, watch } from 'vue'
 import { NEl } from 'naive-ui'
 
 import DebugModal from '@/components/modals/DebugModal.vue'
-import GameModal from '@/components/modals/GameModal.vue'
+import PlayerModal from '@/components/modals/PlayerModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
+import InputMappingModal from '@/components/modals/InputMappingModal.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
+import TradeModal from '@/components/modals/TradeModal.vue'
 import TriggersModal from '@/components/modals/TriggersModal.vue'
 
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
@@ -66,6 +71,7 @@ import SideMap from '@/components/main-area/SideMap.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
 
 import PartyStats from '@/components/hud/PartyStats.vue'
+import PlayerPrompt from '@/components/hud/PlayerPrompt.vue'
 import QuickSlots from '@/components/hud/QuickSlots.vue'
 
 import { state, setMode } from '@/static/state'
@@ -84,32 +90,37 @@ const { runCommand } = useWebSocket()
 
 let moveTimeout = null
 
-function openGameModal () {
+function openPlayerModal () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
 }
 
 function openScore () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'score'
 }
 
 function openInventory () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'inventory'
 }
 
 function openQuests () {
   setMode('modal')
-  state.modals.gameModal = true
+  state.modals.playerModal = true
   state.gamepadTab = 'quests'
 }
 
 function openHelpModal () {
   setMode('modal')
   state.modals.helpModal = true
+}
+
+function openTradeModal () {
+  setMode('modal')
+  state.modals.tradeModal = true
 }
 
 function showDebug () {
@@ -181,6 +192,14 @@ function enter () {
   }, 100)
 }
 
+function moveForward () {
+  runCommand('move forward')
+}
+
+function moveBackward () {
+  runCommand('move backward')
+}
+
 function moveNorth () {
   move('north')
 }
@@ -215,13 +234,17 @@ function moveSouthWest () {
 
 let watchers = []
 onMounted(() => {
-  state.inputEmitter.on('openGameModal', openGameModal)
+  state.inputEmitter.on('openPlayerModal', openPlayerModal)
   state.inputEmitter.on('openHelpModal', openHelpModal)
+  state.inputEmitter.on('openTradeModal', openTradeModal)
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.inputEmitter.on('moveForward', moveForward)
+  state.inputEmitter.on('moveBackward', moveBackward)
 
   state.inputEmitter.on('moveNorth', moveNorth)
   state.inputEmitter.on('moveSouth', moveSouth)
@@ -255,13 +278,17 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  state.inputEmitter.off('openGameModal', openGameModal)
+  state.inputEmitter.off('openPlayerModal', openPlayerModal)
   state.inputEmitter.off('openInventory', openInventory)
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
+  state.inputEmitter.off('openTradeModal', openTradeModal)
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
+
+  state.inputEmitter.off('moveForward', moveForward)
+  state.inputEmitter.off('moveBackward', moveBackward)
 
   state.inputEmitter.off('moveNorth', moveNorth)
   state.inputEmitter.off('moveSouth', moveSouth)
@@ -322,13 +349,18 @@ onBeforeUnmount(() => {
 .vertical-split {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  padding-bottom: 5px;
+  background-color: #18181b;
+  height: 100%;
+  min-height: 0;
   flex: 1 1 auto;
+  align-items: stretch;
 
   > * {
-    padding: 5px 10px;
-    flex: 0 0 content;
+    padding: 0 10px;
+  }
+
+  > .content-split {
+    flex: 1 1 auto;
   }
 }
 
@@ -338,15 +370,16 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
   align-items: stretch;
   flex: 1 1 0;
-  overflow: auto;
+  overflow: hidden;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
 
   .line-area {
     flex: 1 1 auto;
-    overflow: visible;
-
-    &:last-child {
-      padding-right: 34px + 10px;
-    }
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .side-area {
@@ -361,35 +394,31 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       gap: 5px;
-
-      &:first-child {
-        padding-top: 34px + 10px;
-
-        .game.show-modal-shortcuts & {
-          padding-right: 34px + 10px;
-        }
-      }
     }
 
     .side-top {
-      min-height: 300px;
-
       &:last-child {
         flex-grow: 1;
       }
-    }
-
-    .side-bottom {
-      flex-grow: 1;
     }
   }
 }
 
 .bottom-split {
-  padding: 0;
-  flex: 0 0 content;
+  padding: 0 0 10px 0;
+  flex: 0 0 auto;
   > * {
-    padding: 5px 10px 5px 10px;
+    padding: 5px 10px;
+    &:first-child {
+      padding-top: 10px;
+    }
   }
 }
+
+@media screen and (min-height: 621px) {
+  .content-split .side-area .row:first-child {
+    padding-top: 0;
+  }
+}
+
 </style>

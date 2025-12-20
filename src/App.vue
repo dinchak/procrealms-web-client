@@ -114,11 +114,6 @@ onBeforeUnmount(() => {
   --n-label-font-size: 16px;
 }
 
-// .selected {
-//   box-shadow: 0 0 5px #f8ff25;
-//   color: #f8ff25;
-// }
-
 body, html {
   margin: 0;
   padding: 0;
@@ -128,11 +123,8 @@ body, html {
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
-
-//*, * > * {
-  //overflow: auto;
-//}
 
 ::-webkit-scrollbar {
   background: transparent;
@@ -171,4 +163,45 @@ body, html {
 b {
   font-weight: normal !important;
 }
+
+.modal-close-button {
+  margin: 0;
+  padding: 5px;
+  background-color: #18181b;
+  border: 1px solid #18181b;
+  border-radius: 4px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 32px;
+  z-index: 2;
+  line-height: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    border: 1px solid rgb(119 69 69);
+    background-color: rgb(45 27 27 / 90%);
+  }
+}
+
+.modal-keyboard-toggle {
+  margin: 0 5px 0 0;
+  padding: 5px;
+  background-color: #18181b;
+  border: 1px solid #18181b;
+  border-radius: 4px;
+  position: absolute;
+  top: 10px;
+  right: 44px;
+  font-size: 32px;
+  z-index: 2;
+  line-height: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover, &.active {
+    border: 1px solid rgb(69 119 69);
+    background-color: rgb(27 45 27 / 90%);
+  }
+}
+
 </style>

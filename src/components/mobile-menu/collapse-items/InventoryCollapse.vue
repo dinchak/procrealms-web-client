@@ -51,7 +51,7 @@ import { useHelpers } from '@/composables/helpers'
 const { fetchItems } = useWebSocket()
 const { copperToMoneyString } = useHelpers()
 
-const props = defineProps(['inventory', 'isPlayer', 'character', 'affects', 'menu'])
+const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
 
 const items = ref([])
 const searchTerm = ref('')

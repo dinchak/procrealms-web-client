@@ -11,9 +11,11 @@ import MovementControls from '@/components/common/MovementControls.vue'
 
 <style scoped lang="less">
 .side-movement {
+  position: absolute;
+  bottom: 50px;
+  right: 15px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-  margin-left: 10px;
+  justify-content: flex-start;
 }
 </style>

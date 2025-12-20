@@ -81,6 +81,76 @@ export function useLocalStorageHandler () {
     localStorage.setItem('tokens', JSON.stringify(tokens))
   }
 
+  function exportOptions () {
+    const options = {}
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        let value = localStorage.getItem(key)
+        try {
+          value = JSON.parse(value)
+        } catch {
+          // leave as string if not JSON
+        }
+        options[key] = value
+      }
+
+      const json = JSON.stringify(options, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'options.json'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+
+    } catch {
+      alert('Failed to export options')
+    }
+  }
+
+  function importOptions (fileText) {
+    try {
+      const parsed = JSON.parse(fileText)
+
+      if (!parsed || typeof parsed !== 'object') {
+        alert('Invalid options file')
+        return false
+      }
+
+      const ok = window.confirm('This will overwrite everything in localStorage with the uploaded options file. Continue?')
+      if (!ok) {
+        return false
+      }
+
+      // Clear localStorage and populate with uploaded data
+      localStorage.clear()
+      Object.entries(parsed).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          localStorage.setItem(key, value)
+        } else {
+          try {
+            localStorage.setItem(key, JSON.stringify(value))
+          } catch (err) {
+            // fallback to string conversion
+            console.warn('Failed to stringify value for key', key, err)
+            localStorage.setItem(key, String(value))
+          }
+        }
+      })
+
+      // Reload to pick up new settings
+      window.location.reload()
+      return true
+    } catch (err) {
+      console.error(err)
+      alert('Failed to import options: ' + (err && err.message ? err.message : 'unknown error'))
+      return false
+    }
+  }
+
   return {
     saveOptions,
     loadOptions,
@@ -88,6 +158,8 @@ export function useLocalStorageHandler () {
     loadInputMappings,
     getTokens,
     addToken,
-    deleteToken
+    deleteToken,
+    exportOptions,
+    importOptions
   }
 }

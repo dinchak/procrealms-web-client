@@ -1,14 +1,28 @@
 <template>
   <div class="battle-area">
+    <ReactionModal v-if="showReactionModal()" />
+
+    <div class="battle-footer">
+      <BattleField />
+    </div>
+
     <div class="battle-status">
+
       <template v-for="side in ['good', 'vs', 'evil']" :key="side">
         <div v-if="side === 'vs'" class="vs-container">
           <div class="vs">VS</div>
+          <ExpandBattleInfo v-if="!state.options.battleAlwaysExpanded" />
+          <MyTurnIndicator v-if="state.gameState.battle.myTurn" />
         </div>
 
         <div v-if="side !== 'vs'" v-bind:class="getSideClass(side)">
-          <div v-for="participant in getParticipants(side)" class="entity" :key="participant.eid">
-            <TransitionGroup appear name="damage">
+          <TransitionGroup tag="div" name="entity" appear class="entities">
+            <div v-for="participant in getParticipants(side)" class="entity" :key="participant.eid">
+            <TransitionGroup
+              name="damage"
+              :appear="state.options.damageAnimations"
+              :css="state.options.damageAnimations"
+            >
               <div
                 v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
                 :key="anim.key"
@@ -17,7 +31,11 @@
               >{{ anim.amount }}</div>
             </TransitionGroup>
 
-            <TransitionGroup appear name="healing">
+            <TransitionGroup
+              :appear="state.options.damageAnimations"
+              :css="state.options.damageAnimations"
+              name="healing"
+            >
               <div
                 v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
                 :key="anim.key"
@@ -26,22 +44,37 @@
               >{{ anim.amount }}</div>
             </TransitionGroup>
 
-            <BattleEntity :entity="getPartyEntity(participant)" :participant="participant" :side="side"></BattleEntity>
-          </div>
+            <BattleEntity
+              :entity="getPartyEntity(participant)"
+              :participant="participant"
+              :side="side"
+              :expanded="expandEntities"
+            />
+            </div>
+          </TransitionGroup>
         </div>
       </template>
     </div>
+
   </div>
 
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, computed } from 'vue'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
 import BattleEntity from '@/components/battle/BattleEntity.vue'
+import BattleField from '@/components/battle/BattleField.vue'
+import ReactionModal from '@/components/battle/ReactionModal.vue'
+import MyTurnIndicator from '@/components/battle/MyTurnIndicator.vue'
+import ExpandBattleInfo from '@/components/battle/ExpandBattleInfo.vue'
+
+const expandEntities = computed(() => {
+  return state.options.battleAlwaysExpanded ? true : state.options.battleExpanded
+})
 
 const { selectNearestElement } = useHelpers()
 
@@ -80,6 +113,11 @@ function getSideClass (side) {
   return classes.join(' ')
 }
 
+function showReactionModal () {
+  const { battle } = state.gameState
+  return battle.pendingReaction ? true : false
+}
+
 onMounted(() => {
   state.inputEmitter.on('selectBattleAction', selectBattleAction)
   state.inputEmitter.on('performBattleAction', performBattleAction)
@@ -93,8 +131,25 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .battle-area {
-  margin-top: 5px;
-  border-top: 2px solid #333;
+  margin-top: 10px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+
+  .battle-controls {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 10px;
+  }
+
+  .battle-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .battle-status {
@@ -104,36 +159,30 @@ onBeforeUnmount(() => {
   padding-bottom: 10px;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
   .vs-container {
+    margin-top: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 20px;
+    min-width: 50px;
+    align-self: center;
+
     .vs {
       z-index: 1;
       margin: 0px 4px;
       flex: 0 0 0;
       position: relative;
-      font-family: 'DOS', monospace;
+      font-family: 'Inconsolata', monospace;
       animation: vs 0.4s ease-in forwards;
       font-size: 1.1rem;
       text-align: center;
       letter-spacing: 2px;
-      //color: #c50f1f;
       color: #f5f5f5;
-      //text-shadow:
-      //      0px -2px 2px black,
-      //      2px 0px 2px black,
-      //      -2px 0px 2px black,
-      //      0px -4px 4px #fff,
-      //      0px -4px 4px #fff,
-      //  0px -6px 6px #FF3,
-      //  0px -6px 6px #FF3,
-      //  0px -8px 8px #F90,
-      //  0px -8px 8px #F90,
-      //  0px -16px 12px #C33,
-      //  0px -16px 12px #C33;
       text-shadow:
             0px -2px 2px black,
             2px 0px 2px black,
@@ -171,47 +220,58 @@ onBeforeUnmount(() => {
   }
 
   .side {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 12px 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(265px, max-content));
+    grid-auto-rows: auto;
     gap: 4px;
+    margin: 12px 12px;
     align-self: flex-start;
+    width: fit-content;
+    max-width: calc(50% - 40px);
 
     &.good {
-      justify-content: flex-end;
+      justify-content: end;
     }
 
     &.evil {
       justify-content: start;
-      // flex-direction: row;
+    }
+
+    .entities {
+      display: contents;
     }
 
     .entity {
-      align-self: stretch;
+      display: inline-block;
+      vertical-align: top;
       position: relative;
-      // margin: 5px;
+      align-self: start;
+      min-width: 0;
 
       .damage {
         position: absolute;
-        top: 0;
-        font-size: 1.4rem;
+        top: -40px;
+        font-size: 1.6rem;
         color: #ff3333;
         padding: 5px 10px;
-        opacity: 0.8;
-        background-color: #101014;
-        z-index: 1;
+        font-weight: bold;
+        opacity: 1.0;
+        background-color: transparent;
+        z-index: 12;
+        pointer-events: none;
+        -webkit-font-smoothing: antialiased;
 
         &.crit {
           line-height: 1.2rem;
-          font-size: 1.9rem;
-          color: #ffcc33;
+          font-size: 2.0rem;
+          color: #ffd966;
         }
       }
 
       .healing {
         position: absolute;
-        top: -40px;
-        font-size: 1.4rem;
+        top: 0;
+        font-size: 1.6rem;
         color: #33ff33;
         padding: 5px 10px;
         opacity: 0.8;
@@ -224,39 +284,63 @@ onBeforeUnmount(() => {
 
 .damage-enter-active {
   animation: damage 2s ease-out;
+  animation-fill-mode: forwards;
+}
+
+.damage-leave-active {
+  animation: none;
+}
+
+/* entity fade transitions (2s fade-out on removal) */
+.entity-enter-from,
+.entity-leave-to {
+  opacity: 0;
+}
+.entity-enter-to,
+.entity-leave-from {
+  opacity: 1;
+}
+.entity-enter-active,
+.entity-leave-active {
+  transition: opacity 2s ease;
 }
 
 @keyframes damage {
   0% {
     opacity: 1;
-    top: 0;
+    transform: translateY(40px);
   }
   60% {
     opacity: 0.9;
-    top: -35px;
+    transform: translateY(5px);
   }
   100% {
     opacity: 0;
-    top: -40px;
+    transform: translateY(0);
   }
 }
 
 .healing-enter-active {
   animation: healing 2s ease-out;
+  animation-fill-mode: forwards;
+}
+
+.healing-leave-active {
+  animation: none;
 }
 
 @keyframes healing {
   0% {
     opacity: 1;
-    top: -40px;
+    transform: translateY(-40px);
   }
   60% {
     opacity: 0.9;
-    top: -5px;
+    transform: translateY(-5px);
   }
   100% {
     opacity: 0;
-    top: 0;
+    transform: translateY(0);
   }
 }
 
@@ -295,12 +379,32 @@ onBeforeUnmount(() => {
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 640px) {
   .battle-status {
     flex-direction: column;
     .side {
-      flex-direction: column;
+      grid-template-columns: 1fr !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      justify-content: center;
+      justify-items: center;
       align-self: center;
+
+      .entities {
+        display: contents;
+      }
+
+      .entity {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .main-card {
+        width: 100%;
+        max-width: 265px;
+        margin: 0 auto;
+      }
     }
   }
 }

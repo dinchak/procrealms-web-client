@@ -1,8 +1,14 @@
 <template>
   <div class="details">
 
-    <div class="actions">
+    <div
+      class="actions">
       <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
+    </div>
+
+    <div class="inventory-output-container" v-if="state.inventoryOutput[item.iid]">
+      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput[item.iid]">Clear Output</NButton>
+      <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput[item.iid])"></div>
     </div>
 
     <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
@@ -20,6 +26,13 @@
       <div class="stat" v-for="stat in getBaseStats()" :key="stat.label">
         <div :class="getBaseStatValueClass(stat)" v-if="stat.value !== false" v-html-safe="stat.value"></div>
         <div class="label" v-if="stat.label !== false" v-html-safe="stat.label"></div>
+      </div>
+    </div>
+
+    <div class="total-bonuses" v-if="(item.type == 'weapon' || item.type == 'armor') &&getTotalBonuses().length > 0">
+      <div class="bonus" v-for="bonus in getTotalBonuses()" :key="bonus.name">
+        <div class="value bold-green">+{{ renderBonusAmount(bonus) }}</div>
+        <div class="label bold-white">{{ bonus.name }}</div>
       </div>
     </div>
 
@@ -67,6 +80,7 @@ import { defineProps, toRefs } from 'vue'
 import { NButton } from 'naive-ui'
 import { useHelpers } from '@/composables/helpers'
 import { ANSI, ITEM_EFFECTS } from '@/static/constants'
+import { state } from '@/static/state'
 
 const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, listToString } = useHelpers()
 
@@ -228,12 +242,28 @@ function getItemBonuses () {
   return bonuses
 }
 
+function getTotalBonuses () {
+  const raw = getItemBonuses()
+  const totals = {}
+
+  for (const b of raw) {
+    const name = b.name
+    const amount = Number(b.amount) || 0
+    if (!totals[name]) {
+      totals[name] = { name, amount: 0 }
+    }
+    totals[name].amount += amount
+  }
+
+  return Object.values(totals)
+}
+
 const renderBonusPercent = [
-  'critical', 'xpBonus', 'castingTime'
+  'critical', 'xpBonus', 'healingPower', 'summoningPower'
 ]
 
 const renderBonusSeconds = [
-  'skillCooldown', 'spellCooldown'
+  'skillCooldown', 'speed', 'focus', 'spellCooldown'
 ]
 
 const renderBonusMultipliers = [
@@ -258,11 +288,15 @@ function numGemSlotsAvailable () {
 
 function renderGemSlotBonus (slotNum) {
   let flag = item.value.flags.find(flg => flg.gemSlot === slotNum)
-  if (!flag) {
+  if (!flag || !flag.bonuses) {
     return ''
   }
 
   let bonus = flag.bonuses[0]
+  if (!bonus) {
+    return ''
+  }
+
   let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
   if (!itemEffect) {
     return ''
@@ -396,6 +430,27 @@ function renderSkillsRequired () {
     }
   }
 
+  .total-bonuses {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+
+    .bonus {
+      display: flex;
+      flex-direction: row;
+      margin-left: 10px;
+      margin-right: 10px;
+      .value {
+        margin-right: 10px;
+      }
+
+      .label {
+        text-align: left;
+      }
+    }
+  }
+
   .crafting {
     display: flex;
     flex-direction: column;
@@ -430,6 +485,18 @@ function renderSkillsRequired () {
         box-shadow: 0 0 5px #f8ff25;
         color: #f8ff25;
       }
+    }
+  }
+
+  .inventory-output-container {
+    .clear-output-btn {
+      margin-left: 10px;
+    }
+    .inventory-output {
+      padding: 10px;
+      white-space: pre-wrap;
+      border-bottom: 1px solid #333;
+      margin-bottom: 10px;
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div v-if="false"></div>
 </template>
 
 <script setup>
@@ -7,6 +7,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { state } from '@/static/state'
 
 let gamepadStateLoopPaused = true
+let windowHasFocus = true
 
 const axesConfig = [
   {
@@ -46,6 +47,10 @@ function handleMetaKey (ev, keyState) {
 }
 
 function onKeyDown (ev) {
+  if (!windowHasFocus) {
+    return
+  }
+
   if (handleMetaKey(ev, true)) {
     return true
   }
@@ -54,7 +59,7 @@ function onKeyDown (ev) {
 
   let mappings = validMappings({ keyCode: ev.code, metaKeyState: state.metaKeyState })
   if (mappings.length == 0) {
-    return
+    return false
   }
 
   ev.preventDefault()
@@ -65,11 +70,19 @@ function onKeyDown (ev) {
 }
 
 function onKeyUp (ev) {
+  if (!windowHasFocus) {
+    return
+  }
   handleMetaKey(ev, false)
 }
 
 function onGamePadConnected (ev) {
   state.gamepads[ev.gamepad.index] = ev.gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
+  // Only start processing gamepad input if window is focused
+  if (!windowHasFocus || !state.options.gamepadEnabled) {
+    return
+  }
+
   gamepadStateLoopPaused = false
   gamepadStateLoop()
 }
@@ -109,7 +122,12 @@ function validMappings ({ keyCode, metaKeyState, gamepadButton, gamepadButtonRel
 }
 
 function gamepadStateLoop () {
-  if (gamepadStateLoopPaused || Object.values(state.gamepads).length == 0) {
+  if (
+    gamepadStateLoopPaused ||
+    Object.values(state.gamepads).length == 0 ||
+    !windowHasFocus ||
+    !state.options.gamepadEnabled
+  ) {
     return
   }
 
@@ -192,6 +210,22 @@ function removeEventListeners () {
   window.removeEventListener('keyup', onKeyUp)
   window.removeEventListener('gamepadconnected', onGamePadConnected)
   window.removeEventListener('gamepaddisconnected', onGamePadDisconnected)
+  window.removeEventListener('focus', onFocus)
+  window.removeEventListener('blur', onBlur)
+}
+
+function onFocus () {
+  windowHasFocus = true
+  // resume gamepad loop if there are gamepads connected
+  if (Object.values(state.gamepads).length > 0) {
+    gamepadStateLoopPaused = false
+    gamepadStateLoop()
+  }
+}
+
+function onBlur () {
+  windowHasFocus = false
+  gamepadStateLoopPaused = true
 }
 
 onMounted(() => {
@@ -201,15 +235,20 @@ onMounted(() => {
   window.addEventListener('keyup', onKeyUp)
   window.addEventListener('gamepadconnected', onGamePadConnected)
   window.addEventListener('gamepaddisconnected', onGamePadDisconnected)
+  window.addEventListener('focus', onFocus)
+  window.addEventListener('blur', onBlur)
+
+  windowHasFocus = document.hasFocus()
 
   const gamepads = navigator.getGamepads()
   for (let gamepad of gamepads.filter(gp => gp)) {
     state.gamepads[gamepad.index] = gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
   }
 
-  gamepadStateLoopPaused = false
-
-  gamepadStateLoop()
+  if (windowHasFocus && Object.values(state.gamepads).length > 0) {
+    gamepadStateLoopPaused = false
+    gamepadStateLoop()
+  }
 })
 
 onBeforeUnmount(() => {

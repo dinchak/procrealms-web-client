@@ -157,7 +157,7 @@ function getFoodBarClass () {
   line-height: 1;
   border-radius: 2px;
   position: relative;
-  min-width: 60px;
+  min-width: 77px;
 
   &.hp {
     border: 1px solid #005500;

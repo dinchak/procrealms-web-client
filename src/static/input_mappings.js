@@ -1,6 +1,32 @@
 export function resetInputMappings () {
   return [
     {
+      label: 'Move Forward',
+      event: 'moveForward',
+      inBattle: true,
+      bindings: [{
+        keyCode: 'Numpad6',
+        modes: ['hotkey', 'input'],
+      }, {
+        keyCode: 'ArrowRight',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Move Backward',
+      event: 'moveBackward',
+      inBattle: true,
+      bindings: [{
+        keyCode: 'Numpad4',
+        modes: ['hotkey', 'input'],
+      }, {
+        keyCode: 'ArrowLeft',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
       label: 'Move North',
       event: 'moveNorth',
       bindings: [{
@@ -592,68 +618,6 @@ export function resetInputMappings () {
     },
 
     {
-      label: 'Select Output Tab',
-      event: 'selectOutputTab',
-      bindings: [{
-        keyCode: 'Digit1',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Chat Tab',
-      event: 'selectChatTab',
-      bindings: [{
-        keyCode: 'Digit2',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Trade Tab',
-      event: 'selectTradeTab',
-      bindings: [{
-        keyCode: 'Digit3',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Newbie Tab',
-      event: 'selectNewbieTab',
-      bindings: [{
-        keyCode: 'Digit4',
-        ctrl: true,
-        alt: true,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Prev Output Tab',
-      event: 'selectPrevOutputTab',
-      bindings: [{
-        gamepadButton: 14,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
-      label: 'Select Next Output Tab',
-      event: 'selectNextOutputTab',
-      bindings: [{
-        gamepadButton: 15,
-        modes: ['hotkey', 'input'],
-      }],
-    },
-
-    {
       label: 'Show Side Map',
       event: 'showSideMap',
       bindings: [{
@@ -741,6 +705,19 @@ export function resetInputMappings () {
     },
 
     {
+      label: 'Open Trade Modal',
+      event: 'openTradeModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyT',
+        modes: ['hotkey'],
+      }, {
+        gamepadButton: 4,
+        modes: ['hotkey', 'input'],
+      }],
+    },
+
+    {
       label: 'Close Modal',
       event: 'closeModal',
       bindings: [{
@@ -753,8 +730,8 @@ export function resetInputMappings () {
     },
 
     {
-      label: 'Show Game Modal',
-      event: 'openGameModal',
+      label: 'Open Player Modal',
+      event: 'openPlayerModal',
       bindings: [{
         keyCode: 'Escape',
         modes: ['hotkey'],

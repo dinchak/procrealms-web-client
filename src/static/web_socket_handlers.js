@@ -1,12 +1,11 @@
 import jiff from 'jiff'
 
-import { CHANNEL_COLORS } from '@/static/constants'
 import { addLine, state, setMode } from '@/static/state'
 import { processTriggers } from '@/static/triggers'
 import { playMessageSound, playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, strToLines } = useHelpers()
+const { ansiToHtml, strToLines, renderMessage } = useHelpers()
 
 export function onWebSocketEvent (cmd, msg, reqId) {
   if (state.pendingRequests[reqId]) {
@@ -80,10 +79,10 @@ const webSocketHandlers = {
     setTimeout(() => {
       state.animations = state.animations.filter(a => a.key != animation.key)
       state.nextAnimationDelay -= 200
-    }, 1000)
+    }, 2000)
   },
 
-  'affect.cure': ({ target, amount }) => {
+  'effect.cure': ({ target, amount }) => {
     let animation = { key: Math.random(), type: 'healing', eid: target, amount }
 
     setTimeout(() => {
@@ -94,7 +93,7 @@ const webSocketHandlers = {
     setTimeout(() => {
       state.animations = state.animations.filter(a => a.key != animation.key)
       state.nextAnimationDelay -= 200
-    }, 1000)
+    }, 2000)
   },
 
   'channel.msg': ({ id, from, to, channel, timestamp, message }) => {
@@ -109,36 +108,18 @@ const webSocketHandlers = {
     message = ansiToHtml(`\u{1b}[0m${message}`)
 
     let out = ''
-    if (['chat', 'trade', 'newbie'].includes(channel)) {
-      if (state[channel].find(msg => msg.id == id)) {
-        return
-      }
 
-      let unread = true
-      if (state.activeTab == channel) {
-        unread = false
-      }
-
-      addLine({ id, from, to, timestamp, message, unread }, channel)
-
-      if (state.options.chatInMain) {
-        out = `<span class="bold-yellow">${from}</span> <span class="${CHANNEL_COLORS[channel]}">${channel}${from == 'You' ? '' : 's'}</span> <span class="bold-white">'${message}'</span>`
-      }
-    } else if (['party'].includes(channel)) {
-      out = `<span class="green">[<span class="bold-green">Party</span><span class="green">] <span class="bold-yellow">${from}</span> <span class="bold-white">${message}</span>`
-    } else if (['tell'].includes(channel)) {
-      if (from == 'You') {
-        out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
-      } else {
-        out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
-      }
-    } else if (['info', 'announce', 'events'].includes(channel)) {
-      out = message
-    } else {
-      out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+    state.messages.push({ id, from, to, channel, timestamp, message })
+    if (state.messages.length > 250) {
+      state.messages.shift()
     }
-    if (out) {
+
+    if (state.options.chatInMain) {
+      out = renderMessage({ channel, from, to, message })
       addLine(out, 'output')
+    }
+
+    if (out) {
       processTriggers(out)
     }
 
@@ -179,6 +160,12 @@ const webSocketHandlers = {
 
   'help.search': ({ matches }) => {
     state.help.searchResults = matches
+  },
+
+  'shop.list': ({ items, shopkeeper, prices }) => {
+    state.shop.items = items
+    state.shop.shopkeeper = shopkeeper
+    state.shop.prices = prices
   },
 
   'client.media.play': ({ name }) => {

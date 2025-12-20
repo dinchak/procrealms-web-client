@@ -1,7 +1,7 @@
 <template>
   <div class="input-wrapper">
     <form @submit.prevent="onSubmit">
-      <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" :class="state.activeTab" />
+      <input v-model="text" ref="input" @blur="onBlur" @focus="onFocus" :placeholder="getPlaceholder()" class="output" />
     </form>
     <MobileInputControls v-if="state.options.textInputMobileButtons" />
   </div>
@@ -121,14 +121,9 @@ function sendCommand () {
     return
   }
 
-  if (state.activeTab != 'output') {
-    let firstWord = command.split(' ')[0]
-    if (state.activeTab.indexOf(firstWord.toLowerCase()) != 0) {
-      command = `${state.activeTab} ${command}`
-    }
-  } else if (focusMode.value == 'modal-input') {
-    if (state.gameModalAs) {
-      command = `order eid:${state.gameModalAs} ${command}`
+  if (focusMode.value == 'modal-input') {
+    if (state.playerModalAs) {
+      command = `order eid:${state.playerModalAs} ${command}`
     }
   }
 
@@ -151,17 +146,13 @@ function sendCommand () {
 
   setTimeout(() => {
     // TODO replace with scroll down event
-    let output = document.getElementById(state.activeTab)
-    output.scrollTo(0, output.scrollHeight)
+    let output = document.getElementById('output')
+    output.scrollTop = output.scrollHeight
   })
 }
 
 function getPlaceholder () {
-  if (state.activeTab == 'output') {
-    return 'Enter command or help'
-  } else {
-    return `Send ${state.activeTab} message`
-  }
+  return 'Enter command or help'
 }
 
 onMounted(() => {
@@ -196,6 +187,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  background-color: #18181b;
+  min-height: 28px;
 
   .menu-button {
     color: #fff;

@@ -1,17 +1,19 @@
 <template>
-  <div class="bottom-hud" v-if="showHUD()" :style="{ height: getHUDHeight() + 'px' }">
+  <div class="bottom-hud" v-if="showHUD()">
     <div class="center-hud">
       <MiniMap v-if="state.options.showMinimap" />
       <HUDRoomInfo class="hud-item" v-if="state.options.showRoomInfo" />
-      <HUDEffects :affects="state.gameState.affects" class="hud-item" v-if="state.options.showEffects" />
+      <HUDEffects :effects="state.gameState.effects" class="hud-item" v-if="state.options.showEffects" />
       <HUDQuests class="hud-item" v-if="state.options.showQuests" />
+      <HUDChat class="hud-item" v-if="state.options.showChat" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { getHUDHeight, showHUD, state } from '@/static/state'
+import { showHUD, state } from '@/static/state'
 
+import HUDChat from '@/components/hud/HUDChat.vue'
 import HUDEffects from '@/components/hud/HUDEffects.vue'
 import HUDQuests from '@/components/hud/HUDQuests.vue'
 import HUDRoomInfo from '@/components/hud/HUDRoomInfo.vue'
@@ -22,16 +24,17 @@ import MiniMap from '@/components/common/MiniMap.vue'
 .bottom-hud {
   display: flex;
   padding-top: 5px;
-  border-top: 3px solid #181818;
-  background-color: rgb(16, 18, 22);
+  background-color: #18181b;
   overflow-x: auto;
 
   .center-hud {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     gap: 10px;
     flex: 1 0 auto;
+    max-height: 130px;
 
     .hud-item {
       overflow-y: auto;
