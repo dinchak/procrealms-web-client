@@ -698,89 +698,35 @@ export const ANSI_REPLACEMENTS = [
 ]
 
 export const MUSIC_TRACKS = [{
-  name: 'Ancient Temple',
-  url: '/music/Ancient Temple.mp3',
-}, {
   name: 'Animal Friends',
   url: '/music/Animal Friends.mp3',
-}, {
-  name: 'Artifact Bearer',
-  url: '/music/Artifact Bearer.mp3',
-}, {
-  name: 'Blasti\'s Embrace',
-  url: '/music/Blasti\'s Embrace.mp3',
 }, {
   name: 'Blasti\'s Reverie',
   url: '/music/Blasti\'s Reverie.mp3',
 }, {
-  name: 'Box of Crafts',
-  url: '/music/Box of Crafts.mp3',
+  name: 'Frozen Peaks',
+  url: '/music/Frozen Peaks.mp3',
 }, {
-  name: 'Brave Adventurer',
-  url: '/music/Brave Adventurer.mp3',
-}, {
-  name: 'Cathedral of the Devoted',
-  url: '/music/Cathedral of the Devoted.mp3',
-}, {
-  name: 'Dawn of Adventure',
-  url: '/music/Dawn of Adventure.mp3',
-}, {
-  name: 'Death of a Mercenary',
-  url: '/music/Death of a Mercenary.mp3',
-}, {
-  name: 'Dream of Motes',
-  url: '/music/Dream of Motes.mp3',
-}, {
-  name: 'Enchantment',
-  url: '/music/Enchantment.mp3',
-}, {
-  name: 'Exploration',
-  url: '/music/Exploration.mp3',
-}, {
-  name: 'Fragments',
-  url: '/music/Fragments.mp3',
-}, {
-  name: 'Harvest\'s Bounty',
-  url: '/music/Harvest\'s Bounty.mp3',
-}, {
-  name: 'Into the Wilds',
-  url: '/music/Into the Wilds.mp3',
+  name: 'Long Journey',
+  url: '/music/Long Journey.mp3',
 }, {
   name: 'My Portal',
   url: '/music/My Portal.mp3',
 }, {
-  name: 'Mysterious Shrine',
-  url: '/music/Mysterious Shrine.mp3',
-}, {
-  name: 'Mystic Glade',
-  url: '/music/Mystic Glade.mp3',
-}, {
-  name: 'Nexus Run',
-  url: '/music/Nexus Run.mp3',
-}, {
-  name: 'Portal Sunrise',
-  url: '/music/Portal Sunrise.mp3',
-}, {
   name: 'Potato Farmer',
   url: '/music/Potato Farmer.mp3',
 }, {
-  name: 'Portal Sunset',
-  url: '/music/Portal Sunset.mp3',
-}, {
   name: 'Shelly\'s Theme',
-  url: '/music/Shellys Theme.mp3',
-}, {
-  name: 'Spirit of the Shrine',
-  url: '/music/Spirit of the Shrine.mp3',
+  url: '/music/Shelly\'s Theme.mp3',
 }, {
   name: 'The Endless Sands',
   url: '/music/The Endless Sands.mp3',
 }, {
-  name: 'The Great Plains',
-  url: '/music/The Great Plains.mp3',
-}, {
   name: 'The Hidden Grove',
   url: '/music/The Hidden Grove.mp3',
+}, {
+  name: 'The Obelisk',
+  url: '/music/The Obelisk.mp3',
 }, {
   name: 'The Nexus',
   url: '/music/The Nexus.mp3',
@@ -793,9 +739,6 @@ export const MUSIC_TRACKS = [{
 }, {
   name: 'Tranquil Realms',
   url: '/music/Tranquil Realms.mp3',
-}, {
-  name: 'Whispers of the Wild',
-  url: '/music/Whispers of the Wild.mp3',
 }]
 
 export const DEFAULT_TERMINAL_SIZE = {

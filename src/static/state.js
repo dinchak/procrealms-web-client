@@ -99,6 +99,7 @@ export const state = reactive({
     playerModal: false,
     settingsModal: false,
     tradeModal: false,
+    craftingModal: false,
     inputMappingModal: false,
   },
 
