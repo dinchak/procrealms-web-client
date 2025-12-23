@@ -23,14 +23,14 @@
     </div>
 
     <div class="base-stats">
-      <div class="stat" v-for="stat in getBaseStats()" :key="stat.label">
+      <div class="stat" v-for="(stat, i) in getBaseStats()" :key="i + '-' + stat.label">
         <div :class="getBaseStatValueClass(stat)" v-if="stat.value !== false" v-html-safe="stat.value"></div>
         <div class="label" v-if="stat.label !== false" v-html-safe="stat.label"></div>
       </div>
     </div>
 
     <div class="total-bonuses" v-if="(item.type == 'weapon' || item.type == 'armor') &&getTotalBonuses().length > 0">
-      <div class="bonus" v-for="bonus in getTotalBonuses()" :key="bonus.name">
+      <div class="bonus" v-for="(bonus, i) in getTotalBonuses()" :key="i + '-' + bonus.name">
         <div class="value bold-green">+{{ renderBonusAmount(bonus) }}</div>
         <div class="label bold-white">{{ bonus.name }}</div>
       </div>
@@ -40,7 +40,7 @@
       <div class="header bold-magenta" v-if="numGemSlotsAvailable() > 0">Gem Slots <span class="black">[</span>{{ numGemSlotsAvailable() }} <span class="bold-white">slot available</span><span class="black">]</span></div>
       <div class="header bold-magenta" v-if="numGemSlotsAvailable() == 0">Gem Slots <span class="black">[</span><span class="magenta">Filled</span><span class="black">]</span></div>
       <div class="no-gems" v-if="numGemSlotsAvailable() == item.numGemSlots">No gems have been enchanted into this item.</div>
-      <div class="gem" v-for="(gem, i) in item.gemSlots" :key="gem.name">
+      <div class="gem" v-for="(gem, i) in item.gemSlots" :key="i + '-' + gem.name">
         <div class="slot">Slot <span class="bold-magenta">{{ i + 1 }}</span>: </div>
         <div class="gem-name bold-white">{{ gem }}</div>
         <div class="bonus black" v-html-safe="ansiToHtml(renderGemSlotBonus(i))"></div>
@@ -49,7 +49,7 @@
 
     <div class="bonuses" v-if="getItemBonuses().length > 0">
       <div class="header bold-cyan">Bonuses</div>
-      <div class="bonus" v-for="bonus in getItemBonuses()" :key="bonus.name">
+      <div class="bonus" v-for="(bonus, i) in getItemBonuses()" :key="i + '-' + bonus.name">
         <div class="value bold-green">+{{ renderBonusAmount(bonus) }}</div>
         <div class="label bold-white">{{ bonus.name }}</div>
         <div class="flag black" v-if="bonus.flag">[<span class="bold-white">{{ bonus.flag }}</span>]</div>
