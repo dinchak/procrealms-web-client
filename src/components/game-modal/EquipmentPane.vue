@@ -6,7 +6,7 @@
       <NGi>
         <h3>Equipment</h3>
         <NGrid class="equipment" cols="1">
-          <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="slot">
+          <NGi v-for="{ iid, slot, label, color } in getEquipmentLabels()" :key="iid">
             <div class="slot">
               <div class="row" @click="selectIid(iid)">
                 <div :class="'label ' + color">{{ label }}</div>
@@ -21,7 +21,7 @@
 
         <h3 v-if="state.playerModalAs == '' && getPetEid()">Pet Equipment</h3>
         <NGrid class="equipment" cols="1" v-if="state.playerModalAs == '' && getPetEid()">
-          <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="slot">
+          <NGi v-for="{ iid, slot, label, color } in getPetEquipmentLabels()" :key="iid">
             <div class="slot">
               <div class="row" @click="selectIid(iid)">
                 <div :class="'label ' + color">{{ label }}</div>
