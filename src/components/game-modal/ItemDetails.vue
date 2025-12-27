@@ -6,9 +6,9 @@
       <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
 
-    <div class="inventory-output-container" v-if="state.inventoryOutput[item.iid]">
-      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput[item.iid]">Clear Output</NButton>
-      <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput[item.iid])"></div>
+    <div class="inventory-output-container" v-if="state.inventoryOutput['inventory-output-' + item.iid]">
+      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput['inventory-output-' + item.iid]">Clear Output</NButton>
+      <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput['inventory-output-' + item.iid])"></div>
     </div>
 
     <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>

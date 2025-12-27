@@ -100,7 +100,18 @@ export const state = reactive({
     settingsModal: false,
     tradeModal: false,
     craftingModal: false,
+    chatModal: false,
+    auctionModal: false,
     inputMappingModal: false,
+  },
+
+  crafting: {
+    all: false,
+    known: false,
+    learned: false,
+    levelFilter: '',
+    selectedSkill: '',
+    recipes: [],
   },
 
   shop: {
@@ -269,7 +280,6 @@ function resetOptions () {
     showSideMap: false,
     showSideMovement: false,
     showSideAliases: false,
-    showPlayerModalShortcuts: true,
 
     // font options
     fontFamily: 'Inconsolata, monospace',

@@ -8,7 +8,14 @@ import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml, strToLines, renderMessage } = useHelpers()
 
 export function onWebSocketEvent (cmd, msg, reqId) {
-  if (state.pendingRequests[reqId]) {
+  if (reqId && reqId.startsWith('inventory-output-')) {
+    if (!state.inventoryOutput[reqId]) {
+      state.inventoryOutput[reqId] = ''
+    }
+    state.inventoryOutput[reqId] += msg
+  }
+
+  if (state.pendingRequests[reqId] && reqId != 'the_void') {
     let { resolve } = state.pendingRequests[reqId]
     delete state.pendingRequests[reqId]
     resolve(cmd, msg)
@@ -166,6 +173,10 @@ const webSocketHandlers = {
     state.shop.items = items
     state.shop.shopkeeper = shopkeeper
     state.shop.prices = prices
+  },
+
+  'item.craftable': ({ items }) => {
+    state.crafting.recipes = items
   },
 
   'client.media.play': ({ name }) => {

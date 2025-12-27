@@ -50,7 +50,7 @@ export function useWebSocket () {
   }
 
   function sendWithResponse (cmd, msg, reqId = false) {
-    if (reqId && state.pendingRequests[reqId]) {
+    if (reqId && state.pendingRequests[reqId] && reqId != 'the_void') {
       return state.pendingRequests[reqId].promise
     }
 
@@ -60,21 +60,24 @@ export function useWebSocket () {
       console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} reqId=${reqId}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
     }
 
-    let responsePromise = new Promise((resolve, reject) => {
-      let timeout = setTimeout(() => {
-        delete state.pendingRequests[reqId]
-        reject(new Error(`Request for ${cmd} timed out after 5 seconds (reqId=${reqId})`))
-      }, 5000)
+    let responsePromise = null
+    if (reqId != 'the_void') {
+      responsePromise = new Promise((resolve, reject) => {
+        let timeout = setTimeout(() => {
+          delete state.pendingRequests[reqId]
+          reject(new Error(`Request for ${cmd} timed out after 5 seconds (reqId=${reqId})`))
+        }, 5000)
 
-      state.pendingRequests[reqId] = {
-        resolve: (responseCmd, responseMsg) => {
-          clearTimeout(timeout)
-          resolve({ cmd: responseCmd, msg: responseMsg })
+        state.pendingRequests[reqId] = {
+          resolve: (responseCmd, responseMsg) => {
+            clearTimeout(timeout)
+            resolve({ cmd: responseCmd, msg: responseMsg })
+          }
         }
-      }
-    })
+      })
 
-    state.pendingRequests[reqId].promise = responsePromise
+      state.pendingRequests[reqId].promise = responsePromise
+    }
 
     state.websocketConnection.send(JSON.stringify({ cmd, msg, reqId }))
 

@@ -20,7 +20,6 @@
       </NIcon>
 
       <NIcon
-          v-if="!state.options.showPlayerModalShortcuts"
           title="Game Menu"
           :class="state.modals.playerModal ? 'active' : ''"
           size="24"
@@ -28,40 +27,36 @@
       >
         <AssessmentOutlined/>
       </NIcon>
-    </div>
 
-    <div class="game-modal-shortcuts" v-if="state.options.showPlayerModalShortcuts">
-      <div class="shortcut" @click="openPlayerModal('score')">
-        <div class="icon">
-          <img src="@/assets/icons/character.svg">
-        </div>
-      </div>
+      <NIcon
+          title="Crafting Menu"
+          :class="state.modals.craftingModal ? 'active' : ''"
+          size="24"
+          @click="openCraftingModal()"
+      >
+        <ConstructionFilled/>
+      </NIcon>
 
-      <div class="shortcut" @click="openPlayerModal('skills')">
-        <div class="icon">
-          <img src="@/assets/icons/skills.svg">
-        </div>
-      </div>
+      <!-- <NIcon
+          title="Chat Modal"
+          :class="state.modals.craftingModal ? 'active' : ''"
+          size="24"
+          @click="openChatModal()"
+      >
+        <ChatFilled/>
+      </NIcon>
 
-      <div class="shortcut" @click="openPlayerModal('quests')">
-        <div class="icon">
-          <img src="@/assets/icons/trophy.svg">
-        </div>
-      </div>
-
-      <div class="shortcut" @click="openPlayerModal('inventory')">
-        <div class="icon">
-          <img src="@/assets/icons/backpack.svg">
-        </div>
-      </div>
-
-      <div class="shortcut" @click="openPlayerModal('equipment')">
-        <div class="icon">
-          <img src="@/assets/icons/battle-gear.svg">
-        </div>
-      </div>
+      <NIcon
+          title="Auction Modal"
+          :class="state.modals.auctionModal ? 'active' : ''"
+          size="24"
+          @click="openAuctionModal()"
+      >
+        <GavelFilled/>
+      </NIcon> -->
 
     </div>
+
     <SettingsOverlay v-if="state.modals.settingsModal"/>
   </div>
 </template>
@@ -72,6 +67,9 @@ import { NIcon } from 'naive-ui'
 import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
+import ChatFilled from '@vicons/material/ChatFilled'
+import ConstructionFilled from '@vicons/material/ConstructionFilled'
+import GavelFilled from '@vicons/material/GavelFilled'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
@@ -87,6 +85,21 @@ function openPlayerModal (pane = null) {
     state.gamepadTab = pane
   }
   state.modals.playerModal = true
+  setMode('modal')
+}
+
+function openCraftingModal () {
+  state.modals.craftingModal = true
+  setMode('modal')
+}
+
+function openChatModal () {
+  state.modals.chatModal = true
+  setMode('modal')
+}
+
+function openAuctionModal () {
+  state.modals.auctionModal = true
   setMode('modal')
 }
 
