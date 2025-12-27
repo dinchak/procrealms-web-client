@@ -300,6 +300,7 @@ onBeforeUnmount(() => {
       width: 5em;
     }
   }
+
   .inventory {
     width: 33%;
     display: flex;

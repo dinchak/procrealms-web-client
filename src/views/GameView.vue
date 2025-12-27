@@ -2,8 +2,7 @@
   <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
         class="game" :class="{
      'show-mobile-menu': state.options.showMobileMenu,
-     'swap-mobile-menu': state.options.swapMobileMenuSide,
-     'show-modal-shortcuts': state.options.showPlayerModalShortcuts
+     'swap-mobile-menu': state.options.swapMobileMenuSide
   }">
     <div class="game-layout">
       <MobileMenu/>
@@ -33,6 +32,9 @@
         </div>
       </main>
     </div>
+    <AuctionModal/>
+    <ChatModal/>
+    <CraftingModal/>
     <DebugModal/>
     <LogoutModal/>
     <HelpModal/>
@@ -49,6 +51,9 @@
 import { onMounted, onBeforeUnmount, watch } from 'vue'
 import { NEl } from 'naive-ui'
 
+import AuctionModal from '@/components/modals/AuctionModal.vue'
+import ChatModal from '@/components/modals/ChatModal.vue'
+import CraftingModal from '@/components/modals/CraftingModal.vue'
 import DebugModal from '@/components/modals/DebugModal.vue'
 import PlayerModal from '@/components/modals/PlayerModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'

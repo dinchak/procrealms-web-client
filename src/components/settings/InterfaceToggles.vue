@@ -96,14 +96,6 @@
       >
         <NIcon size="24"><DynamicFormOutlined/></NIcon>
       </NButton>
-
-      <NButton size="medium"
-        title="Player Modal Shortcuts"
-        :type="getOptionType('showPlayerModalShortcuts')"
-        @click="toggleOption('showPlayerModalShortcuts')"
-      >
-        <NIcon size="24"><SplitscreenOutlined/></NIcon>
-      </NButton>
     </div>
   </div>
 

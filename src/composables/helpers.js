@@ -41,8 +41,8 @@ export function useHelpers () {
   async function runItemAction (command, item) {
     let commandStr = `${getOrderCmd()}${command} iid:${item.iid}`
     let outputId = `inventory-output-${item.iid}`
-    let result = await runCommand(commandStr, outputId)
-    state.inventoryOutput[item.iid] = result.msg
+    await runCommand(commandStr, outputId)
+    // state.inventoryOutput[item.iid] = result.msg
     await refreshItem(item.iid)
   }
 
