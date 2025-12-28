@@ -128,6 +128,16 @@ function openTradeModal () {
   state.modals.tradeModal = true
 }
 
+function openCraftingModal () {
+  setMode('modal')
+  state.modals.craftingModal = true
+}
+
+function openChatModal () {
+  setMode('modal')
+  state.modals.chatModal = true
+}
+
 function showDebug () {
   setMode('modal')
   state.modals.debugModal = true
@@ -242,6 +252,8 @@ onMounted(() => {
   state.inputEmitter.on('openPlayerModal', openPlayerModal)
   state.inputEmitter.on('openHelpModal', openHelpModal)
   state.inputEmitter.on('openTradeModal', openTradeModal)
+  state.inputEmitter.on('openCraftingModal', openCraftingModal)
+  state.inputEmitter.on('openChatModal', openChatModal)
   state.inputEmitter.on('openScore', openScore)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
@@ -288,6 +300,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('openScore', openScore)
   state.inputEmitter.off('openHelpModal', openHelpModal)
   state.inputEmitter.off('openTradeModal', openTradeModal)
+  state.inputEmitter.off('openChatModal', openChatModal)
+  state.inputEmitter.off('openCraftingModal', openCraftingModal)
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.off('moveInSelectedDirection', moveInSelectedDirection)
@@ -378,6 +392,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border-bottom: 1px solid #333;
   padding-bottom: 10px;
+  padding-right: 0;
 
   .line-area {
     flex: 1 1 auto;

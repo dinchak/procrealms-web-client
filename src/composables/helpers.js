@@ -1,7 +1,7 @@
 import { AnsiUp } from 'ansi_up'
 
 import { getOrderCmd, state } from '@/static/state'
-import { ANSI, ANSI_REPLACEMENTS, CHANNEL_COLORS, DIRECTION_MAP } from '@/static/constants'
+import { ANSI, ANSI_REPLACEMENTS, CHANNELS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
@@ -728,12 +728,21 @@ export function useHelpers () {
   function renderMessage ({ channel, from, to, message }) {
     let out = ''
 
-    if (CHANNEL_COLORS[channel]) {
-      let color = CHANNEL_COLORS[channel] || 'white'
-      let channelOut = `<span class="${color}">[</span><span class="bold-${color}">${channel}</span><span class="${color}">]</span>`
-      let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
-      out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
-    } else if (channel == 'tell') {
+    const channelConfig = CHANNELS.find(c => c.name == channel)
+    let color = 'white'
+    let label = channel
+
+    if (channelConfig) {
+      color = channelConfig.color
+      label = channelConfig.label
+    }
+
+    const channelOut = `<span class="${color}">[</span><span class="bold-${color}">${label}</span><span class="${color}">]</span>`
+
+    let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
+    out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
+
+    if (channel == 'tell') {
       if (from == 'You') {
         out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
       } else {
@@ -742,6 +751,7 @@ export function useHelpers () {
     } else {
       out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
     }
+
     return out
   }
 
@@ -765,6 +775,15 @@ export function useHelpers () {
     return renderColorGradient(['red', 'bold-red', 'magenta', 'bold-magenta', 'bold-yellow'], percent)
   }
 
+  function getTellMessageFrom (message) {
+    if (message.channel != 'tell') {
+      return message.channel
+    }
+
+    let from = (message.from == 'You') ? message.to : message.from
+    return from
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
@@ -774,5 +793,6 @@ export function useHelpers () {
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
     range, renderMessage, runItemAction,
     getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
+    getTellMessageFrom
   }
 }

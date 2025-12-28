@@ -19,7 +19,7 @@
             <CloseOutlined />
           </NIcon>
         </p>
-        <p :class="getModalKeyboardToggleClass()" @click="toggleMiniOutput()">
+        <p v-if="props.showMiniOutput" :class="getModalKeyboardToggleClass()" @click="toggleMiniOutput()">
           <NIcon size="24">
             <KeyboardOutlined />
           </NIcon>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch, computed } from 'vue'
 import { NModal, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -70,6 +70,10 @@ const props = defineProps({
   hasTabNavigation: {
     type: Boolean,
     default: false
+  },
+  showMiniOutput: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -81,6 +85,7 @@ const { selectNearestElement } = useHelpers()
 const miniOutputEnabled = ref(false)
 
 let selectedElement = null
+let watchers = []
 
 const showModal = computed({
   get: () => props.modelValue,
@@ -109,6 +114,29 @@ function nextModalTab () {
 }
 
 function onOpenModal () {
+  state.inputEmitter.on('closeModal', onCloseModal)
+  state.inputEmitter.on('selectModalAction', selectModalAction)
+  state.inputEmitter.on('performModalAction', performModalAction)
+
+  if (props.hasTabNavigation) {
+    state.inputEmitter.on('prevModalTab', prevModalTab)
+    state.inputEmitter.on('nextModalTab', nextModalTab)
+  }
+
+  watchers.push(
+    watch(state.output, () => onOutputChanged())
+  )
+
+  watchers.push(
+    watch(state.gameState.charmies, () => {
+      if (!state.gameState.charmies[state.playerModalAs]) {
+        state.playerModalAs = ''
+      }
+    })
+  )
+
+  // setFontSize(state.options.fontSize)
+  // setFontFamily(state.options.fontFamily)
   setFontSize(state.options.fontSize)
   setFontFamily(state.options.fontFamily)
   scrollDown()
@@ -127,6 +155,18 @@ function onCloseModal () {
   }
 
   prevMode()
+
+  state.inputEmitter.off('closeModal', onCloseModal)
+  state.inputEmitter.off('selectModalAction', selectModalAction)
+  state.inputEmitter.off('performModalAction', performModalAction)
+
+  if (props.hasTabNavigation) {
+    state.inputEmitter.off('prevModalTab', prevModalTab)
+    state.inputEmitter.off('nextModalTab', nextModalTab)
+  }
+
+  watchers.forEach(w => w())
+
   emit('closed')
 }
 
@@ -174,46 +214,6 @@ function onOutputChanged () {
 
   scrollDown()
 }
-
-let watchers = []
-onMounted(() => {
-  state.inputEmitter.on('closeModal', onCloseModal)
-  state.inputEmitter.on('selectModalAction', selectModalAction)
-  state.inputEmitter.on('performModalAction', performModalAction)
-
-  if (props.hasTabNavigation) {
-    state.inputEmitter.on('prevModalTab', prevModalTab)
-    state.inputEmitter.on('nextModalTab', nextModalTab)
-  }
-
-  watchers.push(
-    watch(state.output, () => onOutputChanged())
-  )
-
-  watchers.push(
-    watch(state.gameState.charmies, () => {
-      if (!state.gameState.charmies[state.playerModalAs]) {
-        state.playerModalAs = ''
-      }
-    })
-  )
-
-  setFontSize(state.options.fontSize)
-  setFontFamily(state.options.fontFamily)
-})
-
-onBeforeUnmount(() => {
-  state.inputEmitter.off('closeModal', onCloseModal)
-  state.inputEmitter.off('selectModalAction', selectModalAction)
-  state.inputEmitter.off('performModalAction', performModalAction)
-
-  if (props.hasTabNavigation) {
-    state.inputEmitter.off('prevModalTab', prevModalTab)
-    state.inputEmitter.off('nextModalTab', nextModalTab)
-  }
-
-  watchers.forEach(w => w())
-})
 </script>
 
 <style lang="less">

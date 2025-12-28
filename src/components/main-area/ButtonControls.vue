@@ -37,16 +37,18 @@
         <ConstructionFilled/>
       </NIcon>
 
-      <!-- <NIcon
-          title="Chat Modal"
-          :class="state.modals.craftingModal ? 'active' : ''"
-          size="24"
-          @click="openChatModal()"
-      >
-        <ChatFilled/>
-      </NIcon>
+      <NBadge :value="totalNumUnseenMessages()" :max="99" :offset="[-5, 5]">
+        <NIcon
+            title="Chat Modal"
+            :class="state.modals.craftingModal ? 'active' : ''"
+            size="24"
+            @click="openChatModal()"
+        >
+          <ChatFilled/>
+        </NIcon>
+      </NBadge>
 
-      <NIcon
+      <!-- <NIcon
           title="Auction Modal"
           :class="state.modals.auctionModal ? 'active' : ''"
           size="24"
@@ -62,7 +64,7 @@
 </template>
 
 <script setup>
-import { NIcon } from 'naive-ui'
+import { NIcon, NBadge } from 'naive-ui'
 
 import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
@@ -103,6 +105,14 @@ function openAuctionModal () {
   setMode('modal')
 }
 
+function totalNumUnseenMessages () {
+  let total = 0
+  for (let key in state.unseenMessageCount) {
+    total += state.unseenMessageCount[key]
+  }
+  return total
+}
+
 </script>
 <style scoped lang="less">
 .interface-overlay {
@@ -117,7 +127,7 @@ function openAuctionModal () {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  margin-left: 10px;
+  margin-right: 10px;
   gap: 5px;
 
   .n-icon {

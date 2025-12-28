@@ -210,53 +210,11 @@ onBeforeUnmount(() => {
   }
 }
 
-.message {
-  display: grid;
-  grid-template-columns: 110px calc(100% - 200px) 90px;
-  border-top: 1px solid #181818;
-  margin-top: 5px;
-  padding-top: 5px;
-  align-items: center;
-
-  &:first-child {
-    border: 0;
-  }
-
-  .from {
-    .name {
-      font-size: 0.9rem;
-      line-height: 0.8rem;
-      text-align: right;
-      word-break: break-all;
-    }
-
-    .timestamp {
-      font-size: 0.6rem;
-      line-height: 0.6rem;
-      text-align: right;
-    }
-  }
-
-  .body {
-    display: flex;
-    margin-left: 10px;
-  }
-}
-
 @media screen and (max-height: 500px) {
   .output {
     .line {
       font-size: 1rem;
       line-height: 1rem;
-    }
-
-    .message {
-      grid-template-columns: 90px calc(100% - 90px);
-
-      .body {
-        font-size: 1rem;
-        line-height: 1rem;
-      }
     }
   }
 }
