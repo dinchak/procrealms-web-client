@@ -28,6 +28,14 @@ const props = defineProps({
   activeModes: {
     type: Array,
     default: () => []
+  },
+  placeholder: {
+    type: String,
+    default: 'Enter command or help'
+  },
+  commandPrefix: {
+    type: String,
+    default: ''
   }
 })
 
@@ -128,7 +136,11 @@ function sendCommand () {
   }
 
   commandHistory.unshift(command)
-  command.split(';').forEach(c => runCommand(c))
+  if (props.commandPrefix) {
+    command = props.commandPrefix + command
+  }
+
+  runCommand(command)
 
   if (state.options.keepSentCommands) {
     commandBuffer = ''
@@ -152,7 +164,7 @@ function sendCommand () {
 }
 
 function getPlaceholder () {
-  return 'Enter command or help'
+  return props.placeholder
 }
 
 onMounted(() => {

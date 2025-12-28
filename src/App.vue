@@ -74,6 +74,7 @@ function clearCache (object) {
 }
 
 onMounted(() => {
+  state.inputEmitter.setMaxListeners(20)
   loadOptions()
   loadInputMappings()
 

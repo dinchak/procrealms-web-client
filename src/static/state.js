@@ -67,11 +67,9 @@ export const state = reactive({
   showMoreOptions: false,
 
   output: [],
-  chat: [],
-  trade: [],
-  newbie: [],
 
   messages: [],
+  unseenMessageCount: {},
 
   animations: [],
   nextAnimationDelay: 0,

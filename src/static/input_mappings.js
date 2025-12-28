@@ -711,9 +711,26 @@ export function resetInputMappings () {
       bindings: [{
         keyCode: 'KeyT',
         modes: ['hotkey'],
-      }, {
-        gamepadButton: 4,
-        modes: ['hotkey', 'input'],
+      }],
+    },
+
+    {
+      label: 'Open Crafting Modal',
+      event: 'openCraftingModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyB',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Chat Modal',
+      event: 'openChatModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyC',
+        modes: ['hotkey'],
       }],
     },
 
@@ -762,6 +779,24 @@ export function resetInputMappings () {
       }, {
         gamepadButton: 5,
         modes: ['modal', 'modal-input'],
+      }],
+    },
+
+    {
+      label: 'Previous Channel',
+      event: 'prevChannel',
+      bindings: [{
+        keyCode: 'ArrowUp',
+        modes: ['modal'],
+      }],
+    },
+
+    {
+      label: 'Next Channel',
+      event: 'nextChannel',
+      bindings: [{
+        keyCode: 'ArrowDown',
+        modes: ['modal'],
       }],
     },
 

@@ -151,15 +151,49 @@ export const DIRECTION_MAP = {
   8: 'northeast'
 }
 
-export const CHANNEL_COLORS = {
-  chat: 'yellow',
-  party: 'green',
-  trade: 'blue',
-  newbie: 'magenta',
-  info: 'cyan',
-  announce: 'red',
-  events: 'white'
-}
+export const CHANNELS = [
+  {
+    name: 'chat',
+    label: 'Chat',
+    color: 'bold-yellow'
+  },
+  {
+    name: 'trade',
+    label: 'Trade',
+    color: 'bold-blue'
+  },
+  {
+    name: 'newbie',
+    label: 'Newbie',
+    color: 'bold-magenta'
+  },
+  {
+    name: 'info',
+    label: 'Info',
+    color: 'bold-cyan'
+  },
+  {
+    name: 'announce',
+    label: 'Announce',
+    color: 'bold-red'
+  },
+  {
+    name: 'events',
+    label: 'Events',
+    color: 'bold-white'
+  },
+  {
+    name: 'party',
+    label: 'Party',
+    color: 'bold-green',
+  },
+  {
+    name: 'tell',
+    label: 'Tell',
+    color: 'bold-magenta',
+    hideByDefault: true
+  }
+]
 
 export const TRAITS_MERCENARY = 'mercenary'
 

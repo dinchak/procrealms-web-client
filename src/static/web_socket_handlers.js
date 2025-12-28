@@ -5,7 +5,7 @@ import { processTriggers } from '@/static/triggers'
 import { playMessageSound, playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, strToLines, renderMessage } = useHelpers()
+const { ansiToHtml, strToLines, renderMessage, getTellMessageFrom } = useHelpers()
 
 export function onWebSocketEvent (cmd, msg, reqId) {
   if (reqId && reqId.startsWith('inventory-output-')) {
@@ -115,15 +115,32 @@ const webSocketHandlers = {
     message = ansiToHtml(`\u{1b}[0m${message}`)
 
     let out = ''
-
-    state.messages.push({ id, from, to, channel, timestamp, message })
-    if (state.messages.length > 250) {
-      state.messages.shift()
-    }
-
-    if (state.options.chatInMain) {
+    if (['say', 'yell'].includes(channel)) {
       out = renderMessage({ channel, from, to, message })
       addLine(out, 'output')
+    } else {
+
+      state.messages.push({ id, from, to, channel, timestamp, message, unseen: true })
+
+      let channelKey = channel
+      if (channel == 'tell') {
+        let tellFrom = getTellMessageFrom({ from, to, channel })
+        channelKey = `tell-${tellFrom}`
+      }
+
+      if (!state.unseenMessageCount[channelKey]) {
+        state.unseenMessageCount[channelKey] = 0
+      }
+      state.unseenMessageCount[channelKey]++
+
+      if (state.messages.length > 1000) {
+        state.messages.shift()
+      }
+
+      if (state.options.chatInMain) {
+        out = renderMessage({ channel, from, to, message })
+        addLine(out, 'output')
+      }
     }
 
     if (out) {
