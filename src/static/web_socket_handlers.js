@@ -115,11 +115,12 @@ const webSocketHandlers = {
     message = ansiToHtml(`\u{1b}[0m${message}`)
 
     let out = ''
+
     if (['say', 'yell'].includes(channel)) {
       out = renderMessage({ channel, from, to, message })
       addLine(out, 'output')
-    } else {
 
+    } else {
       state.messages.push({ id, from, to, channel, timestamp, message, unseen: true })
 
       let channelKey = channel

@@ -104,9 +104,7 @@ export const state = reactive({
   },
 
   crafting: {
-    all: false,
-    known: false,
-    learned: false,
+    filterType: 'all',
     levelFilter: '',
     selectedSkill: '',
     recipes: [],

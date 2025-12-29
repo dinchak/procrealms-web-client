@@ -27,7 +27,7 @@
             class="message"
             v-for="message in getMessages()"
             :key="message.id"
-            v-html-safe="getMessageText(message)"
+            v-html-safe="renderMessage(message)"
           ></div>
         </div>
 
@@ -53,7 +53,7 @@ import GameModal from '@/components/modals/GameModal.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 
 import { useHelpers } from '@/composables/helpers'
-const { ansiToHtml, getTellMessageFrom } = useHelpers()
+const { ansiToHtml, getTellMessageFrom, renderMessage } = useHelpers()
 
 let selectedChannel = ref(CHANNELS[0])
 let watchers = []
@@ -100,11 +100,6 @@ function getChannelPrefix () {
     prefix += ` ${selectedChannel.value.from}`
   }
   return prefix + ' '
-}
-
-function getMessageText (message) {
-  let channel = CHANNELS.find(c => c.name == message.channel)
-  return `<span class="${channel.color}">${message.from}</span> ${ansiToHtml(message.message)}`
 }
 
 function getMessages () {
