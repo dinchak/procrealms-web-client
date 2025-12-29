@@ -45,26 +45,15 @@
         </NGi>
         <NGi>
           <div class="checkbox-container">
-            <NCheckbox
-              v-model:checked="state.crafting.all"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >
-              All
-            </NCheckbox>
-
-            <NCheckbox
-              v-model:checked="state.crafting.known"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >
-              Known
-            </NCheckbox>
-
-            <NCheckbox
-              v-model:checked="state.crafting.learned"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >
-              Learned
-            </NCheckbox>
+            <NRadioGroup v-model:value="state.crafting.filterType" name="filter-type">
+              <NRadio
+                v-for="option in filterTypeOptions"
+                :key="option.value"
+                :value="option.value"
+                :label="option.label"
+                @change="runCommand(buildRecipeCommand(), 'the_void')"
+              />
+            </NRadioGroup>
           </div>
         </NGi>
       </NGrid>
@@ -86,7 +75,7 @@
 <script setup>
 import { ref } from 'vue'
 import { state } from '@/static/state'
-import { NGrid, NGi, NInput, NSelect, NCheckbox } from 'naive-ui'
+import { NGrid, NGi, NInput, NSelect, NRadio, NRadioGroup } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -101,6 +90,12 @@ const selectedRecipe = ref('')
 const columns = ref(1)
 const search = ref('')
 const ingredient = ref('')
+
+const filterTypeOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Known', value: 'known' },
+  { label: 'Learned', value: 'learned' }
+]
 
 function getCraftingSkills () {
   const { skills } = state.gameState
@@ -172,16 +167,8 @@ function onWidthChange () {
 function buildRecipeCommand () {
   let cmd = 'recipes'
 
-  if (state.crafting.all) {
-    cmd += ' all'
-  }
-
-  if (state.crafting.known) {
-    cmd += ' known'
-  }
-
-  if (state.crafting.learned) {
-    cmd += ' learned'
+  if (state.crafting.filterType) {
+    cmd += ` ${state.crafting.filterType}`
   }
 
   if (state.crafting.selectedSkill) {

@@ -737,19 +737,27 @@ export function useHelpers () {
       label = channelConfig.label
     }
 
-    const channelOut = `<span class="${color}">[</span><span class="bold-${color}">${label}</span><span class="${color}">]</span>`
+    let channelOut = ''
 
-    let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
-    out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
-
-    if (channel == 'tell') {
-      if (from == 'You') {
-        out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
-      } else {
-        out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
-      }
+    if (channel == 'announce') {
+      out = '<span class="bold-black">[</span><span class="bold-red">Announcement</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
+    } else if (channel == 'events') {
+      out = '<span class="bold-black">[</span><span class="bold-cyan">Event</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
     } else {
-      out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+      channelOut = `<span class="${color}">[</span><span class="bold-${color}">${label}</span><span class="${color}">]</span>`
+
+      let fromOut = from ? `<span class="bold-yellow">${from}</span> ` : ''
+      out = `${channelOut} ${fromOut}<span class="bold-white">${message}</span>`
+
+      if (channel == 'tell') {
+        if (from == 'You') {
+          out = `<span class="magenta">You tell</span> <span class="bold-magenta">${to}</span> <span class="bold-white">${message}</span>`
+        } else {
+          out = `<span class="bold-magenta">${from}</span> <span class="magenta">tells you</span> <span class="bold-white">${message}</span>`
+        }
+      } else {
+        out = `<span class="bold-yellow">${from}</span> <span class="bold-white">${channel}${from == 'You' ? '' : 's'}</span> '${message}'`
+      }
     }
 
     return out
