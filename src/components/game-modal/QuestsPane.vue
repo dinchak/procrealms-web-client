@@ -60,7 +60,7 @@
 <script setup>
 import { defineProps, ref, toRefs } from 'vue'
 import { NButton, NGi, NGrid, NProgress } from 'naive-ui'
-import { state } from '@/static/state'
+import { state, prevMode } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from "@/composables/web_socket.js"
 
@@ -93,6 +93,7 @@ function getScrollContainerClass () {
 
 function onWalk (coords) {
   state.modals.playerModal = false
+  prevMode()
   runCommand(`walk ${coords.x},${coords.y}`)
 }
 
