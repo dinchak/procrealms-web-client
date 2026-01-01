@@ -331,11 +331,6 @@ export function resetMode () {
 }
 
 export function setMode (newMode) {
-  if (state.mode == newMode) {
-    // console.trace(`setMode(${newMode}) - already in that mode`)
-    return
-  }
-
   state.prevModes.push(state.mode)
   state.mode = newMode
   // console.trace(`setMode(${newMode}) - prevModes: ${state.prevModes.join(', ')}`)
