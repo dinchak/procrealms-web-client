@@ -6,9 +6,9 @@
       <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
 
-    <div class="inventory-output-container" v-if="state.inventoryOutput['inventory-output-' + item.iid]">
-      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput['inventory-output-' + item.iid]">Clear Output</NButton>
-      <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput['inventory-output-' + item.iid])"></div>
+    <div class="inventory-output-container" v-if="state.inventoryOutput['inventory-output-' + itemOutputId]">
+      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput['inventory-output-' + itemOutputId]">Clear Output</NButton>
+      <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput['inventory-output-' + itemOutputId])"></div>
     </div>
 
     <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
@@ -56,17 +56,17 @@
       </div>
     </div>
 
-    <div class="crafting" v-if="item.ingredients || item.itemsNeeded || item.skillsNeeded">
+    <div class="crafting" v-if="(item.ingredients && item.ingredients.length > 0) || (item.itemsRequired && item.itemsRequired.length > 0) || (item.skillsRequired && item.skillsRequired.length > 0)">
       <div class="header bold-yellow">Crafting</div>
-      <div class="row" v-if="item.ingredients">
+      <div class="row" v-if="item.ingredients && item.ingredients.length > 0">
         <div class="label">Ingredients:</div>
         <div class="value" v-html-safe="renderIngredients()"></div>
       </div>
-      <div class="row" v-if="item.itemsRequired">
+      <div class="row" v-if="item.itemsRequired && item.itemsRequired.length > 0">
         <div class="label">Items Needed:</div>
         <div class="value" v-html-safe="renderItemsRequired()"></div>
       </div>
-      <div class="row" v-if="item.skillsRequired">
+      <div class="row" v-if="item.skillsRequired && item.skillsRequired.length > 0">
         <div class="label">Skills Needed:</div>
         <div class="value" v-html-safe="renderSkillsRequired()"></div>
       </div>
@@ -92,11 +92,14 @@ const props = defineProps({
   actions: {
     type: Array,
     default: () => []
+  },
+  itemOutputId: {
+    type: String,
+    default: ''
   }
 })
 
-const { item, actions } = toRefs(props)
-
+const { item, actions, itemOutputId } = toRefs(props)
 function getBaseStats () {
   if (item.value.type == 'armor') {
     return [{
@@ -108,7 +111,7 @@ function getBaseStats () {
       color: 'bold-green'
     }, {
       label: false,
-      value: item.value.weight + ' lbs',
+      value: renderNumber(item.value.weight) + ' lbs',
     }]
   } else if (item.value.type == 'weapon') {
     return [{
@@ -120,7 +123,7 @@ function getBaseStats () {
       color: 'bold-green'
     }, {
       label: false,
-      value: item.value.weight + ' lbs',
+      value: renderNumber(item.value.weight) + ' lbs',
     }, {
       label: 'Damage',
       value: `${item.value.damLow}-${item.value.damHigh}`,
@@ -140,7 +143,7 @@ function getBaseStats () {
       value: false
     }, {
       label: false,
-      value: item.value.weight + ' lbs',
+      value: renderNumber(item.value.weight) + ' lbs',
     }]
 
     if (item.value.food > 0) {
@@ -158,7 +161,7 @@ function getBaseStats () {
       value: false
     }, {
       label: false,
-      value: item.value.weight + ' lbs',
+      value: renderNumber(item.value.weight) + ' lbs',
     }]
   }
 }

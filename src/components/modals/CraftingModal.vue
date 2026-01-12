@@ -63,7 +63,7 @@
         <div class="recipes" v-for="i in columns" :key="i">
           <div v-for="recipe in getColumnRecipes(i - 1)" :key="recipe.name" class="recipe-row">
             <div :class="recipeClass(recipe.name)">
-              <div class="name selectable" v-html-safe="ansiToHtml(recipe.fullName)" :class="getRecipeNameClass(recipe)" @click="selectRecipe(recipe)"></div>
+              <div v-html-safe="ansiToHtml(recipe.fullName)" :class="getRecipeNameClass(recipe)" @click="selectRecipe(recipe)"></div>
               <ItemDetails :item="recipe" :actions="getActions(recipe)" v-if="selectedRecipe == recipe.name"></ItemDetails>
             </div>
           </div>
@@ -115,7 +115,11 @@ function recipeClass (name) {
 }
 
 function getRecipeNameClass (item) {
-  return selectedRecipe.value == item.name ? 'selected' : ''
+  let classes = ['name', 'selectable']
+  if (selectedRecipe.value == item.name) {
+    classes.push('selected')
+  }
+  return classes.join(' ')
 }
 
 function selectRecipe (recipe) {

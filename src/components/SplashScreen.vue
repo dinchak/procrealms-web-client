@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .splashscreen {
-  background-image: url('@/assets/bg.jpg');
+  background: url('@/assets/bg.png') no-repeat center center fixed;
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -159,13 +159,13 @@ onBeforeUnmount(() => {
 
   h1 {
     font-family: 'Pixelify Sans', sans-serif;
-    padding: 150px 0 50px 0;
+    padding: 20px 0 20px 0;
     margin: 0;
     width: 100vw;
     text-align: center;
-    font-size: 96px;
-    text-shadow: 0 0 20px rgba(0,153,255,1);
-
+    font-size: 80px;
+    text-shadow: 0 0 20px #0099ff;
+    color: #fff;
   }
 
   .server-status {
@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@media screen and (max-height: 700px) {
+@media screen and (max-height: 600px) {
   .splashscreen {
     h1 {
       font-size: 48px;

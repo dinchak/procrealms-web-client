@@ -54,6 +54,19 @@ const webSocketHandlers = {
     }
   },
 
+  'auction.list': ({ auctions, numPages, totalNumAuctions, page, sort, sortDir }) => {
+    state.auction.auctions = auctions
+    state.auction.numPages = numPages
+    state.auction.totalNumAuctions = totalNumAuctions
+    state.auction.page = page
+    state.auction.sort = sort
+    state.auction.sortDir = sortDir
+  },
+
+  'mail.list': ({ mail }) => {
+    state.mail.mailItems = mail
+  },
+
   'room.describe': ({ desc, map }) => {
     let lines = strToLines(desc)
 
@@ -195,6 +208,10 @@ const webSocketHandlers = {
 
   'item.craftable': ({ items }) => {
     state.crafting.recipes = items
+  },
+
+  'mail.count': ({ count }) => {
+    state.mail.count = count
   },
 
   'client.media.play': ({ name }) => {

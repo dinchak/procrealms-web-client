@@ -189,6 +189,16 @@ export function useWebSocket () {
       .filter(item => item)
   }
 
+  async function fetchAuction (id)  {
+    if (state.cache.auctionCache[id]) {
+      return state.cache.auctionCache[id].auction
+    }
+
+    let { msg } = await sendWithResponse('auction', { id })
+    state.cache.auctionCache[id] = { auction: msg, date: Date.now() }
+    return msg
+  }
+
   async function refreshEntity (eid) {
     delete state.cache.entityCache[eid]
     await fetchEntity(eid, true)
@@ -207,5 +217,6 @@ export function useWebSocket () {
     move, enter,
     fetchEntity, fetchEntities, refreshEntity,
     fetchItem, fetchItems, refreshItem,
+    fetchAuction
   }
 }

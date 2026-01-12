@@ -35,6 +35,8 @@ export const state = reactive({
   validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
 
+  errorMessage: '',
+
   prevModes: [],
 
   metaKeyState: {
@@ -100,7 +102,9 @@ export const state = reactive({
     craftingModal: false,
     chatModal: false,
     auctionModal: false,
+    mailModal: false,
     inputMappingModal: false,
+    errorModal: false,
   },
 
   crafting: {
@@ -108,6 +112,31 @@ export const state = reactive({
     levelFilter: '',
     selectedSkill: '',
     recipes: [],
+  },
+
+  auction: {
+    pane: 'browse',
+    search: {
+      name: '',
+      type: '',
+      subtype: '',
+      slot: '',
+      minLevel: 1,
+      maxLevel: 100,
+    },
+    auctions: [],
+    numPages: 0,
+    totalNumAuctions: 0,
+    page: 0,
+    sort: 'id',
+    sortDir: 'asc',
+    selectedAuctionId: 0,
+    item: {},
+  },
+
+  mail: {
+    mailItems: [],
+    count: 0,
   },
 
   shop: {
@@ -158,6 +187,7 @@ function resetCache () {
     entityCache: {},
     itemCache: {},
     commandCache: {},
+    auctionCache: {},
   }
 }
 
@@ -341,6 +371,12 @@ export function prevMode () {
     state.mode = state.prevModes.pop()
     // console.trace(`prevMode() - new mode: ${state.mode}, prevModes: ${state.prevModes.join(', ')}`)
   }
+}
+
+export function showError (msg) {
+  state.errorMessage = msg
+  state.modals.errorModal = true
+  setMode('error-modal')
 }
 
 export function showHUD () {

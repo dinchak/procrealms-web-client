@@ -1,17 +1,20 @@
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
+
 import { AnsiUp } from 'ansi_up'
+const ansi_up = new AnsiUp()
+ansi_up.use_classes = true
 
 import { getOrderCmd, state } from '@/static/state'
 import { ANSI, ANSI_REPLACEMENTS, CHANNELS, DIRECTION_MAP } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
 
-const ansi_up = new AnsiUp()
-ansi_up.use_classes = true
-
 const { runCommand, move, enter, refreshItem } = useWebSocket()
 
 export function useHelpers () {
-  function copperToMoneyString (amount, short) {
+  function copperToMoneyString (amount, short, color = true) {
     let valueString = ''
     let copperString = (amount || 0).toString()
 
@@ -20,12 +23,26 @@ export function useHelpers () {
     const copper = short ? 'c ' : ' copper '
 
     if (copperString.length > 4) {
-      valueString = "<span class='bold-yellow'>" + copperString.slice(0, copperString.length - 4) + gold + "</span>"
+      if (color) {
+        valueString += "<span class='bold-yellow'>"
+      }
+      valueString += copperString.slice(0, copperString.length - 4) + gold
+      if (color) {
+        valueString += "</span>"
+      }
+
       copperString = copperString.slice(copperString.length - 4, copperString.length)
     }
 
     if (copperString.length > 2) {
-      valueString += "<span class='bold-white'>" + copperString.slice(0, copperString.length - 2) + silver + "</span>"
+      if (color) {
+        valueString += "<span class='bold-white'>"
+      }
+      valueString += copperString.slice(0, copperString.length - 2) + silver
+      if (color) {
+        valueString += "</span>"
+      }
+
       copperString = copperString.slice(copperString.length - 2, copperString.length)
     }
 
@@ -33,9 +50,15 @@ export function useHelpers () {
       return valueString
     }
 
-    valueString += "<span class='bold-cyan'>" + copperString + copper + "</span>"
+    if (color) {
+      valueString += "<span class='bold-cyan'>"
+    }
+    valueString += copperString + copper
+    if (color) {
+      valueString += "</span>"
+    }
 
-    return valueString
+    return valueString.trim()
   }
 
   async function runItemAction (command, item) {
@@ -742,7 +765,9 @@ export function useHelpers () {
     if (channel == 'announce') {
       out = '<span class="bold-black">[</span><span class="bold-red">Announcement</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
     } else if (channel == 'events') {
-      out = '<span class="bold-black">[</span><span class="bold-cyan">Event</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
+      out = '<span class="bold-black">[</span><span class="bold-magenta">Event</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
+    } else if (channel == 'info') {
+      out = '<span class="bold-black">[</span><span class="bold-cyan">Info</span><span class="bold-black">]</span> <span class="bold-white">' + message + '</span>'
     } else {
       channelOut = `<span class="${color}">[</span><span class="bold-${color}">${label}</span><span class="${color}">]</span>`
 
@@ -792,6 +817,10 @@ export function useHelpers () {
     return from
   }
 
+  function getRelativeTime (timestamp, suffix = true) {
+    return dayjs(timestamp).fromNow(suffix)
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
@@ -801,6 +830,6 @@ export function useHelpers () {
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
     range, renderMessage, runItemAction,
     getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
-    getTellMessageFrom
+    getTellMessageFrom, getRelativeTime
   }
 }

@@ -34,7 +34,7 @@
             <div v-for="item in shopItems" :key="item.iid" class="item-row">
               <div :class=itemClass(item.iid)>
                 <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-                  <ItemDetails :item="item" :actions="getBuyActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+                  <ItemDetails :item="item" :actions="getBuyActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
             <div v-for="item in playerItems" :key="item.iid" class="item-row">
               <div :class=itemClass(item.iid)>
                 <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-                  <ItemDetails :item="item" :actions="getActions(item)" v-if="selectedIid == item.iid"></ItemDetails>
+                  <ItemDetails :item="item" :actions="getActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
               </div>
             </div>
           </div>
