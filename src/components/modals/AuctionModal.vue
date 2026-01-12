@@ -7,48 +7,33 @@
     @opened="onModalOpened"
     @closed="onModalClosed"
   >
-    <div class="auction-container">
-      <h3>Auction</h3>
-    </div>
+    <NTabs
+      v-model:value="state.auction.pane"
+      type="card"
+      ref="tabs"
+    >
+      <NTabPane name="browse" tab="Browse">
+        <AuctionBrowse></AuctionBrowse>
+      </NTabPane>
+
+      <NTabPane name="sell" tab="Sell">
+        <AuctionSell></AuctionSell>
+      </NTabPane>
+    </NTabs>
   </GameModal>
 </template>
 <script setup>
 import { state } from '@/static/state'
+import { NTabs, NTabPane } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
+import AuctionBrowse from '@/components/auction-modal/AuctionBrowse.vue'
+import AuctionSell from '@/components/auction-modal/AuctionSell.vue'
 
 function onModalOpened () {
 }
 
 function onModalClosed () {
+  state.modals.auctionModal = false
 }
 </script>
-<style lang="less" scoped>
-.auction-container {
-  max-width: 850px;
-  margin: 0 auto;
-
-  .n-select {
-    max-width: 300px;
-  }
-
-  .recipe-row {
-    width: 100%;
-    .recipe {
-      width: 100%;
-      .name {
-        padding: 5px 10px;
-        cursor: pointer;
-        &.selected {
-          background: #121;
-        }
-
-        &:hover, &.selected {
-          background: #121;
-        }
-      }
-    }
-  }
-
-}
-</style>

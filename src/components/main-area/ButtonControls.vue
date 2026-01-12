@@ -2,61 +2,71 @@
   <div class="interface-overlay">
     <div class="interface">
       <NIcon
-          title="Sidebar"
-          :class="state.options.showMobileMenu ? 'active' : ''"
-          size="24"
-          @click="state.options.showMobileMenu = !state.options.showMobileMenu"
+        title="Sidebar"
+        :class="state.options.showMobileMenu ? 'active' : ''"
+        size="24"
+        @click="state.options.showMobileMenu = !state.options.showMobileMenu"
       >
         <MenuOutlined/>
       </NIcon>
 
       <NIcon
-          title="Settings"
-          :class="state.modals.settingsModal ? 'active' : ''"
-          size="24"
-          @click="toggleSettings"
+        title="Settings"
+        :class="state.modals.settingsModal ? 'active' : ''"
+        size="24"
+        @click="toggleSettings"
       >
         <SettingsFilled/>
       </NIcon>
 
       <NIcon
-          title="Game Menu"
-          :class="state.modals.playerModal ? 'active' : ''"
-          size="24"
-          @click="openPlayerModal()"
+        title="Game Menu"
+        :class="state.modals.playerModal ? 'active' : ''"
+        size="24"
+        @click="openPlayerModal()"
       >
         <AssessmentOutlined/>
       </NIcon>
 
       <NIcon
-          title="Crafting Menu"
-          :class="state.modals.craftingModal ? 'active' : ''"
-          size="24"
-          @click="openCraftingModal()"
+        title="Crafting Menu"
+        :class="state.modals.craftingModal ? 'active' : ''"
+        size="24"
+        @click="openCraftingModal()"
       >
         <ConstructionFilled/>
       </NIcon>
 
+      <NIcon
+        title="Auction Modal"
+        :class="state.modals.auctionModal ? 'active' : ''"
+        size="24"
+        @click="openAuctionModal()"
+      >
+        <GavelFilled/>
+      </NIcon>
+
+      <NBadge :value="state.mail.count" :max="99" :offset="[-5, 5]" type="success">
+        <NIcon
+          title="Mail Modal"
+          :class="state.modals.mailModal ? 'active' : ''"
+          size="24"
+          @click="openMailModal()"
+        >
+          <MailFilled/>
+        </NIcon>
+      </NBadge>
+
       <NBadge :value="totalNumUnseenMessages()" :max="99" :offset="[-5, 5]">
         <NIcon
-            title="Chat Modal"
-            :class="state.modals.craftingModal ? 'active' : ''"
-            size="24"
-            @click="openChatModal()"
+          title="Chat Modal"
+          :class="state.modals.chatModal ? 'active' : ''"
+          size="24"
+          @click="openChatModal()"
         >
           <ChatFilled/>
         </NIcon>
       </NBadge>
-
-      <!-- <NIcon
-          title="Auction Modal"
-          :class="state.modals.auctionModal ? 'active' : ''"
-          size="24"
-          @click="openAuctionModal()"
-      >
-        <GavelFilled/>
-      </NIcon> -->
-
     </div>
 
     <SettingsOverlay v-if="state.modals.settingsModal"/>
@@ -72,6 +82,7 @@ import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import ChatFilled from '@vicons/material/ChatFilled'
 import ConstructionFilled from '@vicons/material/ConstructionFilled'
 import GavelFilled from '@vicons/material/GavelFilled'
+import MailFilled from '@vicons/material/MailFilled'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
@@ -102,6 +113,11 @@ function openChatModal () {
 
 function openAuctionModal () {
   state.modals.auctionModal = true
+  setMode('modal')
+}
+
+function openMailModal () {
+  state.modals.mailModal = true
   setMode('modal')
 }
 

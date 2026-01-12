@@ -197,6 +197,102 @@ export const CHANNELS = [
 
 export const TRAITS_MERCENARY = 'mercenary'
 
+export const ITEM_TYPES = [
+  'armor',
+  'bag',
+  'book',
+  'consumable',
+  'container',
+  'gem',
+  'material',
+  'scroll',
+  'tool',
+  'weapon'
+]
+
+export const ITEM_SUBTYPES = {
+  armor: [
+    'accessory', 'chain', 'cloth', 'leather', 'plate',
+  ],
+  book: [
+    'artisan', 'combat',
+  ],
+  consumable: [
+    'food', 'fragment', 'ingredient', 'mote', 'poison', 'potion',
+  ],
+  container: [
+    'mail'
+  ],
+  gem: [
+    'amethyst', 'diamond', 'emerald', 'malachite', 'moonstone', 'obsidian', 'opal', 'ruby', 'sapphire', 'topaz',
+  ],
+  material: [
+    'bait',
+    'bandage',
+    'blank paper',
+    'bottle',
+    'cardboard',
+    'cloth',
+    'coupon',
+    'dye',
+    'fiber',
+    'fish',
+    'glass',
+    'haunted',
+    'hide',
+    'hinge',
+    'hook',
+    'ink',
+    'leaf',
+    'leather',
+    'link',
+    'log',
+    'lure',
+    'metal',
+    'monster',
+    'nail',
+    'ore',
+    'paper',
+    'petal',
+    'plank',
+    'pulp',
+    'queen bee',
+    'rope',
+    'sand',
+    'seed',
+    'spore',
+    'stone',
+    'thread',
+    'wool',
+  ],
+  scroll: [
+    'recipe', 'spell', 'treasure map'
+  ],
+  tool: [
+    'alembic', 'axe', 'boat', 'cooking pot', 'cooking utensils', 'enchanting kit', 'filet knife',
+    'fishing pole', 'hammer', 'hoe', 'mining pick', 'quill', 'saw', 'sewing kit', 'shovel', 'tanning knife',
+    'empty pen', 'penned animal', 'deployable'
+  ],
+  weapon: [
+    'axe', 'bow', 'dagger', 'hand to hand', 'mace', 'polearm', 'staff', 'sword', 'wand',
+  ]
+}
+
+export const ARMOR_SLOTS = [
+  'head',
+  'shoulders',
+  'body',
+  'hands',
+  'waist',
+  'legs',
+  'feet',
+  'ring',
+  'neck',
+  'offhand',
+  'collar',
+  'charm'
+]
+
 export const DAMAGE_TYPE_COLORS = {
   'bludgeoning': 'bold-magenta',
   'piercing': 'bold-yellow',

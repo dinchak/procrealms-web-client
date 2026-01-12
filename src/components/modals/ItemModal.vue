@@ -3,7 +3,7 @@
     <NCard v-if="item" :class="getClass()" style="max-height: 600px">
       <p class="modal-close-button" v-on:click="closeModal()">x</p>
       <h3 v-html-safe="ansiToHtml(getItemName())"></h3>
-      <ItemDetails :item="item" :actions="getItemActions()" v-if="item"></ItemDetails>
+      <ItemDetails :item="item" :actions="getItemActions()" :item-output-id="item.iid" v-if="item"></ItemDetails>
     </NCard>
   </Teleport>
 </template>

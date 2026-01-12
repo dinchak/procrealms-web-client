@@ -1,29 +1,8 @@
 <template>
-  <div :class="getScrollContainerClass()">
-    <SelectPlayerModalAs></SelectPlayerModalAs>
-
-    <NGrid class="inventory-summary" cols="1 600:2">
-      <NGi class="cell search">
-        <NInput placeholder="Filter Items" v-model:value="search" clearable></NInput>
-      </NGi>
-
-      <NGi class="cell summary">
-        <div class="money" v-html-safe="copperToMoneyString(state.gameState.player.money)"></div>
-        <div class="money-brief" v-html-safe="copperToMoneyString(state.gameState.player.money, true)"></div>
-        <div class="limit">
-          <div class="value bold-cyan">
-            <span class="bold-white">{{ getNumItems() }}</span> <span class="black">/</span> {{ getMaxNumItems() }}
-          </div>
-          <div class="label cyan">items</div>
-        </div>
-        <div class="limit">
-          <div class="value bold-red">
-            <span class="bold-white">{{ getWeight() }}</span> <span class="black">/</span> {{ getMaxWeight() }}
-          </div>
-          <div class="label red">lbs</div>
-        </div>
-      </NGi>
-    </NGrid>
+  <div class="auction-sell-container">
+    <div class="auction-header">
+      <h3>Auction Item</h3>
+    </div>
 
     <div class="sorting">
       <span>Sort by </span>
@@ -39,37 +18,55 @@
         <div v-for="item in getColumnItems(i - 1)" :key="item.iid" class="item-row">
           <div :class="itemClass(item.iid)">
             <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-            <ItemDetails :item="item" :actions="getActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+
+            <div class="auction-actions" v-if="selectedIid == item.iid">
+              <NInput
+                ref="minBinRef"
+                v-model:value="minimumBid"
+                placeholder="Minimum Bid"
+                style="width: 100px;"
+              ></NInput>
+
+              <NInput
+                v-model:value="buyPrice"
+                placeholder="Buy Price"
+                style="width: 100px;"
+              ></NInput>
+
+              <NButton ghost @click="doSell(item)" type="success">
+                <span class="bold-green">Auction Item</span>
+              </NButton>
+            </div>
+
+            <ItemDetails :item="item" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
           </div>
         </div>
       </div>
     </div>
 
-</div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
-import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
-
-import ItemDetails from '@/components/game-modal/ItemDetails.vue'
-import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
-
-import { state } from '@/static/state'
+import { state, showError } from '@/static/state'
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { NPopselect, NInput, NButton } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
+const { ansiToHtml } = useHelpers()
+
 import { useWebSocket } from '@/composables/web_socket'
+const { fetchItems, runCommand } = useWebSocket()
 
-const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
-const { fetchItems } = useWebSocket()
-
-const props = defineProps(['miniOutputEnabled'])
-const { miniOutputEnabled } = toRefs(props)
+import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 const items = ref([])
 const selectedIid = ref({})
 const search = ref('')
 const columns = ref(1)
+const minimumBid = ref('')
+const buyPrice = ref('')
+const minBinRef = ref(null)
 
 const sortOptions = [
   {
@@ -118,34 +115,16 @@ function getItemNameClass (item) {
 function selectItem (item) {
   if (selectedIid.value == item.iid) {
     selectedIid.value = {}
+    minimumBid.value = ''
     return
   }
   selectedIid.value = item.iid
-}
-
-function getNumItems () {
-  return state.gameState.player.numItems || 0
-}
-
-function getMaxNumItems () {
-  return state.gameState.player.maxNumItems || 0
-}
-
-function getWeight () {
-  const initialValue = state.gameState.player.weight || 0
-  return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
-}
-
-function getMaxWeight () {
-  const initialValue = state.gameState.player.maxWeight || 0
-  return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
-}
-
-function getScrollContainerClass () {
-  return {
-    'scroll-container': true,
-    'mini-output-enabled': miniOutputEnabled.value
-  }
+  // minimumBid.value = copperToMoneyString(item.value, true, false)
+  nextTick().then(() => {
+    if (minBinRef.value && Array.isArray(minBinRef.value)) {
+      minBinRef.value[0].focus()
+    }
+  })
 }
 
 function getInventory () {
@@ -207,6 +186,25 @@ function getColumnItems (colIndex) {
   return its.slice(start, start + perCol)
 }
 
+async function doSell (item) {
+  if (!minimumBid.value) {
+    showError('You must set a minimum bid to auction an item.')
+    return
+  }
+
+  let cmd = `auction sell iid:${item.iid} minimum=${minimumBid.value}`
+  if (buyPrice.value) {
+    cmd += ` price=${buyPrice.value}`
+  }
+
+  await runCommand(cmd, 'the_void')
+
+  // Reset selection
+  selectedIid.value = {}
+  minimumBid.value = ''
+  buyPrice.value = ''
+}
+
 let watchers = []
 onMounted(async () => {
   onWidthChange()
@@ -240,54 +238,26 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less" scoped>
-.item-table {
-  display: flex;
-  width: 100%;
-}
-.scroll-container {
-  height: calc(100vh - 75px);
-  overflow-y: scroll;
+.auction-sell-container {
   max-width: 1200px;
   margin: 0 auto;
 
-  &.mini-output-enabled {
-    height: calc(100vh - 225px);
-  }
-
-  .inventory-summary {
+  .auction-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    .cell {
-      margin: 5px 5px;
-    }
-    .summary {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      .money {
-        text-align: right;
-      }
-      .money-brief {
-        display: none;
-        text-align: right;
-      }
-      .limit {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        .value {
-          text-align: right;
-          margin-right: 10px;
-        }
-        .label {
-          text-align: left;
-        }
-      }
+    margin-bottom: 10px;
+    h3 {
+      margin: 0;
     }
   }
+
+  .item-table {
+    display: flex;
+    width: 100%;
+  }
+
   .sorting {
     margin-bottom: 20px;
     margin-left: 5px;
@@ -326,37 +296,14 @@ onBeforeUnmount(() => {
       }
     }
   }
-}
 
-@media screen and (max-width: 800px) {
-  .scroll-container {
-    .inventory {
-      width: 50%;
-    }
-    .inventory-summary {
-      .summary {
-        .money {
-          display: none;
-        }
-        .money-brief {
-          display: block;
-        }
-      }
-    }
+  .auction-actions {
+    padding: 10px 10px 0 10px;
+    display: flex;
+    gap: 10px;
+    background-color: #101216;
+    flex-wrap: wrap;
   }
 }
 
-@media screen and (max-width: 600px) {
-  .scroll-container {
-    .inventory {
-      width: 100%;
-    }
-    .inventory-summary {
-      .summary {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-    }
-  }
-}
 </style>

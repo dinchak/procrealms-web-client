@@ -121,10 +121,10 @@ body, html {
   font-family: 'Ubuntu Mono', monospace;
   color: #fff;
   color-scheme: dark;
-  line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
+  line-height: 1.1 !important;
 }
 
 ::-webkit-scrollbar {

@@ -1,5 +1,5 @@
 <template>
-  <n-el style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
+  <NEl style="background-color: var(--body-color)" v-if="state.token && state.connected && !state.disconnected"
         class="game" :class="{
      'show-mobile-menu': state.options.showMobileMenu,
      'swap-mobile-menu': state.options.swapMobileMenuSide
@@ -17,7 +17,6 @@
             </div>
             <div class="row side-bottom" v-if="state.options.showSideAliases || (state.options.showSideMovement && !state.gameState.battle.active)">
               <SideAliases/>
-              <SideMovement/>
             </div>
           </div>
           <ButtonControls/>
@@ -36,15 +35,18 @@
     <ChatModal/>
     <CraftingModal/>
     <DebugModal/>
-    <LogoutModal/>
+    <ErrorModal/>
     <HelpModal/>
-    <TriggersModal/>
-    <PlayerModal/>
-    <MercModal/>
-    <TradeModal/>
     <InputMappingModal/>
+    <LogoutModal/>
+    <MailModal/>
+    <MercModal/>
+    <PlayerModal/>
     <RadialOverlay/>
-  </n-el>
+    <SideMovement/>
+    <TradeModal/>
+    <TriggersModal/>
+  </NEl>
 </template>
 
 <script setup>
@@ -55,10 +57,12 @@ import AuctionModal from '@/components/modals/AuctionModal.vue'
 import ChatModal from '@/components/modals/ChatModal.vue'
 import CraftingModal from '@/components/modals/CraftingModal.vue'
 import DebugModal from '@/components/modals/DebugModal.vue'
+import ErrorModal from '@/components/modals/ErrorModal.vue'
 import PlayerModal from '@/components/modals/PlayerModal.vue'
 import HelpModal from '@/components/modals/HelpModal.vue'
 import InputMappingModal from '@/components/modals/InputMappingModal.vue'
 import LogoutModal from '@/components/modals/LogoutModal.vue'
+import MailModal from '@/components/modals/MailModal.vue'
 import MercModal from '@/components/modals/MercModal.vue'
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 import TradeModal from '@/components/modals/TradeModal.vue'

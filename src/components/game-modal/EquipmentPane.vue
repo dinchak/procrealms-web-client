@@ -13,7 +13,7 @@
                 <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
               </div>
               <div class="row details">
-                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" :item-output-id="iid" v-if="iid && selectedIid == iid"></ItemDetails>
               </div>
             </div>
           </NGi>
@@ -28,7 +28,7 @@
                 <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
               </div>
               <div class="row details">
-                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" :item-output-id="iid" v-if="iid && selectedIid == iid"></ItemDetails>
               </div>
             </div>
           </NGi>
@@ -45,7 +45,7 @@
                 <div :class="getItemClass(slot)" v-html-safe="getItemFullName(iid)"></div>
               </div>
               <div class="row details">
-                <ItemDetails :item="selectedItem" :actions="getActions(iid)" v-if="iid && selectedIid == iid"></ItemDetails>
+                <ItemDetails :item="selectedItem" :actions="getActions(iid)" :item-output-id="iid" v-if="iid && selectedIid == iid"></ItemDetails>
               </div>
             </div>
           </NGi>

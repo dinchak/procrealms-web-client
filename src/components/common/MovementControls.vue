@@ -123,16 +123,16 @@ function getEnterClass () {
       align-items: center;
       width: 41px;
       height: 41px;
-      background-color: #333;
+      background-color: #222;
       transition: all 0.3s;
       margin-left: 5px;
       &.active {
-        opacity: 0.3;
-        background-color: #222;
+        opacity: 0.7;
+        background-color: #333;
         &:hover {
           cursor: pointer;
           opacity: 1;
-          background-color: #63e2b7;
+          background-color: #4a6;
           color: #000;
         }
       }

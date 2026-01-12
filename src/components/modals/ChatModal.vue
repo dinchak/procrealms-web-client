@@ -53,7 +53,7 @@ import GameModal from '@/components/modals/GameModal.vue'
 import KeyboardInput from '@/components/main-area/KeyboardInput.vue'
 
 import { useHelpers } from '@/composables/helpers'
-const { ansiToHtml, getTellMessageFrom, renderMessage } = useHelpers()
+const { getTellMessageFrom, renderMessage } = useHelpers()
 
 let selectedChannel = ref(CHANNELS[0])
 let watchers = []
@@ -191,6 +191,7 @@ function onModalClosed () {
   state.inputEmitter.off('prevChannel', selectPrevChannel)
   state.inputEmitter.off('nextChannel', selectNextChannel)
   watchers.forEach(w => w())
+  state.modals.chatModal = false
 }
 </script>
 <style lang="less" scoped>
