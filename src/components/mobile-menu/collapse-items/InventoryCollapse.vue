@@ -23,6 +23,7 @@
         v-for="item in filteredItems"
         :key="item.iid"
         :iid="item.iid"
+        :item="item"
         :selected="getSelected(item.iid)"
         v-on:click="clickHandler(item.iid)"
       ></InventoryRow>
@@ -43,7 +44,7 @@ import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
 import ItemModal from '@/components/modals/ItemModal.vue'
 
-import { setMode, prevMode, updateCounter } from '@/static/state'
+import { state, setMode, prevMode, updateCounter } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
@@ -87,20 +88,27 @@ const options = [
   }
 ]
 
+let refreshCounter = ref(0)
+
 let watchers = []
 onMounted(() => {
-  setItems(props.inventory)
+  setItems(props.inventory.map(it => it.iid))
 
-  watchers.push(watch(() => props.inventory, () => {
-    setItems(props.inventory)
+  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), newIds => {
+    for (let newId of newIds) {
+      let [iid, name] = newId.split('|')
+      delete state.cache.itemCache[iid]
+    }
+
+    setItems(props.inventory.map(it => it.iid))
   }))
 
   watchers.push(watch(searchTerm, () => {
-    setItems(props.inventory)
+    setItems(props.inventory.map(it => it.iid))
   }))
 
   watchers.push(watch(updateCounter, () => {
-    setItems(props.inventory)
+    setItems(props.inventory.map(it => it.iid))
   }))
 
   watchers.push(watch(value, () => {

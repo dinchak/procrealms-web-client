@@ -164,7 +164,11 @@ export function useWebSocket () {
 
     const reqId = `item-${iid}`
     let { msg } = await sendWithResponse('item', { iid }, reqId)
-    state.cache.itemCache[iid] = { item: msg, date: Date.now() }
+    if (msg.removed) {
+      delete state.cache.itemCache[iid]
+    } else {
+      state.cache.itemCache[iid] = { item: msg, date: Date.now() }
+    }
     return msg
   }
 
@@ -177,6 +181,11 @@ export function useWebSocket () {
     let { msg } = await sendWithResponse('items', { iids: fetchIids })
 
     for (let item of msg) {
+      if (msg.removed) {
+        delete state.cache.itemCache[item.iid]
+        continue
+      }
+
       state.cache.itemCache[item.iid] = { item, date: Date.now() }
     }
 

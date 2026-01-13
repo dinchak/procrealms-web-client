@@ -152,7 +152,7 @@ function getInventory () {
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
     return state.gameState.charmies[state.playerModalAs].items || []
   }
-  return state.gameState.inventory || []
+  return state.gameState.inventory.map(it => it.iid) || []
 }
 
 let charmieInventoryWatcher = null
@@ -215,11 +215,17 @@ onMounted(async () => {
   items.value = sortItems(await fetchItems(getInventory()))
 
   watchers.push(
-    watch(() => state.gameState.inventory, async () => {
+    watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), async newIds => {
       if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
-      items.value = sortItems(await fetchItems(state.gameState.inventory))
+
+      for (let newId of newIds) {
+        let [iid, name] = newId.split('|')
+        delete state.cache.itemCache[iid]
+      }
+      let iids = state.gameState.inventory.map(it => it.iid)
+      items.value = sortItems(await fetchItems(iids))
     })
   )
 

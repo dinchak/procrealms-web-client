@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs, ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { defineProps, toRefs, ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { NPopover } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
@@ -21,14 +21,24 @@ const { fetchItem } = useWebSocket()
 
 const props = defineProps({
   iid: String,
+  item: Object,
   selected: Boolean
 })
 
-const { iid, selected } = toRefs(props)
-const item = ref({})
+const { iid, item: itemProp, selected } = toRefs(props)
+
+const fetchedItem = ref({})
+
+// Computed `displayItem` prefers the passed prop when available, otherwise falls back to fetchedItem.
+const displayItem = computed(() => {
+  if (itemProp.value && Object.keys(itemProp.value).length) {
+    return itemProp.value
+  }
+  return fetchedItem.value || {}
+})
 
 function getItemName () {
-  return item.value ? item.value.fullName : ''
+  return displayItem.value ? displayItem.value.fullName : ''
 }
 
 function getInventoryRowClass () {
@@ -39,23 +49,34 @@ function getInventoryRowClass () {
   return classes.join(' ')
 }
 
-let watchers = []
 onMounted(async () => {
-  if (iid.value) {
-    item.value = await fetchItem(iid.value)
+  if (!(itemProp.value && Object.keys(itemProp.value).length) && iid.value) {
+    fetchedItem.value = await fetchItem(iid.value)
   }
 
-  watchers.push(watch(() => iid.value, async () => {
-    if (iid.value) {
-      item.value = await fetchItem(iid.value)
-    } else {
-      item.value = {}
+  // If parent doesn't provide `item`, keep fetchedItem in sync with iid changes.
+  const stopIidWatch = watch(() => iid.value, async newIid => {
+    if (itemProp.value && Object.keys(itemProp.value).length) {
+      return
     }
-  }))
-})
+    if (newIid) {
+      fetchedItem.value = await fetchItem(newIid)
+    } else {
+      fetchedItem.value = {}
+    }
+  })
 
-onBeforeUnmount(() => {
-  watchers.forEach(w => w())
+  // If the parent starts providing an `item` object, clear the fetched cache.
+  const stopItemPropWatch = watch(() => itemProp.value, newVal => {
+    if (newVal && Object.keys(newVal).length) {
+      fetchedItem.value = {}
+    }
+  })
+
+  onBeforeUnmount(() => {
+    stopIidWatch()
+    stopItemPropWatch()
+  })
 })
 </script>
 

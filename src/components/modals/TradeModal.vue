@@ -31,10 +31,10 @@
 
           </div>
           <div class="shop-inventory">
-            <div v-for="item in shopItems" :key="item.iid" class="item-row">
-              <div :class=itemClass(item.iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-                  <ItemDetails :item="item" :actions="getBuyActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+            <div v-for="{ name, iid } in state.shop.items" :key="iid" class="item-row">
+              <div :class=itemClass(iid)>
+                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass(iid)" @click="selectItem(iid)"></div>
+                  <ItemDetails :item="selectedItem" :actions="getBuyActions(selectedItem)" :item-output-id="iid" v-if="selectedIid == iid"></ItemDetails>
               </div>
             </div>
           </div>
@@ -58,8 +58,8 @@
           <div class="player-inventory">
             <div v-for="item in playerItems" :key="item.iid" class="item-row">
               <div :class=itemClass(item.iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-                  <ItemDetails :item="item" :actions="getActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item.iid)"></div>
+                  <ItemDetails :item="item" :actions="getSellActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
               </div>
             </div>
           </div>
@@ -79,7 +79,7 @@ import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 import { useWebSocket } from '@/composables/web_socket'
-const { runCommand, fetchItems, fetchEntity } = useWebSocket()
+const { runCommand, fetchItems, fetchEntity, fetchItem } = useWebSocket()
 
 import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml, copperToMoneyString, runItemAction, getActions } = useHelpers()
@@ -88,6 +88,7 @@ const shopItems = ref([])
 const playerItems = ref([])
 const shopkeeper = ref({ name: 'Loading...' })
 const selectedIid = ref('')
+const selectedItem = ref({})
 const shopkeeperSortValue = ref('name')
 const onlyUsableItems = ref(false)
 
@@ -164,6 +165,40 @@ function getBuyActions (item) {
   return actions
 }
 
+function getSellActions (item) {
+  let actions = getActions(item)
+  actions = actions.filter(ac => !['Sell', 'Sell All'].includes(ac.label))
+
+  let sellLabel = 'Sell'
+  if (item.amount > 1) {
+    sellLabel = 'Sell 1x'
+  }
+
+  actions.unshift({
+    label: sellLabel,
+    onClick: async () => {
+      await runItemAction('sell', item)
+      updateItemList()
+    },
+    class: 'bold-red',
+    disabled: false
+  })
+
+  if (item.amount > 1) {
+    actions.unshift({
+      label: 'Sell All',
+      onClick: async () => {
+        await runItemAction('sell all', item)
+        updateItemList()
+      },
+      class: 'bold-red',
+      disabled: false
+    })
+  }
+
+  return actions
+}
+
 function updateItemList () {
   let cmd = `list`
   if (onlyUsableItems.value) {
@@ -178,16 +213,27 @@ function onModalOpened () {
 
   updateItemList()
 
-  watchers.push(watch(() => state.shop.items, async newItemIids => {
-    shopItems.value = sortShopkeeperItems(await fetchItems(newItemIids))
+  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}`), async (newIds) => {
+    for (let newId of newIds) {
+      let [iid, name] = newId.split('|')
+      delete state.cache.itemCache[iid]
+    }
+
+    let iids = state.shop.items.map(it => it.iid)
+    shopItems.value = sortShopkeeperItems(await fetchItems(iids))
   }, { immediate: true }))
 
   watchers.push(watch(() => state.shop.shopkeeper, async newShopkeeperId => {
     shopkeeper.value = await fetchEntity(newShopkeeperId)
   }, { immediate: true }))
 
-  watchers.push(watch(() => state.gameState.inventory, async newItemIids => {
-    playerItems.value = sortPlayerItems(await fetchItems(newItemIids))
+  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), async (newIds) => {
+    for (let newId of newIds) {
+      let [iid, name] = newId.split('|')
+      delete state.cache.itemCache[iid]
+    }
+    let iids = state.gameState.inventory.map(it => it.iid)
+    playerItems.value = sortPlayerItems(await fetchItems(iids))
   }, { immediate: true }))
 }
 
@@ -209,16 +255,18 @@ function itemClass (itemIid) {
   return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
 }
 
-function getItemNameClass (item) {
-  return selectedIid.value == item.iid ? 'selected' : ''
+function getItemNameClass (iid) {
+  return selectedIid.value == iid ? 'selected' : ''
 }
 
-function selectItem (item) {
-  if (selectedIid.value == item.iid) {
-    selectedIid.value = {}
+async function selectItem (iid) {
+  if (selectedIid.value == iid) {
+    selectedIid.value = ''
+    selectedItem.value = {}
     return
   }
-  selectedIid.value = item.iid
+  selectedIid.value = iid
+  selectedItem.value = await fetchItem(iid)
 }
 
 function onInventorySortChange () {
