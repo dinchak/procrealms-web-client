@@ -110,10 +110,22 @@ function openScore () {
   state.gamepadTab = 'score'
 }
 
+function openSkills () {
+  setMode('modal')
+  state.modals.playerModal = true
+  state.gamepadTab = 'skills'
+}
+
 function openInventory () {
   setMode('modal')
   state.modals.playerModal = true
   state.gamepadTab = 'inventory'
+}
+
+function openEquipment () {
+  setMode('modal')
+  state.modals.playerModal = true
+  state.gamepadTab = 'equipment'
 }
 
 function openQuests () {
@@ -140,6 +152,16 @@ function openCraftingModal () {
 function openChatModal () {
   setMode('modal')
   state.modals.chatModal = true
+}
+
+function openAuctionModal () {
+  setMode('modal')
+  state.modals.auctionModal = true
+}
+
+function openMailModal () {
+  setMode('modal')
+  state.modals.mailModal = true
 }
 
 function showDebug () {
@@ -257,10 +279,15 @@ onMounted(() => {
   state.inputEmitter.on('openHelpModal', openHelpModal)
   state.inputEmitter.on('openTradeModal', openTradeModal)
   state.inputEmitter.on('openCraftingModal', openCraftingModal)
+  state.inputEmitter.on('openAuctionModal', openAuctionModal)
+  state.inputEmitter.on('openMailModal', openMailModal)
   state.inputEmitter.on('openChatModal', openChatModal)
   state.inputEmitter.on('openScore', openScore)
+  state.inputEmitter.on('openSkills', openSkills)
   state.inputEmitter.on('openQuests', openQuests)
   state.inputEmitter.on('openInventory', openInventory)
+  state.inputEmitter.on('openEquipment', openEquipment)
+
   state.inputEmitter.on('selectMovementDirection', selectMovementDirection)
   state.inputEmitter.on('moveInSelectedDirection', moveInSelectedDirection)
 
@@ -301,10 +328,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   state.inputEmitter.off('openPlayerModal', openPlayerModal)
   state.inputEmitter.off('openInventory', openInventory)
+  state.inputEmitter.off('openEquipment', openEquipment)
   state.inputEmitter.off('openScore', openScore)
+  state.inputEmitter.off('openSkills', openSkills)
   state.inputEmitter.off('openHelpModal', openHelpModal)
   state.inputEmitter.off('openTradeModal', openTradeModal)
   state.inputEmitter.off('openChatModal', openChatModal)
+  state.inputEmitter.off('openAuctionModal', openAuctionModal)
+  state.inputEmitter.off('openMailModal', openMailModal)
   state.inputEmitter.off('openCraftingModal', openCraftingModal)
   state.inputEmitter.off('openQuests', openQuests)
   state.inputEmitter.off('selectMovementDirection', selectMovementDirection)
