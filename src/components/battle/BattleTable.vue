@@ -45,7 +45,7 @@
             >{{ anim.amount }}</div>
           </TransitionGroup>
 
-          <div v-html-safe="ansiToHtml(participant.tag + ' ' + participant.colorName)" :class="{ 'name-flash': flashing[participant.eid] === 'damage', 'name-flash-heal': flashing[participant.eid] === 'healing' }"></div>
+          <div v-html-safe="getParticipantName(participant)" :class="{ 'name-flash': flashing[participant.eid] === 'damage', 'name-flash-heal': flashing[participant.eid] === 'healing' }"></div>
         </div>
 
         <div>
@@ -77,7 +77,7 @@
                   :key="enemy.eid"
                   class="target-name"
                   @click="setCharmieTarget($event, participant, enemy.eid)"
-                  v-html-safe="ansiToHtml(`${enemy.tag} ${enemy.name}`)"
+                  v-html-safe="getParticipantName(enemy)"
                 ></div>
               </NPopover>
             </NIconWrapper>
@@ -108,6 +108,7 @@ import { NIcon, NIconWrapper, NPopover } from 'naive-ui'
 import { CrisisAlertFilled } from '@vicons/material'
 import { reactive, watch, onMounted, onBeforeUnmount } from 'vue'
 
+import { ANSI } from '@/static/constants'
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
@@ -128,6 +129,10 @@ const { runCommand } = useWebSocket()
 
 const flashing = reactive({})
 const watchers = []
+
+function getParticipantName (participant) {
+  return ansiToHtml(participant.tag + ANSI.white + ' L' + ANSI.boldWhite + participant.level + ' ' + participant.colorName)
+}
 
 function getHp (participant) {
   if (participant.side == 'good') {
