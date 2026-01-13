@@ -265,6 +265,7 @@ export function resetInputMappings () {
       event: 'showDebug',
       bindings: [{
         keyCode: 'Backquote',
+        shift: true,
         modes: ['hotkey'],
       }],
     },
@@ -705,6 +706,61 @@ export function resetInputMappings () {
     },
 
     {
+      label: 'Open Score',
+      event: 'openScore',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyS',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Skills',
+      event: 'openSkills',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyK',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Inventory',
+      event: 'openInventory',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyI',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Equipment',
+      event: 'openEquipment',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyE',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Quests',
+      event: 'openQuests',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyQ',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
       label: 'Open Trade Modal',
       event: 'openTradeModal',
       inBattle: false,
@@ -719,7 +775,8 @@ export function resetInputMappings () {
       event: 'openCraftingModal',
       inBattle: false,
       bindings: [{
-        keyCode: 'KeyB',
+        keyCode: 'KeyC',
+        shift: true,
         modes: ['hotkey'],
       }],
     },
@@ -729,7 +786,29 @@ export function resetInputMappings () {
       event: 'openChatModal',
       inBattle: false,
       bindings: [{
-        keyCode: 'KeyC',
+        keyCode: 'Backquote',
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Mail Modal',
+      event: 'openMailModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyM',
+        shift: true,
+        modes: ['hotkey'],
+      }],
+    },
+
+    {
+      label: 'Open Auction Modal',
+      event: 'openAuctionModal',
+      inBattle: false,
+      bindings: [{
+        keyCode: 'KeyA',
+        shift: true,
         modes: ['hotkey'],
       }],
     },
