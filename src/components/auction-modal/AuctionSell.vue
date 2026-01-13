@@ -33,6 +33,16 @@
                 style="width: 100px;"
               ></NInput>
 
+              <NInput
+                v-if="item.amount > 1"
+                v-model:value="sellAmount"
+                placeholder="Amount"
+                type="number"
+                :min="1"
+                :max="item.amount"
+                style="width: 80px;"
+              ></NInput>
+
               <NButton ghost @click="doSell(item)" type="success">
                 <span class="bold-green">Auction Item</span>
               </NButton>
@@ -66,6 +76,7 @@ const search = ref('')
 const columns = ref(1)
 const minimumBid = ref('')
 const buyPrice = ref('')
+const sellAmount = ref('')
 const minBinRef = ref(null)
 
 const sortOptions = [
@@ -119,7 +130,8 @@ function selectItem (item) {
     return
   }
   selectedIid.value = item.iid
-  // minimumBid.value = copperToMoneyString(item.value, true, false)
+  // default sell amount to entire stack if available
+  sellAmount.value = item.amount && item.amount > 0 ? String(item.amount) : ''
   nextTick().then(() => {
     if (minBinRef.value && Array.isArray(minBinRef.value)) {
       minBinRef.value[0].focus()
@@ -131,7 +143,7 @@ function getInventory () {
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
     return state.gameState.charmies[state.playerModalAs].items || []
   }
-  return state.gameState.inventory || []
+  return state.gameState.inventory.map(it => it.iid) || []
 }
 
 let charmieInventoryWatcher = null
@@ -186,13 +198,36 @@ function getColumnItems (colIndex) {
   return its.slice(start, start + perCol)
 }
 
+
 async function doSell (item) {
   if (!minimumBid.value) {
     showError('You must set a minimum bid to auction an item.')
     return
   }
 
-  let cmd = `auction sell iid:${item.iid} minimum=${minimumBid.value}`
+  // Determine amount to sell and validate/clamp
+  const maxAmt = item.amount && item.amount > 0 ? item.amount : 1
+  let amt
+  if (maxAmt > 1) {
+    if (sellAmount.value === '' || sellAmount.value == null) {
+      amt = maxAmt
+    } else {
+      amt = parseInt(sellAmount.value)
+      if (isNaN(amt)) {
+        showError('Invalid amount to sell.')
+        return
+      }
+    }
+    amt = Math.max(1, Math.min(amt, maxAmt))
+  } else {
+    amt = 1
+  }
+
+  const baseName = (item.name || item.fullName || item.iid)
+  const quotedName = (amt > 1) ? `${amt}x ${baseName}` : `${baseName}`
+  const safeQuoted = quotedName.replace(/"/g, '\\"')
+
+  let cmd = `auction sell "${safeQuoted}" minimum=${minimumBid.value}`
   if (buyPrice.value) {
     cmd += ` price=${buyPrice.value}`
   }
@@ -203,6 +238,7 @@ async function doSell (item) {
   selectedIid.value = {}
   minimumBid.value = ''
   buyPrice.value = ''
+  sellAmount.value = ''
 }
 
 let watchers = []
@@ -217,7 +253,7 @@ onMounted(async () => {
       if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
-      items.value = sortItems(await fetchItems(state.gameState.inventory))
+      items.value = sortItems(await fetchItems(state.gameState.inventory.map(it => it.iid)))
     })
   )
 
