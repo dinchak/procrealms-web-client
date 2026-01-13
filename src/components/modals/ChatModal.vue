@@ -174,6 +174,14 @@ function selectPrevChannel () {
 function onModalOpened () {
   state.inputEmitter.on('prevChannel', selectPrevChannel)
   state.inputEmitter.on('nextChannel', selectNextChannel)
+
+  // select first channel with unseen messages if any
+  const channels = getChannels()
+  const firstUnread = channels.find(c => getUnseenMessageCount(c) > 0)
+  if (firstUnread) {
+    selectedChannel.value = firstUnread
+  }
+
   scrollToBottom()
   markMessagesSeen()
   watchers.push(
