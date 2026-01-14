@@ -19,20 +19,18 @@
         </NPopselect>
       </div>
 
-      <InventoryRow
-        v-for="item in filteredItems"
-        :key="item.iid"
-        :iid="item.iid"
-        :item="item"
-        :selected="getSelected(item.iid)"
-        v-on:click="clickHandler(item.iid)"
-      ></InventoryRow>
+      <div v-for="item in filteredItems" :key="item.iid">
+        <InventoryRow
+          :iid="item.iid"
+          :item="item"
+          :selected="getSelected(item.iid)"
+          v-on:click="clickHandler(item.iid)"
+        ></InventoryRow>
 
-      <ItemModal
-        :item="items.find(item => item.iid === selectedIid)"
-        mode="inventory"
-        @closeItemModal="closeItemModal"
-      ></ItemModal>
+        <div class="inline-details" v-if="selectedIid == item.iid">
+          <ItemDetails :item="selectedItem" :actions="getActions(selectedItem)" :item-output-id="item.iid"></ItemDetails>
+        </div>
+      </div>
     </div>
   </NCollapseItem>
 </template>
@@ -42,15 +40,15 @@ import { ref, watch, onMounted, defineProps, onBeforeUnmount } from 'vue'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
-import ItemModal from '@/components/modals/ItemModal.vue'
+import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 import { state, setMode, prevMode, updateCounter } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { fetchItems } = useWebSocket()
-const { copperToMoneyString } = useHelpers()
+const { fetchItem } = useWebSocket()
+const { copperToMoneyString, getActions } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
 
@@ -60,6 +58,7 @@ const filteredItems = ref([])
 const searchInput = ref(null)
 const value = ref('name')
 const selectedIid = ref('')
+const selectedItem = ref({})
 
 const options = [
   {
@@ -88,27 +87,25 @@ const options = [
   }
 ]
 
-let refreshCounter = ref(0)
-
 let watchers = []
 onMounted(() => {
-  setItems(props.inventory.map(it => it.iid))
+  setItems(props.inventory)
 
-  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), newIds => {
+  watchers.push(watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), newIds => {
     for (let newId of newIds) {
-      let [iid, name] = newId.split('|')
+      let [iid] = newId.split('|')
       delete state.cache.itemCache[iid]
     }
 
-    setItems(props.inventory.map(it => it.iid))
+    setItems(props.inventory)
   }))
 
   watchers.push(watch(searchTerm, () => {
-    setItems(props.inventory.map(it => it.iid))
+    setItems(props.inventory)
   }))
 
   watchers.push(watch(updateCounter, () => {
-    setItems(props.inventory.map(it => it.iid))
+    setItems(props.inventory)
   }))
 
   watchers.push(watch(value, () => {
@@ -126,8 +123,25 @@ function getSelected (iid) {
   return selectedIid.value === iid
 }
 
-async function setItems (itemIIDs) {
-  items.value = await fetchItems(itemIIDs)
+function mapInventory (inventory) {
+  const src = inventory || []
+  const arr = Array.isArray(src) ? src : Object.values(src)
+  return arr.map(obj => ({
+    iid: obj.iid,
+    name: obj.name || obj.fullName || '',
+    fullName: obj.name || obj.fullName || '',
+    colorName: obj.colorName || '',
+    type: obj.type || '',
+    subtype: obj.subtype || '',
+    amount: obj.amount || 1,
+    level: obj.level || 0,
+    weight: obj.weight || 0,
+    value: obj.value || 0
+  }))
+}
+
+function setItems (inventory) {
+  items.value = mapInventory(inventory)
 
   const input = searchTerm.value.toLowerCase()
 
@@ -145,15 +159,14 @@ async function setItems (itemIIDs) {
 function clickHandler (iid) {
   if (selectedIid.value && selectedIid.value == iid) {
     selectedIid.value = ''
-  } else {
-    selectedIid.value = iid
+    selectedItem.value = {}
+    return
   }
-}
 
-function closeItemModal (val) {
-  if (val === 'inventory') {
-    selectedIid.value = ''
-  }
+  selectedIid.value = iid
+  fetchItem(iid).then(item => {
+    selectedItem.value = item || {}
+  })
 }
 
 function onFocus () {
