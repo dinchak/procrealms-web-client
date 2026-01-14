@@ -214,4 +214,19 @@ function totalNumUnseenMessages () {
     }
   }
 }
+
+@media screen and (max-width: 650px) {
+  .interface-overlay {
+    position: sticky;
+    top: 8px;
+    margin-top: 0;
+    align-self: flex-end;
+    z-index: 20;
+    overflow: visible;
+  }
+
+  .interface {
+    margin-right: 6px;
+  }
+}
 </style>

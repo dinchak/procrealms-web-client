@@ -39,8 +39,8 @@ import MovementControls from '@/components/common/MovementControls.vue'
   box-sizing: border-box;
   transition: transform 0.2s, opacity 0.5s;
   opacity: 1;
-  min-width: 290px;
-  width: 290px;
+  min-width: 350px;
+  width: 350px;
   padding: 10px 0px 10px 10px;
   flex: 0 0 auto;
 
