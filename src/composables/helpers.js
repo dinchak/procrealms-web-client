@@ -391,7 +391,7 @@ export function useHelpers () {
       return selectedElement
     }
 
-    if (degree === 'false' && selectDelay) {
+    if (degree === false && selectDelay) {
       clearTimeout(selectDelayTimeout)
       selectDelay = false
     }
@@ -568,7 +568,7 @@ export function useHelpers () {
       return
     }
 
-    if (degree == false) {
+    if (degree === false) {
       state.selectedDirection = DIRECTION_MAP[0]
       return
     }
