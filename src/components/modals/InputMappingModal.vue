@@ -350,9 +350,6 @@ function onGamepadButtonReleased (button) {
 }
 
 function onGamepadAxis ({ axis }) {
-  // console.log(`onGamepadAxis axis=${axis} degree=${degree}`)
-  // console.log(selectedMapping.value)
-
   if (mapNextInput.value && selectedMapping.value.type == 'degree') {
     newBinding.value = {
       gamepadAxis: axis,

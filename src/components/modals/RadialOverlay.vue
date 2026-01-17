@@ -62,7 +62,7 @@ function closeRadialMenu () {
 }
 
 function selectRadialItem (degree) {
-  if (degree == false) {
+  if (degree === false) {
     selectedSlot.value = 0
     return
   }
