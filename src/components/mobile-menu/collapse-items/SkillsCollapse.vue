@@ -75,11 +75,11 @@ function getSortedSkills (type) {
     return filtered
       .sort((a, b) => { // Sort by total required stat points
         const sum = obj => Object.values(obj).reduce((prev, cur) => prev + cur.amount, 0)
-        return sum(a.requirements) - sum(b.requirements)
+        return sum(a.requirements || []) - sum(b.requirements || [])
       })
       .sort((a, b) => { // Then sort by bespoke requirement order (array above)
         const getReq = sk => {
-          const sortedReq = Object.values(sk.requirements)
+          const sortedReq = Object.values(sk.requirements || [])
             .sort((prev, cur) => reqOrder.indexOf(prev.stat) - reqOrder.indexOf(cur.stat))
 
           return sortedReq.map(sorted => sorted.stat).join('+')
