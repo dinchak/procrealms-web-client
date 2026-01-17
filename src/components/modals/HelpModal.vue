@@ -273,7 +273,7 @@ function renderFragment (fragment) {
 }
 
 function getRequirements (skillData) {
-  return skillData.requirements
+  return (skillData.requirements || [])
     .map(req => `<span class="bold-white">${req.amount}</span> <span class="bold-magenta">${ucfirst(req.stat)}</span>`)
     .join(', ')
 }
