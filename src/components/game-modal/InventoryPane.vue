@@ -38,14 +38,16 @@
       <div class="inventory" v-for="i in columns" :key="i">
         <div v-for="item in getColumnItems(i - 1)" :key="item.iid" class="item-row">
           <div :class="itemClass(item.iid)">
-            <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item)"></div>
-            <ItemDetails :item="selectedItem" :actions="getActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+            <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)"
+                 @click="selectItem(item)"></div>
+            <ItemDetails :item="selectedItem" :actions="getActions(item)" :item-output-id="item.iid"
+                         v-if="selectedIid == item.iid"></ItemDetails>
           </div>
         </div>
       </div>
     </div>
 
-</div>
+  </div>
 </template>
 
 <script setup>
@@ -60,7 +62,7 @@ import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
-const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
+const { ansiToHtml, copperToMoneyString, getActions, sortInventoryItems } = useHelpers()
 const { fetchItem } = useWebSocket()
 
 const props = defineProps(['miniOutputEnabled'])
@@ -178,6 +180,7 @@ function mapInventory () {
 }
 
 let charmieInventoryWatcher = null
+
 function unwatchCharmieInventory () {
   if (charmieInventoryWatcher) {
     charmieInventoryWatcher()
@@ -215,8 +218,7 @@ function onSortChange () {
 }
 
 function sortItems (its) {
-  its.sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
-  return its
+  return sortInventoryItems(its, state.inventorySortValue)
 }
 
 function getColumnItems (colIndex) {
@@ -271,6 +273,7 @@ onBeforeUnmount(() => {
   display: flex;
   width: 100%;
 }
+
 .scroll-container {
   height: calc(100vh - 75px);
   overflow-y: scroll;
@@ -287,34 +290,42 @@ onBeforeUnmount(() => {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+
     .cell {
       margin: 5px 5px;
     }
+
     .summary {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+
       .money {
         text-align: right;
       }
+
       .money-brief {
         display: none;
         text-align: right;
       }
+
       .limit {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
+
         .value {
           text-align: right;
           margin-right: 10px;
         }
+
         .label {
           text-align: left;
         }
       }
     }
   }
+
   .sorting {
     margin-bottom: 20px;
     margin-left: 5px;
@@ -335,13 +346,17 @@ onBeforeUnmount(() => {
     align-items: flex-start;
     flex-direction: column;
     flex-grow: 1;
+
     .item-row {
       width: 100%;
+
       .item {
         width: 100%;
+
         .name {
           padding: 5px 10px;
           cursor: pointer;
+
           &.selected {
             background: #121;
           }
@@ -360,11 +375,13 @@ onBeforeUnmount(() => {
     .inventory {
       width: 50%;
     }
+
     .inventory-summary {
       .summary {
         .money {
           display: none;
         }
+
         .money-brief {
           display: block;
         }
@@ -378,6 +395,7 @@ onBeforeUnmount(() => {
     .inventory {
       width: 100%;
     }
+
     .inventory-summary {
       .summary {
         flex-direction: row;

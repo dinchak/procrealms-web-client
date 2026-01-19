@@ -1,11 +1,11 @@
 <template>
   <GameModal
-    v-model="state.modals.tradeModal"
-    title="Trade Menu"
-    modal-class="trade-modal"
-    modal-key="tradeModal"
-    @opened="onModalOpened"
-    @closed="onModalClosed"
+      v-model="state.modals.tradeModal"
+      title="Trade Menu"
+      modal-class="trade-modal"
+      modal-key="tradeModal"
+      @opened="onModalOpened"
+      @closed="onModalClosed"
   >
     <div class="trade-container">
       <div class="trade-columns">
@@ -18,7 +18,8 @@
             <div class="filters">
               <div class="sorting">
                 <span>Sort by </span>
-                <NPopselect v-model:value="shopkeeperSortValue" :options="sortOptions" @update:value="onShopkeeperSortChange">
+                <NPopselect v-model:value="shopkeeperSortValue" :options="sortOptions"
+                            @update:value="onShopkeeperSortChange">
                   <span class="dropdown">{{ shopkeeperSortValue }}</span>
                 </NPopselect>
               </div>
@@ -33,8 +34,10 @@
           <div class="shop-inventory">
             <div v-for="{ name, iid } in state.shop.items" :key="iid" class="item-row">
               <div :class=itemClass(iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass(iid)" @click="selectItem(iid)"></div>
-                  <ItemDetails :item="selectedItem" :actions="getBuyActions(selectedItem)" :item-output-id="iid" v-if="selectedIid == iid"></ItemDetails>
+                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass(iid)"
+                     @click="selectItem(iid)"></div>
+                <ItemDetails :item="selectedItem" :actions="getBuyActions(selectedItem)" :item-output-id="iid"
+                             v-if="selectedIid == iid"></ItemDetails>
               </div>
             </div>
           </div>
@@ -48,7 +51,8 @@
             <div class="filters">
               <div class="sorting">
                 <span>Sort by </span>
-                <NPopselect v-model:value="state.inventorySortValue" :options="sortOptions" @update:value="onInventorySortChange">
+                <NPopselect v-model:value="state.inventorySortValue" :options="sortOptions"
+                            @update:value="onInventorySortChange">
                   <span class="dropdown">{{ state.inventorySortValue }}</span>
                 </NPopselect>
               </div>
@@ -58,8 +62,10 @@
           <div class="player-inventory">
             <div v-for="item in playerItems" :key="item.iid" class="item-row">
               <div :class=itemClass(item.iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item.iid)"></div>
-                  <ItemDetails :item="item" :actions="getSellActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)"
+                     @click="selectItem(item.iid)"></div>
+                <ItemDetails :item="item" :actions="getSellActions(item)" :item-output-id="item.iid"
+                             v-if="selectedIid == item.iid"></ItemDetails>
               </div>
             </div>
           </div>
@@ -79,10 +85,12 @@ import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 import { useWebSocket } from '@/composables/web_socket'
+
 const { runCommand, fetchItems, fetchEntity, fetchItem } = useWebSocket()
 
 import { useHelpers } from '@/composables/helpers'
-const { ansiToHtml, copperToMoneyString, runItemAction, getActions } = useHelpers()
+
+const { ansiToHtml, copperToMoneyString, runItemAction, getActions, sortInventoryItems } = useHelpers()
 
 const shopItems = ref([])
 const playerItems = ref([])
@@ -274,11 +282,7 @@ function onInventorySortChange () {
 }
 
 function sortPlayerItems (items) {
-  items.sort((a, b) => {
-    return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1
-  })
-
-  return items
+  return sortInventoryItems(items, state.inventorySortValue)
 }
 
 function onShopkeeperSortChange () {
@@ -286,11 +290,8 @@ function onShopkeeperSortChange () {
 }
 
 function sortShopkeeperItems (items) {
-  items.sort((a, b) => {
-    return a[shopkeeperSortValue.value] > b[shopkeeperSortValue.value] ? 1 : -1
-  })
-
-  return items
+  // TODO This currently doesn't work because it's being called after the list is displayed.
+  return sortInventoryItems(items, shopkeeperSortValue.value)
 }
 
 </script>
@@ -315,6 +316,7 @@ function sortShopkeeperItems (items) {
         margin: 2px 0 5px 0;
         padding-bottom: 5px;
         border-bottom: 1px solid #333;
+
         .filters {
           display: flex;
           flex-direction: row;
@@ -350,11 +352,14 @@ function sortShopkeeperItems (items) {
 
         .item-row {
           width: 100%;
+
           .item {
             width: 100%;
+
             .name {
               padding: 5px 10px;
               cursor: pointer;
+
               &.selected {
                 background: #121;
               }

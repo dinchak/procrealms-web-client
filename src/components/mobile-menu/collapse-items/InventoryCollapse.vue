@@ -3,32 +3,34 @@
     <div class="money" v-html-safe=copperToMoneyString(getMoney())></div>
 
     <div class="limits">
-      <div class="items">{{getNumItems()}}/{{getMaxNumItems()}} items</div>
-      <div class="weight">{{getWeight()}}/{{getMaxWeight()}} lbs</div>
+      <div class="items">{{ getNumItems() }}/{{ getMaxNumItems() }} items</div>
+      <div class="weight">{{ getWeight() }}/{{ getMaxWeight() }} lbs</div>
     </div>
 
     <div v-if="items.length !== 0" class="inventory-items">
       <div class="search">
-        <NInput v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus" placeholder="Search"></NInput>
+        <NInput v-model:value="searchTerm" ref="searchInput" @blur="onBlur" @focus="onFocus"
+                placeholder="Search"></NInput>
       </div>
 
       <div class="sorting">
         <span>Sort by </span>
         <NPopselect v-model:value="value" :options="options">
-          <span class="dropdown">{{value}}</span>
+          <span class="dropdown">{{ value }}</span>
         </NPopselect>
       </div>
 
       <div v-for="item in filteredItems" :key="item.iid">
         <InventoryRow
-          :iid="item.iid"
-          :item="item"
-          :selected="getSelected(item.iid)"
-          v-on:click="clickHandler(item.iid)"
+            :iid="item.iid"
+            :item="item"
+            :selected="getSelected(item.iid)"
+            v-on:click="clickHandler(item.iid)"
         ></InventoryRow>
 
         <div class="inline-details" v-if="selectedIid == item.iid">
-          <ItemDetails :item="selectedItem" :actions="getActions(selectedItem)" :item-output-id="item.iid"></ItemDetails>
+          <ItemDetails :item="selectedItem" :actions="getActions(selectedItem)"
+                       :item-output-id="item.iid"></ItemDetails>
         </div>
       </div>
     </div>
@@ -48,7 +50,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { fetchItem } = useWebSocket()
-const { copperToMoneyString, getActions } = useHelpers()
+const { copperToMoneyString, getActions, sortInventoryItems } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
 
@@ -109,9 +111,7 @@ onMounted(() => {
   }))
 
   watchers.push(watch(value, () => {
-    filteredItems.value = filteredItems.value.sort((a, b) => {
-      return a[value.value] > b[value.value] ? 1 : -1
-    })
+    filteredItems.value = sortInventoryItems(filteredItems.value, value.value)
   }))
 })
 
@@ -145,15 +145,15 @@ function setItems (inventory) {
 
   const input = searchTerm.value.toLowerCase()
 
-  filteredItems.value = items.value.filter(item => {
+  filteredItems.value = sortInventoryItems(items.value.filter(item => {
     return (item.name.toLowerCase().includes(input) ||
-      item.colorName.toLowerCase().includes(input) ||
-      item.type.toLowerCase().includes(input)) ||
-      (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
-  })
-    .sort((a, b) => {
-      return a[value.value] > b[value.value] ? 1 : -1
-    })
+            item.colorName.toLowerCase().includes(input) ||
+            item.type.toLowerCase().includes(input)) ||
+        (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
+  }), value.value)
+  // .sort((a, b) => {
+  //   return a[value.value] > b[value.value] ? 1 : -1
+  // })
 }
 
 function clickHandler (iid) {

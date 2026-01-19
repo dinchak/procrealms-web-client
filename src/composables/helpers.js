@@ -1,8 +1,10 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+
 dayjs.extend(relativeTime)
 
 import { AnsiUp } from 'ansi_up'
+
 const ansi_up = new AnsiUp()
 ansi_up.use_classes = true
 
@@ -328,6 +330,7 @@ export function useHelpers () {
   }
 
   let modalClasses = ['game-modal', 'login-modal', 'new-player-modal']
+
   function getSelectableElements () {
     return Array.from(document.querySelectorAll('.selectable'))
       .filter(el => {
@@ -636,7 +639,8 @@ export function useHelpers () {
     if (effect.damageOverTime) {
       let { damLow, damHigh, damageType } = effect.damageOverTime
       bonuses.push({
-        value: `Deals <span class="bold-red">${damLow.toFixed(0)}</span>-<span class="bold-red">${damHigh.toFixed(0)}</span> ${damageType} damage every <span class="bold-yellow">${effect.triggerTime}</span>s` })
+        value: `Deals <span class="bold-red">${damLow.toFixed(0)}</span>-<span class="bold-red">${damHigh.toFixed(0)}</span> ${damageType} damage every <span class="bold-yellow">${effect.triggerTime}</span>s`
+      })
     }
 
     return bonuses.concat(effect.bonuses)
@@ -821,6 +825,72 @@ export function useHelpers () {
     return dayjs(timestamp).fromNow(suffix)
   }
 
+  function sortInventoryItems (items, sortValue) {
+
+    function compareFullName (a, b) {
+      // Compares 'L1 5x Sword of Testing' to 'L2 10x o Mace of Testing', essentially sorting by level.
+      // If the levels are the same or are 0, falls back to compareStrippedName to sort by just the item name.
+      let aComp = a.fullName || a.colorName || a.name || ''
+      let bComp = b.fullName || b.colorName || b.name || ''
+      // lint sees ANSI escape codes as regex control characters.
+      // eslint-disable-next-line no-control-regex
+      const ANSIre = /\x1b\[[0-9;]*m/g // remove ANSI escape codes.
+      aComp = aComp.replace(ANSIre, '')
+      bComp = bComp.replace(ANSIre, '')
+      const re = /^L(\d+)/  // Get the number after the L at the start of the string.
+      const ma = aComp.match(re)
+      const mb = bComp.match(re)
+      if (ma && mb) {
+        const res = Number(ma[1]) - Number(mb[1])
+        if (res === 0) {
+          return compareStrippedName(a, b)
+        }
+        return res
+      }
+      return compareStrippedName(a, b)
+    }
+
+    function compareStrippedName (a, b) {
+      // Compares just the 'Sword of Testing' to 'Mace of Testing'.
+      const aComp = a.fullName || a.colorName || a.name || ''
+      const bComp = b.fullName || b.colorName || b.name || ''
+      // eslint-disable-next-line no-control-regex
+      return aComp.replace(/\x1b\[[0-9;]*m/g, '') // remove ANSI escape codes.
+        // remove leading space-delimited groups that contain a number (L1 5x) or consist of only o's.
+        .replace(/^(?:(?:\S*\d\S*|o+)\s*)+/i, "")
+      // eslint-disable-next-line no-control-regex
+      > bComp.replace(/\x1b\[[0-9;]*m/g, '')
+        .replace(/^(?:(?:\S*\d\S*|o+)\s*)+/i, "") ? 1 : -1
+    }
+
+    if (sortValue === 'name') {
+      return items.sort((a, b) => {
+        return compareStrippedName(a, b)
+      })
+    } else if (sortValue === 'level') {
+      return items.sort((a, b) => {
+        // If the levels have values (tradeModal), try sorting by that first.
+        if (a.level && b.level) {
+          if (a.level === b.level) {
+            // If levels are the same, sort by name.
+            return compareStrippedName(a, b)
+          }
+          return a.level - b.level
+        }
+        // Levels are 0 (inventoryCollapse) so sort by the Lx in the name instead.
+        return compareFullName(a, b)
+      })
+    } else {
+      return items.sort((a, b) => {
+        if (a[sortValue] === b[sortValue]) {
+          // If values are the same, sort by name.
+          return compareStrippedName(a, b)
+        }
+        return a[sortValue] > b[sortValue] ? 1 : -1
+      })
+    }
+  }
+
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
@@ -830,6 +900,6 @@ export function useHelpers () {
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
     range, renderMessage, runItemAction,
     getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
-    getTellMessageFrom, getRelativeTime
+    getTellMessageFrom, getRelativeTime, sortInventoryItems
   }
 }

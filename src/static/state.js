@@ -51,7 +51,7 @@ export const state = reactive({
   mercEid: -1,
 
   gamepadPrevStates: {},
-  gamepads: { },
+  gamepads: {},
   gamepadTab: false,
   gamepadHelpTab: false,
   suggestedCommands: [],
@@ -62,7 +62,7 @@ export const state = reactive({
   nameExistsResolve: null,
   nameExistsReject: null,
 
-  inventorySortValue: 'type',
+  inventorySortValue: 'name',  // Change because sorting by type does not work in some cases.
   inventoryOutput: {},
 
   scrolledBack: false,
