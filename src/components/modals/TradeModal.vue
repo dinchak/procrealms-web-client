@@ -213,12 +213,7 @@ function onModalOpened () {
 
   updateItemList()
 
-  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}`), async newIds => {
-    for (let newId of newIds) {
-      let [iid] = newId.split('|')
-      delete state.cache.itemCache[iid]
-    }
-
+  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}`), async () => {
     let iids = state.shop.items.map(it => it.iid)
     shopItems.value = sortShopkeeperItems(await fetchItems(iids))
   }, { immediate: true }))
@@ -227,12 +222,8 @@ function onModalOpened () {
     shopkeeper.value = await fetchEntity(newShopkeeperId)
   }, { immediate: true }))
 
-  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), async newIds => {
-    for (let newId of newIds) {
-      let [iid] = newId.split('|')
-      delete state.cache.itemCache[iid]
-    }
-    let iids = (state.gameState.inventory || []).map(it => it.iid)
+  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), async () => {
+    let iids = state.gameState.inventory.map(it => it.iid)
     playerItems.value = sortPlayerItems(await fetchItems(iids))
   }, { immediate: true }))
 }

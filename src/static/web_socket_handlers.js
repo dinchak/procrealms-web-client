@@ -39,7 +39,46 @@ const webSocketHandlers = {
       // }
 
       // comment out this if you uncomment the above
-      state.gameState = jiff.patch(patch, state.gameState)
+      const patched = jiff.patch(patch, state.gameState)
+
+      // only update keys that actually changed to avoid spurious watchers
+      for (const key of Object.keys(patched)) {
+        const oldVal = state.gameState[key]
+        const newVal = patched[key]
+
+        const equalArrays = (a, b) => {
+          if (!Array.isArray(a) || !Array.isArray(b)) {
+            return false
+          }
+          if (a.length !== b.length) {
+            return false
+          }
+          for (let i = 0; i < a.length; i++) {
+            if (a[i] === b[i]) {
+              continue
+            }
+
+            if (typeof a[i] === 'object' && typeof b[i] === 'object') {
+              if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) {
+                return false
+              }
+            } else {
+              return false
+            }
+          }
+          return true
+        }
+
+        const same =
+          oldVal === newVal ||
+          (Array.isArray(oldVal) && Array.isArray(newVal) && equalArrays(oldVal, newVal)) ||
+          (oldVal && newVal && typeof oldVal === 'object' && typeof newVal === 'object' &&
+            JSON.stringify(oldVal) === JSON.stringify(newVal))
+
+        if (!same) {
+          state.gameState[key] = newVal
+        }
+      }
     } catch (err) {
       addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${err.message}`, 'output')
       console.log(err.stack)

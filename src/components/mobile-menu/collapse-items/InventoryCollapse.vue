@@ -47,7 +47,7 @@ import { state, setMode, prevMode, updateCounter } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
-const { fetchItem } = useWebSocket()
+const { fetchItem, fetchItems } = useWebSocket()
 const { copperToMoneyString, getActions } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
@@ -91,12 +91,7 @@ let watchers = []
 onMounted(() => {
   setItems(props.inventory)
 
-  watchers.push(watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), newIds => {
-    for (let newId of newIds) {
-      let [iid] = newId.split('|')
-      delete state.cache.itemCache[iid]
-    }
-
+  watchers.push(watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), () => {
     setItems(props.inventory)
   }))
 
@@ -140,8 +135,9 @@ function mapInventory (inventory) {
   }))
 }
 
-function setItems (inventory) {
-  items.value = mapInventory(inventory)
+async function setItems (inventory) {
+  items.value = await fetchItems(inventory.map(i => i.iid))
+  // items.value = mapInventory(inventory)
 
   const input = searchTerm.value.toLowerCase()
 

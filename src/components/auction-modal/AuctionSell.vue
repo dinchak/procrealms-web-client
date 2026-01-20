@@ -66,7 +66,7 @@ import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml } = useHelpers()
 
 import { useWebSocket } from '@/composables/web_socket'
-const { fetchItem, runCommand } = useWebSocket()
+const { fetchItem, fetchItems, runCommand } = useWebSocket()
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
@@ -145,7 +145,7 @@ async function selectItem (item) {
   })
 }
 
-function mapInventory () {
+async function mapInventory () {
   let source = []
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
     source = state.gameState.charmies[state.playerModalAs].items || []
@@ -153,19 +153,7 @@ function mapInventory () {
     source = state.gameState.inventory || []
   }
 
-  return source.map(obj => {
-    return {
-      iid: obj.iid,
-      fullName: obj.name || obj.fullName || '',
-      name: obj.name || obj.fullName || '',
-      amount: obj.amount || 1,
-      type: obj.type || '',
-      subtype: obj.subtype || '',
-      level: obj.level || 0,
-      weight: obj.weight || 0,
-      value: obj.value || 0
-    }
-  })
+  return await fetchItems(source.map(i => i.iid))
 }
 
 let charmieInventoryWatcher = null
@@ -201,8 +189,8 @@ function onWidthChange () {
   }
 }
 
-function onSortChange () {
-  items.value = sortItems(mapInventory())
+async function onSortChange () {
+  items.value = sortItems(await mapInventory())
 }
 
 function sortItems (its) {
@@ -264,29 +252,24 @@ async function doSell (item) {
 }
 
 let watchers = []
-onMounted(() => {
+onMounted(async () => {
   onWidthChange()
   window.addEventListener('resize', onWidthChange)
 
-  items.value = sortItems(mapInventory())
+  items.value = sortItems(await mapInventory())
 
   watchers.push(
-    watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), newIds => {
+    watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), async () => {
       if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
-
-      for (let newId of newIds) {
-        let [iid] = newId.split('|')
-        delete state.cache.itemCache[iid]
-      }
-      items.value = sortItems(mapInventory())
+      items.value = sortItems(await mapInventory())
     })
   )
 
   watchers.push(
-    watch(() => state.playerModalAs, () => {
-      items.value = sortItems(mapInventory())
+    watch(() => state.playerModalAs, async () => {
+      items.value = sortItems(await mapInventory())
       unwatchCharmieInventory()
       watchCharmieInventory()
     })
