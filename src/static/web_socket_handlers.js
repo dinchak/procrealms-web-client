@@ -41,6 +41,19 @@ const webSocketHandlers = {
       // comment out this if you uncomment the above
       const patched = jiff.patch(patch, state.gameState)
 
+      // invalidate caches for any items/entities that were removed/changed
+      for (let line of patch) {
+        const { value } = line
+        if (value && typeof value == 'object') {
+          if (value.iid) {
+            delete state.cache.itemCache[value.iid]
+          }
+          if (value.eid) {
+            delete state.cache.entityCache[value.eid]
+          }
+        }
+      }
+
       // only update keys that actually changed to avoid spurious watchers
       for (const key of Object.keys(patched)) {
         const oldVal = state.gameState[key]
@@ -76,6 +89,7 @@ const webSocketHandlers = {
             JSON.stringify(oldVal) === JSON.stringify(newVal))
 
         if (!same) {
+          console.log(`Game state key updated: ${key}`)
           state.gameState[key] = newVal
         }
       }
