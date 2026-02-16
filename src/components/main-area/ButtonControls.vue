@@ -220,7 +220,6 @@ function totalNumUnseenMessages () {
     position: sticky;
     top: 8px;
     margin-top: 0;
-    align-self: flex-end;
     z-index: 20;
     overflow: visible;
   }
