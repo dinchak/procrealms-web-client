@@ -10,6 +10,8 @@ import { playRandomTrack } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 
+const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
+
 const { ansiToHtml } = useHelpers()
 const { fetchItems, fetchEntities } = useWebSocket()
 
@@ -239,8 +241,47 @@ function resetDiagnostics () {
       tradeShopStaleDrops: 0,
       mercOrdersRefreshes: 0,
       mercOrdersStaleDrops: 0,
+    },
+    performance: {
+      websocketEvents: 0,
+      websocketPatchOperations: 0,
+      websocketOutputLines: 0,
+      triggerCalls: 0,
+      outputLinesQueued: 0,
+      outputFlushCount: 0,
+      outputLinesFlushed: 0,
+      outputTrimEvents: 0,
+      outputTrimmedLines: 0,
+      replaceIdsEntityBatches: 0,
+      replaceIdsItemBatches: 0,
+      replaceIdsQueueBatches: 0,
+      replaceIdsQueueLines: 0,
+      replaceIdsQueueMaxBatchSize: 0,
+      replaceIdsQueueTotalMs: 0,
+      replaceIdsQueueErrors: 0,
+      optionsSaveCalls: 0,
+      optionsSaveWrites: 0,
+      inputLookupCalls: 0,
+      inputLookupMatched: 0,
+      mappingIndexRebuilds: 0,
     }
   }
+}
+
+export function incrementPerformanceDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT || !state.diagnostics.performance) {
+    return
+  }
+
+  state.diagnostics.performance[key] = (state.diagnostics.performance[key] || 0) + amount
+}
+
+export function incrementUiDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT || !state.diagnostics.ui) {
+    return
+  }
+
+  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
 }
 
 export function resetGameState () {
@@ -404,8 +445,43 @@ function addSuggestedCommand (command) {
 
 let preloadBuffers = {}
 let addLinesTimeout = null
-const maxLines = 2000
-const removeLines = 500
+const BUFFER_LIMITS = {
+  output: {
+    max: 5000,
+    trimTo: 4500,
+  },
+  default: {
+    max: 2000,
+    trimTo: 1500,
+  }
+}
+let replaceIdsTimeout = null
+let replaceIdsQueue = []
+
+function getBufferLimit (bufferName) {
+  return BUFFER_LIMITS[bufferName] || BUFFER_LIMITS.default
+}
+
+function trimBufferIfNeeded (bufferName) {
+  const limits = getBufferLimit(bufferName)
+  const currentLength = state[bufferName].length
+
+  if (currentLength <= limits.max) {
+    return
+  }
+
+  const trimAmount = Math.max(0, currentLength - limits.trimTo)
+  if (!trimAmount) {
+    return
+  }
+
+  state[bufferName].splice(0, trimAmount)
+
+  if (bufferName == 'output') {
+    incrementPerformanceDiagnostic('outputTrimEvents')
+    incrementPerformanceDiagnostic('outputTrimmedLines', trimAmount)
+  }
+}
 
 export function resetMode () {
   state.mode = 'login'
@@ -468,7 +544,7 @@ export async function addLine (line, bufferName) {
     preloadBuffers[bufferName] = []
   }
 
-  line = await replaceIds(line)
+  line = await enqueueReplaceIds(line)
 
   if (bufferName == 'output') {
     Object.freeze(line)
@@ -478,6 +554,7 @@ export async function addLine (line, bufferName) {
     line = '<br/>'
   }
 
+  incrementPerformanceDiagnostic('outputLinesQueued')
   preloadBuffers[bufferName].push(line)
 
   if (addLinesTimeout) {
@@ -486,50 +563,116 @@ export async function addLine (line, bufferName) {
 
   addLinesTimeout = setTimeout(() => {
     for (let bufName in preloadBuffers) {
+      const flushCount = preloadBuffers[bufName].length
       state[bufName].push(...preloadBuffers[bufName])
       preloadBuffers[bufName] = []
-      if (state[bufName].length > maxLines) {
-        state[bufName].splice(0, removeLines)
-      }
+      trimBufferIfNeeded(bufName)
+
+      incrementPerformanceDiagnostic('outputLinesFlushed', flushCount)
     }
+
+    incrementPerformanceDiagnostic('outputFlushCount')
     addLinesTimeout = null
   }, 10)
 }
 
-async function replaceIds (command) {
-  const eidMatches = [...command.matchAll(/eid:(\w+)/g)].map(m => m[1])
-  const uniqueEids = [...new Set(eidMatches)]
+function enqueueReplaceIds (command) {
+  return new Promise(resolve => {
+    replaceIdsQueue.push({ command, resolve })
 
-  if (uniqueEids.length) {
-    const entities = await fetchEntities(uniqueEids)
-    const byEid = Object.fromEntries(entities.map(e => [e.eid, e]))
+    if (replaceIdsTimeout) {
+      return
+    }
 
-    command = command.replace(/eid:(\w+)/g, (match, eid) => {
-      const ent = byEid[eid]
-      if (ent) {
-        if (ent.colorBattleTag) {
-          return ansiToHtml(ent.colorBattleTag + ' ' + ent.name)
-        }
-        return ent.name
+    replaceIdsTimeout = setTimeout(() => {
+      replaceIdsTimeout = null
+      flushReplaceIdsQueue()
+    }, 0)
+  })
+}
+
+async function flushReplaceIdsQueue () {
+  const startedAt = Date.now()
+  const batch = replaceIdsQueue
+  replaceIdsQueue = []
+
+  if (!batch.length) {
+    return
+  }
+
+  incrementPerformanceDiagnostic('replaceIdsQueueBatches')
+  incrementPerformanceDiagnostic('replaceIdsQueueLines', batch.length)
+  if (batch.length > (state.diagnostics.performance.replaceIdsQueueMaxBatchSize || 0)) {
+    state.diagnostics.performance.replaceIdsQueueMaxBatchSize = batch.length
+  }
+
+  const eidRegex = /eid:(\w+)/g
+  const iidRegex = /iid:(\w+)/g
+  const uniqueEids = new Set()
+  const uniqueIids = new Set()
+
+  for (const entry of batch) {
+    const eidMatches = String(entry.command).matchAll(eidRegex)
+    for (const m of eidMatches) {
+      uniqueEids.add(m[1])
+    }
+
+    const iidMatches = String(entry.command).matchAll(iidRegex)
+    for (const m of iidMatches) {
+      uniqueIids.add(m[1])
+    }
+  }
+
+  try {
+    let byEid = {}
+    if (uniqueEids.size) {
+      incrementPerformanceDiagnostic('replaceIdsEntityBatches')
+      const entities = await fetchEntities([...uniqueEids])
+      byEid = Object.fromEntries((entities || []).map(e => [e.eid, e]))
+    }
+
+    let byIid = {}
+    if (uniqueIids.size) {
+      incrementPerformanceDiagnostic('replaceIdsItemBatches')
+      const items = await fetchItems([...uniqueIids])
+      byIid = Object.fromEntries((items || []).map(i => [i.iid, i]))
+    }
+
+    for (const entry of batch) {
+      let replaced = entry.command
+
+      if (uniqueEids.size) {
+        replaced = replaced.replace(/eid:(\w+)/g, (match, eid) => {
+          const ent = byEid[eid]
+          if (!ent) {
+            return match
+          }
+
+          if (ent.colorBattleTag) {
+            return ansiToHtml(ent.colorBattleTag + ' ' + ent.name)
+          }
+          return ent.name
+        })
       }
-      return match
-    })
+
+      if (uniqueIids.size) {
+        replaced = replaced.replace(/iid:(\w+)/g, (match, iid) => {
+          const item = byIid[iid]
+          return item ? item.name : match
+        })
+      }
+
+      entry.resolve(replaced)
+    }
+
+    incrementPerformanceDiagnostic('replaceIdsQueueTotalMs', Date.now() - startedAt)
+  } catch {
+    incrementPerformanceDiagnostic('replaceIdsQueueErrors')
+    incrementPerformanceDiagnostic('replaceIdsQueueTotalMs', Date.now() - startedAt)
+    for (const entry of batch) {
+      entry.resolve(entry.command)
+    }
   }
-
-  const iidMatches = [...command.matchAll(/iid:(\w+)/g)].map(m => m[1])
-  const uniqueIids = [...new Set(iidMatches)]
-
-  if (uniqueIids.length) {
-    const items = await fetchItems(uniqueIids)
-    const byIid = Object.fromEntries(items.map(i => [i.iid, i]))
-
-    command = command.replace(/iid:(\w+)/g, (match, iid) => {
-      const item = byIid[iid]
-      return item ? item.name : match
-    })
-  }
-
-  return command
 }
 
 export function getOrderCmd () {

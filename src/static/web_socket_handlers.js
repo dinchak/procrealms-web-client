@@ -1,7 +1,7 @@
 import jiff from 'jiff'
 
-import { addLine, state, setMode } from '@/static/state'
-import { processTriggers } from '@/static/triggers'
+import { addLine, incrementPerformanceDiagnostic, state, setMode } from '@/static/state'
+import { processTriggersBatch } from '@/static/triggers'
 import { playMessageSound, playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
@@ -16,7 +16,143 @@ function getTopLevelPatchKey (path) {
   return pathParts.length ? pathParts[0] : null
 }
 
+function normalizePatchPathToSection (path, topLevelKey) {
+  if (!path) {
+    return path
+  }
+
+  const base = `/${topLevelKey}`
+  if (path == base) {
+    return '/'
+  }
+
+  if (path.startsWith(base + '/')) {
+    return path.slice(base.length)
+  }
+
+  return path
+}
+
+function normalizePatchOperationToSection (operation, topLevelKey) {
+  const normalized = { ...operation }
+
+  if (typeof normalized.path == 'string') {
+    normalized.path = normalizePatchPathToSection(normalized.path, topLevelKey)
+  }
+
+  if (typeof normalized.from == 'string') {
+    normalized.from = normalizePatchPathToSection(normalized.from, topLevelKey)
+  }
+
+  return normalized
+}
+
+function isInvalidPatchOperationError (err) {
+  return err && (
+    err.name == 'InvalidPatchOperationError' ||
+    String(err.message || '').includes('InvalidPatchOperationError')
+  )
+}
+
+function shouldIgnoreInvalidPatchOperation ({ op }, err) {
+  if (!isInvalidPatchOperationError(err)) {
+    return false
+  }
+
+  return ['remove', 'replace', 'test'].includes(op)
+}
+
+function applyPatchWithTolerance (patch, initialState) {
+  let nextState = initialState
+
+  for (const operation of patch) {
+    try {
+      nextState = jiff.patch([operation], nextState)
+    } catch (err) {
+      if (shouldIgnoreInvalidPatchOperation(operation, err)) {
+        incrementPerformanceDiagnostic('patchToleratedOperations')
+        continue
+      }
+
+      throw err
+    }
+  }
+
+  return nextState
+}
+
+function canUseTopLevelScopedPatch (patch) {
+  for (const operation of patch) {
+    const topLevelKey = getTopLevelPatchKey(operation.path)
+    if (!topLevelKey) {
+      return false
+    }
+
+    if (typeof operation.from == 'string') {
+      const fromTopLevelKey = getTopLevelPatchKey(operation.from)
+      if (!fromTopLevelKey || fromTopLevelKey != topLevelKey) {
+        return false
+      }
+    }
+  }
+
+  return true
+}
+
+function applyTopLevelScopedPatch (patch) {
+  if (!canUseTopLevelScopedPatch(patch)) {
+    incrementPerformanceDiagnostic('patchFallbackFullState')
+    state.gameState = applyPatchWithTolerance(patch, state.gameState)
+    return state.gameState
+  }
+
+  const touchedKeys = new Set()
+  const patchByTopLevelKey = new Map()
+  let hasRootOperation = false
+
+  for (let op of patch) {
+    const topLevelKey = getTopLevelPatchKey(op.path)
+    if (!topLevelKey) {
+      hasRootOperation = true
+      break
+    }
+
+    if (!patchByTopLevelKey.has(topLevelKey)) {
+      patchByTopLevelKey.set(topLevelKey, [])
+    }
+    patchByTopLevelKey.get(topLevelKey).push(normalizePatchOperationToSection(op, topLevelKey))
+
+    touchedKeys.add(topLevelKey)
+  }
+
+  if (hasRootOperation) {
+    incrementPerformanceDiagnostic('patchFallbackFullState')
+    state.gameState = applyPatchWithTolerance(patch, state.gameState)
+    return state.gameState
+  }
+
+  for (const key of touchedKeys) {
+    const sectionPatch = patchByTopLevelKey.get(key) || []
+
+    if (!sectionPatch.length) {
+      continue
+    }
+
+    const currentSection = state.gameState[key]
+    const nextSection = applyPatchWithTolerance(sectionPatch, currentSection)
+    if (state.gameState[key] !== nextSection) {
+      state.gameState[key] = nextSection
+    }
+  }
+
+  incrementPerformanceDiagnostic('patchTopLevelFastPath')
+  incrementPerformanceDiagnostic('patchTouchedTopLevelKeys', touchedKeys.size)
+  return state.gameState
+}
+
 export function onWebSocketEvent (cmd, msg, reqId) {
+  incrementPerformanceDiagnostic('websocketEvents')
+
   if (reqId && reqId.startsWith('inventory-output-')) {
     if (!state.inventoryOutput[reqId]) {
       state.inventoryOutput[reqId] = ''
@@ -40,6 +176,8 @@ export function onWebSocketEvent (cmd, msg, reqId) {
 
 const webSocketHandlers = {
   'state.patch': ({ patch }) => {
+    incrementPerformanceDiagnostic('websocketPatchOperations', patch.length)
+
     try {
       // uncomment to help debug desyncs
       // for (let operation of patch) {
@@ -47,18 +185,11 @@ const webSocketHandlers = {
       //   state.gameState = jiff.patch([operation], state.gameState)
       // }
 
-      // comment out this if you uncomment the above
-      const patched = jiff.patch(patch, state.gameState)
-      const touchedKeys = new Set()
+      applyTopLevelScopedPatch(patch)
 
       // invalidate caches for any items/entities that were removed/changed
       for (let line of patch) {
-        const { path, value } = line
-        const topLevelKey = getTopLevelPatchKey(path)
-
-        if (topLevelKey) {
-          touchedKeys.add(topLevelKey)
-        }
+        const { value } = line
 
         if (value && typeof value == 'object') {
           if (value.iid) {
@@ -70,29 +201,27 @@ const webSocketHandlers = {
         }
       }
 
-      // only update top-level keys touched by this patch to avoid full-object deep compares
-      for (const key of touchedKeys) {
-        if (!(key in patched)) {
-          continue
-        }
-
-        const newVal = patched[key]
-        if (state.gameState[key] !== newVal) {
-          state.gameState[key] = newVal
-        }
-      }
     } catch (err) {
-      addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${err.message}`, 'output')
-      console.log(err.stack)
+      try {
+        incrementPerformanceDiagnostic('patchFallbackFullState')
+        state.gameState = applyPatchWithTolerance(patch, state.gameState)
+      } catch (fallbackErr) {
+        addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${fallbackErr.message}`, 'output')
+        console.log(fallbackErr.stack)
+      }
     }
   },
 
   'out': line => {
     let lines = strToLines(line)
+    incrementPerformanceDiagnostic('websocketOutputLines', lines.length)
+
     for (let ln of lines) {
       addLine(ln, 'output')
-      processTriggers(ln)
     }
+
+    incrementPerformanceDiagnostic('triggerCalls', lines.length)
+    processTriggersBatch(lines)
   },
 
   'auction.list': ({ auctions, numPages, totalNumAuctions, page, sort, sortDir }) => {
@@ -125,8 +254,10 @@ const webSocketHandlers = {
 
     for (let line of lines) {
       addLine(line, 'output')
-      processTriggers(line)
     }
+
+    incrementPerformanceDiagnostic('triggerCalls', lines.length)
+    processTriggersBatch(lines)
   },
 
   'entity.attack': ({ target, amount, crit }) => {
@@ -199,7 +330,8 @@ const webSocketHandlers = {
     }
 
     if (out) {
-      processTriggers(out)
+      incrementPerformanceDiagnostic('triggerCalls')
+      processTriggersBatch([out])
     }
 
     playMessageSound({ id, from, to, channel, timestamp, message })
