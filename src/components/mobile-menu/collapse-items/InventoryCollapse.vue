@@ -46,7 +46,7 @@ import { incrementUiDiagnostic, setMode, prevMode, updateCounter } from '@/stati
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
-import { sortItemsByKey } from '@/composables/inventory_helpers'
+import { mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { fetchItem, fetchItems } = useWebSocket()
 const { copperToMoneyString, getActions } = useHelpers()
@@ -137,7 +137,7 @@ async function setItems (inventory) {
     return
   }
 
-  items.value = fetchedItems
+  items.value = mergeInventorySourceWithFetchedItems(inventoryItems, fetchedItems)
   applyFilterSort()
 }
 

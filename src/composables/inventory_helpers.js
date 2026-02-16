@@ -32,3 +32,50 @@ export function sortItemsByKey (items = [], key = 'name') {
     return aVal > bVal ? 1 : -1
   })
 }
+
+function getBaseInventoryName (item = {}) {
+  if (item.colorName) {
+    return item.colorName
+  }
+
+  if (item.name) {
+    return item.name
+  }
+
+  const fullName = item.fullName || ''
+  return fullName.replace(/^\d+x\s+/, '')
+}
+
+export function getInventoryItemDisplayName (item = {}) {
+  const amount = Number(item.amount) || 1
+  const baseName = getBaseInventoryName(item)
+
+  if (!baseName) {
+    return ''
+  }
+
+  if (amount > 1) {
+    return `${amount}x ${baseName}`
+  }
+
+  return baseName
+}
+
+export function mergeInventorySourceWithFetchedItems (sourceItems = [], fetchedItems = []) {
+  const fetchedByIid = new Map((fetchedItems || [])
+    .filter(item => item && item.iid !== undefined && item.iid !== null)
+    .map(item => [item.iid, item]))
+
+  return (sourceItems || [])
+    .filter(item => item && item.iid !== undefined && item.iid !== null)
+    .map(sourceItem => {
+      const fetchedItem = fetchedByIid.get(sourceItem.iid) || {}
+      const mergedItem = {
+        ...fetchedItem,
+        ...sourceItem
+      }
+
+      mergedItem.fullName = getInventoryItemDisplayName(mergedItem)
+      return mergedItem
+    })
+}

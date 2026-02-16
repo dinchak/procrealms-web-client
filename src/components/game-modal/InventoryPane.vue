@@ -55,11 +55,11 @@ import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
-import { incrementUiDiagnostic, state } from '@/static/state'
+import { incrementUiDiagnostic, state, updateCounter } from '@/static/state'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
-import { getActiveInventorySource, getInventorySignature, sortItemsByKey } from '@/composables/inventory_helpers'
+import { getActiveInventorySource, getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
 const { fetchItem, fetchItems } = useWebSocket()
@@ -166,7 +166,8 @@ function getScrollContainerClass () {
 
 async function mapInventory () {
   const source = getActiveInventorySource(state)
-  return await fetchItems(source.map(i => i.iid))
+  const fetchedItems = await fetchItems(source.map(i => i.iid))
+  return mergeInventorySourceWithFetchedItems(source, fetchedItems)
 }
 
 async function refreshInventoryItems () {
@@ -267,6 +268,12 @@ onMounted(async () => {
       scheduleInventoryRefresh(16)
       unwatchCharmieInventory()
       watchCharmieInventory()
+    })
+  )
+
+  watchers.push(
+    watch(() => updateCounter.value, () => {
+      scheduleInventoryRefresh(16)
     })
   )
 })

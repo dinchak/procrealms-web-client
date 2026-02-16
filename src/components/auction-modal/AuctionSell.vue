@@ -58,16 +58,16 @@
 </template>
 
 <script setup>
-import { incrementUiDiagnostic, state, showError } from '@/static/state'
+import { incrementUiDiagnostic, state, showError, updateCounter } from '@/static/state'
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { NPopselect, NInput, NButton } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml } = useHelpers()
-import { getActiveInventorySource, getInventorySignature, sortItemsByKey } from '@/composables/inventory_helpers'
+import { getActiveInventorySource, getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 import { useWebSocket } from '@/composables/web_socket'
-const { fetchItem, fetchItems, runCommand } = useWebSocket()
+const { fetchItem, fetchItems, refreshItem, runCommand } = useWebSocket()
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
@@ -155,7 +155,8 @@ async function selectItem (item) {
 
 async function mapInventory () {
   const source = getActiveInventorySource(state)
-  return await fetchItems(source.map(i => i.iid))
+  const fetchedItems = await fetchItems(source.map(i => i.iid))
+  return mergeInventorySourceWithFetchedItems(source, fetchedItems)
 }
 
 async function refreshInventoryItems () {
@@ -269,6 +270,8 @@ async function doSell (item) {
   }
 
   await runCommand(cmd, 'the_void')
+  await refreshItem(item.iid)
+  scheduleInventoryRefresh(16)
 
   // Reset selection
   selectedIid.value = {}
@@ -299,6 +302,12 @@ onMounted(async () => {
       scheduleInventoryRefresh(16)
       unwatchCharmieInventory()
       watchCharmieInventory()
+    })
+  )
+
+  watchers.push(
+    watch(() => updateCounter.value, () => {
+      scheduleInventoryRefresh(16)
     })
   )
 })

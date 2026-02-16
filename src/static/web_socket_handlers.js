@@ -48,18 +48,75 @@ function normalizePatchOperationToSection (operation, topLevelKey) {
 }
 
 function isInvalidPatchOperationError (err) {
+  const message = String(err && err.message ? err.message : '')
+
   return err && (
     err.name == 'InvalidPatchOperationError' ||
-    String(err.message || '').includes('InvalidPatchOperationError')
+    message.includes('InvalidPatchOperationError') ||
+    message.includes('path does not exist') ||
+    message.includes('outside of array bounds')
   )
 }
 
-function shouldIgnoreInvalidPatchOperation ({ op }, err) {
+function parsePointerSegments (pointer) {
+  if (typeof pointer != 'string' || pointer == '' || pointer == '/') {
+    return []
+  }
+
+  return pointer
+    .split('/')
+    .slice(1)
+    .map(segment => segment.replace(/~1/g, '/').replace(/~0/g, '~'))
+}
+
+function isArrayIndexSegment (segment) {
+  return typeof segment == 'string' && /^\d+$/.test(segment)
+}
+
+function isArrayPathCandidate (pointer, { allowAppend = false } = {}) {
+  const segments = parsePointerSegments(pointer)
+  if (!segments.length) {
+    return false
+  }
+
+  const lastSegment = segments[segments.length - 1]
+  if (allowAppend && lastSegment == '-') {
+    return true
+  }
+
+  return isArrayIndexSegment(lastSegment)
+}
+
+function shouldIgnoreInvalidPatchOperation ({ op, path, from }, err) {
   if (!isInvalidPatchOperationError(err)) {
     return false
   }
 
-  return ['remove', 'replace', 'test'].includes(op)
+  const message = String(err && err.message ? err.message : '')
+  const operationPath = typeof path == 'string' ? path : ''
+  const fromPath = typeof from == 'string' ? from : ''
+
+  const listOps = ['add', 'remove', 'replace', 'move']
+  const isListPathOperation =
+    (listOps.includes(op) && isArrayPathCandidate(operationPath, { allowAppend: op == 'add' })) ||
+    (op == 'move' && isArrayPathCandidate(fromPath))
+
+  if (isListPathOperation && (
+    message.includes('path does not exist') ||
+    message.includes('outside of array bounds')
+  )) {
+    return true
+  }
+
+  if (['remove', 'replace', 'test'].includes(op) && message.includes('path does not exist')) {
+    return true
+  }
+
+  if (op == 'add' && message.includes('outside of array bounds')) {
+    return true
+  }
+
+  return false
 }
 
 function applyPatchWithTolerance (patch, initialState) {

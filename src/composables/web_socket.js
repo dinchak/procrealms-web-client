@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { addLine, state } from '@/static/state'
+import { addLine, state, updateCounter } from '@/static/state'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
 import {
   CACHE_MAX_COMMAND_ENTRIES,
@@ -420,13 +420,13 @@ export function useWebSocket () {
   async function refreshEntity (eid) {
     delete state.cache.entityCache[eid]
     await fetchEntity(eid, true)
-    state.updateCounter++
+    updateCounter.value += 1
   }
 
   async function refreshItem (iid) {
     delete state.cache.itemCache[iid]
     await fetchItem(iid, true)
-    state.updateCounter++
+    updateCounter.value += 1
   }
 
   return {

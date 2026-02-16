@@ -73,7 +73,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { NPopselect } from 'naive-ui'
-import { incrementUiDiagnostic, state } from '@/static/state'
+import { incrementUiDiagnostic, state, updateCounter } from '@/static/state'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -83,7 +83,7 @@ const { runCommand, fetchItems, fetchEntity, fetchItem } = useWebSocket()
 
 import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml, copperToMoneyString, runItemAction, getActions } = useHelpers()
-import { getInventorySignature, sortItemsByKey } from '@/composables/inventory_helpers'
+import { getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const shopItems = ref([])
 const playerItems = ref([])
@@ -200,7 +200,8 @@ function scheduleShopRefresh (delay = 16) {
 async function refreshPlayerItems () {
   const token = ++playerRefreshToken
   incrementUiDiagnostic('tradePlayerRefreshes')
-  const iids = state.gameState.inventory.map(it => it.iid)
+  const sourceItems = state.gameState.inventory || []
+  const iids = sourceItems.map(it => it.iid)
   const fetchedItems = await fetchItems(iids)
 
   if (token !== playerRefreshToken) {
@@ -208,7 +209,8 @@ async function refreshPlayerItems () {
     return
   }
 
-  playerItems.value = sortPlayerItems(fetchedItems)
+  const mergedItems = mergeInventorySourceWithFetchedItems(sourceItems, fetchedItems)
+  playerItems.value = sortPlayerItems(mergedItems)
 }
 
 function schedulePlayerRefresh (delay = 16) {
@@ -301,6 +303,10 @@ function onModalOpened () {
   watchers.push(watch(() => getInventorySignature(state.gameState.inventory || []), () => {
     schedulePlayerRefresh(16)
   }, { immediate: true }))
+
+  watchers.push(watch(() => updateCounter.value, () => {
+    schedulePlayerRefresh(16)
+  }))
 }
 
 function onModalClosed () {
