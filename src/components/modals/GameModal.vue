@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch, computed } from 'vue'
+import { ref, nextTick, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { NModal, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
@@ -86,6 +86,7 @@ const miniOutputEnabled = ref(false)
 
 let selectedElement = null
 let watchers = []
+let modalHandlersBound = false
 
 const showModal = computed({
   get: () => props.modelValue,
@@ -114,6 +115,11 @@ function nextModalTab () {
 }
 
 function onOpenModal () {
+  if (modalHandlersBound) {
+    return
+  }
+  modalHandlersBound = true
+
   state.inputEmitter.on('closeModal', onCloseModal)
   state.inputEmitter.on('selectModalAction', selectModalAction)
   state.inputEmitter.on('performModalAction', performModalAction)
@@ -165,7 +171,10 @@ function onCloseModal () {
     state.inputEmitter.off('nextModalTab', nextModalTab)
   }
 
+  modalHandlersBound = false
+
   watchers.forEach(w => w())
+  watchers = []
 
   emit('closed')
 }
@@ -214,6 +223,27 @@ function onOutputChanged () {
 
   scrollDown()
 }
+
+onMounted(() => {
+  if (showModal.value) {
+    onOpenModal()
+  }
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('closeModal', onCloseModal)
+  state.inputEmitter.off('selectModalAction', selectModalAction)
+  state.inputEmitter.off('performModalAction', performModalAction)
+
+  if (props.hasTabNavigation) {
+    state.inputEmitter.off('prevModalTab', prevModalTab)
+    state.inputEmitter.off('nextModalTab', nextModalTab)
+  }
+
+  modalHandlersBound = false
+  watchers.forEach(w => w())
+  watchers = []
+})
 </script>
 
 <style lang="less">

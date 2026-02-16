@@ -31,42 +31,42 @@
         </div>
       </main>
     </div>
-    <AuctionModal/>
-    <ChatModal/>
-    <CraftingModal/>
-    <DebugModal/>
-    <ErrorModal/>
-    <HelpModal/>
-    <InputMappingModal/>
-    <LogoutModal/>
-    <MailModal/>
-    <MercModal/>
-    <PlayerModal/>
+    <AuctionModal v-if="state.modals.auctionModal"/>
+    <ChatModal v-if="state.modals.chatModal"/>
+    <CraftingModal v-if="state.modals.craftingModal"/>
+    <DebugModal v-if="state.modals.debugModal"/>
+    <ErrorModal v-if="state.modals.errorModal"/>
+    <HelpModal v-if="state.modals.helpModal"/>
+    <InputMappingModal v-if="state.modals.inputMappingModal"/>
+    <LogoutModal v-if="state.modals.logoutModal"/>
+    <MailModal v-if="state.modals.mailModal"/>
+    <MercModal v-if="state.modals.mercModal"/>
+    <PlayerModal v-if="state.modals.playerModal"/>
     <RadialOverlay/>
     <SideMovement/>
-    <TradeModal/>
-    <TriggersModal/>
+    <TradeModal v-if="state.modals.tradeModal"/>
+    <TriggersModal v-if="state.modals.triggersModal"/>
   </NEl>
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, watch } from 'vue'
+import { defineAsyncComponent, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NEl } from 'naive-ui'
 
-import AuctionModal from '@/components/modals/AuctionModal.vue'
-import ChatModal from '@/components/modals/ChatModal.vue'
-import CraftingModal from '@/components/modals/CraftingModal.vue'
-import DebugModal from '@/components/modals/DebugModal.vue'
-import ErrorModal from '@/components/modals/ErrorModal.vue'
-import PlayerModal from '@/components/modals/PlayerModal.vue'
-import HelpModal from '@/components/modals/HelpModal.vue'
-import InputMappingModal from '@/components/modals/InputMappingModal.vue'
-import LogoutModal from '@/components/modals/LogoutModal.vue'
-import MailModal from '@/components/modals/MailModal.vue'
-import MercModal from '@/components/modals/MercModal.vue'
+const AuctionModal = defineAsyncComponent(() => import('@/components/modals/AuctionModal.vue'))
+const ChatModal = defineAsyncComponent(() => import('@/components/modals/ChatModal.vue'))
+const CraftingModal = defineAsyncComponent(() => import('@/components/modals/CraftingModal.vue'))
+const DebugModal = defineAsyncComponent(() => import('@/components/modals/DebugModal.vue'))
+const ErrorModal = defineAsyncComponent(() => import('@/components/modals/ErrorModal.vue'))
+const PlayerModal = defineAsyncComponent(() => import('@/components/modals/PlayerModal.vue'))
+const HelpModal = defineAsyncComponent(() => import('@/components/modals/HelpModal.vue'))
+const InputMappingModal = defineAsyncComponent(() => import('@/components/modals/InputMappingModal.vue'))
+const LogoutModal = defineAsyncComponent(() => import('@/components/modals/LogoutModal.vue'))
+const MailModal = defineAsyncComponent(() => import('@/components/modals/MailModal.vue'))
+const MercModal = defineAsyncComponent(() => import('@/components/modals/MercModal.vue'))
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
-import TradeModal from '@/components/modals/TradeModal.vue'
-import TriggersModal from '@/components/modals/TriggersModal.vue'
+const TradeModal = defineAsyncComponent(() => import('@/components/modals/TradeModal.vue'))
+const TriggersModal = defineAsyncComponent(() => import('@/components/modals/TriggersModal.vue'))
 
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
 
@@ -93,7 +93,7 @@ import { useWindowHandler } from '@/composables/window_handler'
 
 const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 const { triggerResize } = useWindowHandler()
-const { saveOptions } = useLocalStorageHandler()
+const { saveOptionsDebounced, flushPendingOptionsSave } = useLocalStorageHandler()
 
 const { runCommand } = useWebSocket()
 
@@ -316,7 +316,7 @@ onMounted(() => {
 
   document.addEventListener('fullscreenchange', onFullscreenChange)
 
-  watchers.push(watch(state.options, saveOptions))
+  watchers.push(watch(state.options, () => saveOptionsDebounced(), { deep: true }))
 
   watchers.push(watch(() => state.options.textInputAlwaysFocused, () => {
     if (state.options.textInputAlwaysFocused) {
@@ -371,6 +371,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', onFullscreenChange)
 
   watchers.forEach(w => w())
+  flushPendingOptionsSave()
 })
 </script>
 
