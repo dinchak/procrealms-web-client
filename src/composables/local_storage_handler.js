@@ -1,10 +1,36 @@
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
-import { state } from '@/static/state'
+import { incrementPerformanceDiagnostic, state } from '@/static/state'
 import { resetInputMappings } from '@/static/input_mappings'
+
+let saveOptionsTimeout = null
 
 export function useLocalStorageHandler () {
   function saveOptions () {
+    incrementPerformanceDiagnostic('optionsSaveWrites')
     localStorage.setItem('options', JSON.stringify(state.options))
+  }
+
+  function saveOptionsDebounced (waitMs = 250) {
+    incrementPerformanceDiagnostic('optionsSaveCalls')
+
+    if (saveOptionsTimeout) {
+      clearTimeout(saveOptionsTimeout)
+    }
+
+    saveOptionsTimeout = setTimeout(() => {
+      saveOptionsTimeout = null
+      saveOptions()
+    }, waitMs)
+  }
+
+  function flushPendingOptionsSave () {
+    if (!saveOptionsTimeout) {
+      return
+    }
+
+    clearTimeout(saveOptionsTimeout)
+    saveOptionsTimeout = null
+    saveOptions()
   }
 
   function loadOptions () {
@@ -153,6 +179,8 @@ export function useLocalStorageHandler () {
 
   return {
     saveOptions,
+    saveOptionsDebounced,
+    flushPendingOptionsSave,
     loadOptions,
     saveInputMappings,
     loadInputMappings,
