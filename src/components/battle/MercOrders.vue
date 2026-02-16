@@ -22,7 +22,7 @@ import { NDropdown, NButton, NIcon } from 'naive-ui'
 
 // import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
-import { state } from '@/static/state'
+import { incrementUiDiagnostic, state } from '@/static/state'
 
 import AddCommentOutlined from '@vicons/material/AddCommentOutlined'
 
@@ -36,7 +36,6 @@ const props = defineProps({
 const { merc } = toRefs(props)
 
 const options = reactive([])
-const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 let optionsRefreshToken = 0
 let optionsRefreshTimeout = null
 let watchers = []
@@ -48,14 +47,6 @@ const combatPotions = ["healing potion", "energy potion", "stamina potion"]
 - Have a way to select a target on which the action / skill is performed
 - Add more potions
  */
-
-function incrementUiDiagnostic (key, amount = 1) {
-  if (!IS_DEVELOPMENT) {
-    return
-  }
-
-  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
-}
 
 onMounted(() => {
   scheduleSetOptions(0)

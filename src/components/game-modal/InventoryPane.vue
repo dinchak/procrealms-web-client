@@ -55,14 +55,14 @@ import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
-import { state } from '@/static/state'
+import { incrementUiDiagnostic, state } from '@/static/state'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
+import { getActiveInventorySource, getInventorySignature, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
 const { fetchItem, fetchItems } = useWebSocket()
-const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -118,14 +118,6 @@ function getItems () {
   }
 }
 
-function incrementUiDiagnostic (key, amount = 1) {
-  if (!IS_DEVELOPMENT) {
-    return
-  }
-
-  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
-}
-
 function getItemNameClass (item) {
   return selectedIid.value == item.iid ? 'selected' : ''
 }
@@ -173,13 +165,7 @@ function getScrollContainerClass () {
 }
 
 async function mapInventory () {
-  let source = []
-  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
-    source = state.gameState.charmies[state.playerModalAs].items || []
-  } else {
-    source = state.gameState.inventory || []
-  }
-
+  const source = getActiveInventorySource(state)
   return await fetchItems(source.map(i => i.iid))
 }
 
@@ -220,9 +206,11 @@ function watchCharmieInventory () {
   }
 
   charmieInventoryWatcher = watch(() => {
-    return state.gameState.charmies[state.playerModalAs] ? state.gameState.charmies[state.playerModalAs].items : []
+    const charmie = state.gameState.charmies[state.playerModalAs]
+    const charmieItems = charmie ? charmie.items : []
+    return getInventorySignature(charmieItems)
   }, async () => {
-    scheduleInventoryRefresh(0)
+    scheduleInventoryRefresh(16)
   })
 }
 
@@ -245,7 +233,7 @@ async function onSortChange () {
 }
 
 function sortItems (its) {
-  return [...its].sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
+  return sortItemsByKey(its, state.inventorySortValue)
 }
 
 function getColumnItems (colIndex) {
@@ -266,17 +254,17 @@ onMounted(async () => {
   await refreshInventoryItems()
 
   watchers.push(
-    watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}|${i.amount || 1}`), async () => {
+    watch(() => getInventorySignature(state.gameState.inventory || []), async () => {
       if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
-      scheduleInventoryRefresh(0)
+      scheduleInventoryRefresh(16)
     })
   )
 
   watchers.push(
     watch(() => state.playerModalAs, async () => {
-      scheduleInventoryRefresh(0)
+      scheduleInventoryRefresh(16)
       unwatchCharmieInventory()
       watchCharmieInventory()
     })

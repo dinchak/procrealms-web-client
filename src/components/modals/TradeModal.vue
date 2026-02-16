@@ -73,7 +73,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { NPopselect } from 'naive-ui'
-import { state } from '@/static/state'
+import { incrementUiDiagnostic, state } from '@/static/state'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -83,7 +83,7 @@ const { runCommand, fetchItems, fetchEntity, fetchItem } = useWebSocket()
 
 import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml, copperToMoneyString, runItemAction, getActions } = useHelpers()
-const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
+import { getInventorySignature, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const shopItems = ref([])
 const playerItems = ref([])
@@ -96,6 +96,8 @@ let shopRefreshToken = 0
 let playerRefreshToken = 0
 let selectedFetchToken = 0
 let shopkeeperFetchToken = 0
+let shopRefreshTimeout = null
+let playerRefreshTimeout = null
 
 let watchers = []
 
@@ -170,14 +172,6 @@ function getBuyActions (item) {
   return actions
 }
 
-function incrementUiDiagnostic (key, amount = 1) {
-  if (!IS_DEVELOPMENT) {
-    return
-  }
-
-  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
-}
-
 async function refreshShopItems () {
   const token = ++shopRefreshToken
   incrementUiDiagnostic('tradeShopRefreshes')
@@ -192,6 +186,17 @@ async function refreshShopItems () {
   shopItems.value = sortShopkeeperItems(fetchedItems)
 }
 
+function scheduleShopRefresh (delay = 16) {
+  if (shopRefreshTimeout) {
+    clearTimeout(shopRefreshTimeout)
+  }
+
+  shopRefreshTimeout = setTimeout(() => {
+    shopRefreshTimeout = null
+    refreshShopItems()
+  }, delay)
+}
+
 async function refreshPlayerItems () {
   const token = ++playerRefreshToken
   incrementUiDiagnostic('tradePlayerRefreshes')
@@ -204,6 +209,21 @@ async function refreshPlayerItems () {
   }
 
   playerItems.value = sortPlayerItems(fetchedItems)
+}
+
+function schedulePlayerRefresh (delay = 16) {
+  if (playerRefreshTimeout) {
+    clearTimeout(playerRefreshTimeout)
+  }
+
+  playerRefreshTimeout = setTimeout(() => {
+    playerRefreshTimeout = null
+    refreshPlayerItems()
+  }, delay)
+}
+
+function getShopSignature () {
+  return getInventorySignature(state.shop.items || [])
 }
 
 async function refreshShopkeeperEntity (eid) {
@@ -265,8 +285,8 @@ function onModalOpened () {
 
   updateItemList()
 
-  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
-    refreshShopItems()
+  watchers.push(watch(() => getShopSignature(), () => {
+    scheduleShopRefresh(16)
   }, { immediate: true }))
 
   watchers.push(watch(() => state.shop.shopkeeper, async newShopkeeperId => {
@@ -278,14 +298,24 @@ function onModalOpened () {
     refreshShopkeeperEntity(newShopkeeperId)
   }, { immediate: true }))
 
-  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
-    refreshPlayerItems()
+  watchers.push(watch(() => getInventorySignature(state.gameState.inventory || []), () => {
+    schedulePlayerRefresh(16)
   }, { immediate: true }))
 }
 
 function onModalClosed () {
   watchers.forEach(unwatch => unwatch())
   watchers = []
+
+  if (shopRefreshTimeout) {
+    clearTimeout(shopRefreshTimeout)
+    shopRefreshTimeout = null
+  }
+
+  if (playerRefreshTimeout) {
+    clearTimeout(playerRefreshTimeout)
+    playerRefreshTimeout = null
+  }
 
   state.shop.shopkeeper = ''
   state.shop.items = []
@@ -325,9 +355,7 @@ function onInventorySortChange () {
 }
 
 function sortPlayerItems (items) {
-  return [...items].sort((a, b) => {
-    return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1
-  })
+  return sortItemsByKey(items, state.inventorySortValue)
 }
 
 function onShopkeeperSortChange () {
@@ -335,9 +363,7 @@ function onShopkeeperSortChange () {
 }
 
 function sortShopkeeperItems (items) {
-  return [...items].sort((a, b) => {
-    return a[shopkeeperSortValue.value] > b[shopkeeperSortValue.value] ? 1 : -1
-  })
+  return sortItemsByKey(items, shopkeeperSortValue.value)
 }
 
 </script>

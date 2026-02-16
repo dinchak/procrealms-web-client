@@ -42,16 +42,16 @@ import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
-import { state, setMode, prevMode, updateCounter } from '@/static/state'
+import { incrementUiDiagnostic, setMode, prevMode, updateCounter } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { fetchItem, fetchItems } = useWebSocket()
 const { copperToMoneyString, getActions } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
-const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const items = ref([])
 const searchTerm = ref('')
@@ -92,14 +92,6 @@ let watchers = []
 let refreshTimeout = null
 let refreshRequestToken = 0
 let selectedFetchToken = 0
-
-function incrementUiDiagnostic (key, amount = 1) {
-  if (!IS_DEVELOPMENT) {
-    return
-  }
-
-  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
-}
 
 onMounted(() => {
   scheduleItemsRefresh(0)
@@ -170,9 +162,8 @@ function applyFilterSort () {
         item.type.toLowerCase().includes(input)) ||
         (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
     })
-    .sort((a, b) => {
-      return a[value.value] > b[value.value] ? 1 : -1
-    })
+
+  filteredItems.value = sortItemsByKey(filteredItems.value, value.value)
 }
 
 function clickHandler (iid) {

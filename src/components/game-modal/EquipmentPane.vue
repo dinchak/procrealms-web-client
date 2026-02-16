@@ -62,7 +62,7 @@ import { NGrid, NGi } from 'naive-ui'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 import SelectPlayerModalAs from '@/components/game-modal/SelectPlayerModalAs.vue'
 
-import { state } from '@/static/state'
+import { incrementUiDiagnostic, state } from '@/static/state'
 
 import {
   EQUIPMENT_LABELS,
@@ -72,10 +72,10 @@ import {
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { getInventorySignature } from '@/composables/inventory_helpers'
 
 const { ansiToHtml, getPetEid, getActions } = useHelpers()
 const { fetchItems, fetchItem } = useWebSocket()
-const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -88,14 +88,6 @@ let equipmentRefreshToken = 0
 let equipmentRefreshTimeout = null
 let selectedFetchToken = 0
 
-function incrementUiDiagnostic (key, amount = 1) {
-  if (!IS_DEVELOPMENT) {
-    return
-  }
-
-  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
-}
-
 function getFetchIids () {
   return Object.values(getEquipment())
     .filter(iid => iid)
@@ -103,6 +95,20 @@ function getFetchIids () {
       Object.values(getTools())
         .filter(iid => iid)
     )
+}
+
+function getEquipmentSignature () {
+  const entries = Object.values(getEquipment())
+    .filter(Boolean)
+    .map(iid => ({ iid }))
+  return getInventorySignature(entries)
+}
+
+function getToolsSignature () {
+  const entries = Object.values(getTools())
+    .filter(Boolean)
+    .map(iid => ({ iid }))
+  return getInventorySignature(entries)
 }
 
 async function refreshEquipmentItems () {
@@ -118,7 +124,7 @@ async function refreshEquipmentItems () {
   cacheCounter.value += 1
 }
 
-function scheduleEquipmentRefresh (delay = 0) {
+function scheduleEquipmentRefresh (delay = 16) {
   if (equipmentRefreshTimeout) {
     clearTimeout(equipmentRefreshTimeout)
   }
@@ -226,13 +232,13 @@ function getScrollContainerClass () {
 
 let watchers = []
 onMounted(() => {
-  scheduleEquipmentRefresh(0)
+  scheduleEquipmentRefresh(16)
 
   watchers.push(
     watch(
-      () => Object.values(getEquipment()).filter(Boolean).join('|'),
+      () => getEquipmentSignature(),
       () => {
-        scheduleEquipmentRefresh(0)
+        scheduleEquipmentRefresh(16)
       }
     )
   )
@@ -241,16 +247,16 @@ onMounted(() => {
     watch(
       () => state.playerModalAs,
       () => {
-        scheduleEquipmentRefresh(0)
+        scheduleEquipmentRefresh(16)
       }
     )
   )
 
   watchers.push(
     watch(
-      () => Object.values(getTools()).filter(Boolean).join('|'),
+      () => getToolsSignature(),
       () => {
-        scheduleEquipmentRefresh(0)
+        scheduleEquipmentRefresh(16)
       }
     )
   )
