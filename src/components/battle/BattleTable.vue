@@ -1,7 +1,7 @@
 <template>
   <div class="battle-area">
     <BattleField />
-    <ReactionModal v-if="showReactionModal()" />
+    <ReactionModal v-if="showReactionModal" />
 
     <div class="battle-table">
       <div class="participants-header">
@@ -16,7 +16,7 @@
       </div>
       <div
         :class="getParticipantClass(participant)"
-        v-for="participant in getParticipants()"
+        v-for="participant in participants"
         :key="participant.eid"
         @click="setTarget($event, participant.eid)"
       >
@@ -26,7 +26,7 @@
             v-if="state.options.damageAnimations"
           >
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'damage')"
+              v-for="(anim, i) in getEntityAnimations(participant.eid, 'damage')"
               :key="anim.key"
               :style="{ marginLeft: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
@@ -38,7 +38,7 @@
             v-if="state.options.damageAnimations"
           >
             <div
-              v-for="(anim, i) in state.animations.filter(a => a.eid == participant.eid && a.type == 'healing')"
+              v-for="(anim, i) in getEntityAnimations(participant.eid, 'healing')"
               :key="anim.key"
               :style="{ marginLeft: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
@@ -73,7 +73,7 @@
                 </template>
                 <div>Set New Target:</div>
                 <div
-                  v-for="enemy in getTargets()"
+                  v-for="enemy in aliveTargets"
                   :key="enemy.eid"
                   class="target-name"
                   @click="setCharmieTarget($event, participant, enemy.eid)"
@@ -106,7 +106,7 @@
 <script setup>
 import { NIcon, NIconWrapper, NPopover } from 'naive-ui'
 import { CrisisAlertFilled } from '@vicons/material'
-import { reactive, watch, onMounted, onBeforeUnmount } from 'vue'
+import { computed, reactive, watch, onMounted, onBeforeUnmount } from 'vue'
 
 import { ANSI } from '@/static/constants'
 import { state } from '@/static/state'
@@ -129,6 +129,51 @@ const { runCommand } = useWebSocket()
 
 const flashing = reactive({})
 const watchers = []
+
+const participants = computed(() => {
+  const { player, battle } = state.gameState
+  const sortedParticipants = Object.values(battle.participants)
+
+  sortedParticipants.sort((a, b) => {
+    if (battle.myTurn) {
+      const aIsPlayer = a.eid == player.eid ? 1 : 0
+      const bIsPlayer = b.eid == player.eid ? 1 : 0
+      if (aIsPlayer != bIsPlayer) {
+        return bIsPlayer - aIsPlayer
+      }
+    }
+
+    const aAlive = isAlive(a) ? 1 : 0
+    const bAlive = isAlive(b) ? 1 : 0
+    if (aAlive != bAlive) {
+      return bAlive - aAlive
+    }
+
+    return a.nextAction - b.nextAction
+  })
+
+  return sortedParticipants
+})
+
+const aliveTargets = computed(() => participants.value.filter(p => isAlive(p)))
+
+const animationsByEntity = computed(() => {
+  const grouped = {}
+
+  for (const anim of state.animations) {
+    if (!grouped[anim.eid]) {
+      grouped[anim.eid] = { damage: [], healing: [] }
+    }
+
+    if (anim.type == 'healing') {
+      grouped[anim.eid].healing.push(anim)
+    } else {
+      grouped[anim.eid].damage.push(anim)
+    }
+  }
+
+  return grouped
+})
 
 function getParticipantName (participant) {
   return ansiToHtml(participant.tag + ANSI.white + ' L' + ANSI.boldWhite + participant.level + ' ' + participant.colorName)
@@ -214,16 +259,6 @@ function getPartyEntity (participant) {
   return state.gameState.party[participant.eid]
 }
 
-function getParticipants () {
-  const { player, battle } = state.gameState
-  let sortedParticipants = Object.values(battle.participants)
-    .sort((a, b) => a.nextAction - b.nextAction)
-    .sort((a, b) => isAlive(b) - isAlive(a))
-    .sort((a, b) => (battle.myTurn ? (b.eid == player.eid) - (a.eid == player.eid) : 0))
-
-  return sortedParticipants
-}
-
 function getParticipantClass (participant) {
   let classes = ['participant']
   const { participants } = state.gameState.battle
@@ -232,13 +267,6 @@ function getParticipantClass (participant) {
     classes.push('my-target')
   }
   return classes
-}
-
-function getTargets () {
-  return Object.values(state.gameState.battle.participants)
-    .filter(p => {
-      return isAlive(p)
-    })
 }
 
 function setTarget ($event, targetEid) {
@@ -260,9 +288,15 @@ function isAlive (participant) {
   return !participant.dead && !participant.incapacitated
 }
 
-function showReactionModal () {
-  const { battle } = state.gameState
-  return battle.pendingReaction ? true : false
+const showReactionModal = computed(() => !!state.gameState.battle.pendingReaction)
+
+function getEntityAnimations (eid, type) {
+  const bucket = animationsByEntity.value[eid]
+  if (!bucket) {
+    return []
+  }
+
+  return type == 'healing' ? bucket.healing : bucket.damage
 }
 
 function getAnimationClass (anim) {
