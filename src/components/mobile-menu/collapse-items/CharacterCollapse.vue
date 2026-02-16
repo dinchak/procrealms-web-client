@@ -167,8 +167,15 @@
       </div>
 
       <div class="row">
-        <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
+        <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white"></span></div>
         <div>Critical</div>
+        <div class="yellow">{{ player().minRange }}<span class="white">-</span>{{ player().maxRange }}</div>
+        <div>Attack Range</div>
+      </div>
+
+      <div class="row">
+        <div class="bold-red">{{ renderNumber(player().criticalChanceAgainst) }}<span class="white">%</span></div>
+        <div>Critical vs L<span class="bold-white">{{ player().level }}</span></div>
         <div class="bold-white">{{ player().armor }}</div>
         <div>Armor</div>
       </div>
@@ -177,7 +184,7 @@
         <div class="red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
         <div>Multiplier</div>
         <div class="bold-white">{{ renderNumber(player().armorAbsorption) }}<span class="white">%</span></div>
-        <div>absorb vs L<span class="bold-white">{{ player().level }}</span></div>
+        <div>Absorb vs L<span class="bold-white">{{ player().level }}</span></div>
       </div>
 
       <div class="row">
@@ -206,6 +213,13 @@
         <div>Skill Cooldown</div>
         <div><span class="cyan">{{ renderNumber(player().spellCooldown) }}</span>s</div>
         <div>Spell Cooldown</div>
+      </div>
+
+      <div class="row">
+        <div><span class="yellow">{{ renderNumber(player().movement) }}</span></div>
+        <div>Movement</div>
+        <div><span class="bold-yellow">{{ renderNumber(100 * player().xpGainBonus) }}</span>%</div>
+        <div>XP Bonus</div>
       </div>
     </div>
 

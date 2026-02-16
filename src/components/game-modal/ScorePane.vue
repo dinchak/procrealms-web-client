@@ -296,7 +296,11 @@
         </div>
         <div class="combat-stat">
           <div class="bold-white">{{ renderNumber(player().armorAbsorption) }}<span class="white">%</span></div>
-          <div>absorb vs L<span class="bold-white">{{ player().level }}</span></div>
+          <div>Absorb vs L<span class="bold-white">{{ player().level }}</span></div>
+        </div>
+        <div class="combat-stat">
+          <div class="yellow">{{ player().minRange }}<span class="white">-</span>{{ player().maxRange }}</div>
+          <div>Attack Range</div>
         </div>
       </NGi>
 
@@ -307,11 +311,15 @@
         </div>
         <div class="combat-stat">
           <div class="bold-yellow">{{ renderNumber(player().apr) }}</div>
-          <div>Attacks per Round</div>
+          <div>Attacks/Round</div>
         </div>
         <div class="combat-stat">
-          <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white">%</span></div>
-          <div>Critical</div>
+          <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white"></span></div>
+          <div>Critical Hit</div>
+        </div>
+        <div class="combat-stat">
+          <div class="bold-red">{{ renderNumber(player().criticalChanceAgainst) }}<span class="white">%</span></div>
+          <div>Critical vs <span class="bold-white">L{{ player().level }}</span></div>
         </div>
         <div class="combat-stat">
           <div class="red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
@@ -336,6 +344,10 @@
           <div><span class="cyan">{{ renderNumber(player().spellCooldown) }}</span>s</div>
           <div>Spell Cooldown</div>
         </div>
+        <div class="combat-stat">
+          <div><span class="bold-yellow">{{ player().movement }}</span></div>
+          <div>Movement/Turn</div>
+        </div>
       </NGi>
 
       <NGi class="grid-item">
@@ -354,6 +366,10 @@
         <div class="combat-stat">
           <div>+<span class="green">{{ renderNumber(player().healingPower) }}</span>%</div>
           <div>Healing Power</div>
+        </div>
+        <div class="combat-stat">
+          <div>+<span class="bold-yellow">{{ renderNumber(100 * player().xpGainBonus) }}</span>%</div>
+          <div>XP Bonus</div>
         </div>
       </NGi>
     </NGrid>
