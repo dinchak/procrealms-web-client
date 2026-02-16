@@ -5,6 +5,11 @@ const { runCommand } = useWebSocket()
 
 const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{1,50}) = (.+)$'
 const listValuePattern = '^{(.*)}$'
+const triggerBatch = {
+  queue: [],
+  scheduled: false,
+}
+const TRIGGER_BATCH_MS_BUDGET = 8
 
 export function loadSettingsByNameAndType (settings, name, settingsType) {
   let privateSettings = loadSettingsByStorageKey(settingsType + '-' + name.toLowerCase())
@@ -53,6 +58,38 @@ export function processTriggers (line) {
     triggers
       .filter(trigger => trigger.active && trigger.patterns[0] && trigger.commands)
       .forEach(trigger => processTrigger(trigger, stripHtml(line)))
+  }
+}
+
+function flushTriggerBatch () {
+  triggerBatch.scheduled = false
+  const start = performance.now()
+
+  while (triggerBatch.queue.length) {
+    const line = triggerBatch.queue.shift()
+    processTriggers(line)
+
+    if (performance.now() - start >= TRIGGER_BATCH_MS_BUDGET) {
+      break
+    }
+  }
+
+  if (triggerBatch.queue.length) {
+    triggerBatch.scheduled = true
+    setTimeout(flushTriggerBatch, 0)
+  }
+}
+
+export function processTriggersBatch (lines = []) {
+  if (!Array.isArray(lines) || lines.length == 0) {
+    return
+  }
+
+  triggerBatch.queue.push(...lines.filter(line => !!line))
+
+  if (!triggerBatch.scheduled) {
+    triggerBatch.scheduled = true
+    setTimeout(flushTriggerBatch, 0)
   }
 }
 
