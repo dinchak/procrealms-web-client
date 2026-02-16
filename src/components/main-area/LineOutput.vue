@@ -1,9 +1,9 @@
 <template>
   <div id="output" class="output" ref="output" @scroll="onScroll()">
-    <div v-for="(line, i) in state.output"
+    <div v-for="(line, i) in renderedOutput"
       class="line"
       v-html-safe="line"
-      :key="`line-${i}`"
+      :key="`line-${renderStartIndex + i}`"
       @click="lineClick"
       @mouseover="lineMouseover"
       @mouseleave="lineMouseleave">
@@ -11,7 +11,7 @@
     <BattleStatus v-if="state.gameState.battle.active && !state.options.battleTableMode"></BattleStatus>
     <BattleTable v-if="state.gameState.battle.active && state.options.battleTableMode"></BattleTable>
   </div>
-  <div v-show="state.scrolledBack.output" class="scrollback-control" @click="scrollDown()">
+  <div v-show="isScrolledBack" class="scrollback-control" @click="scrollDown()">
     <NIcon>
       <SouthOutlined></SouthOutlined>
     </NIcon>
@@ -26,7 +26,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { watch, nextTick, onMounted, onBeforeUnmount, computed, ref } from 'vue'
 
 import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
@@ -43,8 +43,23 @@ const { onResize, calcTerminalSize } = useWindowHandler()
 
 const outputId = 'output'
 const scrollbackThreshold = 30
+const maxVisibleOutputLines = 600
+
+const output = ref(null)
+const isScrolledBack = computed(() => !!state.scrolledBack)
+const renderStartIndex = computed(() => {
+  if (isScrolledBack.value) {
+    return 0
+  }
+  return Math.max(0, state.output.length - maxVisibleOutputLines)
+})
+const renderedOutput = computed(() => state.output.slice(renderStartIndex.value))
 
 let resizeTimeout = null
+
+function getOutputElement () {
+  return output.value || document.getElementById(outputId)
+}
 
 function doResize () {
   if (resizeTimeout) {
@@ -59,7 +74,7 @@ function doResize () {
 }
 
 function onChanged () {
-  let el = document.getElementById(outputId)
+  let el = getOutputElement()
   if (!el) {
     return
   }
@@ -76,7 +91,7 @@ function onChanged () {
 }
 
 function scrollDown () {
-  let el = document.getElementById(outputId)
+  let el = getOutputElement()
   if (el) {
     let target = Math.max(0, el.scrollHeight - el.clientHeight)
     el.scrollTop = target
@@ -84,7 +99,7 @@ function scrollDown () {
 }
 
 function onScroll () {
-  let el = document.getElementById(outputId)
+  let el = getOutputElement()
   if (el) {
     let { scrollTop, scrollHeight, offsetHeight } = el
     state.scrolledBack = Math.round(scrollTop + offsetHeight + scrollbackThreshold) <= scrollHeight
@@ -127,7 +142,7 @@ onMounted(() => {
   dayjs.extend(relativeTime)
   onResize(doResize)
 
-  let el = document.getElementById(outputId)
+  let el = getOutputElement()
   if (el) {
     el.scrollTop = el.scrollHeight
   }
