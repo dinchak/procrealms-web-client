@@ -17,6 +17,10 @@
         </p>
 
         <NCollapse>
+          <NCollapseItem v-if="isDevelopment" title="diagnostics">
+            <pre>{{ state.diagnostics }}</pre>
+          </NCollapseItem>
+
           <NCollapseItem v-for="key in Object.keys(state.gameState)" :key="key" :title="key">
             <pre>{{ state.gameState[key] }}</pre>
           </NCollapseItem>
@@ -34,6 +38,8 @@ import { useHelpers } from '@/composables/helpers'
 import { useWindowHandler } from '@/composables/window_handler'
 
 import CloseOutlined from '@vicons/material/CloseOutlined'
+
+const isDevelopment = import.meta.env.MODE == 'development'
 
 const { selectNearestElement } = useHelpers()
 const { setFontSize, setFontFamily } = useWindowHandler()

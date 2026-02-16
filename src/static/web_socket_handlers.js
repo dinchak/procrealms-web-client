@@ -7,6 +7,15 @@ import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, strToLines, renderMessage, getTellMessageFrom } = useHelpers()
 
+function getTopLevelPatchKey (path) {
+  if (!path || path == '/') {
+    return null
+  }
+
+  const pathParts = path.split('/').filter(Boolean)
+  return pathParts.length ? pathParts[0] : null
+}
+
 export function onWebSocketEvent (cmd, msg, reqId) {
   if (reqId && reqId.startsWith('inventory-output-')) {
     if (!state.inventoryOutput[reqId]) {
@@ -40,10 +49,17 @@ const webSocketHandlers = {
 
       // comment out this if you uncomment the above
       const patched = jiff.patch(patch, state.gameState)
+      const touchedKeys = new Set()
 
       // invalidate caches for any items/entities that were removed/changed
       for (let line of patch) {
-        const { value } = line
+        const { path, value } = line
+        const topLevelKey = getTopLevelPatchKey(path)
+
+        if (topLevelKey) {
+          touchedKeys.add(topLevelKey)
+        }
+
         if (value && typeof value == 'object') {
           if (value.iid) {
             delete state.cache.itemCache[value.iid]
@@ -54,42 +70,14 @@ const webSocketHandlers = {
         }
       }
 
-      // only update keys that actually changed to avoid spurious watchers
-      for (const key of Object.keys(patched)) {
-        const oldVal = state.gameState[key]
-        const newVal = patched[key]
-
-        const equalArrays = (a, b) => {
-          if (!Array.isArray(a) || !Array.isArray(b)) {
-            return false
-          }
-          if (a.length !== b.length) {
-            return false
-          }
-          for (let i = 0; i < a.length; i++) {
-            if (a[i] === b[i]) {
-              continue
-            }
-
-            if (typeof a[i] === 'object' && typeof b[i] === 'object') {
-              if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) {
-                return false
-              }
-            } else {
-              return false
-            }
-          }
-          return true
+      // only update top-level keys touched by this patch to avoid full-object deep compares
+      for (const key of touchedKeys) {
+        if (!(key in patched)) {
+          continue
         }
 
-        const same =
-          oldVal === newVal ||
-          (Array.isArray(oldVal) && Array.isArray(newVal) && equalArrays(oldVal, newVal)) ||
-          (oldVal && newVal && typeof oldVal === 'object' && typeof newVal === 'object' &&
-            JSON.stringify(oldVal) === JSON.stringify(newVal))
-
-        if (!same) {
-          console.log(`Game state key updated: ${key}`)
+        const newVal = patched[key]
+        if (state.gameState[key] !== newVal) {
           state.gameState[key] = newVal
         }
       }

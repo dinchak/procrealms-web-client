@@ -75,6 +75,7 @@ import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, getPetEid, getActions } = useHelpers()
 const { fetchItems, fetchItem } = useWebSocket()
+const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -83,6 +84,50 @@ const selectedIid = ref(0)
 const selectedItem = ref({})
 
 const cacheCounter = ref(0)
+let equipmentRefreshToken = 0
+let equipmentRefreshTimeout = null
+let selectedFetchToken = 0
+
+function incrementUiDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT) {
+    return
+  }
+
+  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
+}
+
+function getFetchIids () {
+  return Object.values(getEquipment())
+    .filter(iid => iid)
+    .concat(
+      Object.values(getTools())
+        .filter(iid => iid)
+    )
+}
+
+async function refreshEquipmentItems () {
+  const token = ++equipmentRefreshToken
+  incrementUiDiagnostic('equipmentPaneRefreshes')
+  await fetchItems(getFetchIids())
+
+  if (token !== equipmentRefreshToken) {
+    incrementUiDiagnostic('equipmentPaneStaleDrops')
+    return
+  }
+
+  cacheCounter.value += 1
+}
+
+function scheduleEquipmentRefresh (delay = 0) {
+  if (equipmentRefreshTimeout) {
+    clearTimeout(equipmentRefreshTimeout)
+  }
+
+  equipmentRefreshTimeout = setTimeout(() => {
+    equipmentRefreshTimeout = null
+    refreshEquipmentItems()
+  }, delay)
+}
 
 function getItemClass (slot) {
   let iid = getEquipmentIid(slot) || getToolIid(slot)
@@ -150,7 +195,14 @@ async function selectIid (iid) {
   }
 
   selectedIid.value = iid
-  selectedItem.value = await fetchItem(iid)
+  const token = ++selectedFetchToken
+  const detail = await fetchItem(iid)
+
+  if (token !== selectedFetchToken) {
+    return
+  }
+
+  selectedItem.value = detail || {}
 }
 
 function getItemFullName (iid) {
@@ -174,23 +226,13 @@ function getScrollContainerClass () {
 
 let watchers = []
 onMounted(() => {
-  let fetchIids = Object.values(getEquipment())
-    .filter(iid => iid)
-    .concat(
-      Object.values(getTools())
-        .filter(iid => iid)
-    )
-
-  fetchItems(fetchIids).then(() => {
-    cacheCounter.value += 1
-  })
+  scheduleEquipmentRefresh(0)
 
   watchers.push(
     watch(
-      state.gameState.equipment,
-      async () => {
-        await fetchItems(Object.values(getEquipment()))
-        cacheCounter.value += 1
+      () => Object.values(getEquipment()).filter(Boolean).join('|'),
+      () => {
+        scheduleEquipmentRefresh(0)
       }
     )
   )
@@ -198,25 +240,27 @@ onMounted(() => {
   watchers.push(
     watch(
       () => state.playerModalAs,
-      async () => {
-        await fetchItems(Object.values(getEquipment()))
-        cacheCounter.value += 1
+      () => {
+        scheduleEquipmentRefresh(0)
       }
     )
   )
 
   watchers.push(
     watch(
-      () => state.gameState.tools,
-      async () => {
-        await fetchItems(Object.values(getTools()))
-        cacheCounter.value += 1
+      () => Object.values(getTools()).filter(Boolean).join('|'),
+      () => {
+        scheduleEquipmentRefresh(0)
       }
     )
   )
 })
 
 onBeforeUnmount(() => {
+  if (equipmentRefreshTimeout) {
+    clearTimeout(equipmentRefreshTimeout)
+    equipmentRefreshTimeout = null
+  }
   watchers.forEach(w => w())
 })
 

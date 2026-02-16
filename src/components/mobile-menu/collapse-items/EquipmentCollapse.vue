@@ -45,15 +45,23 @@ const selectedSlot = ref('')
 const equipmentRows = ref([])
 const petEquipmentRows = ref([])
 const item = ref({})
+let selectedFetchToken = 0
+
+function refreshRows () {
+  equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
+  petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
+}
 
 let watchers = []
 onMounted(() => {
-  equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
-  petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
-  watchers.push(watch(() => state.gameState.equipment, () => {
-    equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
-    petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
-  }))
+  refreshRows()
+
+  watchers.push(watch(
+    () => [state.playerModalAs, ...Object.values(getEquipment())].join('|'),
+    () => {
+      refreshRows()
+    }
+  ))
 })
 
 onBeforeUnmount(() => {
@@ -85,7 +93,14 @@ async function clickHandler (iid, slot) {
   } else {
     selectedIid.value = iid
     selectedSlot.value = slot
-    item.value = await fetchItem(iid)
+    const token = ++selectedFetchToken
+    const fetched = await fetchItem(iid)
+
+    if (token !== selectedFetchToken) {
+      return
+    }
+
+    item.value = fetched || {}
   }
 }
 

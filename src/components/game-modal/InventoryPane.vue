@@ -62,6 +62,7 @@ import { useWebSocket } from '@/composables/web_socket'
 
 const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
 const { fetchItem, fetchItems } = useWebSocket()
+const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -71,6 +72,9 @@ const selectedIid = ref({})
 const selectedItem = ref({})
 const search = ref('')
 const columns = ref(1)
+let inventoryRefreshToken = 0
+let selectedFetchToken = 0
+let inventoryRefreshTimeout = null
 
 const sortOptions = [
   {
@@ -114,6 +118,14 @@ function getItems () {
   }
 }
 
+function incrementUiDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT) {
+    return
+  }
+
+  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
+}
+
 function getItemNameClass (item) {
   return selectedIid.value == item.iid ? 'selected' : ''
 }
@@ -126,8 +138,12 @@ async function selectItem (item) {
   }
 
   selectedIid.value = item.iid
+  const token = ++selectedFetchToken
 
   const detail = await fetchItem(item.iid)
+  if (token !== selectedFetchToken) {
+    return
+  }
   selectedItem.value = detail || {}
 }
 
@@ -167,6 +183,30 @@ async function mapInventory () {
   return await fetchItems(source.map(i => i.iid))
 }
 
+async function refreshInventoryItems () {
+  const token = ++inventoryRefreshToken
+  incrementUiDiagnostic('inventoryPaneRefreshes')
+  const mapped = await mapInventory()
+
+  if (token !== inventoryRefreshToken) {
+    incrementUiDiagnostic('inventoryPaneStaleDrops')
+    return
+  }
+
+  items.value = sortItems(mapped)
+}
+
+function scheduleInventoryRefresh (delay = 0) {
+  if (inventoryRefreshTimeout) {
+    clearTimeout(inventoryRefreshTimeout)
+  }
+
+  inventoryRefreshTimeout = setTimeout(() => {
+    inventoryRefreshTimeout = null
+    refreshInventoryItems()
+  }, delay)
+}
+
 let charmieInventoryWatcher = null
 function unwatchCharmieInventory () {
   if (charmieInventoryWatcher) {
@@ -182,7 +222,7 @@ function watchCharmieInventory () {
   charmieInventoryWatcher = watch(() => {
     return state.gameState.charmies[state.playerModalAs] ? state.gameState.charmies[state.playerModalAs].items : []
   }, async () => {
-    items.value = sortItems(await mapInventory())
+    scheduleInventoryRefresh(0)
   })
 }
 
@@ -201,13 +241,11 @@ function onWidthChange () {
 }
 
 async function onSortChange () {
-  let fetched = await fetchItems(state.gameState.inventory.map(i => i.iid))
-  items.value = sortItems(fetched)
+  items.value = sortItems(items.value)
 }
 
 function sortItems (its) {
-  its.sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
-  return its
+  return [...its].sort((a, b) => { return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1 })
 }
 
 function getColumnItems (colIndex) {
@@ -225,20 +263,20 @@ onMounted(async () => {
   onWidthChange()
   window.addEventListener('resize', onWidthChange)
 
-  items.value = sortItems(await mapInventory())
+  await refreshInventoryItems()
 
   watchers.push(
-    watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), async () => {
+    watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}|${i.amount || 1}`), async () => {
       if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
         return
       }
-      items.value = sortItems(await mapInventory())
+      scheduleInventoryRefresh(0)
     })
   )
 
   watchers.push(
     watch(() => state.playerModalAs, async () => {
-      items.value = sortItems(await mapInventory())
+      scheduleInventoryRefresh(0)
       unwatchCharmieInventory()
       watchCharmieInventory()
     })
@@ -246,6 +284,10 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  if (inventoryRefreshTimeout) {
+    clearTimeout(inventoryRefreshTimeout)
+    inventoryRefreshTimeout = null
+  }
   watchers.forEach(w => w())
   unwatchCharmieInventory()
   window.removeEventListener('resize', onWidthChange)

@@ -28,6 +28,8 @@ const props = defineProps({
 const { iid, item: itemProp, selected } = toRefs(props)
 
 const fetchedItem = ref({})
+let fetchToken = 0
+let watchers = []
 
 // Computed `displayItem` prefers the passed prop when available, otherwise falls back to fetchedItem.
 const displayItem = computed(() => {
@@ -49,34 +51,46 @@ function getInventoryRowClass () {
   return classes.join(' ')
 }
 
-onMounted(async () => {
+async function refreshFetchedItem (nextIid) {
+  const token = ++fetchToken
+
+  if (!nextIid) {
+    fetchedItem.value = {}
+    return
+  }
+
+  const fetched = await fetchItem(nextIid)
+  if (token !== fetchToken) {
+    return
+  }
+
+  fetchedItem.value = fetched || {}
+}
+
+onMounted(() => {
   if (!(itemProp.value && Object.keys(itemProp.value).length) && iid.value) {
-    fetchedItem.value = await fetchItem(iid.value)
+    refreshFetchedItem(iid.value)
   }
 
   // If parent doesn't provide `item`, keep fetchedItem in sync with iid changes.
-  const stopIidWatch = watch(() => iid.value, async newIid => {
+  watchers.push(watch(() => iid.value, newIid => {
     if (itemProp.value && Object.keys(itemProp.value).length) {
       return
     }
-    if (newIid) {
-      fetchedItem.value = await fetchItem(newIid)
-    } else {
-      fetchedItem.value = {}
-    }
-  })
+    refreshFetchedItem(newIid)
+  }))
 
   // If the parent starts providing an `item` object, clear the fetched cache.
-  const stopItemPropWatch = watch(() => itemProp.value, newVal => {
+  watchers.push(watch(() => itemProp.value, newVal => {
     if (newVal && Object.keys(newVal).length) {
+      fetchToken += 1
       fetchedItem.value = {}
     }
-  })
+  }))
+})
 
-  onBeforeUnmount(() => {
-    stopIidWatch()
-    stopItemPropWatch()
-  })
+onBeforeUnmount(() => {
+  watchers.forEach(w => w())
 })
 </script>
 

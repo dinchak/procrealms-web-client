@@ -83,6 +83,7 @@ const { runCommand, fetchItems, fetchEntity, fetchItem } = useWebSocket()
 
 import { useHelpers } from '@/composables/helpers'
 const { ansiToHtml, copperToMoneyString, runItemAction, getActions } = useHelpers()
+const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const shopItems = ref([])
 const playerItems = ref([])
@@ -91,6 +92,10 @@ const selectedIid = ref('')
 const selectedItem = ref({})
 const shopkeeperSortValue = ref('name')
 const onlyUsableItems = ref(false)
+let shopRefreshToken = 0
+let playerRefreshToken = 0
+let selectedFetchToken = 0
+let shopkeeperFetchToken = 0
 
 let watchers = []
 
@@ -165,6 +170,53 @@ function getBuyActions (item) {
   return actions
 }
 
+function incrementUiDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT) {
+    return
+  }
+
+  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
+}
+
+async function refreshShopItems () {
+  const token = ++shopRefreshToken
+  incrementUiDiagnostic('tradeShopRefreshes')
+  const iids = state.shop.items.map(it => it.iid)
+  const fetchedItems = await fetchItems(iids)
+
+  if (token !== shopRefreshToken) {
+    incrementUiDiagnostic('tradeShopStaleDrops')
+    return
+  }
+
+  shopItems.value = sortShopkeeperItems(fetchedItems)
+}
+
+async function refreshPlayerItems () {
+  const token = ++playerRefreshToken
+  incrementUiDiagnostic('tradePlayerRefreshes')
+  const iids = state.gameState.inventory.map(it => it.iid)
+  const fetchedItems = await fetchItems(iids)
+
+  if (token !== playerRefreshToken) {
+    incrementUiDiagnostic('tradePlayerStaleDrops')
+    return
+  }
+
+  playerItems.value = sortPlayerItems(fetchedItems)
+}
+
+async function refreshShopkeeperEntity (eid) {
+  const token = ++shopkeeperFetchToken
+  const entity = await fetchEntity(eid)
+
+  if (token !== shopkeeperFetchToken) {
+    return
+  }
+
+  shopkeeper.value = entity || { name: 'Loading...' }
+}
+
 function getSellActions (item) {
   let actions = getActions(item)
   actions = actions.filter(ac => !['Sell', 'Sell All'].includes(ac.label))
@@ -213,18 +265,21 @@ function onModalOpened () {
 
   updateItemList()
 
-  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}`), async () => {
-    let iids = state.shop.items.map(it => it.iid)
-    shopItems.value = sortShopkeeperItems(await fetchItems(iids))
+  watchers.push(watch(() => state.shop.items.map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
+    refreshShopItems()
   }, { immediate: true }))
 
   watchers.push(watch(() => state.shop.shopkeeper, async newShopkeeperId => {
-    shopkeeper.value = await fetchEntity(newShopkeeperId)
+    if (!newShopkeeperId) {
+      shopkeeper.value = { name: 'Loading...' }
+      return
+    }
+
+    refreshShopkeeperEntity(newShopkeeperId)
   }, { immediate: true }))
 
-  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}`), async () => {
-    let iids = state.gameState.inventory.map(it => it.iid)
-    playerItems.value = sortPlayerItems(await fetchItems(iids))
+  watchers.push(watch(() => state.gameState.inventory.map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
+    refreshPlayerItems()
   }, { immediate: true }))
 }
 
@@ -257,7 +312,12 @@ async function selectItem (iid) {
     return
   }
   selectedIid.value = iid
-  selectedItem.value = await fetchItem(iid)
+  const token = ++selectedFetchToken
+  const detail = await fetchItem(iid)
+  if (token !== selectedFetchToken) {
+    return
+  }
+  selectedItem.value = detail || {}
 }
 
 function onInventorySortChange () {
@@ -265,11 +325,9 @@ function onInventorySortChange () {
 }
 
 function sortPlayerItems (items) {
-  items.sort((a, b) => {
+  return [...items].sort((a, b) => {
     return a[state.inventorySortValue] > b[state.inventorySortValue] ? 1 : -1
   })
-
-  return items
 }
 
 function onShopkeeperSortChange () {
@@ -277,11 +335,9 @@ function onShopkeeperSortChange () {
 }
 
 function sortShopkeeperItems (items) {
-  items.sort((a, b) => {
+  return [...items].sort((a, b) => {
     return a[shopkeeperSortValue.value] > b[shopkeeperSortValue.value] ? 1 : -1
   })
-
-  return items
 }
 
 </script>

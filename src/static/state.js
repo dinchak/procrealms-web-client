@@ -31,6 +31,7 @@ export const state = reactive({
   inputEmitter: new EventEmitter(),
   options: resetOptions(),
   cache: resetCache(),
+  diagnostics: resetDiagnostics(),
 
   validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
@@ -172,6 +173,7 @@ export function resetState () {
   state.prevModes = ['login']
   state.pendingRequests = {}
   state.cache = resetCache()
+  state.diagnostics = resetDiagnostics()
   state.gameState = resetGameState()
   state.output = []
   state.chat = []
@@ -188,6 +190,56 @@ function resetCache () {
     itemCache: {},
     commandCache: {},
     auctionCache: {},
+    inflightItemRequests: {},
+    inflightEntityRequests: {},
+  }
+}
+
+function resetDiagnostics () {
+  return {
+    cache: {
+      fetchItemCalls: 0,
+      fetchItemCacheHits: 0,
+      fetchItemCacheMisses: 0,
+      fetchItemTimeouts: 0,
+      fetchItemsCalls: 0,
+      fetchItemsRequestedIds: 0,
+      fetchItemsCacheMissIds: 0,
+      fetchItemsBatchRequests: 0,
+      fetchItemsBatchDeduped: 0,
+      fetchItemsTimeouts: 0,
+      fetchEntityCalls: 0,
+      fetchEntityCacheHits: 0,
+      fetchEntityCacheMisses: 0,
+      fetchEntityTimeouts: 0,
+      fetchEntitiesCalls: 0,
+      fetchEntitiesRequestedIds: 0,
+      fetchEntitiesCacheMissIds: 0,
+      fetchEntitiesBatchRequests: 0,
+      fetchEntitiesBatchDeduped: 0,
+      fetchEntitiesTimeouts: 0,
+      itemCacheEvictions: 0,
+      entityCacheEvictions: 0,
+      commandCacheEvictions: 0,
+      fetchItemsTotalMs: 0,
+      fetchEntitiesTotalMs: 0,
+    },
+    ui: {
+      inventoryCollapseRefreshes: 0,
+      inventoryCollapseStaleDrops: 0,
+      inventoryPaneRefreshes: 0,
+      inventoryPaneStaleDrops: 0,
+      equipmentPaneRefreshes: 0,
+      equipmentPaneStaleDrops: 0,
+      auctionSellRefreshes: 0,
+      auctionSellStaleDrops: 0,
+      tradePlayerRefreshes: 0,
+      tradePlayerStaleDrops: 0,
+      tradeShopRefreshes: 0,
+      tradeShopStaleDrops: 0,
+      mercOrdersRefreshes: 0,
+      mercOrdersStaleDrops: 0,
+    }
   }
 }
 

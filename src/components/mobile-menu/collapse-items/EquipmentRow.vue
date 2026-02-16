@@ -19,6 +19,23 @@ const props = defineProps(['iid', 'itemSlot', 'selected'])
 
 const { iid, itemSlot, selected } = toRefs(props)
 const item = ref({})
+let fetchToken = 0
+
+async function refreshItemFromIid (nextIid) {
+  const token = ++fetchToken
+
+  if (!nextIid) {
+    item.value = {}
+    return
+  }
+
+  const fetched = await fetchItem(nextIid)
+  if (token !== fetchToken) {
+    return
+  }
+
+  item.value = fetched || {}
+}
 
 function getItemName () {
   return item.value ? item.value.fullName : ''
@@ -33,17 +50,11 @@ function getEquipmentRowClass () {
 }
 
 let watchers = []
-onMounted(async () => {
-  if (iid.value) {
-    item.value = await fetchItem(iid.value)
-  }
+onMounted(() => {
+  refreshItemFromIid(iid.value)
 
-  watchers.push(watch(() => iid.value, async () => {
-    if (iid.value) {
-      item.value = await fetchItem(iid.value)
-    } else {
-      item.value = {}
-    }
+  watchers.push(watch(() => iid.value, () => {
+    refreshItemFromIid(iid.value)
   }))
 })
 

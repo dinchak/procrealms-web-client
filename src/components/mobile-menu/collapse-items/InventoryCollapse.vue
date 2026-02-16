@@ -51,6 +51,7 @@ const { fetchItem, fetchItems } = useWebSocket()
 const { copperToMoneyString, getActions } = useHelpers()
 
 const props = defineProps(['inventory', 'isPlayer', 'character', 'effects', 'menu'])
+const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
 const items = ref([])
 const searchTerm = ref('')
@@ -88,29 +89,43 @@ const options = [
 ]
 
 let watchers = []
-onMounted(() => {
-  setItems(props.inventory)
+let refreshTimeout = null
+let refreshRequestToken = 0
+let selectedFetchToken = 0
 
-  watchers.push(watch(() => (state.gameState.inventory || []).map(i => `${i.iid}|${i.name}`), () => {
-    setItems(props.inventory)
+function incrementUiDiagnostic (key, amount = 1) {
+  if (!IS_DEVELOPMENT) {
+    return
+  }
+
+  state.diagnostics.ui[key] = (state.diagnostics.ui[key] || 0) + amount
+}
+
+onMounted(() => {
+  scheduleItemsRefresh(0)
+
+  watchers.push(watch(() => (props.inventory || []).map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
+    scheduleItemsRefresh(0)
   }))
 
   watchers.push(watch(searchTerm, () => {
-    setItems(props.inventory)
+    applyFilterSort()
   }))
 
   watchers.push(watch(updateCounter, () => {
-    setItems(props.inventory)
+    scheduleItemsRefresh(40)
   }))
 
   watchers.push(watch(value, () => {
-    filteredItems.value = filteredItems.value.sort((a, b) => {
-      return a[value.value] > b[value.value] ? 1 : -1
-    })
+    applyFilterSort()
   }))
 })
 
 onBeforeUnmount(() => {
+  if (refreshTimeout) {
+    clearTimeout(refreshTimeout)
+    refreshTimeout = null
+  }
   watchers.forEach(w => w())
 })
 
@@ -118,35 +133,43 @@ function getSelected (iid) {
   return selectedIid.value === iid
 }
 
-function mapInventory (inventory) {
-  const src = inventory || []
-  const arr = Array.isArray(src) ? src : Object.values(src)
-  return arr.map(obj => ({
-    iid: obj.iid,
-    name: obj.name || obj.fullName || '',
-    fullName: obj.name || obj.fullName || '',
-    colorName: obj.colorName || '',
-    type: obj.type || '',
-    subtype: obj.subtype || '',
-    amount: obj.amount || 1,
-    level: obj.level || 0,
-    weight: obj.weight || 0,
-    value: obj.value || 0
-  }))
+async function setItems (inventory) {
+  const token = ++refreshRequestToken
+  incrementUiDiagnostic('inventoryCollapseRefreshes')
+
+  const inventoryItems = inventory || []
+  const fetchedItems = await fetchItems(inventoryItems.map(i => i.iid))
+
+  if (token !== refreshRequestToken) {
+    incrementUiDiagnostic('inventoryCollapseStaleDrops')
+    return
+  }
+
+  items.value = fetchedItems
+  applyFilterSort()
 }
 
-async function setItems (inventory) {
-  items.value = await fetchItems(inventory.map(i => i.iid))
-  // items.value = mapInventory(inventory)
+function scheduleItemsRefresh (delay = 0) {
+  if (refreshTimeout) {
+    clearTimeout(refreshTimeout)
+  }
 
+  refreshTimeout = setTimeout(() => {
+    refreshTimeout = null
+    setItems(props.inventory)
+  }, delay)
+}
+
+function applyFilterSort () {
   const input = searchTerm.value.toLowerCase()
 
-  filteredItems.value = items.value.filter(item => {
-    return (item.name.toLowerCase().includes(input) ||
-      item.colorName.toLowerCase().includes(input) ||
-      item.type.toLowerCase().includes(input)) ||
-      (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
-  })
+  filteredItems.value = items.value
+    .filter(item => {
+      return (item.name.toLowerCase().includes(input) ||
+        item.colorName.toLowerCase().includes(input) ||
+        item.type.toLowerCase().includes(input)) ||
+        (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
+    })
     .sort((a, b) => {
       return a[value.value] > b[value.value] ? 1 : -1
     })
@@ -160,7 +183,11 @@ function clickHandler (iid) {
   }
 
   selectedIid.value = iid
+  const token = ++selectedFetchToken
   fetchItem(iid).then(item => {
+    if (token !== selectedFetchToken) {
+      return
+    }
     selectedItem.value = item || {}
   })
 }

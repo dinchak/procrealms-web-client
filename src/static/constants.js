@@ -2,6 +2,12 @@ export const CACHE_DELETE_TIME = 1200000 // 20 minutes
 
 export const CACHE_DELETE_INTERVAL = 900000 // 15 minutes
 
+export const CACHE_MAX_ITEM_ENTRIES = 2500
+
+export const CACHE_MAX_ENTITY_ENTRIES = 1500
+
+export const CACHE_MAX_COMMAND_ENTRIES = 2000
+
 export const FONT_SIZES = [{
   value: '14px',
   label: 'Small'
