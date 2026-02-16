@@ -9,8 +9,31 @@ import {
 } from '@/static/constants'
 
 const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
+const DEV_WS_DELAY_MIN_MS = Number(import.meta.env.VITE_DEV_WS_DELAY_MIN_MS ?? 10)
+const DEV_WS_DELAY_MAX_MS = Number(import.meta.env.VITE_DEV_WS_DELAY_MAX_MS ?? 30)
 
 export function useWebSocket () {
+  function getDevelopmentMessageDelayMs () {
+    if (!IS_DEVELOPMENT) {
+      return 0
+    }
+
+    const min = Number.isFinite(DEV_WS_DELAY_MIN_MS) ? Math.max(0, DEV_WS_DELAY_MIN_MS) : 0
+    const max = Number.isFinite(DEV_WS_DELAY_MAX_MS) ? Math.max(min, DEV_WS_DELAY_MAX_MS) : min
+
+    return Math.floor(Math.random() * (max - min + 1)) + min
+  }
+
+  function delay (ms) {
+    if (!ms || ms <= 0) {
+      return Promise.resolve()
+    }
+
+    return new Promise(resolve => {
+      setTimeout(resolve, ms)
+    })
+  }
+
   function isTimeoutError (err) {
     return err instanceof Error && err.message.includes('timed out')
   }
@@ -76,12 +99,23 @@ export function useWebSocket () {
   }
 
   function initConnection ({ onConnect, onClose, url }) {
+    let incomingMessageQueue = Promise.resolve()
+
     try {
       state.websocketConnection = new window.WebSocket(url)
 
       state.websocketConnection.onopen = onConnect
       state.websocketConnection.onclose = onClose
-      state.websocketConnection.onmessage = ({ data }) => _onMessage(data)
+      state.websocketConnection.onmessage = ({ data }) => {
+        incomingMessageQueue = incomingMessageQueue
+          .then(async () => {
+            await delay(getDevelopmentMessageDelayMs())
+            _onMessage(data)
+          })
+          .catch(err => {
+            console.log(err.stack)
+          })
+      }
     } catch (err) {
       console.log(err.stack)
     }

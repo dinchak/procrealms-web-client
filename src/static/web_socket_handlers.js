@@ -7,206 +7,6 @@ import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, strToLines, renderMessage, getTellMessageFrom } = useHelpers()
 
-function getTopLevelPatchKey (path) {
-  if (!path || path == '/') {
-    return null
-  }
-
-  const pathParts = path.split('/').filter(Boolean)
-  return pathParts.length ? pathParts[0] : null
-}
-
-function normalizePatchPathToSection (path, topLevelKey) {
-  if (!path) {
-    return path
-  }
-
-  const base = `/${topLevelKey}`
-  if (path == base) {
-    return '/'
-  }
-
-  if (path.startsWith(base + '/')) {
-    return path.slice(base.length)
-  }
-
-  return path
-}
-
-function normalizePatchOperationToSection (operation, topLevelKey) {
-  const normalized = { ...operation }
-
-  if (typeof normalized.path == 'string') {
-    normalized.path = normalizePatchPathToSection(normalized.path, topLevelKey)
-  }
-
-  if (typeof normalized.from == 'string') {
-    normalized.from = normalizePatchPathToSection(normalized.from, topLevelKey)
-  }
-
-  return normalized
-}
-
-function isInvalidPatchOperationError (err) {
-  const message = String(err && err.message ? err.message : '')
-
-  return err && (
-    err.name == 'InvalidPatchOperationError' ||
-    message.includes('InvalidPatchOperationError') ||
-    message.includes('path does not exist') ||
-    message.includes('outside of array bounds')
-  )
-}
-
-function parsePointerSegments (pointer) {
-  if (typeof pointer != 'string' || pointer == '' || pointer == '/') {
-    return []
-  }
-
-  return pointer
-    .split('/')
-    .slice(1)
-    .map(segment => segment.replace(/~1/g, '/').replace(/~0/g, '~'))
-}
-
-function isArrayIndexSegment (segment) {
-  return typeof segment == 'string' && /^\d+$/.test(segment)
-}
-
-function isArrayPathCandidate (pointer, { allowAppend = false } = {}) {
-  const segments = parsePointerSegments(pointer)
-  if (!segments.length) {
-    return false
-  }
-
-  const lastSegment = segments[segments.length - 1]
-  if (allowAppend && lastSegment == '-') {
-    return true
-  }
-
-  return isArrayIndexSegment(lastSegment)
-}
-
-function shouldIgnoreInvalidPatchOperation ({ op, path, from }, err) {
-  if (!isInvalidPatchOperationError(err)) {
-    return false
-  }
-
-  const message = String(err && err.message ? err.message : '')
-  const operationPath = typeof path == 'string' ? path : ''
-  const fromPath = typeof from == 'string' ? from : ''
-
-  const listOps = ['add', 'remove', 'replace', 'move']
-  const isListPathOperation =
-    (listOps.includes(op) && isArrayPathCandidate(operationPath, { allowAppend: op == 'add' })) ||
-    (op == 'move' && isArrayPathCandidate(fromPath))
-
-  if (isListPathOperation && (
-    message.includes('path does not exist') ||
-    message.includes('outside of array bounds')
-  )) {
-    return true
-  }
-
-  if (['remove', 'replace', 'test'].includes(op) && message.includes('path does not exist')) {
-    return true
-  }
-
-  if (op == 'add' && message.includes('outside of array bounds')) {
-    return true
-  }
-
-  return false
-}
-
-function applyPatchWithTolerance (patch, initialState) {
-  let nextState = initialState
-
-  for (const operation of patch) {
-    try {
-      nextState = jiff.patch([operation], nextState)
-    } catch (err) {
-      if (shouldIgnoreInvalidPatchOperation(operation, err)) {
-        incrementPerformanceDiagnostic('patchToleratedOperations')
-        continue
-      }
-
-      throw err
-    }
-  }
-
-  return nextState
-}
-
-function canUseTopLevelScopedPatch (patch) {
-  for (const operation of patch) {
-    const topLevelKey = getTopLevelPatchKey(operation.path)
-    if (!topLevelKey) {
-      return false
-    }
-
-    if (typeof operation.from == 'string') {
-      const fromTopLevelKey = getTopLevelPatchKey(operation.from)
-      if (!fromTopLevelKey || fromTopLevelKey != topLevelKey) {
-        return false
-      }
-    }
-  }
-
-  return true
-}
-
-function applyTopLevelScopedPatch (patch) {
-  if (!canUseTopLevelScopedPatch(patch)) {
-    incrementPerformanceDiagnostic('patchFallbackFullState')
-    state.gameState = applyPatchWithTolerance(patch, state.gameState)
-    return state.gameState
-  }
-
-  const touchedKeys = new Set()
-  const patchByTopLevelKey = new Map()
-  let hasRootOperation = false
-
-  for (let op of patch) {
-    const topLevelKey = getTopLevelPatchKey(op.path)
-    if (!topLevelKey) {
-      hasRootOperation = true
-      break
-    }
-
-    if (!patchByTopLevelKey.has(topLevelKey)) {
-      patchByTopLevelKey.set(topLevelKey, [])
-    }
-    patchByTopLevelKey.get(topLevelKey).push(normalizePatchOperationToSection(op, topLevelKey))
-
-    touchedKeys.add(topLevelKey)
-  }
-
-  if (hasRootOperation) {
-    incrementPerformanceDiagnostic('patchFallbackFullState')
-    state.gameState = applyPatchWithTolerance(patch, state.gameState)
-    return state.gameState
-  }
-
-  for (const key of touchedKeys) {
-    const sectionPatch = patchByTopLevelKey.get(key) || []
-
-    if (!sectionPatch.length) {
-      continue
-    }
-
-    const currentSection = state.gameState[key]
-    const nextSection = applyPatchWithTolerance(sectionPatch, currentSection)
-    if (state.gameState[key] !== nextSection) {
-      state.gameState[key] = nextSection
-    }
-  }
-
-  incrementPerformanceDiagnostic('patchTopLevelFastPath')
-  incrementPerformanceDiagnostic('patchTouchedTopLevelKeys', touchedKeys.size)
-  return state.gameState
-}
-
 export function onWebSocketEvent (cmd, msg, reqId) {
   incrementPerformanceDiagnostic('websocketEvents')
 
@@ -242,7 +42,7 @@ const webSocketHandlers = {
       //   state.gameState = jiff.patch([operation], state.gameState)
       // }
 
-      applyTopLevelScopedPatch(patch)
+      state.gameState = jiff.patch(patch, state.gameState)
 
       // invalidate caches for any items/entities that were removed/changed
       for (let line of patch) {
@@ -259,13 +59,8 @@ const webSocketHandlers = {
       }
 
     } catch (err) {
-      try {
-        incrementPerformanceDiagnostic('patchFallbackFullState')
-        state.gameState = applyPatchWithTolerance(patch, state.gameState)
-      } catch (fallbackErr) {
-        addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${fallbackErr.message}`, 'output')
-        console.log(fallbackErr.stack)
-      }
+      addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${err.message}`, 'output')
+      console.log(err.stack)
     }
   },
 
