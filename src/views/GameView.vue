@@ -44,6 +44,7 @@
     <PlayerModal v-if="state.modals.playerModal"/>
     <RadialOverlay/>
     <SideMovement/>
+    <SituationModal v-if="inSituationRoom()"/>
     <TradeModal v-if="state.modals.tradeModal"/>
     <TriggersModal v-if="state.modals.triggersModal"/>
   </NEl>
@@ -67,6 +68,7 @@ const MercModal = defineAsyncComponent(() => import('@/components/modals/MercMod
 import RadialOverlay from '@/components/modals/RadialOverlay.vue'
 const TradeModal = defineAsyncComponent(() => import('@/components/modals/TradeModal.vue'))
 const TriggersModal = defineAsyncComponent(() => import('@/components/modals/TriggersModal.vue'))
+const SituationModal = defineAsyncComponent(() => import('@/components/modals/SituationModal.vue'))
 
 import MobileMenu from '@/components/mobile-menu/MobileMenu.vue'
 
@@ -90,6 +92,7 @@ import { useHelpers } from '@/composables/helpers'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { useWindowHandler } from '@/composables/window_handler'
+
 
 const { selectMovementDirection, moveInSelectedDirection } = useHelpers()
 const { triggerResize } = useWindowHandler()
@@ -180,6 +183,11 @@ function onFullscreenChange () {
     state.isFullscreen = false
   }
   triggerResize()
+}
+
+function inSituationRoom () {
+  const { room } = state.gameState
+  return room && room.meta && room.meta.situationTitle
 }
 
 function startAudioContext () {
