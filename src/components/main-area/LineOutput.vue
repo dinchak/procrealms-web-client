@@ -1,24 +1,26 @@
 <template>
-  <div id="output" class="output" ref="output" @scroll="onScroll()">
-    <div v-for="(line, i) in renderedOutput"
-      class="line"
-      v-html-safe="line"
-      :key="`line-${renderStartIndex + i}`"
-      @click="lineClick"
-      @mouseover="lineMouseover"
-      @mouseleave="lineMouseleave">
+  <div class="output-container">
+    <div id="output" class="output" ref="output" @scroll.passive="onScroll()">
+      <div v-for="(line, i) in renderedOutput"
+        class="line"
+        v-html-safe="line"
+        :key="`line-${renderStartIndex + i}`"
+        @click="lineClick"
+        @mouseover="lineMouseover"
+        @mouseleave="lineMouseleave">
+      </div>
+      <BattleStatus v-if="state.gameState.battle.active && !state.options.battleTableMode"></BattleStatus>
+      <BattleTable v-if="state.gameState.battle.active && state.options.battleTableMode"></BattleTable>
     </div>
-    <BattleStatus v-if="state.gameState.battle.active && !state.options.battleTableMode"></BattleStatus>
-    <BattleTable v-if="state.gameState.battle.active && state.options.battleTableMode"></BattleTable>
-  </div>
-  <div v-show="isScrolledBack" class="scrollback-control" @click="scrollDown()">
-    <NIcon>
-      <SouthOutlined></SouthOutlined>
-    </NIcon>
-    More
-    <NIcon>
-      <SouthOutlined></SouthOutlined>
-    </NIcon>
+    <div v-show="isScrolledBack" class="scrollback-control" @click="scrollDown()">
+      <NIcon>
+        <SouthOutlined></SouthOutlined>
+      </NIcon>
+      More
+      <NIcon>
+        <SouthOutlined></SouthOutlined>
+      </NIcon>
+    </div>
   </div>
 </template>
 
@@ -26,7 +28,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import { watch, nextTick, onMounted, onBeforeUnmount, computed, ref } from 'vue'
+import { watch, onMounted, onBeforeUnmount, computed, ref } from 'vue'
 
 import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
@@ -39,11 +41,11 @@ import SouthOutlined from '@vicons/material/SouthOutlined'
 import { NIcon } from 'naive-ui'
 
 const { send, runCommand } = useWebSocket()
-const { onResize, calcTerminalSize } = useWindowHandler()
+const { onResize, offResize, calcTerminalSize } = useWindowHandler()
 
 const outputId = 'output'
 const scrollbackThreshold = 30
-const maxVisibleOutputLines = 600
+const maxVisibleOutputLines = 400
 
 const output = ref(null)
 const isScrolledBack = computed(() => !!state.scrolledBack)
@@ -56,9 +58,17 @@ const renderStartIndex = computed(() => {
 const renderedOutput = computed(() => state.output.slice(renderStartIndex.value))
 
 let resizeTimeout = null
+let outputSyncFrame = 0
+let scrollStateFrame = 0
+let pendingForceScroll = false
+let resizeObserver = null
 
 function getOutputElement () {
   return output.value || document.getElementById(outputId)
+}
+
+function getResizeTarget () {
+  return getOutputElement()?.parentElement || null
 }
 
 function doResize () {
@@ -73,7 +83,16 @@ function doResize () {
   }, 500)
 }
 
-function onChanged () {
+function scrollToBottom (el = getOutputElement()) {
+  if (!el) {
+    return
+  }
+
+  let target = Math.max(0, el.scrollHeight - el.clientHeight)
+  el.scrollTop = target
+}
+
+function syncOutputState (forceScroll = false) {
   let el = getOutputElement()
   if (!el) {
     return
@@ -83,27 +102,48 @@ function onChanged () {
 
   let atBottom = Math.round(scrollTop + offsetHeight) >= Math.round(scrollHeight - scrollbackThreshold)
 
-  state.scrolledBack = !atBottom
+  const shouldScrollToBottom = forceScroll || atBottom
+  state.scrolledBack = !shouldScrollToBottom
 
-  if (atBottom) {
-    nextTick(() => scrollDown())
+  if (shouldScrollToBottom) {
+    scrollToBottom(el)
   }
+}
+
+function scheduleOutputSync ({ forceScroll = false } = {}) {
+  pendingForceScroll = pendingForceScroll || forceScroll
+
+  if (outputSyncFrame) {
+    return
+  }
+
+  outputSyncFrame = requestAnimationFrame(() => {
+    outputSyncFrame = 0
+    const shouldForceScroll = pendingForceScroll
+    pendingForceScroll = false
+    syncOutputState(shouldForceScroll)
+  })
 }
 
 function scrollDown () {
-  let el = getOutputElement()
-  if (el) {
-    let target = Math.max(0, el.scrollHeight - el.clientHeight)
-    el.scrollTop = target
-  }
+  scheduleOutputSync({ forceScroll: true })
 }
 
 function onScroll () {
-  let el = getOutputElement()
-  if (el) {
+  if (scrollStateFrame) {
+    return
+  }
+
+  scrollStateFrame = requestAnimationFrame(() => {
+    scrollStateFrame = 0
+    let el = getOutputElement()
+    if (!el) {
+      return
+    }
+
     let { scrollTop, scrollHeight, offsetHeight } = el
     state.scrolledBack = Math.round(scrollTop + offsetHeight + scrollbackThreshold) <= scrollHeight
-  }
+  })
 }
 
 function lineClick (ev) {
@@ -128,23 +168,48 @@ function lineMouseleave (ev) {
 }
 
 function pageUp () {
-  let activeTabElement = document.getElementById(outputId)
+  let activeTabElement = getOutputElement()
+  if (!activeTabElement) {
+    return
+  }
+
   activeTabElement.scrollTop = activeTabElement.scrollTop - activeTabElement.clientHeight * 9 / 10
 }
 
 function pageDown () {
-  let activeTabElement = document.getElementById(outputId)
+  let activeTabElement = getOutputElement()
+  if (!activeTabElement) {
+    return
+  }
+
   activeTabElement.scrollTop = activeTabElement.scrollTop + activeTabElement.clientHeight * 9 / 10
+}
+
+function observeOutputResize () {
+  if (typeof ResizeObserver == 'undefined') {
+    return
+  }
+
+  const target = getResizeTarget()
+  if (!target) {
+    return
+  }
+
+  resizeObserver = new ResizeObserver(() => {
+    doResize()
+  })
+  resizeObserver.observe(target)
 }
 
 let watchers = []
 onMounted(() => {
   dayjs.extend(relativeTime)
   onResize(doResize)
+  observeOutputResize()
 
   let el = getOutputElement()
   if (el) {
-    el.scrollTop = el.scrollHeight
+    scrollToBottom(el)
   }
 
   doResize()
@@ -159,17 +224,41 @@ onMounted(() => {
   state.inputEmitter.on('pageDown', pageDown)
   state.inputEmitter.on('scrollDown', scrollDown)
 
-  watchers.push(watch(() => state.output.length, () => onChanged()))
+  watchers.push(watch(() => state.output.length, () => {
+    scheduleOutputSync({ forceScroll: !state.scrolledBack })
+  }, { flush: 'post' }))
 
-  watchers.push(watch(() => state.gameState.battle.active, () => scrollDown()))
-  watchers.push(watch(() => state.gameState.battle.participants, () => onChanged()))
-  watchers.push(watch(() => state.options, () => doResize()))
+  watchers.push(watch(() => state.gameState.battle.active, () => scrollDown(), { flush: 'post' }))
+  watchers.push(watch(() => `${state.gameState.battle.active}|${state.options.battleTableMode}|${Object.keys(state.gameState.battle.participants || {}).join('|')}`, () => {
+    scheduleOutputSync({ forceScroll: !state.scrolledBack })
+  }, { flush: 'post' }))
 })
 
 onBeforeUnmount(() => {
   state.inputEmitter.off('pageUp', pageUp)
   state.inputEmitter.off('pageDown', pageDown)
   state.inputEmitter.off('scrollDown', scrollDown)
+  offResize(doResize)
+
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  }
+
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout)
+    resizeTimeout = null
+  }
+
+  if (outputSyncFrame) {
+    cancelAnimationFrame(outputSyncFrame)
+    outputSyncFrame = 0
+  }
+
+  if (scrollStateFrame) {
+    cancelAnimationFrame(scrollStateFrame)
+    scrollStateFrame = 0
+  }
 
   for (let watcher of watchers) {
     watcher()
@@ -179,6 +268,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less">
+.output-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
 .output {
   position: relative;
   /* fill the .line-area height so this element is the scrolling container */

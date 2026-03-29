@@ -32,9 +32,9 @@
           </div>
           <div class="shop-inventory">
             <div v-for="{ name, iid } in state.shop.items" :key="iid" class="item-row">
-              <div :class=itemClass(iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass(iid)" @click="selectItem(iid)"></div>
-                  <ItemDetails :item="selectedItem" :actions="getBuyActions(selectedItem)" :item-output-id="iid" v-if="selectedIid == iid"></ItemDetails>
+              <div :class="itemClass('shop', iid)">
+                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass('shop', iid)" @click="selectItem('shop', iid)"></div>
+                  <ItemDetails :item="selectedItem" :actions="getBuyActions(iid)" :item-output-id="iid" v-if="isSelected('shop', iid)"></ItemDetails>
               </div>
             </div>
           </div>
@@ -57,9 +57,9 @@
           </div>
           <div class="player-inventory">
             <div v-for="item in playerItems" :key="item.iid" class="item-row">
-              <div :class=itemClass(item.iid)>
-                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass(item)" @click="selectItem(item.iid)"></div>
-                  <ItemDetails :item="item" :actions="getSellActions(item)" :item-output-id="item.iid" v-if="selectedIid == item.iid"></ItemDetails>
+              <div :class="itemClass('player', item.iid)">
+                <div class="name selectable" v-html-safe="ansiToHtml(item.fullName)" :class="getItemNameClass('player', item.iid)" @click="selectItem('player', item.iid)"></div>
+                  <ItemDetails :item="selectedItem" :actions="getSellActions(item.iid)" :item-output-id="item.iid" v-if="isSelected('player', item.iid)"></ItemDetails>
               </div>
             </div>
           </div>
@@ -89,6 +89,7 @@ const shopItems = ref([])
 const playerItems = ref([])
 const shopkeeper = ref({ name: 'Loading...' })
 const selectedIid = ref('')
+const selectedSource = ref('')
 const selectedItem = ref({})
 const shopkeeperSortValue = ref('name')
 const onlyUsableItems = ref(false)
@@ -128,25 +129,34 @@ const sortOptions = [
   }
 ]
 
-function getBuyActions (item) {
+function getBuyActions (iid) {
+  const currentItem = resolveTradeItem('shop', iid)
+  if (!currentItem) {
+    return []
+  }
+
   let actions = []
 
   actions.push({
     label: 'Buy',
     onClick: async () => {
-      await runItemAction('buy', item)
-      updateItemList()
+      const ran = await runTradeItemAction('shop', 'buy', iid)
+      if (ran) {
+        updateItemList()
+      }
     },
     class: 'bold-green',
     disabled: false
   })
 
-  if (item.amount > 1) {
+  if (currentItem.amount > 1) {
     actions.push({
       label: 'Buy All',
       onClick: async () => {
-        await runItemAction('buy all', item)
-        updateItemList()
+        const ran = await runTradeItemAction('shop', 'buy all', iid)
+        if (ran) {
+          updateItemList()
+        }
       },
       class: 'bold-green',
       disabled: false
@@ -155,15 +165,15 @@ function getBuyActions (item) {
 
   actions.push({
     label: 'Examine',
-    onClick: () => runItemAction('examine', item),
+    onClick: () => runTradeItemAction('shop', 'examine', iid),
     class: 'bold-cyan',
     disabled: false
   })
 
-  if (['armor', 'weapon'].includes(item.type)) {
+  if (['armor', 'weapon'].includes(currentItem.type)) {
     actions.push({
       label: 'Compare',
-      onClick: () => runItemAction('compare', item),
+      onClick: () => runTradeItemAction('shop', 'compare', iid),
       class: 'bold-magenta',
       disabled: false
     })
@@ -184,6 +194,13 @@ async function refreshShopItems () {
   }
 
   shopItems.value = sortShopkeeperItems(fetchedItems)
+
+  if (selectedSource.value === 'shop' && selectedIid.value) {
+    const hasSelectedItem = state.shop.items.some(item => item.iid === selectedIid.value)
+    if (!hasSelectedItem) {
+      clearTradeSelection()
+    }
+  }
 }
 
 function scheduleShopRefresh (delay = 16) {
@@ -211,6 +228,10 @@ async function refreshPlayerItems () {
 
   const mergedItems = mergeInventorySourceWithFetchedItems(sourceItems, fetchedItems)
   playerItems.value = sortPlayerItems(mergedItems)
+
+  if (selectedSource.value === 'player' && selectedIid.value && !getPlayerItemByIid(selectedIid.value)) {
+    clearTradeSelection()
+  }
 }
 
 function schedulePlayerRefresh (delay = 16) {
@@ -239,9 +260,71 @@ async function refreshShopkeeperEntity (eid) {
   shopkeeper.value = entity || { name: 'Loading...' }
 }
 
-function getSellActions (item) {
-  let actions = getActions(item)
-  actions = actions.filter(ac => !['Sell', 'Sell All'].includes(ac.label))
+function isSelected (source, iid) {
+  return selectedSource.value === source && selectedIid.value === iid
+}
+
+function getPlayerItemByIid (iid) {
+  return playerItems.value.find(item => item.iid === iid) || null
+}
+
+function getShopItemByIid (iid) {
+  return shopItems.value.find(item => item.iid === iid) || null
+}
+
+function resolveTradeItem (source, iid) {
+  if (!iid) {
+    return null
+  }
+
+  if (isSelected(source, iid) && selectedItem.value && selectedItem.value.iid === iid) {
+    return selectedItem.value
+  }
+
+  if (source === 'player') {
+    return getPlayerItemByIid(iid)
+  }
+
+  if (source === 'shop') {
+    return getShopItemByIid(iid)
+  }
+
+  return null
+}
+
+async function runTradeItemAction (source, command, iid) {
+  const item = resolveTradeItem(source, iid)
+  if (!item || !item.iid) {
+    return false
+  }
+
+  await runItemAction(command, item)
+  return true
+}
+
+function getPlayerActions (iid) {
+  const item = resolveTradeItem('player', iid)
+  if (!item) {
+    return []
+  }
+
+  return getActions(item)
+    .filter(action => !['Sell', 'Sell All'].includes(action.label))
+    .map(action => ({
+      ...action,
+      onClick: async () => {
+        await runTradeItemAction('player', action.label.toLowerCase(), iid)
+      }
+    }))
+}
+
+function getSellActions (iid) {
+  const item = resolveTradeItem('player', iid)
+  if (!item) {
+    return []
+  }
+
+  let actions = getPlayerActions(iid)
 
   let sellLabel = 'Sell'
   if (item.amount > 1) {
@@ -251,8 +334,10 @@ function getSellActions (item) {
   actions.unshift({
     label: sellLabel,
     onClick: async () => {
-      await runItemAction('sell', item)
-      updateItemList()
+      const ran = await runTradeItemAction('player', 'sell', iid)
+      if (ran) {
+        updateItemList()
+      }
     },
     class: 'bold-red',
     disabled: false
@@ -262,8 +347,10 @@ function getSellActions (item) {
     actions.unshift({
       label: 'Sell All',
       onClick: async () => {
-        await runItemAction('sell all', item)
-        updateItemList()
+        const ran = await runTradeItemAction('player', 'sell all', iid)
+        if (ran) {
+          updateItemList()
+        }
       },
       class: 'bold-red',
       disabled: false
@@ -313,6 +400,11 @@ function onModalClosed () {
   watchers.forEach(unwatch => unwatch())
   watchers = []
 
+  shopRefreshToken++
+  playerRefreshToken++
+  selectedFetchToken++
+  shopkeeperFetchToken++
+
   if (shopRefreshTimeout) {
     clearTimeout(shopRefreshTimeout)
     shopRefreshTimeout = null
@@ -330,30 +422,42 @@ function onModalClosed () {
   shopItems.value = []
   playerItems.value = []
 
+  clearTradeSelection()
+
   state.inventoryOutput = {}
 }
 
-function itemClass (itemIid) {
-  return selectedIid.value === itemIid ? 'item border selected-item' : 'item'
+function clearTradeSelection () {
+  selectedSource.value = ''
+  selectedIid.value = ''
+  selectedItem.value = {}
 }
 
-function getItemNameClass (iid) {
-  return selectedIid.value == iid ? 'selected' : ''
+function itemClass (source, itemIid) {
+  return isSelected(source, itemIid) ? 'item border selected-item' : 'item'
 }
 
-async function selectItem (iid) {
-  if (selectedIid.value == iid) {
-    selectedIid.value = ''
-    selectedItem.value = {}
+function getItemNameClass (source, iid) {
+  return isSelected(source, iid) ? 'selected' : ''
+}
+
+async function selectItem (source, iid) {
+  if (isSelected(source, iid)) {
+    clearTradeSelection()
     return
   }
+
+  selectedSource.value = source
   selectedIid.value = iid
+  selectedItem.value = resolveTradeItem(source, iid) || {}
+
   const token = ++selectedFetchToken
   const detail = await fetchItem(iid)
-  if (token !== selectedFetchToken) {
+  if (token !== selectedFetchToken || !isSelected(source, iid)) {
     return
   }
-  selectedItem.value = detail || {}
+
+  selectedItem.value = detail || resolveTradeItem(source, iid) || {}
 }
 
 function onInventorySortChange () {

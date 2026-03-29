@@ -11,6 +11,10 @@ export function useWindowHandler () {
     }
   }
 
+  function offResize (cb) {
+    resizeHandlers = resizeHandlers.filter(handler => handler !== cb)
+  }
+
   function triggerResize (ev) {
     for (let handler of resizeHandlers) {
       handler(ev)
@@ -88,7 +92,7 @@ export function useWindowHandler () {
   }
 
   return {
-    onResize, triggerResize, calcTerminalSize,
+    onResize, offResize, triggerResize, calcTerminalSize,
     setFontSize, setFontFamily, toggleFullscreen,
   }
 }

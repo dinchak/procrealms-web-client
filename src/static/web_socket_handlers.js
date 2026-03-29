@@ -6,6 +6,49 @@ import { playMessageSound, playTrackByName } from '@/static/sound'
 import { useHelpers } from '@/composables/helpers'
 
 const { ansiToHtml, strToLines, renderMessage, getTellMessageFrom } = useHelpers()
+const MESSAGE_BUFFER_LIMITS = {
+  max: 800,
+  trimTo: 600,
+}
+
+function getMessageChannelKey ({ from, to, channel }) {
+  if (channel == 'tell') {
+    return `tell-${getTellMessageFrom({ from, to, channel })}`
+  }
+
+  return channel
+}
+
+function trimMessagesIfNeeded () {
+  if (state.messages.length <= MESSAGE_BUFFER_LIMITS.max) {
+    return
+  }
+
+  const trimAmount = Math.max(0, state.messages.length - MESSAGE_BUFFER_LIMITS.trimTo)
+  if (!trimAmount) {
+    return
+  }
+
+  const trimmedMessages = state.messages.splice(0, trimAmount)
+  incrementPerformanceDiagnostic('messageTrimEvents')
+  incrementPerformanceDiagnostic('messageTrimmedMessages', trimAmount)
+
+  for (const message of trimmedMessages) {
+    if (!message?.unseen) {
+      continue
+    }
+
+    const channelKey = getMessageChannelKey(message)
+    if (!state.unseenMessageCount[channelKey]) {
+      continue
+    }
+
+    state.unseenMessageCount[channelKey]--
+    if (state.unseenMessageCount[channelKey] <= 0) {
+      delete state.unseenMessageCount[channelKey]
+    }
+  }
+}
 
 export function onWebSocketEvent (cmd, msg, reqId) {
   incrementPerformanceDiagnostic('websocketEvents')
@@ -160,20 +203,14 @@ const webSocketHandlers = {
     } else {
       state.messages.push({ id, from, to, channel, timestamp, message, unseen: true })
 
-      let channelKey = channel
-      if (channel == 'tell') {
-        let tellFrom = getTellMessageFrom({ from, to, channel })
-        channelKey = `tell-${tellFrom}`
-      }
+      const channelKey = getMessageChannelKey({ from, to, channel })
 
       if (!state.unseenMessageCount[channelKey]) {
         state.unseenMessageCount[channelKey] = 0
       }
       state.unseenMessageCount[channelKey]++
 
-      if (state.messages.length > 1000) {
-        state.messages.shift()
-      }
+      trimMessagesIfNeeded()
 
       if (state.options.chatInMain) {
         out = renderMessage({ channel, from, to, message })
@@ -211,7 +248,6 @@ const webSocketHandlers = {
   'help.entry': ({ entry, content }) => {
     let helpFile = { entry, content }
     if (!state.help.openEntries.some(e => e.entry == entry)) {
-      state.help.contents.push(helpFile)
       state.help.openEntries.push(helpFile)
     }
     state.gamepadHelpTab = entry

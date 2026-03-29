@@ -1,6 +1,6 @@
 <template>
   <div class="chat-box">
-    <div class="line" v-for="message in state.messages" :key="message.id" v-html-safe="renderMessage(message)">
+    <div class="line" v-for="message in visibleMessages" :key="message.id" v-html-safe="renderMessage(message)">
       <!-- <div class="channel"><span class="black">[</span><span :class="getChannelClass(message.channel)">{{ message.channel }}</span><span class="black">]</span></div>
       <div class="from">{{ message.from }}</div>
       <div class="content" v-html-safe="message.message"></div> -->
@@ -10,10 +10,12 @@
 
 <script setup>
 import { state } from '@/static/state'
-import { onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useHelpers } from '@/composables/helpers'
 
 const { renderMessage } = useHelpers()
+const maxVisibleMessages = 200
+const visibleMessages = computed(() => state.messages.slice(-maxVisibleMessages))
 
 function scrollDown () {
   const chatBox = document.querySelector('.chat-box')

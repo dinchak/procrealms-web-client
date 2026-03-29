@@ -150,6 +150,7 @@ export const state = reactive({
 
   help: {
     topics: {
+      newbie: [],
       skills: [],
       general: [],
       commands: [],
@@ -178,10 +179,31 @@ export function resetState () {
   state.diagnostics = resetDiagnostics()
   state.gameState = resetGameState()
   state.output = []
+  state.messages = []
+  state.unseenMessageCount = {}
   state.chat = []
   state.trade = []
   state.newbie = []
   state.animations = []
+  state.shop = {
+    items: [],
+    shopkeeper: '',
+    prices: {},
+  }
+  state.help = {
+    topics: {
+      newbie: [],
+      skills: [],
+      general: [],
+      commands: [],
+    },
+    topicsLoaded: false,
+    searchResults: [],
+    contents: [],
+    openEntries: [],
+  }
+  state.inventoryOutput = {}
+  state.gamepadHelpTab = false
   state.triggers = new Map()
   state.variables = new Map()
 }
@@ -246,6 +268,8 @@ function resetDiagnostics () {
       websocketEvents: 0,
       websocketPatchOperations: 0,
       websocketOutputLines: 0,
+      messageTrimEvents: 0,
+      messageTrimmedMessages: 0,
       triggerCalls: 0,
       outputLinesQueued: 0,
       outputFlushCount: 0,
@@ -447,8 +471,8 @@ let preloadBuffers = {}
 let addLinesTimeout = null
 const BUFFER_LIMITS = {
   output: {
-    max: 5000,
-    trimTo: 4500,
+    max: 3000,
+    trimTo: 2000,
   },
   default: {
     max: 2000,
