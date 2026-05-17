@@ -1,8 +1,5 @@
 <template>
   <div class="effects">
-    <div class="effect" v-if="!effects || !Object.keys(effects).length">
-      <div class="name">No effects</div>
-    </div>
     <div
       v-for="effect in Object.values(effects)"
       :key="effect.name"

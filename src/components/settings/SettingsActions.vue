@@ -80,8 +80,9 @@ async function onFileSelected (event) {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
   .settings-button {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     &:last-child {
       margin-bottom: 0;
     }

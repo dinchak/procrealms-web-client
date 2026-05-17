@@ -1,5 +1,20 @@
 <template>
   <div class="details">
+    <NButton
+      v-if="canLookInContainer()"
+      class="container-look-button selectable"
+      ghost
+      size="small"
+      title="Look inside"
+      aria-label="Look inside"
+      @click.stop="lookInContainer"
+    >
+      <template #icon>
+        <NIcon>
+          <Inventory2Outlined />
+        </NIcon>
+      </template>
+    </NButton>
 
     <div
       class="actions">
@@ -56,6 +71,10 @@
       </div>
     </div>
 
+    <template v-if="renderInstantRestoration()">
+      <div class="instant-restoration" v-html-safe="renderInstantRestoration()"></div>
+    </template>
+
     <div class="crafting" v-if="(item.ingredients && item.ingredients.length > 0) || (item.itemsRequired && item.itemsRequired.length > 0) || (item.skillsRequired && item.skillsRequired.length > 0)">
       <div class="header bold-yellow">Crafting</div>
       <div class="row" v-if="item.ingredients && item.ingredients.length > 0">
@@ -77,12 +96,16 @@
 </template>
 <script setup>
 import { defineProps, toRefs } from 'vue'
-import { NButton } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
+import Inventory2Outlined from '@vicons/material/Inventory2Outlined'
+
 import { useHelpers } from '@/composables/helpers'
+import { useWebSocket } from '@/composables/web_socket'
 import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 import { state } from '@/static/state'
 
 const { ansiToHtml, copperToMoneyString, ucfirst, renderNumber, listToString } = useHelpers()
+const { runCommand } = useWebSocket()
 
 const props = defineProps({
   item: {
@@ -100,6 +123,19 @@ const props = defineProps({
 })
 
 const { item, actions, itemOutputId } = toRefs(props)
+
+function canLookInContainer () {
+  return item.value.subtype == 'container'
+}
+
+function lookInContainer () {
+  if (!canLookInContainer()) {
+    return
+  }
+
+  runCommand(`look in iid:${item.value.iid}`)
+}
+
 function getBaseStats () {
   if (item.value.type == 'armor') {
     return [{
@@ -146,23 +182,19 @@ function getBaseStats () {
       value: renderNumber(item.value.weight) + ' lbs',
     }]
 
-    if (item.value.food > 0) {
-      stats.push({
-        label: 'Food',
-        value: item.value.food,
-        color: 'bold-green'
-      })
-    }
-
     return stats
   } else {
-    return [{
+    let rows = [{
       label: copperToMoneyString(item.value.value, true),
       value: false
-    }, {
-      label: false,
-      value: renderNumber(item.value.weight) + ' lbs',
     }]
+    if (item.value.weight) {
+      rows.push({
+        label: 'Weight',
+        value: renderNumber(item.value.weight) + ' lbs',
+      })
+    }
+    return rows
   }
 }
 
@@ -179,46 +211,49 @@ function getBaseStatValueClass (stat) {
 
 function getItemBonuses () {
   let bonuses = []
-  let bonusKeys = Object.keys(item.value)
 
-  for (let key of bonusKeys) {
-    let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == key)
-    if (!itemEffect) {
-      continue
-    }
+  if (item.value.type != 'consumable') {
+    let bonusKeys = Object.keys(item.value)
 
-    if (item[key] == 0) {
-      continue
-    }
-
-    bonuses.push({
-      name: itemEffect.label || key,
-      amount: item.value[key]
-    })
-  }
-
-  if (item.value.flags) {
-    for (let flag of item.value.flags) {
-      if (!flag.bonuses) {
+    for (let key of bonusKeys) {
+      let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == key)
+      if (!itemEffect) {
         continue
       }
 
-      for (let bonus of flag.bonuses) {
-        let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
-        let row = bonuses.find(b => b.label == (itemEffect ? itemEffect.label : bonus.name))
-        if (row) {
-          row.amount += bonus.amount
-          row.flag = flag.name
+      if (item.value[key] == 0) {
+        continue
+      }
+
+      bonuses.push({
+        name: itemEffect.label || key,
+        amount: item.value[key]
+      })
+    }
+
+    if (item.value.flags) {
+      for (let flag of item.value.flags) {
+        if (!flag.bonuses) {
           continue
         }
 
-        row = {
-          name: itemEffect ? itemEffect.label : bonus.name,
-          amount: bonus.amount,
-          flag: flag.name
-        }
+        for (let bonus of flag.bonuses) {
+          let itemEffect = ITEM_EFFECTS.find(effect => effect.bonus == bonus.name)
+          let row = bonuses.find(b => b.label == (itemEffect ? itemEffect.label : bonus.name))
+          if (row) {
+            row.amount += bonus.amount
+            row.flag = flag.name
+            continue
+          }
 
-        bonuses.push(row)
+          row = {
+            name: itemEffect ? itemEffect.label : bonus.name,
+            amount: bonus.amount,
+            flag: flag.name
+          }
+
+          bonuses.push(row)
+        }
       }
     }
   }
@@ -243,6 +278,48 @@ function getItemBonuses () {
   }
 
   return bonuses
+}
+
+const instantRestorationKeys = [{
+  key: 'hp',
+  label: 'HP'
+}, {
+  key: 'energy',
+  label: 'energy'
+}, {
+  key: 'stamina',
+  label: 'stamina'
+}, {
+  key: 'food',
+  label: 'food'
+}]
+
+function renderInstantRestoration () {
+  if (item.value.type != 'consumable') {
+    return ''
+  }
+
+  let restorations = instantRestorationKeys
+    .filter(restoration => item.value[restoration.key] > 0)
+    .map(restoration => `<span class="bold-green">${renderNumber(item.value[restoration.key])}</span> <span class="bold-white">${restoration.label}</span>`)
+
+  if (restorations.length == 0) {
+    return ''
+  }
+
+  return `Instantly restores ${renderRestorationList(restorations)} when consumed.`
+}
+
+function renderRestorationList (restorations) {
+  if (restorations.length == 1) {
+    return restorations[0]
+  }
+
+  if (restorations.length == 2) {
+    return restorations.join(' and ')
+  }
+
+  return `${restorations.slice(0, -1).join(', ')}, and ${restorations[restorations.length - 1]}`
 }
 
 function getTotalBonuses () {
@@ -348,6 +425,15 @@ function renderSkillsRequired () {
 .details {
   background: rgb(16, 18, 22);
   padding-top: 10px;
+  position: relative;
+
+  .container-look-button {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 1;
+  }
+
   .tags {
     display: flex;
     flex-direction: row;
@@ -433,6 +519,10 @@ function renderSkillsRequired () {
     }
   }
 
+  .instant-restoration {
+    padding: 0 10px 10px 10px;
+  }
+
   .total-bonuses {
     display: flex;
     flex-direction: row;
@@ -478,7 +568,7 @@ function renderSkillsRequired () {
   .actions {
     display: flex;
     flex-direction: row;
-    padding: 0 10px 0px 10px;
+    padding: 0 48px 0px 10px;
     flex-wrap: wrap;
 
     .n-button {

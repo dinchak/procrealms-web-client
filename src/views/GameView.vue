@@ -24,7 +24,7 @@
         <div class="bottom-split">
           <BottomHUD v-if="!state.gameState.battle.active"/>
           <QuickSlots v-if="state.options.showQuickSlots"/>
-          <PlayerPrompt v-if="state.gameState.prompt"/>
+          <PlayerPrompt v-if="state.options.showPlayerPrompt && state.gameState.prompt"/>
           <QuickSlotHandlers/>
           <PartyStats v-if="state.options.showPartyStats && !state.gameState.battle.active"/>
           <KeyboardInput :focus-mode="'input'" :active-modes="['hotkey', 'input']"/>
@@ -44,6 +44,7 @@
     <PlayerModal v-if="state.modals.playerModal"/>
     <RadialOverlay/>
     <SideMovement/>
+    <SettingsOverlay v-if="state.modals.settingsModal"/>
     <SituationModal v-if="inSituationRoom()"/>
     <TradeModal v-if="state.modals.tradeModal"/>
     <TriggersModal v-if="state.modals.triggersModal"/>
@@ -80,6 +81,7 @@ import QuickSlotHandlers from '@/components/main-area/QuickSlotHandlers.vue'
 import BottomHUD from '@/components/main-area/BottomHUD.vue'
 import SideMap from '@/components/main-area/SideMap.vue'
 import SideMovement from '@/components/main-area/SideMovement.vue'
+import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import PartyStats from '@/components/hud/PartyStats.vue'
 import PlayerPrompt from '@/components/hud/PlayerPrompt.vue'

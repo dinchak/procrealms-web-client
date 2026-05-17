@@ -68,15 +68,11 @@
         </NIcon>
       </NBadge>
     </div>
-
-    <SettingsOverlay v-if="state.modals.settingsModal"/>
   </div>
 </template>
 
 <script setup>
 import { NIcon, NBadge } from 'naive-ui'
-
-import SettingsOverlay from '@/components/settings/SettingsOverlay.vue'
 
 import AssessmentOutlined from '@vicons/material/AssessmentOutlined'
 import ChatFilled from '@vicons/material/ChatFilled'
@@ -152,18 +148,14 @@ function totalNumUnseenMessages () {
     cursor: pointer;
     transition: all 0.2s;
     background: #18181b;
-    border: 1px solid #18181b;
     user-select: none;
     transition: all 0.3s;
-    border-radius: 4px;
 
     &:hover {
-      border: 1px solid rgb(69 100 119);
       background-color: rgb(27 38 45 / 90%);
     }
 
     &.active {
-      border: 1px solid rgb(69 100 119);
       background-color: rgb(27 38 45 / 90%);
       color: #fff;
     }

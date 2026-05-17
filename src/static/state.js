@@ -111,7 +111,7 @@ export const state = reactive({
   },
 
   crafting: {
-    filterType: 'all',
+    filterType: 'known',
     levelFilter: '',
     selectedSkill: '',
     recipes: [],
@@ -362,6 +362,7 @@ export const configurableOptions = {
   },
   'Input': {
     'Keep Sent Commands': 'keepSentCommands',
+    'Show Player Prompt': 'showPlayerPrompt',
     'Text Input Always Focused': 'textInputAlwaysFocused',
     'Unfocus Input On Command': 'unfocusInputOnCommand',
     'Gamepad Enabled': 'gamepadEnabled'
@@ -390,6 +391,7 @@ function resetOptions () {
     largeVitals: false,
     chatInMain: true,
     roomDescriptionMinimap: false,
+    showPlayerPrompt: true,
     textInputAlwaysFocused: false,
     unfocusInputOnCommand: false,
     gamepadEnabled: false,

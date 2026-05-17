@@ -96,6 +96,15 @@
       >
         <NIcon size="24"><DynamicFormOutlined/></NIcon>
       </NButton>
+
+      <NButton size="medium"
+        title="Player Prompt"
+        :type="getOptionType('showPlayerPrompt')"
+        @click="toggleOption('showPlayerPrompt')"
+      >
+        <NIcon size="24"><ArrowForwardIosFilled/></NIcon>
+      </NButton>
+
     </div>
   </div>
 
@@ -114,7 +123,7 @@ import MapOutlined from '@vicons/material/MapOutlined'
 import MeetingRoomOutlined from '@vicons/material/MeetingRoomOutlined'
 import OpenWithOutlined from '@vicons/material/OpenWithOutlined'
 import SmartButtonOutlined from '@vicons/material/SmartButtonOutlined'
-import SplitscreenOutlined from '@vicons/material/SplitscreenOutlined'
+import ArrowForwardIosFilled from '@vicons/material/ArrowForwardIosFilled'
 
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'

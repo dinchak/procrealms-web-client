@@ -112,8 +112,6 @@ const rules = {
       validator (rule, value) {
         if (!value) {
           return new Error('Password is required')
-        } else if (value.length < 3) {
-          return new Error('Password is too short')
         }
       }
     }
@@ -137,6 +135,11 @@ const rules = {
       message: 'Invalid character name',
       asyncValidator: () => {
         return new Promise((resolve, reject) => {
+          if (!model.value.password) {
+            reject(new Error('Password is required'))
+            return
+          }
+
           sendWithResponse('create', {
             name: model.value.name,
             password: model.value.password,

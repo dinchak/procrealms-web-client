@@ -111,10 +111,13 @@ function getEnterClass () {
   }
 }
 .movement.is-side {
+  gap: 5px;
+
   .row {
     display: flex;
     flex-direction: row;
-    margin-bottom: 5px;
+    gap: 5px;
+
     .direction {
       opacity: 0;
       font-size: 1.5rem;
@@ -125,7 +128,6 @@ function getEnterClass () {
       height: 41px;
       background-color: #222;
       transition: all 0.3s;
-      margin-left: 5px;
       &.active {
         opacity: 0.7;
         background-color: #333;
@@ -142,9 +144,6 @@ function getEnterClass () {
         background-color: #63e2b7;
         color: #000;
       }
-    }
-    &:last-child {
-      margin-bottom: 0;
     }
   }
 }

@@ -1,8 +1,5 @@
 <template>
   <div class="aliases" v-if="state.options.showSideAliases">
-    <div v-if="getAliases().length === 0">
-      No aliases
-    </div>
     <div class="alias" v-for="alias in getAliases()" :key="alias.alias">
       <n-button size="small" @click="runAlias(alias.alias)">{{ alias.alias }}</n-button>
     </div>

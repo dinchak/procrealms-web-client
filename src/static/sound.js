@@ -2,11 +2,63 @@ import { state } from '@/static/state'
 import { MUSIC_TRACKS } from '@/static/constants'
 
 let trackLoading = false
+let randomPlaylist = []
+let nextPlaylistIndex = 0
+
+function shuffleTracks (previousTrack) {
+  let playlist = [...MUSIC_TRACKS]
+
+  for (let i = playlist.length - 1; i > 0; i--) {
+    let swapIndex = Math.random() * (i + 1) | 0
+    let track = playlist[i]
+    playlist[i] = playlist[swapIndex]
+    playlist[swapIndex] = track
+  }
+
+  if (previousTrack && playlist.length > 1 && playlist[0].name === previousTrack.name) {
+    let swapIndex = playlist.findIndex(track => track.name !== previousTrack.name)
+    let track = playlist[0]
+    playlist[0] = playlist[swapIndex]
+    playlist[swapIndex] = track
+  }
+
+  return playlist
+}
+
+function getNextRandomTrack () {
+  const { currentTrack } = state.music
+
+  if (!randomPlaylist.length || nextPlaylistIndex >= randomPlaylist.length) {
+    randomPlaylist = shuffleTracks(currentTrack)
+    nextPlaylistIndex = 0
+  }
+
+  let track = randomPlaylist[nextPlaylistIndex]
+
+  if (track?.name === currentTrack?.name && MUSIC_TRACKS.length > 1) {
+    let swapIndex = randomPlaylist.findIndex((playlistTrack, index) => {
+      return index > nextPlaylistIndex && playlistTrack.name !== currentTrack.name
+    })
+
+    if (swapIndex !== -1) {
+      randomPlaylist[nextPlaylistIndex] = randomPlaylist[swapIndex]
+      randomPlaylist[swapIndex] = track
+      track = randomPlaylist[nextPlaylistIndex]
+    } else {
+      randomPlaylist = shuffleTracks(currentTrack)
+      nextPlaylistIndex = 0
+      track = randomPlaylist[nextPlaylistIndex]
+    }
+  }
+
+  nextPlaylistIndex++
+  return track
+}
 
 export async function playTrackByName (name) {
   const { currentTrack } = state.music
 
-  if (currentTrack?.name === name) {
+  if (currentTrack?.name === name && state.music.musicSource) {
     return
   }
 
@@ -20,7 +72,12 @@ export async function playTrackByName (name) {
 }
 
 export async function playRandomTrack () {
-  let track = MUSIC_TRACKS[Math.random() * MUSIC_TRACKS.length | 0]
+  let track = getNextRandomTrack()
+
+  if (!track) {
+    return
+  }
+
   await startPlaying(track)
 }
 
@@ -49,7 +106,7 @@ export async function startPlaying (track) {
     await loadTrack(track)
   }
 
-  if (state.music.currentTrack !== track) {
+  if (state.music.currentTrack !== track || !state.music.musicSource) {
     if (state.music.musicSource) {
       state.music.musicSource.stop()
       state.music.musicSource.disconnect()
@@ -63,7 +120,7 @@ export async function startPlaying (track) {
     musicSource.start()
 
     musicSource.addEventListener('ended', async ev => {
-      if (track.name !== state.music.currentTrack.name) {
+      if (track.name !== state.music.currentTrack?.name) {
         return
       }
 
@@ -71,6 +128,7 @@ export async function startPlaying (track) {
         return
       }
 
+      state.music.musicSource = null
       await playRandomTrack()
     })
 

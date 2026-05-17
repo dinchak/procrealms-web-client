@@ -63,10 +63,11 @@ import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { NPopselect, NInput, NButton } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
-const { ansiToHtml } = useHelpers()
+const { ansiToHtml, copperToMoneyString } = useHelpers()
 import { getActiveInventorySource, getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 import { useWebSocket } from '@/composables/web_socket'
+
 const { fetchItem, fetchItems, refreshItem, runCommand } = useWebSocket()
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -128,11 +129,26 @@ function getItemNameClass (item) {
   return selectedIid.value == item.iid ? 'selected' : ''
 }
 
+function setDefaultPrices (detail, item) {
+  const value = item.value
+
+  if (typeof value !== 'number') {
+    minimumBid.value = ''
+    buyPrice.value = ''
+    return
+  }
+
+  minimumBid.value = copperToMoneyString(Math.floor(value / 2), true, false)
+  buyPrice.value = copperToMoneyString(value, true, false)
+}
+
 async function selectItem (item) {
   if (selectedIid.value == item.iid) {
     selectedIid.value = {}
     selectedItem.value = {}
     minimumBid.value = ''
+    buyPrice.value = ''
+    sellAmount.value = ''
     return
   }
 
@@ -145,6 +161,7 @@ async function selectItem (item) {
   }
   selectedItem.value = detail || {}
 
+  setDefaultPrices(detail, item)
   sellAmount.value = item.amount && item.amount > 0 ? String(item.amount) : ''
   nextTick().then(() => {
     if (minBinRef.value && Array.isArray(minBinRef.value)) {
@@ -242,7 +259,6 @@ async function doSell (item) {
     return
   }
 
-  // Determine amount to sell and validate/clamp
   const maxAmt = item.amount && item.amount > 0 ? item.amount : 1
   let amt
   if (maxAmt > 1) {
@@ -260,20 +276,15 @@ async function doSell (item) {
     amt = 1
   }
 
-  const baseName = (item.name || item.fullName || item.iid)
-  const quotedName = (amt > 1) ? `${amt}x ${baseName}` : `${baseName}`
-  const safeQuoted = quotedName.replace(/"/g, '\\"')
-
-  let cmd = `auction sell "${safeQuoted}" minimum=${minimumBid.value}`
+  let cmd = `auction sell iid:${item.iid} amount=${amt} minimum="${minimumBid.value}"`
   if (buyPrice.value) {
-    cmd += ` price=${buyPrice.value}`
+    cmd += ` price="${buyPrice.value}"`
   }
 
   await runCommand(cmd, 'the_void')
   await refreshItem(item.iid)
   scheduleInventoryRefresh(16)
 
-  // Reset selection
   selectedIid.value = {}
   selectedItem.value = {}
   minimumBid.value = ''

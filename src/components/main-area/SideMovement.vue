@@ -17,6 +17,10 @@ import MovementControls from '@/components/common/MovementControls.vue'
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  z-index: 2000;
+  padding: 5px;
+  background-color: #18181b;
+  isolation: isolate;
+  // Above the main interface (mobile toolbar is 20), below overlays/modals.
+  z-index: 25;
 }
 </style>

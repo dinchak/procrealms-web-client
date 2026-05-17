@@ -6,7 +6,7 @@
         <FontSelector />
         <MusicPlayer />
         <MapResize v-if="state.options.showSideMap" />
-        <GamepadSettings />
+        <GamepadSettings v-if="Object.values(state.gamepads).length > 0" />
       </div>
       <div class="row">
         <SettingsActions />
@@ -49,7 +49,6 @@ onBeforeUnmount(() => {
 <style scoped lang="less">
 .hud-settings-overlay {
   position: fixed;
-  z-index: 0;
   top: 0;
   left: 0;
   width: 100%;
@@ -61,21 +60,16 @@ onBeforeUnmount(() => {
   background-color: rgba(0, 0, 0, 0.5);
 
   .hud-settings-container {
-    z-index: 10;
-    position: absolute;
-    top: 50px;
-    right: 50px;
     z-index: 3;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
     flex-wrap: nowrap;
-    padding: 5px;
+    padding: 10px;
     gap: 20px;
     background-color: rgb(27 38 45 / 90%);
-    border: 1px solid rgb(69 100 119);
-    border-radius: 4px;
+    max-width: calc(100vw - 100px);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
 
@@ -87,12 +81,10 @@ onBeforeUnmount(() => {
       gap: 10px;
     }
 
-    @media screen and (max-width: 750px) {
-      // top: 0;
-      // right: 0;
-      left: 50px;
+    @media screen and (max-width: 500px) {
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 40px);
       flex-wrap: wrap;
-      gap: 5px;
     }
   }
 }

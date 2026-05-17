@@ -92,9 +92,9 @@ const search = ref('')
 const ingredient = ref('')
 
 const filterTypeOptions = [
-  { label: 'All', value: 'all' },
   { label: 'Known', value: 'known' },
-  { label: 'Learned', value: 'learned' }
+  { label: 'Learned', value: 'learned' },
+  { label: 'All', value: 'all' },
 ]
 
 function getCraftingSkills () {

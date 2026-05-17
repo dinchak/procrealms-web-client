@@ -205,7 +205,6 @@ onBeforeUnmount(() => {
   .menu-button {
     color: #fff;
     background-color: #222;
-    border: 1px solid #333;
     width: 35px;
     text-align: center;
     display: flex;
@@ -213,7 +212,6 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
     margin: 0 0 0 8px;
-    border-radius: 4px;
     flex-shrink: 0;
     transition: all 0.3s;
 
@@ -221,13 +219,11 @@ onBeforeUnmount(() => {
       &:hover {
         cursor: pointer;
         background-color: #063603;
-        border: 1px solid #16c60c;
       }
     }
 
     &.active {
       background-color: #063603;
-      border: 1px solid #16c60c;
       color: #f8ff25
     }
 
