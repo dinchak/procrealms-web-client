@@ -1,99 +1,148 @@
 <template>
-  <div class="effects">
+  <div ref="effectsElement" class="hud-effects">
     <div
-      v-for="effect in Object.values(effects)"
-      :key="effect.name"
+      v-for="(effect, index) in getEffects()"
+      :key="getEffectKey(effect, index)"
       class="effect"
     >
+      <div class="row">
+        <div
+          :ref="el => setEffectElement(getEffectKey(effect, index), el)"
+          :class="getEffectNameClass(effect, index)"
+          role="button"
+          tabindex="0"
+          v-html-safe="getEffectName(effect)"
+          @mouseenter="showEffectDetail(effect, index, $event)"
+          @mouseleave="hideEffectDetail(effect, index)"
+          @click.stop="toggleEffectDetail(effect, index, $event)"
+          @keydown.enter.prevent="toggleEffectDetail(effect, index, $event)"
+          @keydown.space.prevent="toggleEffectDetail(effect, index, $event)"
+        ></div>
 
-      <div class="effects-header">
-        <div class="name" v-html-safe="getEffectName(effect)" />
         <NProgress
-          v-if="effect.timeLeft > 0"
+          v-if="hasTimeRemaining(effect)"
           type="line"
           :show-indicator="false"
           :border-radius="0"
           :height="4"
-          v-show="typeof effect.timeLeft == 'number'"
           :status="progressStatus(getTimeLeftPercentage(effect))"
           :percentage="getTimeLeftPercentage(effect)"
         />
       </div>
-
-      <div class="effect-bonuses">
-        <div class="effect-bonus" v-if="effect.desc">
-          <div class="effect-bonus-label">
-            <div v-html-safe="ansiToHtml(effect.desc)"></div>
-          </div>
-        </div>
-
-        <div
-          class="effect-bonus"
-          v-for="{ name, amount } in effectBonuses(effect)"
-          :key="name"
-        >
-          <div class="effect-bonus-value bold-white" v-html-safe="(amount > 0 ? '+' : '') + amount"></div>
-          <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
-        </div>
-      </div>
     </div>
 
-</div>
+    <Teleport to="body">
+      <div
+        class="hud-popup-panel"
+        v-if="getActiveEffect()"
+        :style="getFixedPanelStyle()"
+      >
+        <EffectDetails :effect="getActiveEffect()"></EffectDetails>
+      </div>
+    </Teleport>
+  </div>
 </template>
 
 <script setup>
-defineProps(['effects'])
-
+import { ref } from 'vue'
 import { NProgress } from 'naive-ui'
-import { useHelpers } from '@/composables/helpers'
-import { ANSI, ITEM_EFFECTS } from '@/static/constants'
 
-const { ansiToHtml, progressStatus, effectBonuses: effectBonuses } = useHelpers()
+import EffectDetails from '@/components/hud/EffectDetails.vue'
+
+import { ANSI } from '@/static/constants'
+import { useHelpers } from '@/composables/helpers'
+import { useHudPopup } from '@/composables/hud_popup'
+
+const props = defineProps({
+  effects: {
+    type: [Array, Object],
+    default: () => []
+  }
+})
+
+const { ansiToHtml, progressStatus } = useHelpers()
+
+const effectsElement = ref(null)
+const {
+  pinnedKey: pinnedEffectKey,
+  getActiveKey: getActiveEffectKey,
+  getFixedPanelStyle,
+  setPopupElement: setEffectElement,
+  showPopup,
+  hidePopup,
+  togglePopup
+} = useHudPopup(effectsElement, () => getEffects().map((effect, index) => getEffectKey(effect, index)))
+
+function getEffects () {
+  return Array.isArray(props.effects)
+    ? props.effects
+    : Object.values(props.effects || {})
+}
+
+function getEffectKey (effect, index) {
+  return effect.name || effect.longFlag || String(index)
+}
 
 function getEffectName (effect) {
-  return effect.longFlag ?
-    ansiToHtml(ANSI.reset + effect.longFlag) :
-    ansiToHtml(ANSI.reset + effect.name)
+  if (!effect.longFlag && !effect.name) {
+    return ansiToHtml(ANSI.reset + 'Effect')
+  }
+
+  return effect.longFlag
+    ? ansiToHtml(ANSI.reset + effect.longFlag)
+    : ansiToHtml(ANSI.reset + effect.name)
+}
+
+function getEffectNameClass (effect, index) {
+  return {
+    'effect-name': true,
+    selectable: true,
+    'popup-open': getActiveEffectKey() === getEffectKey(effect, index),
+    pinned: pinnedEffectKey.value === getEffectKey(effect, index)
+  }
+}
+
+function hasTimeRemaining (effect) {
+  return typeof effect.timeLeft === 'number' && effect.timeLeft > 0 && effect.totalTimeLeft > 0
 }
 
 function getTimeLeftPercentage (effect) {
-  return effect.timeLeft / effect.totalTimeLeft * 100
-}
-
-function getEffectBonusLabel (bonus) {
-  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
-  if (itemEffect) {
-    return itemEffect.label
+  if (!hasTimeRemaining(effect)) {
+    return 0
   }
+
+  return Math.min(100, Math.max(0, effect.timeLeft / effect.totalTimeLeft * 100))
 }
 
-function getEffectBonusLabelClass (bonus) {
-  let classes = ['effect-bonus-label']
-  let itemEffect = ITEM_EFFECTS.find(ie => ie.bonus === bonus)
-  if (itemEffect) {
-    classes.push(itemEffect.color)
-  }
-  return classes.join(' ')
+function getActiveEffect () {
+  const activeKey = getActiveEffectKey()
+  return getEffects().find((effect, index) => getEffectKey(effect, index) === activeKey)
 }
 
+function showEffectDetail (effect, index, event) {
+  showPopup(getEffectKey(effect, index), event)
+}
+
+function hideEffectDetail (effect, index) {
+  hidePopup(getEffectKey(effect, index))
+}
+
+function toggleEffectDetail (effect, index, event) {
+  togglePopup(getEffectKey(effect, index), event)
+}
 </script>
 
 <style lang="less" scoped>
-.effects {
+.hud-effects {
   display: flex;
+  flex-basis: 200px;
   flex-direction: column;
   font-size: 0.8rem;
-  flex-basis: 200px;
+  height: 110px;
 
   .effect {
     display: flex;
     flex-direction: column;
-    margin-bottom: 5px;
-    width: 100%;
-    font-size: 0.8rem;
-    border-top: 0;
-    padding: 0;
-    margin-top: 5px;
 
     &:last-child {
       margin-bottom: 0;
@@ -101,36 +150,42 @@ function getEffectBonusLabelClass (bonus) {
       border-bottom: 0;
     }
 
-    .effects-header {
-      width: 100%;
+    .row {
       display: flex;
-      flex-direction: row;
-      align-items: center;
+      flex-direction: column;
       justify-content: space-between;
-      gap: 5px;
+      margin-bottom: 5px;
+
+      .effect-name {
+        align-self: flex-start;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        max-width: 100%;
+        min-height: 1.2em;
+        outline: none;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover,
+        &:focus-visible,
+        &.popup-open {
+          background: rgba(41, 185, 55, 0.12);
+          text-decoration: underline;
+        }
+
+        &.pinned {
+          background: rgba(41, 185, 55, 0.2);
+        }
+      }
 
       .n-progress {
-        width: 50px;
-      }
-    }
-
-    .effect-bonuses {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      margin-left: 10px;
-
-      .effect-bonus {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-right: 10px;
-
-        .effect-bonus-value {
-          margin-right: 5px;
-        }
+        width: 90px;
       }
     }
   }
 }
+
 </style>

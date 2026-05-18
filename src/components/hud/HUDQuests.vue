@@ -1,23 +1,29 @@
 <template>
-  <div class="hud-quests">
-    <div v-if="state.gameState.quests.length == 0">
+  <div ref="questsElement" class="hud-quests">
+    <div v-if="getQuests().length == 0">
       No quests
     </div>
 
-    <div class="quest" v-for="quest in state.gameState.quests" :key="quest.name">
-
+    <div class="quest" v-for="quest in getQuests()" :key="getQuestKey(quest)">
       <div class="row">
-        <div class="name" v-html-safe="getQuestName(quest)"></div>
-
-        <div class="objectives" v-if="questHasObjectives(quest)">
-          <div class="objective" v-for="objective in getQuestObjectives(quest)" v-html-safe="objective" :key="objective"></div>
-        </div>
+        <div
+          :ref="el => setQuestElement(getQuestKey(quest), el)"
+          :class="getQuestNameClass(quest)"
+          role="button"
+          tabindex="0"
+          v-html-safe="getQuestName(quest)"
+          @mouseenter="showQuestDetail(quest, $event)"
+          @mouseleave="hideQuestDetail(quest)"
+          @click.stop="toggleQuestDetail(quest, $event)"
+          @keydown.enter.prevent="toggleQuestDetail(quest, $event)"
+          @keydown.space.prevent="toggleQuestDetail(quest, $event)"
+        ></div>
 
         <NProgress
           v-if="quest.amount"
           :status="quest.progress < quest.amount ? 'warning' : 'success'"
           type="line"
-          :percentage="quest.progress / quest.amount * 100"
+          :percentage="getProgressPercentage(quest)"
           :height="4"
           :border-radius="0"
         >
@@ -31,37 +37,90 @@
 
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        class="hud-popup-panel"
+        v-if="getActiveQuest()"
+        :style="getFixedPanelStyle()"
+      >
+        <QuestDetails
+          :quest="getActiveQuest()"
+          @close="closePinnedQuestDetail"
+        ></QuestDetails>
+      </div>
+    </Teleport>
   </div>
 </template>
 <script setup>
+import { ref } from 'vue'
 import { NProgress } from 'naive-ui'
+
+import QuestDetails from '@/components/hud/QuestDetails.vue'
+
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 import { ANSI } from '@/static/constants'
+import { useHudPopup } from '@/composables/hud_popup'
 
 const { ansiToHtml } = useHelpers()
+
+const questsElement = ref(null)
+const {
+  pinnedKey: pinnedQuestKey,
+  getActiveKey: getActiveQuestKey,
+  getFixedPanelStyle,
+  setPopupElement: setQuestElement,
+  showPopup,
+  hidePopup,
+  togglePopup,
+  closePinned: closePinnedQuestDetail
+} = useHudPopup(questsElement, () => getQuests().map(quest => getQuestKey(quest)))
+
+function getQuests () {
+  return state.gameState.quests || []
+}
+
+function getQuestKey (quest) {
+  return quest.name
+}
 
 function getQuestName (quest) {
   return `L<span class="bold-white">${quest.level}</span> <span class="bold-yellow">${ansiToHtml(ANSI.reset + quest.name)}</span>`
 }
 
-function getQuestObjectives (quest) {
-  let objectives = []
-
-  if (quest.objective && quest.type != 'generated') {
-    objectives.push(ansiToHtml(`${ANSI.reset}${quest.objective}`))
+function getQuestNameClass (quest) {
+  return {
+    name: true,
+    selectable: true,
+    'popup-open': getActiveQuestKey() === getQuestKey(quest),
+    pinned: pinnedQuestKey.value === getQuestKey(quest)
   }
-
-  if (quest.extra && !quest.activity.startsWith('kill')) {
-    objectives.push(ansiToHtml(`${ANSI.reset}${quest.extra}`))
-  }
-
-  return objectives
 }
 
-function questHasObjectives (quest) {
-  return (quest.objective && quest.type != 'generated') ||
-    (quest.extra && !quest.activity.startsWith('kill'))
+function getProgressPercentage (quest) {
+  if (!quest.amount) {
+    return 0
+  }
+
+  return Math.min(100, Math.max(0, quest.progress / quest.amount * 100))
+}
+
+function getActiveQuest () {
+  const activeKey = getActiveQuestKey()
+  return getQuests().find(quest => getQuestKey(quest) === activeKey)
+}
+
+function showQuestDetail (quest, event) {
+  showPopup(getQuestKey(quest), event)
+}
+
+function hideQuestDetail (quest) {
+  hidePopup(getQuestKey(quest))
+}
+
+function toggleQuestDetail (quest, event) {
+  togglePopup(getQuestKey(quest), event)
 }
 </script>
 
@@ -85,6 +144,30 @@ function questHasObjectives (quest) {
       flex-direction: column;
       justify-content: space-between;
       margin-bottom: 5px;
+
+      .name {
+        align-self: flex-start;
+        cursor: pointer;
+        display: block;
+        max-width: 100%;
+        min-height: 1.2em;
+        outline: none;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover,
+        &:focus-visible,
+        &.popup-open {
+          text-decoration: underline;
+        }
+
+        &.pinned {
+          background: rgba(41, 185, 55, 0.2);
+        }
+      }
+
       .n-progress {
         width: 125px;
 
@@ -106,11 +189,6 @@ function questHasObjectives (quest) {
         .n-progress-custom-content {
           margin-left: 0;
         }
-      }
-      .objectives {
-        display: flex;
-        flex-direction: column;
-        max-width: 300px;
       }
     }
   }
