@@ -8,7 +8,8 @@
     >
       <div
         class="battlefield-position bold-red"
-      >{{ position }}</div>
+        v-html-safe="getPositionLabel(position)"
+      ></div>
 
       <div class="battlefield-entity-container">
         <div
@@ -37,6 +38,14 @@ import { useWebSocket } from '@/composables/web_socket'
 const { range, ansiToHtml } = useHelpers()
 const { runCommand } = useWebSocket()
 
+function getPositionLabel(position) {
+  if (state.options.battleRelativePositions) {
+    let me = state.gameState.battle.participants[state.gameState.player.eid]
+    return position - me.position
+  }
+
+  return position
+}
 function getTag(participant) {
   let me = state.gameState.battle.participants[state.gameState.player.eid]
   if (me.eid === participant.eid) {
@@ -49,6 +58,7 @@ function isMyTarget(participant) {
   let me = state.gameState.battle.participants[state.gameState.player.eid]
   return me.targetEid === participant.eid
 }
+
 function getParticipants (position) {
   let participants = Object.values(state.gameState.battle.participants)
     .filter(p => p.position === position)
