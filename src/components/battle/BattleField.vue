@@ -12,10 +12,15 @@
 
       <div class="battlefield-entity-container">
         <div
-          v-for="tag in getBattleTags(position)"
+          v-for="participant in getParticipants(position)"
           class="battlefield-entity"
-          :key="tag"
-          v-html-safe="ansiToHtml(tag)"
+          :class="{
+    'acting': participant.isActing,
+    'my-target': isMyTarget(participant),
+  }"
+          :key="participant.tag"
+          @click="setTarget($event, participant.eid)"
+          v-html-safe="ansiToHtml(getTag(participant))"
         ></div>
       </div>
 
@@ -32,13 +37,29 @@ import { useWebSocket } from '@/composables/web_socket'
 const { range, ansiToHtml } = useHelpers()
 const { runCommand } = useWebSocket()
 
-function getBattleTags (position) {
-  let tags = Object.values(state.gameState.battle.participants)
-    .filter(p => p.position === position)
-    .map(p => p.tag)
+function getTag(participant) {
+  let me = state.gameState.battle.participants[state.gameState.player.eid]
+  if (me.eid === participant.eid) {
+    return "You"
+  }
+  return participant.tag
+}
 
-  tags.sort((a, b) => -a.localeCompare(b))
-  return tags
+function isMyTarget(participant) {
+  let me = state.gameState.battle.participants[state.gameState.player.eid]
+  return me.targetEid === participant.eid
+}
+function getParticipants (position) {
+  let participants = Object.values(state.gameState.battle.participants)
+    .filter(p => p.position === position)
+
+  participants.sort((a, b) => -(a.tag).localeCompare(b.tag))
+  return participants
+}
+
+function setTarget ($event, targetEid) {
+  $event.stopPropagation()
+  runCommand(`target eid:${targetEid}`)
 }
 
 function onPositionClick (position) {
@@ -98,6 +119,24 @@ function onPositionClick (position) {
       flex: 1;
       flex-wrap: wrap;
       justify-content: space-around;
+    }
+
+    .battlefield-entity {
+      padding: 0 2px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      &.my-target {
+        background-color: rgba(240, 210, 52, 0.1);
+        border-color: rgba(240, 210, 52, 0.3);
+      }
+      //&.acting {
+      //  background-color: rgba(240, 210, 52, 0.2);
+      //}
+      &:hover {
+        background-color: rgba(52, 240, 210, 0.2);
+        border-color: rgba(52, 240, 210, 0.3);
+        cursor: pointer;
+      }
     }
   }
 }

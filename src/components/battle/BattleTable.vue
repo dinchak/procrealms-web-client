@@ -7,12 +7,48 @@
       <div class="participants-header">
         <div class="header-cell"></div>
         <div class="header-cell"></div>
-        <div class="header-cell target">TG</div>
-        <div class="header-cell right">MV</div>
-        <div class="header-cell right">HP</div>
-        <div class="header-cell right">EN</div>
-        <div class="header-cell right">ST</div>
-        <div class="header-cell right">Act</div>
+        <div class="header-cell target">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>TG</template>
+            <div class="tooltip">Target</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>DS</template>
+            <div class="tooltip">Distance</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>MV</template>
+            <div class="tooltip">Available Moves</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>HP</template>
+            <div class="tooltip">Health</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>EN</template>
+            <div class="tooltip">Energy</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>ST</template>
+            <div class="tooltip">Stamina</div>
+          </NPopover>
+        </div>
+        <div class="header-cell right">
+          <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false">
+            <template #trigger>Act</template>
+            <div class="tooltip">Time to next action</div>
+          </NPopover>
+        </div>
       </div>
       <div
         :class="getParticipantClass(participant)"
@@ -85,6 +121,9 @@
           </div>
         </div>
         <div class="right">
+          <div class="number">{{ participant.position - meParticipant.position || ''}}</div>
+        </div>
+        <div class="right">
           <div class="number">{{ participant.movement || ''}}</div>
         </div>
         <div :class="getHpClass(participant)">
@@ -129,6 +168,8 @@ const { runCommand } = useWebSocket()
 
 const flashing = reactive({})
 const watchers = []
+
+const meParticipant = computed(() => state.gameState.battle.participants[state.gameState.player.eid])
 
 const participants = computed(() => {
   const { player, battle } = state.gameState
@@ -263,8 +304,20 @@ function getParticipantClass (participant) {
   let classes = ['participant']
   const { participants } = state.gameState.battle
   let me = participants[state.gameState.player.eid]
-  if (me.targetEid == participant.eid) {
+  if (me.targetEid === participant.eid) {
     classes.push('my-target')
+  }
+  if (isAlive(participant)) {
+    if (participant.side === 'good') {
+      classes.push('good')
+    } else if (participant.side === 'evil') {
+      classes.push('evil')
+    }
+  } else {
+    classes.push('dead')
+  }
+  if (participant.hidden) {
+    classes.push('hidden')
   }
   return classes
 }
@@ -429,6 +482,12 @@ onBeforeUnmount(() => {
         }
       }
 
+      &.good {
+        background-color: #001800;
+      }
+      &.evil {
+        background-color: #180000;
+      }
       &.my-target {
         background-color: rgba(240, 210, 52, 0.1);
       }
