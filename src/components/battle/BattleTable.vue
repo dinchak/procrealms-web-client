@@ -121,7 +121,7 @@
           </div>
         </div>
         <div class="right">
-          <div class="number">{{ participant.position - meParticipant.position || ''}}</div>
+          <div class="number">{{ Math.abs(participant.position - meParticipant.position) || ''}}</div>
         </div>
         <div class="right">
           <div class="number">{{ participant.movement || ''}}</div>
