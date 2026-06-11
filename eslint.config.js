@@ -54,7 +54,6 @@ export default [
       "comma-spacing": ["error", { "before": false, "after": true }],
       "func-call-spacing": ["error", "never"],
       "indent": ["error", 2],
-      "linebreak-style": ["error", "unix"],
       "new-parens": "error",
       "no-lonely-if": "error",
       "no-mixed-spaces-and-tabs": "error",
