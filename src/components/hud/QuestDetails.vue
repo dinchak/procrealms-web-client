@@ -2,6 +2,7 @@
   <div class="quest-details">
     <div class="name" v-html-safe="getQuestName()"></div>
     <div class="giver" v-if="quest.giver" v-html-safe="getGivenBy()"></div>
+    <div class="location" v-if="quest.giver.location" v-html-safe="getGivenByLocation()"></div>
 
     <NProgress
       v-if="quest.amount"
@@ -65,6 +66,11 @@ function getQuestName () {
 
 function getGivenBy () {
   return `Given by <span class="bold-yellow">${ansiToHtml(ANSI.reset + (props.quest.giver.name || 'Unknown'))}</span>`
+}
+
+function getGivenByLocation () {
+  console.debug(props)
+  return `<span class="black">[</span><span class="bold-white">${props.quest.giver.location.name}, <span class="bold-magenta">${props.quest.giver.location.coords.x}</span>, <span class="bold-magenta">${props.quest.giver.location.coords.y}</span><span class="black">]</span>`
 }
 
 function getProgressPercentage () {

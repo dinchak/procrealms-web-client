@@ -10,6 +10,7 @@
       <NGi class="quest" v-for="quest in quests()" :key="quest.name">
         <div class="name" v-html-safe="getQuestName(quest)"></div>
         <div class="giver" v-html-safe="getGivenBy(quest)"></div>
+        <div class="location" v-html-safe="getGivenByLocation(quest)"></div>
         <NProgress
           v-if="quest.amount"
           :status="quest.progress < quest.amount ? 'default' : 'success'"
@@ -82,6 +83,10 @@ function getQuestName (quest) {
 
 function getGivenBy (quest) {
   return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
+}
+
+function getGivenByLocation (quest) {
+  return `<span class="black">[</span><span class="bold-white">${quest.giver.location.name}, <span class="bold-magenta">${quest.giver.location.coords.x}</span>, <span class="bold-magenta">${quest.giver.location.coords.y}</span><span class="black">]</span>`
 }
 
 function getScrollContainerClass () {
