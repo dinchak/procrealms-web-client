@@ -4,7 +4,7 @@
       <div class="skill-type bold-red">Weapon Skills</div>
       <div class="skill" v-for="skill in getSortedSkills('weapon')" :key="skill.name">
         <div class="skill-header">
-          <div>{{ skill.name }}</div>
+          <div class="name">{{ skill.name }}</div>
           <div>Level {{ skill.level }}</div>
         </div>
         <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
@@ -17,7 +17,7 @@
       </div>
       <div class="skill" v-for="skill in getSortedSkills('crafting')" :key="skill.name">
         <div class="skill-header">
-          <div>{{ skill.name }}</div>
+          <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
           <div>Level {{ skill.level }}</div>
         </div>
         <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
@@ -30,7 +30,7 @@
       </div>
       <div class="skill" v-for="skill in getSortedSkills('combat')" :key="skill.name">
         <div class="skill-header">
-          <div>{{ skill.name }}</div>
+          <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
           <div>Rank {{ skill.rank }}</div>
         </div>
       </div>
@@ -41,7 +41,7 @@
       </div>
       <div class="skill" v-for="skill in getSortedSkills('artisan')" :key="skill.name">
         <div class="skill-header">
-          <div>{{ skill.name }}</div>
+          <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
           <div>Rank {{ skill.rank }}</div>
         </div>
       </div>
@@ -53,10 +53,16 @@
 import { defineProps, toRefs } from 'vue'
 
 import { NCollapseItem, NProgress } from 'naive-ui'
+import { useWebSocket } from "@/composables/web_socket.js"
 
+const { runCommand } = useWebSocket()
 const props = defineProps(['character', 'skills', 'isPlayer'])
 
 const { character, skills, isPlayer } = toRefs(props)
+
+function openHelpPage (name) {
+  runCommand(`help ${name}`)
+}
 
 function getSortedSkills (type) {
   const filtered = skills.value
@@ -112,10 +118,14 @@ function getSortedSkills (type) {
       justify-content: space-between;
     }
 
-    .expand-link {
-      color: #fff;
-      text-decoration: underline;
-      cursor: pointer;
+    .name {
+      &.link {
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+          color: #f9f1a5;
+        }
+      }
     }
   }
 

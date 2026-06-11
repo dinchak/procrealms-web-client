@@ -26,7 +26,7 @@
           <div class="info" v-if="getCraftingSkills().length == 0">You haven't learned any crafting skills yet.</div>
           <div v-for="skill of getCraftingSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name">{{ skill.name }}</div>
+              <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
             <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
@@ -43,7 +43,7 @@
           <div class="info" v-if="getCombatSkills().length == 0">You haven't learned any combat skills yet.</div>
           <div v-for="skill of getCombatSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name">{{ skill.name }}</div>
+              <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
               <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
           </div>
@@ -59,7 +59,7 @@
           <div class="info" v-if="getArtisanSkills().length == 0">You haven't learned any artisan skills yet.</div>
           <div v-for="skill of getArtisanSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
-              <div class="name">{{ skill.name }}</div>
+              <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
               <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
             </div>
           </div>
@@ -75,7 +75,9 @@ import { NGrid, NGi, NProgress } from 'naive-ui'
 
 import SelectPlayerModalAs from './SelectPlayerModalAs.vue'
 import { state } from '@/static/state'
+import { useWebSocket } from "@/composables/web_socket.js"
 
+const { runCommand } = useWebSocket()
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
 
@@ -93,6 +95,10 @@ function skills () {
   }
 
   return state.gameState.skills || {}
+}
+
+function openHelpPage (name) {
+  runCommand(`help ${name}`)
 }
 
 function getWeaponSkills () {
@@ -171,6 +177,17 @@ function getScrollContainerClass () {
       .skill {
         width: 350px;
         padding: 0 20px 5px 20px;
+
+        .name {
+          &.link {
+              cursor: pointer;
+              &:hover {
+                text-decoration: underline;
+                color: #f9f1a5;
+              }
+          }
+        }
+
         .skill-info {
           display: flex;
           justify-content: space-between;
