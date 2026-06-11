@@ -76,6 +76,7 @@ function onModalOpened () {
 
 function onModalClosed () {
   state.gamepadTab = currentPane.value
+  state.playerModalAs = ''
   watchers.forEach(unwatch => unwatch())
   watchers = []
 
