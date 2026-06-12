@@ -57,7 +57,6 @@ function getValidReactions () {
   if (!battle.pendingReaction) {
     return []
   }
-  console.debug(state.gameState)
   return battle.pendingReaction.validReactions.map(r => {
     let matchingSlot = slots.find(s => s.label === r)
     if (!matchingSlot) {
