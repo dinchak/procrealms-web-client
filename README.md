@@ -4,7 +4,7 @@ This is the repository for the official Procedural Realms web client running at 
 
 ## Quickstart
 
-- Copy the contents of `.env.production` into `.env` to point the code to the production server.
+- Copy `.env.production` to `.env.local` to point the code to the production server.
 
 - Run the following commands to start the application:
 
