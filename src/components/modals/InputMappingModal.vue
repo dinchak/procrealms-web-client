@@ -89,7 +89,7 @@
 
           <div class="binding" v-if="newBindingType == 'gamepadButtonPressed'">
             <span class="black">[</span>
-            <span class="bold-magenta">Button Press</span>
+            <span class="bold-magenta">Gamepad Press</span>
             <span class="black">] </span>
 
             <span class="bold-yellow">{{ newBinding.gamepadButton }}</span>
@@ -97,7 +97,7 @@
 
           <div class="binding" v-if="newBindingType == 'gamepadButtonReleased'">
             <span class="black">[</span>
-            <span class="bold-magenta">Button Release</span>
+            <span class="bold-magenta">Release</span>
             <span class="black">] </span>
 
             <span class="bold-yellow">{{ newBinding.gamepadButtonReleased }}</span>
@@ -116,14 +116,14 @@
             @click="setButtonReleased()"
             type="warning"
             ghost
-          >Set To Button Release</NButton>
+          >Set To Gamepad Release</NButton>
 
           <NButton
             v-if="newBindingType == 'gamepadButtonReleased'"
             @click="setButtonPressed()"
             type="warning"
             ghost
-          >Set To Button Press</NButton>
+          >Set To Gamepad Press</NButton>
 
           <NSelect
             v-model:value="newBinding.modes"
@@ -165,7 +165,7 @@
 
               <div class="binding" v-if="hasBindingType(binding, 'gamepadButton')">
                 <span class="black">[</span>
-                <span class="bold-magenta">Button Press</span>
+                <span class="bold-magenta">Gamepad Press</span>
                 <span class="black">] </span>
 
                 <span class="bold-yellow">{{ binding.gamepadButton }}</span>
@@ -173,7 +173,7 @@
 
               <div class="binding" v-if="hasBindingType(binding, 'gamepadButtonReleased')">
                 <span class="black">[</span>
-                <span class="bold-magenta">Button Release</span>
+                <span class="bold-magenta">Gamepad Release</span>
                 <span class="black">] </span>
 
                 <span class="bold-yellow">{{ binding.gamepadButtonReleased }}</span>
