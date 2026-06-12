@@ -1016,5 +1016,15 @@ export function resetInputMappings () {
         modes: ['hotkey', 'input'],
       }],
     },
+
+    {
+      label: 'Pass Reaction',
+      event: 'pass',
+      inBattle: true,
+      bindings: [{
+        keyCode: 'KeyP',
+        modes: ['hotkey'],
+      }],
+    },
   ]
 }
