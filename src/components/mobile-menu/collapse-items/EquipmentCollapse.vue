@@ -57,7 +57,7 @@ onMounted(() => {
   refreshRows()
 
   watchers.push(watch(
-    () => [state.playerModalAs, ...Object.values(getEquipment())].join('|'),
+    () => [...Object.values(getEquipment())].join('|'),
     () => {
       refreshRows()
     }
@@ -69,9 +69,6 @@ onBeforeUnmount(() => {
 })
 
 function getEquipment () {
-  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
-    return state.gameState.charmies[state.playerModalAs].equipment
-  }
   return state.gameState.equipment
 }
 
