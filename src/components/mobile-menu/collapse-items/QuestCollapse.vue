@@ -5,6 +5,7 @@
       <div class="quest" v-for="quest in quests()" :key="quest.name">
         <div v-html-safe="getQuestName(quest)"></div>
         <div v-html-safe="getGivenBy(quest)"></div>
+        <div v-html-safe="getGivenByLocation(quest)"></div>
         <div v-if="quest.objective" v-html-safe="`Objective: ` + ansiToHtml(quest.objective)"></div>
         <div v-if="quest.extra" v-html-safe="ansiToHtml(quest.extra)"></div>
         <NProgress
@@ -69,6 +70,10 @@ function getQuestName (quest) {
 
 function getGivenBy (quest) {
   return `Given by <span class="bold-yellow">${quest.giver.name}</span>`
+}
+
+function getGivenByLocation (quest) {
+  return `<span class="black">[</span><span class="bold-white">${quest.giver.location.name}, <span class="bold-magenta">${quest.giver.location.coords.x}</span>, <span class="bold-magenta">${quest.giver.location.coords.y}</span><span class="black">]</span>`
 }
 
 </script>
