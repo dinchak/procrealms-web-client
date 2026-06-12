@@ -377,6 +377,7 @@ export const configurableOptions = {
   'Battle': {
     'Battle Table Mode': 'battleTableMode',
     'Battle Always Expanded': 'battleAlwaysExpanded',
+    'Battle Relative Positions': 'battleRelativePositions',
     'Damage Animations': 'damageAnimations',
   },
 }
@@ -386,6 +387,7 @@ function resetOptions () {
     // general options
     battleAlwaysExpanded: true,
     battleTableMode: true,
+    battleRelativePositions: false,
     damageAnimations: true,
     battleExpanded: false,
     largeVitals: false,
