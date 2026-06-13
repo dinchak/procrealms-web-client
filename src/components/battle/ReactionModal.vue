@@ -8,13 +8,13 @@
           type="success"
           v-for="reaction in getValidReactions()"
           :key="reaction"
-          @click="runCommand(reaction)"
-        >{{ reaction }}</NButton>
+          @click="runCommand(reaction.command)">
+        <span v-if="reaction.slot !== null" class="bold-white"><span class="bold-yellow">{{reaction.slot}}</span>:&nbsp;</span> {{ reaction.command }}</NButton>
         <NButton
           ghost
           type="warning"
           @click="runCommand('pass')"
-        >Pass</NButton>
+        ><span class="bold-yellow">P</span>ass</NButton>
       </div>
     </NCard>
   </NModal>
@@ -25,6 +25,7 @@ import { NModal, NCard, NButton } from 'naive-ui'
 import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 const { runCommand } = useWebSocket()
 const { ansiToHtml } = useHelpers()
@@ -52,12 +53,30 @@ function getReactionType () {
 }
 
 function getValidReactions () {
-  const { battle } = state.gameState
+  const { battle, slots } = state.gameState
   if (!battle.pendingReaction) {
     return []
   }
-  return battle.pendingReaction.validReactions || []
+  return battle.pendingReaction.validReactions.map(r => {
+    let matchingSlot = slots.find(s => s.label === r)
+    if (!matchingSlot) {
+      return { slot: null, command: r }
+    }
+    return { slot: matchingSlot.slot, command: r }
+  }) || []
 }
+
+function pass () {
+  runCommand('pass')
+}
+
+onMounted(() => {
+  state.inputEmitter.on('pass', pass)
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off('pass', pass)
+})
 
 </script>
 <style lang="less" scoped>
