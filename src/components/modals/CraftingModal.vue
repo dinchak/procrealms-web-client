@@ -22,13 +22,6 @@
         </NGi>
         <NGi>
           <NInput
-            v-model:value="state.crafting.levelFilter"
-            placeholder="Level Filter, ie. 10, 5-15, 20+"
-            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
-          />
-        </NGi>
-        <NGi>
-          <NInput
             placeholder="Search by recipe name"
             v-model:value="search"
             clearable
@@ -42,6 +35,33 @@
             clearable
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           ></NInput>
+        </NGi>
+        <NGi>
+          <NInput
+            v-model:value="state.crafting.levelFilter"
+            placeholder="Level Filter, ie. 10, 5-15, 20+"
+            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+          />
+        </NGi>
+        <NGi>
+          <div class="pagination-options">
+            <NPagination
+              v-model:page="page"
+              :page-count="numPages()"
+              simple
+              @update:page="updatePage()"
+            >
+            </NPagination>
+            <NInput
+              class="page-size"
+              placeholder="Page Limit"
+              v-model:value="limit"
+              type="number"
+              min="0"
+              max="1000"
+              @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+            />
+          </div>
         </NGi>
         <NGi>
           <div class="checkbox-container">
@@ -58,7 +78,17 @@
         </NGi>
       </NGrid>
 
-      <div class="no-recipes" v-if="state.crafting.recipes.length == 0">No recipes found.</div>
+      <div class="recipe-count" v-if="state.crafting.recipes.length == 0">
+        <div>no recipes found</div>
+      </div>
+      <div class="recipe-count" v-if="state.crafting.recipes.length > 0">
+        <div>{{ state.crafting.count }} results</div>
+        <div>showing {{ resultStart() }}-{{ resultEnd() }}</div>
+        <div>page {{ page }} of {{ numPages() }}</div>
+        <div>
+          <NButton ghost type="warning" @click="resetSearch()" size="tiny">Reset Search</NButton>
+        </div>
+      </div>
       <div class="recipe-table">
         <div class="recipes" v-for="i in columns" :key="i">
           <div v-for="recipe in getColumnRecipes(i - 1)" :key="recipe.name" class="recipe-row">
@@ -73,9 +103,9 @@
   </GameModal>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { state } from '@/static/state'
-import { NGrid, NGi, NInput, NSelect, NRadio, NRadioGroup } from 'naive-ui'
+import { NGrid, NGi, NInput, NSelect, NRadio, NRadioGroup, NPagination, NButton } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -90,6 +120,10 @@ const selectedRecipe = ref('')
 const columns = ref(1)
 const search = ref('')
 const ingredient = ref('')
+const limit = ref('30')
+const page = ref(1)
+
+let watchers = []
 
 const filterTypeOptions = [
   { label: 'Known', value: 'known' },
@@ -168,6 +202,47 @@ function onWidthChange () {
   }
 }
 
+function updatePage () {
+  runCommand(buildRecipeCommand(), 'the_void')
+}
+
+function numPages () {
+  if (state.crafting.count == 0) {
+    return 1
+  }
+  return Math.ceil(state.crafting.count / limitNum())
+}
+
+function pageNum () {
+  let pageNum = parseInt(page.value, 10)
+  if (isNaN(pageNum) || pageNum < 1) {
+    return 1
+  }
+  return pageNum
+}
+
+function limitNum () {
+  let limitNum = parseInt(limit.value, 10)
+  if (isNaN(limitNum) || limitNum < 1) {
+    return 1
+  }
+  return limitNum
+}
+
+function resultStart () {
+  if (state.crafting.count == 0) {
+    return 1
+  }
+  return (pageNum() - 1) * limitNum() + 1
+}
+
+function resultEnd () {
+  if (state.crafting.count == 0) {
+    return 0
+  }
+  return Math.min(pageNum() * limitNum(), state.crafting.count)
+}
+
 function buildRecipeCommand () {
   let cmd = 'recipes'
 
@@ -175,21 +250,12 @@ function buildRecipeCommand () {
     cmd += ` ${state.crafting.filterType}`
   }
 
-  if (state.crafting.selectedSkill) {
-    cmd += ` '${state.crafting.selectedSkill}'`
-  }
-
-  if (ingredient.value) {
-    cmd += ` ingredient '${ingredient.value}'`
-  }
-
-  if (search.value) {
-    cmd += ` '${search.value}'`
-  }
-
-  if (state.crafting.levelFilter) {
-    cmd += ` ${state.crafting.levelFilter}`
-  }
+  cmd += ` skill='${state.crafting.selectedSkill || ""}'`
+  cmd += ` ingredient='${ingredient.value || ""}'`
+  cmd += ` search='${search.value || ""}'`
+  cmd += ` level=${state.crafting.levelFilter || ""}`
+  cmd += ` limit=${limitNum() || 30}`
+  cmd += ` page=${pageNum() || 1}`
 
   return cmd
 }
@@ -203,6 +269,30 @@ function onModalOpened () {
 function onModalClosed () {
   window.removeEventListener('resize', onWidthChange)
 }
+
+function resetSearch () {
+  page.value = 1
+  limit.value = 30
+  search.value = ''
+  ingredient.value = ''
+  state.crafting.selectedSkill = ''
+  state.crafting.levelFilter = ''
+  state.crafting.filterType = 'known'
+  runCommand(buildRecipeCommand(), 'the_void')
+}
+
+onMounted(() => {
+   watchers.push(watch(() => state.crafting.count, () => {
+    if (page.value > numPages()) {
+      page.value = numPages()
+      runCommand(buildRecipeCommand(), 'the_void')
+    }
+  }))
+})
+
+onBeforeUnmount(() => {
+  watchers.forEach(w => w())
+})
 </script>
 <style lang="less" scoped>
 .checkbox-container {
@@ -212,15 +302,11 @@ function onModalClosed () {
   height: 34px;
 }
 
-.level-filter {
+.pagination-options {
+  max-width: 300px;
   display: flex;
-  gap: 10px;
-  align-items: center;
-  height: 34px;
-
-  .n-input {
-    width: 100px;
-  }
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .crafting-container {
@@ -231,8 +317,20 @@ function onModalClosed () {
     max-width: 300px;
   }
 
-  .no-recipes {
+  .page-size {
+    width: 75px;
+  }
+
+  .recipe-count {
     margin-top: 10px;
+    font-size: 14px;
+    line-height: 22px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 40px;
+    padding: 5px 10px;
+    background-color: #10292d;
   }
 
   .recipe-table {

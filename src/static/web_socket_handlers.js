@@ -267,8 +267,9 @@ const webSocketHandlers = {
     state.shop.prices = prices
   },
 
-  'item.craftable': ({ items }) => {
+  'item.craftable': ({ items, count }) => {
     state.crafting.recipes = items
+    state.crafting.count = count
   },
 
   'mail.count': ({ count }) => {

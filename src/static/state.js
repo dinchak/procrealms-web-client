@@ -115,6 +115,7 @@ export const state = reactive({
     levelFilter: '',
     selectedSkill: '',
     recipes: [],
+    count: 0
   },
 
   auction: {
