@@ -13,7 +13,7 @@
         <NGi>
           <NSelect
             class="skill-selector"
-            v-model:value="state.crafting.selectedSkill"
+            v-model:value="state.recipeSearch.selectedSkill"
             placeholder="Select Skill"
             :options="getCraftingSkills()"
             aria-label="Select Skill"
@@ -23,7 +23,7 @@
         <NGi>
           <NInput
             placeholder="Search by recipe name"
-            v-model:value="search"
+            v-model:value="state.recipeSearch.search"
             clearable
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           ></NInput>
@@ -31,14 +31,14 @@
         <NGi>
           <NInput
             placeholder="Search by ingredient name"
-            v-model:value="ingredient"
+            v-model:value="state.recipeSearch.ingredient"
             clearable
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           ></NInput>
         </NGi>
         <NGi>
           <NInput
-            v-model:value="state.crafting.levelFilter"
+            v-model:value="state.recipeSearch.levelFilter"
             placeholder="Level Filter, ie. 10, 5-15, 20+"
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           />
@@ -46,7 +46,7 @@
         <NGi>
           <div class="pagination-options">
             <NPagination
-              v-model:page="page"
+              v-model:page="state.recipeSearch.page"
               :page-count="numPages()"
               simple
               @update:page="updatePage()"
@@ -55,7 +55,7 @@
             <NInput
               class="page-size"
               placeholder="Page Limit"
-              v-model:value="limit"
+              :value="state.recipeSearch.limit + ''"
               type="number"
               min="0"
               max="1000"
@@ -65,30 +65,35 @@
         </NGi>
         <NGi>
           <div class="checkbox-container">
-            <NRadioGroup v-model:value="state.crafting.filterType" name="filter-type">
-              <NRadio
-                v-for="option in filterTypeOptions"
-                :key="option.value"
-                :value="option.value"
-                :label="option.label"
-                @change="runCommand(buildRecipeCommand(), 'the_void')"
-              />
-            </NRadioGroup>
+            <NCheckbox
+              v-model:checked="state.recipeSearch.known"
+              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
+            >Known</NCheckbox>
+            <NCheckbox
+              v-model:checked="state.recipeSearch.learned"
+              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
+            >Learned</NCheckbox>
+            <NCheckbox
+              v-model:checked="state.recipeSearch.all"
+              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
+            >All</NCheckbox>
           </div>
         </NGi>
       </NGrid>
 
-      <div class="recipe-count" v-if="state.crafting.recipes.length == 0">
+      <div class="recipe-count" v-if="state.recipeResults.recipes.length == 0">
         <div>no recipes found</div>
       </div>
-      <div class="recipe-count" v-if="state.crafting.recipes.length > 0">
-        <div>{{ state.crafting.count }} results</div>
+
+      <div class="recipe-count" v-if="state.recipeResults.recipes.length > 0">
+        <div>{{ state.recipeResults.count }} results</div>
         <div>showing {{ resultStart() }}-{{ resultEnd() }}</div>
-        <div>page {{ page }} of {{ numPages() }}</div>
+        <div>page {{ state.recipeSearch.page }} of {{ numPages() }}</div>
         <div>
           <NButton ghost type="warning" @click="resetSearch()" size="tiny">Reset Search</NButton>
         </div>
       </div>
+
       <div class="recipe-table">
         <div class="recipes" v-for="i in columns" :key="i">
           <div v-for="recipe in getColumnRecipes(i - 1)" :key="recipe.name" class="recipe-row">
@@ -105,7 +110,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { state } from '@/static/state'
-import { NGrid, NGi, NInput, NSelect, NRadio, NRadioGroup, NPagination, NButton } from 'naive-ui'
+import { NGrid, NGi, NInput, NSelect, NPagination, NButton, NCheckbox } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -118,18 +123,8 @@ const { runCommand } = useWebSocket()
 
 const selectedRecipe = ref('')
 const columns = ref(1)
-const search = ref('')
-const ingredient = ref('')
-const limit = ref('30')
-const page = ref(1)
 
 let watchers = []
-
-const filterTypeOptions = [
-  { label: 'Known', value: 'known' },
-  { label: 'Learned', value: 'learned' },
-  { label: 'All', value: 'all' },
-]
 
 function getCraftingSkills () {
   const { skills } = state.gameState
@@ -181,7 +176,7 @@ function getActions (recipe) {
 }
 
 function getColumnRecipes (colIndex) {
-  const recipes = state.crafting.recipes
+  const { recipes } = state.recipeResults
 
   if (!recipes || recipes.length === 0) {
     return []
@@ -207,55 +202,57 @@ function updatePage () {
 }
 
 function numPages () {
-  if (state.crafting.count == 0) {
+  const { count } = state.recipeResults
+  if (count == 0) {
     return 1
   }
-  return Math.ceil(state.crafting.count / limitNum())
-}
-
-function pageNum () {
-  let pageNum = parseInt(page.value, 10)
-  if (isNaN(pageNum) || pageNum < 1) {
-    return 1
-  }
-  return pageNum
-}
-
-function limitNum () {
-  let limitNum = parseInt(limit.value, 10)
-  if (isNaN(limitNum) || limitNum < 1) {
-    return 1
-  }
-  return limitNum
+  return Math.ceil(count / state.recipeSearch.limit)
 }
 
 function resultStart () {
-  if (state.crafting.count == 0) {
+  if (state.recipeResults.count == 0) {
     return 1
   }
-  return (pageNum() - 1) * limitNum() + 1
+  const { page, limit } = state.recipeSearch
+  return (page - 1) * limit + 1
 }
 
 function resultEnd () {
-  if (state.crafting.count == 0) {
+  const { count } = state.recipeResults
+  if (count == 0) {
     return 0
   }
-  return Math.min(pageNum() * limitNum(), state.crafting.count)
+  const { page, limit } = state.recipeSearch
+  return Math.min(page * limit, count)
 }
 
 function buildRecipeCommand () {
   let cmd = 'recipes'
 
-  if (state.crafting.filterType) {
-    cmd += ` ${state.crafting.filterType}`
+  if (state.recipeSearch.known) {
+    cmd += ` known=true`
+  } else {
+    cmd += ` known=false`
   }
 
-  cmd += ` skill='${state.crafting.selectedSkill || ""}'`
-  cmd += ` ingredient='${ingredient.value || ""}'`
-  cmd += ` search='${search.value || ""}'`
-  cmd += ` level=${state.crafting.levelFilter || ""}`
-  cmd += ` limit=${limitNum() || 30}`
-  cmd += ` page=${pageNum() || 1}`
+  if (state.recipeSearch.learned) {
+    cmd += ` learned=true`
+  } else {
+    cmd += ` learned=false`
+  }
+
+  if (state.recipeSearch.all) {
+    cmd += ` all=true`
+  } else {
+    cmd += ` all=false`
+  }
+
+  cmd += ` skill='${state.recipeSearch.selectedSkill || ""}'`
+  cmd += ` ingredient='${state.recipeSearch.ingredient || ""}'`
+  cmd += ` search='${state.recipeSearch.search || ""}'`
+  cmd += ` level='${state.recipeSearch.levelFilter || ""}'`
+  cmd += ` limit=${state.recipeSearch.limit}`
+  cmd += ` page=${state.recipeSearch.page}`
 
   return cmd
 }
@@ -271,20 +268,22 @@ function onModalClosed () {
 }
 
 function resetSearch () {
-  page.value = 1
-  limit.value = 30
-  search.value = ''
-  ingredient.value = ''
-  state.crafting.selectedSkill = ''
-  state.crafting.levelFilter = ''
-  state.crafting.filterType = 'known'
+  state.recipeSearch.page = 1
+  state.recipeSearch.limit = 30
+  state.recipeSearch.search = ''
+  state.recipeSearch.ingredient = ''
+  state.recipeSearch.known = false
+  state.recipeSearch.learned = false
+  state.recipeSearch.all = false
+  state.recipeSearch.selectedSkill = ''
+  state.recipeSearch.levelFilter = ''
   runCommand(buildRecipeCommand(), 'the_void')
 }
 
 onMounted(() => {
-   watchers.push(watch(() => state.crafting.count, () => {
-    if (page.value > numPages()) {
-      page.value = numPages()
+   watchers.push(watch(() => state.recipeResults.count, () => {
+    if (state.recipeSearch.page > numPages()) {
+      state.recipeSearch.page = numPages()
       runCommand(buildRecipeCommand(), 'the_void')
     }
   }))

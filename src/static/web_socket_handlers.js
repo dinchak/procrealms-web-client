@@ -268,8 +268,8 @@ const webSocketHandlers = {
   },
 
   'item.craftable': ({ items, count }) => {
-    state.crafting.recipes = items
-    state.crafting.count = count
+    state.recipeResults.recipes = items
+    state.recipeResults.count = count
   },
 
   'mail.count': ({ count }) => {

@@ -110,10 +110,19 @@ export const state = reactive({
     errorModal: false,
   },
 
-  crafting: {
-    filterType: 'known',
+  recipeSearch: {
+    page: 1,
+    limit: 30,
+    search: '',
+    ingredient: '',
     levelFilter: '',
     selectedSkill: '',
+    known: true,
+    learned: false,
+    all: false
+  },
+
+  recipeResults: {
     recipes: [],
     count: 0
   },
