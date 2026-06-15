@@ -23,7 +23,7 @@
         <NGi>
           <NInput
             placeholder="Search by recipe name"
-            v-model:value="state.recipeSearch.search"
+            v-model:value="state.recipeSearch.name"
             clearable
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           ></NInput>
@@ -36,6 +36,39 @@
             @update:value="runCommand(buildRecipeCommand(), 'the_void')"
           ></NInput>
         </NGi>
+
+        <NGi>
+          <NSelect
+            placeholder="Select Type"
+            :options="getItemTypes()"
+            v-model:value="state.recipeSearch.type"
+            aria-label="Select Type"
+            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+          />
+        </NGi>
+
+        <NGi v-if="state.recipeSearch.type && ITEM_SUBTYPES[state.recipeSearch.type]">
+          <NSelect
+            :disabled="state.recipeSearch.type == ''"
+            placeholder="Select Subtype"
+            :options="getItemSubTypes()"
+            v-model:value="state.recipeSearch.subtype"
+            aria-label="Select Subtype"
+            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+          />
+        </NGi>
+
+        <NGi v-if="state.recipeSearch.type == 'armor'">
+          <NSelect
+            :disabled="state.recipeSearch.type != 'armor'"
+            placeholder="Select Slot"
+            :options="getArmorSlots()"
+            v-model:value="state.recipeSearch.slot"
+            aria-label="Select Slot"
+            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+          />
+        </NGi>
+
         <NGi>
           <NInput
             v-model:value="state.recipeSearch.levelFilter"
@@ -64,20 +97,14 @@
           </div>
         </NGi>
         <NGi>
-          <div class="checkbox-container">
-            <NCheckbox
-              v-model:checked="state.recipeSearch.known"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >Known</NCheckbox>
-            <NCheckbox
-              v-model:checked="state.recipeSearch.learned"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >Learned</NCheckbox>
-            <NCheckbox
-              v-model:checked="state.recipeSearch.all"
-              @update:checked="runCommand(buildRecipeCommand(), 'the_void')"
-            >All</NCheckbox>
-          </div>
+          <NRadioGroup
+            v-model:value="state.recipeSearch.mode"
+            @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+          >
+            <NRadioButton name="mode" value="craftable" label="Craftable"></NRadioButton>
+            <NRadioButton name="mode" value="unlocked" label="Unlocked"></NRadioButton>
+            <NRadioButton name="mode" value="all" label="All"></NRadioButton>
+          </NRadioGroup>
         </NGi>
       </NGrid>
 
@@ -98,8 +125,16 @@
         <div class="recipes" v-for="i in columns" :key="i">
           <div v-for="recipe in getColumnRecipes(i - 1)" :key="recipe.name" class="recipe-row">
             <div :class="recipeClass(recipe.name)">
-              <div v-html-safe="ansiToHtml(recipe.fullName)" :class="getRecipeNameClass(recipe)" @click="selectRecipe(recipe)"></div>
-              <ItemDetails :item="recipe" :actions="getActions(recipe)" v-if="selectedRecipe == recipe.name"></ItemDetails>
+              <div
+                v-html-safe="ansiToHtml(recipe.fullName)"
+                :class="getRecipeNameClass(recipe)"
+                @click="selectRecipe(recipe)"
+              ></div>
+              <ItemDetails
+                v-if="selectedRecipe == recipe.name"
+                :item="recipe"
+                :actions="getActions(recipe)"
+              ></ItemDetails>
             </div>
           </div>
         </div>
@@ -110,7 +145,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { state } from '@/static/state'
-import { NGrid, NGi, NInput, NSelect, NPagination, NButton, NCheckbox } from 'naive-ui'
+import { NGrid, NGi, NInput, NSelect, NPagination, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -120,6 +155,8 @@ const { ansiToHtml } = useHelpers()
 
 import { useWebSocket } from '@/composables/web_socket'
 const { runCommand } = useWebSocket()
+
+import { ITEM_TYPES, ITEM_SUBTYPES, ARMOR_SLOTS } from '@/static/constants'
 
 const selectedRecipe = ref('')
 const columns = ref(1)
@@ -137,6 +174,42 @@ function getCraftingSkills () {
   craftingSkills.sort((a, b) => a.label.localeCompare(b.label))
 
   return [{ label: 'All Skills', value: '' }, ...craftingSkills]
+}
+
+function getItemTypes () {
+  let itemTypes = ITEM_TYPES.map(type => ({
+    label: type,
+    value: type
+  }))
+
+  return [{ label: 'All Types', value: '' }, ...itemTypes]
+}
+
+function getItemSubTypes () {
+  const { type } = state.recipeSearch
+  if (type == '' || !ITEM_SUBTYPES[type]) {
+    return [{ label: 'Select Type', value: '' }]
+  }
+
+  let itemSubTypes = ITEM_SUBTYPES[type].map(subtype => ({
+    label: subtype,
+    value: subtype
+  }))
+
+  return [{ label: 'All Subtypes', value: '' }, ...itemSubTypes]
+}
+
+function getArmorSlots () {
+  if (state.recipeSearch.type != 'armor') {
+    return []
+  }
+
+  let armorSlots = ARMOR_SLOTS.map(slot => ({
+    label: slot,
+    value: slot
+  }))
+
+  return [{ label: 'All Slots', value: '' }, ...armorSlots]
 }
 
 function recipeClass (name) {
@@ -162,14 +235,25 @@ function selectRecipe (recipe) {
 function getActions (recipe) {
   let actions = []
   if (recipe.canCraft === true) {
-    actions.push({
-      label: 'Craft',
-      class: 'bold-yellow',
-      onClick: () => {
-        let outputId = `inventory-output-${recipe.iid}`
-        runCommand(`craft '${recipe.name}'`, outputId)
-      }
-    })
+    if (['building', 'station'].includes(recipe.type)) {
+      actions.push({
+        label: 'Build',
+        class: 'bold-yellow',
+        onClick: () => {
+          let outputId = `inventory-output-${recipe.iid}`
+          runCommand(`build '${recipe.name}'`, outputId)
+        }
+      })
+    } else {
+      actions.push({
+        label: 'Craft',
+        class: 'bold-yellow',
+        onClick: () => {
+          let outputId = `inventory-output-${recipe.iid}`
+          runCommand(`craft '${recipe.name}'`, outputId)
+        }
+      })
+    }
   }
 
   return actions
@@ -227,33 +311,16 @@ function resultEnd () {
 }
 
 function buildRecipeCommand () {
-  let cmd = 'recipes'
-
-  if (state.recipeSearch.known) {
-    cmd += ` known=true`
-  } else {
-    cmd += ` known=false`
-  }
-
-  if (state.recipeSearch.learned) {
-    cmd += ` learned=true`
-  } else {
-    cmd += ` learned=false`
-  }
-
-  if (state.recipeSearch.all) {
-    cmd += ` all=true`
-  } else {
-    cmd += ` all=false`
-  }
-
+  let cmd = `recipes ${state.recipeSearch.mode}`
   cmd += ` skill='${state.recipeSearch.selectedSkill || ""}'`
+  cmd += ` name='${state.recipeSearch.name || ""}'`
   cmd += ` ingredient='${state.recipeSearch.ingredient || ""}'`
-  cmd += ` search='${state.recipeSearch.search || ""}'`
   cmd += ` level='${state.recipeSearch.levelFilter || ""}'`
+  cmd += ` type='${state.recipeSearch.type || ""}'`
+  cmd += ` subtype='${state.recipeSearch.subtype || ""}'`
+  cmd += ` slot='${state.recipeSearch.slot}'`
   cmd += ` limit=${state.recipeSearch.limit}`
   cmd += ` page=${state.recipeSearch.page}`
-
   return cmd
 }
 
@@ -270,13 +337,14 @@ function onModalClosed () {
 function resetSearch () {
   state.recipeSearch.page = 1
   state.recipeSearch.limit = 30
-  state.recipeSearch.search = ''
+  state.recipeSearch.name = ''
   state.recipeSearch.ingredient = ''
-  state.recipeSearch.known = false
-  state.recipeSearch.learned = false
-  state.recipeSearch.all = false
   state.recipeSearch.selectedSkill = ''
   state.recipeSearch.levelFilter = ''
+  state.recipeSearch.type = ''
+  state.recipeSearch.subtype = ''
+  state.recipeSearch.slot = ''
+  state.recipeSearch.mode = 'craftable'
   runCommand(buildRecipeCommand(), 'the_void')
 }
 

@@ -113,13 +113,14 @@ export const state = reactive({
   recipeSearch: {
     page: 1,
     limit: 30,
-    search: '',
+    name: '',
     ingredient: '',
     levelFilter: '',
     selectedSkill: '',
-    known: true,
-    learned: false,
-    all: false
+    type: '',
+    subtype: '',
+    slot: '',
+    mode: 'craftable'
   },
 
   recipeResults: {
