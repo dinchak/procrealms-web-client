@@ -29,7 +29,8 @@
               <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
               <div class="level">Level <span class="bold-white">{{ skill.level }}</span></div>
             </div>
-            <NProgress type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
+            <NProgress v-if="skill.level < 100" type="line" status="default" :percentage="skill.tnl || 0" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
+            <NProgress v-if="skill.level >= 100" type="line" status="success" :percentage="100" :border-radius="0" :height="8" :show-indicator="false"></NProgress>
           </div>
         </div>
       </NGi>

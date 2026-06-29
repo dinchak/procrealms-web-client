@@ -20,7 +20,9 @@
           <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
           <div>Level {{ skill.level }}</div>
         </div>
-        <NProgress type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
+        <NProgress v-if="skill.level < 100" type="line" status="default" :percentage="skill.tnl" indicator-placement="inside">
+        </NProgress>
+        <NProgress v-if="skill.level >= 100" type="line" status="success" :percentage="100" indicator-placement="inside">
         </NProgress>
       </div>
 
