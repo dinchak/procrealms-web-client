@@ -22,7 +22,7 @@
     </div>
 
     <div class="inventory-output-container" v-if="state.inventoryOutput['inventory-output-' + itemOutputId]">
-      <NButton class="clear-output-btn" size="small" @click="delete state.inventoryOutput['inventory-output-' + itemOutputId]">Clear Output</NButton>
+      <NButton class="clear-output-btn selectable" size="small" @click="delete state.inventoryOutput['inventory-output-' + itemOutputId]">Clear Output</NButton>
       <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput['inventory-output-' + itemOutputId])"></div>
     </div>
 

@@ -58,7 +58,7 @@ import SkillsPane from '@/components/game-modal/SkillsPane.vue'
 
 const tabs = ref(null)
 const currentPane = ref("score")
-const panes = ref(['score', 'skills', 'inventory', 'equipment', 'quests', 'options', 'mappings'])
+const panes = ref(['score', 'skills', 'quests', 'inventory', 'equipment'])
 
 let watchers = []
 
