@@ -80,7 +80,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'opened', 'closed', 'prevTab', 'nextTab'])
 
 const { setFontSize, setFontFamily } = useWindowHandler()
-const { selectNearestElement } = useHelpers()
+const { selectNearestElement, performSelectedElementAction } = useHelpers()
 
 const miniOutputEnabled = ref(false)
 
@@ -101,8 +101,9 @@ function selectModalAction (degree) {
 }
 
 function performModalAction () {
+  selectedElement = performSelectedElementAction(selectedElement, '.game-modal')
   if (selectedElement) {
-    selectedElement.click()
+    selectedElement.focus()
   }
 }
 

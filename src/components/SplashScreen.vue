@@ -68,7 +68,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { sendWithResponse } = useWebSocket()
-const { selectNearestElement } = useHelpers()
+const { selectNearestElement, performSelectedElementAction } = useHelpers()
 const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
@@ -122,10 +122,7 @@ function openNewPlayerModal () {
 }
 
 function performLoginAction () {
-  if (!selectedElement) {
-    return
-  }
-  selectedElement.click()
+  selectedElement = performSelectedElementAction(selectedElement)
 }
 
 let unwatch = null

@@ -18,7 +18,7 @@
 
     <div
       class="actions">
-      <NButton ghost v-for="action in actions" :key="action.label" :onClick="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
+      <NButton ghost v-for="action in actions" :key="action.label" @click="action.onClick" :class="action.class + (!action.disabled ? ' selectable' : '')" :disabled="action.disabled">{{ action.label }}</NButton>
     </div>
 
     <div class="inventory-output-container" v-if="state.inventoryOutput['inventory-output-' + itemOutputId]">

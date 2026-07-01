@@ -41,7 +41,7 @@ import CloseOutlined from '@vicons/material/CloseOutlined'
 
 const isDevelopment = import.meta.env.MODE == 'development'
 
-const { selectNearestElement } = useHelpers()
+const { selectNearestElement, performSelectedElementAction } = useHelpers()
 const { setFontSize, setFontFamily } = useWindowHandler()
 
 let selectedElement = null
@@ -53,8 +53,9 @@ function selectModalAction (degree) {
 }
 
 function performModalAction () {
+  selectedElement = performSelectedElementAction(selectedElement, '.debug-modal')
   if (selectedElement) {
-    selectedElement.click()
+    selectedElement.focus()
   }
 }
 

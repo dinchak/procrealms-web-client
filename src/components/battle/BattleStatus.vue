@@ -76,7 +76,7 @@ const expandEntities = computed(() => {
   return state.options.battleAlwaysExpanded ? true : state.options.battleExpanded
 })
 
-const { selectNearestElement } = useHelpers()
+const { selectNearestElement, performSelectedElementAction } = useHelpers()
 
 let selectedElement = null
 function selectBattleAction (degree) {
@@ -84,9 +84,7 @@ function selectBattleAction (degree) {
 }
 
 function performBattleAction () {
-  if (selectedElement) {
-    selectedElement.click()
-  }
+  selectedElement = performSelectedElementAction(selectedElement)
 }
 
 function getParticipants (side) {

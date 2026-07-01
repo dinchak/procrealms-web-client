@@ -374,20 +374,231 @@ export function useHelpers () {
 
   let selectDelay = false
   let selectDelayTimeout = null
+  let lastSelectedRect = null
+  let currentSelectedElement = null
+  let stopSelectableRepairWatcher = null
+  const gamepadSelectedClass = 'gamepad-selected'
 
-  function selectNearestElement (selectedElement, degree) {
-    if (degree === false) {
-      return selectedElement
+  function rememberSelectedRect (element) {
+    if (!element || !element.isConnected) {
+      return
     }
 
+    lastSelectedRect = getBoundingRect(element)
+  }
+
+  function setSelectedElement (element) {
+    if (!element) {
+      return null
+    }
+
+    clearGamepadSelectedElements(element)
+    element.classList.add('selected')
+    element.classList.add(gamepadSelectedClass)
+    currentSelectedElement = element
+    rememberSelectedRect(element)
+    scrollParentToElement(element)
+    return element
+  }
+
+  function clearGamepadSelectedElements (exceptElement = null) {
+    for (let element of document.querySelectorAll(`.${gamepadSelectedClass}`)) {
+      if (element === exceptElement) {
+        continue
+      }
+
+      element.classList.remove('selected')
+      element.classList.remove(gamepadSelectedClass)
+    }
+  }
+
+  function isSelectableElementActive (element, selectableElements = null) {
+    if (!element || !element.isConnected) {
+      return false
+    }
+
+    let availableElements = selectableElements || getSelectableElements()
+    return availableElements.includes(element)
+  }
+
+  function refreshSelectedElement (selectedElement, preferredElements = null) {
+    let selectableElements = getSelectableElements()
+    if (selectableElements.length == 0) {
+      return null
+    }
+
+    if (preferredElements && preferredElements.length > 0) {
+      return setSelectedElement(findClosestSelectableElementFromRect(lastSelectedRect, preferredElements) || preferredElements[0])
+    }
+
+    if (isSelectableElementActive(selectedElement, selectableElements)) {
+      return setSelectedElement(selectedElement)
+    }
+
+    return setSelectedElement(findClosestSelectableElementFromRect(lastSelectedRect, selectableElements) || selectableElements[0])
+  }
+
+  function watchForSelectableRepair (selectedElement, onRepair, timeout = 5000, removalFallbackDelay = 100) {
+    if (typeof MutationObserver == 'undefined') {
+      return () => {}
+    }
+
+    let initialElements = new Set(getSelectableElements())
+    let selectedRect = selectedElement && isSelectableElementActive(selectedElement)
+      ? getBoundingRect(selectedElement)
+      : lastSelectedRect
+    let stopped = false
+    let frameId = null
+    let timeoutId = null
+    let fallbackTimeoutId = null
+    let observer = null
+
+    function stop () {
+      stopped = true
+
+      if (observer) {
+        observer.disconnect()
+        observer = null
+      }
+
+      if (frameId) {
+        cancelAnimationFrame(frameId)
+        frameId = null
+      }
+
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+
+      if (fallbackTimeoutId) {
+        clearTimeout(fallbackTimeoutId)
+        fallbackTimeoutId = null
+      }
+    }
+
+    function repairSelection (preferredElements = null) {
+      let repairedElement = refreshSelectedElement(selectedElement, preferredElements)
+      stop()
+
+      if (repairedElement) {
+        onRepair(repairedElement)
+      }
+    }
+
+    function scheduleRemovalFallback () {
+      if (fallbackTimeoutId || stopped) {
+        return
+      }
+
+      fallbackTimeoutId = setTimeout(() => {
+        fallbackTimeoutId = null
+
+        if (stopped) {
+          return
+        }
+
+        let selectableElements = getSelectableElements()
+        if (selectedElement && isSelectableElementActive(selectedElement, selectableElements)) {
+          return
+        }
+
+        repairSelection()
+      }, removalFallbackDelay)
+    }
+
+    function repairIfSelectableChanged () {
+      frameId = null
+
+      if (stopped) {
+        return
+      }
+
+      let selectableElements = getSelectableElements()
+      let newSelectableElements = selectableElements.filter(element => !initialElements.has(element))
+      let selectedElementRemoved = selectedElement && !isSelectableElementActive(selectedElement, selectableElements)
+
+      if (!selectedElementRemoved) {
+        return
+      }
+
+      scheduleRemovalFallback()
+
+      let overlappingElements = newSelectableElements.filter(element => rectsOverlap(selectedRect, getBoundingRect(element)))
+      if (overlappingElements.length == 0) {
+        return
+      }
+
+      repairSelection(overlappingElements)
+    }
+
+    function scheduleRepairCheck () {
+      if (frameId || stopped) {
+        return
+      }
+
+      frameId = requestAnimationFrame(repairIfSelectableChanged)
+    }
+
+    observer = new MutationObserver(scheduleRepairCheck)
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'hidden'],
+      childList: true,
+      subtree: true
+    })
+
+    timeoutId = setTimeout(stop, timeout)
+    return stop
+  }
+
+  function getCurrentGamepadSelectedElement (scopeSelector = null) {
+    let scope = scopeSelector ? document.querySelector(scopeSelector) : document
+    if (!scope) {
+      return null
+    }
+
+    return scope.querySelector(`.selectable.${gamepadSelectedClass}`)
+  }
+
+  function stopWatchingForSelectableRepair () {
+    if (stopSelectableRepairWatcher) {
+      stopSelectableRepairWatcher()
+      stopSelectableRepairWatcher = null
+    }
+  }
+
+  function performSelectedElementAction (selectedElement, scopeSelector = null) {
+    selectedElement = getCurrentGamepadSelectedElement(scopeSelector) || currentSelectedElement || selectedElement
     if (!selectedElement) {
-      selectedElement = getSelectableElements()[0]
+      return null
+    }
+
+    if (!isSelectableElementActive(selectedElement)) {
+      selectedElement = refreshSelectedElement(selectedElement)
       if (!selectedElement) {
         return null
       }
+    }
 
-      selectedElement.classList.add('selected')
-      scrollParentToElement(selectedElement)
+    setSelectedElement(selectedElement)
+    stopWatchingForSelectableRepair()
+    stopSelectableRepairWatcher = watchForSelectableRepair(selectedElement, repairedElement => {
+      if (repairedElement) {
+        repairedElement.focus()
+      }
+      stopSelectableRepairWatcher = null
+    })
+
+    selectedElement.click()
+    return selectedElement
+  }
+
+  function selectNearestElement (selectedElement, degree) {
+    stopWatchingForSelectableRepair()
+    selectedElement = currentSelectedElement || getCurrentGamepadSelectedElement() || selectedElement
+
+    if (degree === false) {
       return selectedElement
     }
 
@@ -408,15 +619,35 @@ export function useHelpers () {
     }, delayTime)
 
     let direction = degreeToDirection(degree)
-    let nearestElement = findNearestSelectableElement(selectedElement, direction)
+    let selectableElements = getSelectableElements()
+    if (selectableElements.length == 0) {
+      currentSelectedElement = null
+      return null
+    }
+
+    if (!selectedElement) {
+      return setSelectedElement(selectableElements[0])
+    }
+
+    if (!isSelectableElementActive(selectedElement, selectableElements)) {
+      let recoveredElement = recoverSelectableElement(direction, selectableElements)
+      if (recoveredElement) {
+        return setSelectedElement(recoveredElement)
+      }
+
+      return setSelectedElement(selectableElements[0])
+    }
+
+    rememberSelectedRect(selectedElement)
+
+    let nearestElement = findNearestSelectableElement(selectedElement, direction, selectableElements)
 
     if (nearestElement) {
       selectedElement.classList.remove('selected')
-      selectedElement = nearestElement
-      selectedElement.classList.add('selected')
+      selectedElement.classList.remove(gamepadSelectedClass)
+      return setSelectedElement(nearestElement)
     }
 
-    scrollParentToElement(selectedElement)
     return selectedElement
   }
 
@@ -471,53 +702,142 @@ export function useHelpers () {
     return Math.sqrt(dx * dx + dy * dy)
   }
 
-  function getPosition (element) {
-    let xPosition = 0
-    let yPosition = 0
-    let width = element.offsetWidth
-    let height = element.offsetHeight
-
-    while (element) {
-      xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft)
-      yPosition += (element.offsetTop - element.scrollTop + element.clientTop)
-      element = element.offsetParent
+  function rectsOverlap (rect1, rect2) {
+    if (!rect1 || !rect2) {
+      return false
     }
 
-    let x = xPosition + width / 2
-    let y = yPosition + height / 2
-
-    return { x, y }
+    return rect1.x1 < rect2.x2 &&
+      rect1.x2 > rect2.x1 &&
+      rect1.y1 < rect2.y2 &&
+      rect1.y2 > rect2.y1
   }
 
-  function findNearestSelectableElement (selectedElement, direction) {
+  function getRectCenter (rect) {
+    return {
+      x: (rect.x1 + rect.x2) / 2,
+      y: (rect.y1 + rect.y2) / 2
+    }
+  }
+
+  function calcAxisGap (min1, max1, min2, max2) {
+    if (max1 < min2) {
+      return min2 - max1
+    }
+
+    if (max2 < min1) {
+      return min1 - max2
+    }
+
+    return 0
+  }
+
+  function getDirectionalMetrics (rect1, rect2, direction) {
+    let rect1Center = getRectCenter(rect1)
+    let rect2Center = getRectCenter(rect2)
+    let deltaX = rect2Center.x - rect1Center.x
+    let deltaY = rect2Center.y - rect1Center.y
+
+    let forwardDistance = 0
+    let axisGap = 0
+    let centerOffset = 0
+
+    if (direction == 'left') {
+      forwardDistance = -deltaX
+      axisGap = calcAxisGap(rect1.y1, rect1.y2, rect2.y1, rect2.y2)
+      centerOffset = Math.abs(deltaY)
+    } else if (direction == 'right') {
+      forwardDistance = deltaX
+      axisGap = calcAxisGap(rect1.y1, rect1.y2, rect2.y1, rect2.y2)
+      centerOffset = Math.abs(deltaY)
+    } else if (direction == 'up') {
+      forwardDistance = -deltaY
+      axisGap = calcAxisGap(rect1.x1, rect1.x2, rect2.x1, rect2.x2)
+      centerOffset = Math.abs(deltaX)
+    } else {
+      forwardDistance = deltaY
+      axisGap = calcAxisGap(rect1.x1, rect1.x2, rect2.x1, rect2.x2)
+      centerOffset = Math.abs(deltaX)
+    }
+
+    if (forwardDistance <= 0) {
+      return null
+    }
+
+    let sourceSize = direction == 'left' || direction == 'right'
+      ? rect1.y2 - rect1.y1
+      : rect1.x2 - rect1.x1
+    let targetSize = direction == 'left' || direction == 'right'
+      ? rect2.y2 - rect2.y1
+      : rect2.x2 - rect2.x1
+    let effectiveCenterOffset = centerOffset
+
+    if ((direction == 'up' || direction == 'down') && sourceSize > targetSize * 2) {
+      effectiveCenterOffset = Math.abs(rect2.x1 - rect1.x1)
+    }
+
+    let centerDistance = calcRectDistance(rect1, rect2, direction)
+    let laneTolerance = Math.min(18, Math.max(6, sourceSize * 0.25))
+    let sameLane = axisGap <= laneTolerance
+
+    return {
+      sameLane,
+      score: (forwardDistance * 1.5) + (axisGap * 4) + (effectiveCenterOffset * 0.75) + (centerDistance * 0.05)
+    }
+  }
+
+  function findNearestSelectableElementFromRect (rect1, direction, selectableElements) {
+    let candidates = []
+
+    for (let element of selectableElements) {
+      const rect2 = getBoundingRect(element)
+      let metrics = getDirectionalMetrics(rect1, rect2, direction)
+      if (!metrics) {
+        continue
+      }
+
+      candidates.push({
+        element,
+        sameLane: metrics.sameLane,
+        score: metrics.score
+      })
+    }
+
+    let sameLaneCandidates = candidates.filter(candidate => candidate.sameLane)
+    if (sameLaneCandidates.length > 0) {
+      candidates = sameLaneCandidates
+    }
+
+    let nearestElement = null
+    let nearestScore = Infinity
+
+    for (let candidate of candidates) {
+      if (candidate.score < nearestScore) {
+        nearestScore = candidate.score
+        nearestElement = candidate.element
+      }
+    }
+
+    return nearestElement
+  }
+
+  function findNearestSelectableElement (selectedElement, direction, selectableElements = getSelectableElements()) {
     const rect1 = getBoundingRect(selectedElement)
-    const { x, y } = getPosition(selectedElement)
+    let candidateElements = selectableElements.filter(element => element !== selectedElement)
+    return findNearestSelectableElementFromRect(rect1, direction, candidateElements)
+  }
+
+  function findClosestSelectableElementFromRect (rect1, selectableElements) {
+    if (!rect1) {
+      return null
+    }
 
     let nearestElement = null
     let nearestDistance = Infinity
-    let selectableElements = getSelectableElements()
 
     for (let element of selectableElements) {
-      if (element === selectedElement) {
-        continue
-      }
-
-      const rect2 = getBoundingRect(element)
-      const elementPosition = getPosition(element)
-      const elX = elementPosition.x
-      const elY = elementPosition.y
-
-      if (direction == 'left' && (elX >= x || rect1.y1 > rect2.y2 || rect1.y2 < rect2.y1)) {
-        continue
-      } else if (direction == 'right' && (elX <= x || rect1.y1 > rect2.y2 || rect1.y2 < rect2.y1)) {
-        continue
-      } else if (direction == 'up' && elY >= y) {
-        continue
-      } else if (direction == 'down' && elY <= y) {
-        continue
-      }
-
-      let rectDistance = calcRectDistance(rect1, rect2, direction)
+      let rect2 = getBoundingRect(element)
+      let rectDistance = calcRectDistance(rect1, rect2)
       if (rectDistance < nearestDistance) {
         nearestDistance = rectDistance
         nearestElement = element
@@ -525,6 +845,15 @@ export function useHelpers () {
     }
 
     return nearestElement
+  }
+
+  function recoverSelectableElement (direction, selectableElements) {
+    if (!lastSelectedRect) {
+      return null
+    }
+
+    return findNearestSelectableElementFromRect(lastSelectedRect, direction, selectableElements) ||
+      findClosestSelectableElementFromRect(lastSelectedRect, selectableElements)
   }
 
   function ucfirst (str) {
@@ -824,7 +1153,7 @@ export function useHelpers () {
   return {
     ucfirst, renderNumber, listToString, ansiToHtml,
     copperToMoneyString, getActions, getMerc, getPetEid,
-    selectNearestElement, isGamepadConnected,
+    selectNearestElement, performSelectedElementAction, isGamepadConnected,
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,

@@ -44,7 +44,7 @@ import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
 
 const { sendWithResponse } = useWebSocket()
-const { selectNearestElement } = useHelpers()
+const { selectNearestElement, performSelectedElementAction } = useHelpers()
 
 const formRef = ref(null)
 const nameInput = ref(null)
@@ -117,8 +117,9 @@ function selectModalAction (degree) {
 }
 
 function performModalAction () {
+  selectedElement = performSelectedElementAction(selectedElement, '.login-modal')
   if (selectedElement) {
-    selectedElement.click()
+    selectedElement.focus()
   }
 }
 
