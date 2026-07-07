@@ -33,7 +33,9 @@
       <div class="skill" v-for="skill in getSortedSkills('combat')" :key="skill.name">
         <div class="skill-header">
           <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
-          <div>Rank {{ skill.rank }}</div>
+          <div>
+            Rank {{ skill.rank }}<span v-if="skill.bonusRanks > 0" class="bonus-rank">[<span class="bonus-rank-value">+{{ skill.bonusRanks }}</span>]</span>
+          </div>
         </div>
       </div>
 
@@ -44,7 +46,9 @@
       <div class="skill" v-for="skill in getSortedSkills('artisan')" :key="skill.name">
         <div class="skill-header">
           <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
-          <div>Rank {{ skill.rank }}</div>
+          <div>
+            Rank {{ skill.rank }}<span v-if="skill.bonusRanks > 0" class="bonus-rank">[<span class="bonus-rank-value">+{{ skill.bonusRanks }}</span>]</span>
+          </div>
         </div>
       </div>
     </div>
@@ -128,6 +132,15 @@ function getSortedSkills (type) {
           color: #f9f1a5;
         }
       }
+    }
+
+    .bonus-rank {
+      color: #555;
+      margin-left: 0.2em;
+    }
+
+    .bonus-rank-value {
+      color: #ffff55;
     }
   }
 

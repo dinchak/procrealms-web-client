@@ -45,7 +45,9 @@
           <div v-for="skill of getCombatSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
               <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
-              <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
+              <div class="level">
+                Rank <span class="bold-white">{{ skill.rank }}</span><span v-if="skill.bonusRanks > 0" class="bonus-rank">[<span class="bonus-rank-value">+{{ skill.bonusRanks }}</span>]</span>
+              </div>
             </div>
           </div>
         </div>
@@ -61,7 +63,9 @@
           <div v-for="skill of getArtisanSkills()" :key="skill.name" class="skill">
             <div class="skill-info">
               <div class="name link" @click="openHelpPage(skill.name)">{{ skill.name }}</div>
-              <div class="level">Rank <span class="bold-white">{{ skill.rank }}</span></div>
+              <div class="level">
+                Rank <span class="bold-white">{{ skill.rank }}</span><span v-if="skill.bonusRanks > 0" class="bonus-rank">[<span class="bonus-rank-value">+{{ skill.bonusRanks }}</span>]</span>
+              </div>
             </div>
           </div>
         </div>
@@ -187,6 +191,15 @@ function getScrollContainerClass () {
                 color: #f9f1a5;
               }
           }
+        }
+
+        .bonus-rank {
+          color: #555;
+          margin-left: 0.2em;
+        }
+
+        .bonus-rank-value {
+          color: #ffff55;
         }
 
         .skill-info {

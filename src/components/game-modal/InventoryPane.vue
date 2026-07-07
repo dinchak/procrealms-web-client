@@ -27,7 +27,7 @@
 
     <div class="sorting">
       <span>Sort by </span>
-      <NPopselect class="selectable" v-model:value="state.inventorySortValue" :options="sortOptions" @update:value="onSortChange">
+      <NPopselect v-model:value="state.inventorySortValue" :options="sortOptions" @update:value="onSortChange">
         <span class="dropdown">{{ state.inventorySortValue }}</span>
       </NPopselect>
     </div>
