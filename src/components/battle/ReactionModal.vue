@@ -49,6 +49,9 @@ function getReactionType () {
   if (!battle.pendingReaction) {
     return 'Unknown Action'
   }
+  if (battle.pendingReaction.spellName) {
+    return battle.pendingReaction.spellName
+  }
   return battle.pendingReaction.type
 }
 
