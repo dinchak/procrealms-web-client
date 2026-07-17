@@ -152,12 +152,20 @@ function setWindowFocusState (hasFocus) {
 }
 
 function syncWindowFocusState () {
-  return setWindowFocusState(!document.hidden && document.hasFocus())
+  return setWindowFocusState(!document.hidden)
 }
 
 function onKeyDown (ev) {
-  if (!syncWindowFocusState()) {
+  if (document.hidden) {
+    setWindowFocusState(false)
     return
+  }
+
+  // A key event is definitive proof that this document can receive input.
+  // Do not use document.hasFocus() here: browsers may update it after a tab
+  // becomes visible, which can leave the client ignoring every keypress.
+  if (!windowHasFocus) {
+    setWindowFocusState(true)
   }
 
   if (handleMetaKey(ev, true)) {
@@ -179,8 +187,13 @@ function onKeyDown (ev) {
 }
 
 function onKeyUp (ev) {
-  if (!syncWindowFocusState()) {
+  if (document.hidden) {
+    setWindowFocusState(false)
     return
+  }
+
+  if (!windowHasFocus) {
+    setWindowFocusState(true)
   }
   handleMetaKey(ev, false)
 }
@@ -326,7 +339,9 @@ function removeEventListeners () {
 }
 
 function onFocus () {
-  syncWindowFocusState()
+  if (!document.hidden) {
+    setWindowFocusState(true)
+  }
 }
 
 function onBlur () {
@@ -334,7 +349,7 @@ function onBlur () {
 }
 
 function onVisibilityChange () {
-  syncWindowFocusState()
+  setWindowFocusState(!document.hidden)
 }
 
 onMounted(() => {

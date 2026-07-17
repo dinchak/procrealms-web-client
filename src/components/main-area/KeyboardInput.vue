@@ -19,6 +19,8 @@ let text = ref('')
 let commandBuffer = ''
 let historyIndex = -1
 let commandHistory = []
+let inputWasFocused = false
+let restoreInputOnWindowFocus = false
 
 const props = defineProps({
   focusMode: {
@@ -60,12 +62,22 @@ function blurTextInput () {
 }
 
 function onFocus () {
+  inputWasFocused = true
   setMode(focusMode.value)
 }
 
 function onBlur () {
+  // A tab/app switch blurs the element. Remember that this input owned focus
+  // so it can be restored when the player returns, but do not steal focus
+  // after an ordinary click elsewhere in the UI.
+  setTimeout(() => {
+    if (!document.hidden && document.activeElement !== input.value) {
+      inputWasFocused = false
+    }
+  })
+
   if (state.options.textInputAlwaysFocused) {
-    if (activeModes.value.includes(state.mode)) {
+    if (!document.hidden && activeModes.value.includes(state.mode)) {
       input.value.focus()
     }
     return
@@ -167,12 +179,29 @@ function getPlaceholder () {
   return props.placeholder
 }
 
+function onWindowBlur () {
+  restoreInputOnWindowFocus = inputWasFocused
+}
+
+function onWindowFocus () {
+  requestAnimationFrame(() => {
+    const shouldRestore = restoreInputOnWindowFocus || state.options.textInputAlwaysFocused
+    restoreInputOnWindowFocus = false
+
+    if (!document.hidden && shouldRestore && activeModes.value.includes(state.mode)) {
+      input.value.focus()
+    }
+  })
+}
+
 onMounted(() => {
   state.inputEmitter.on('focusTextInput', focusTextInput)
   state.inputEmitter.on('blurTextInput', blurTextInput)
   state.inputEmitter.on('sendCommand', sendCommand)
   state.inputEmitter.on('prevCommand', prevCommand)
   state.inputEmitter.on('nextCommand', nextCommand)
+  window.addEventListener('blur', onWindowBlur)
+  window.addEventListener('focus', onWindowFocus)
 
   if (state.options.textInputAlwaysFocused) {
     if (activeModes.value.includes(state.mode)) {
@@ -188,6 +217,8 @@ onBeforeUnmount(() => {
   state.inputEmitter.off('sendCommand', sendCommand)
   state.inputEmitter.off('prevCommand', prevCommand)
   state.inputEmitter.off('nextCommand', nextCommand)
+  window.removeEventListener('blur', onWindowBlur)
+  window.removeEventListener('focus', onWindowFocus)
 })
 </script>
 
