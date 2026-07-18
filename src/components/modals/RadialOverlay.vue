@@ -50,7 +50,7 @@ function getRadialItems (radialNum) {
 
 function openRadialMenu () {
   visible.value = true
-  setMode('radial')
+  setMode('radial', 'radialOverlay')
 }
 
 function closeRadialMenu () {
@@ -58,7 +58,7 @@ function closeRadialMenu () {
     return
   }
   visible.value = false
-  prevMode()
+  prevMode('radialOverlay')
 }
 
 function selectRadialItem (degree) {

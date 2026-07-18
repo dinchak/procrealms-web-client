@@ -82,11 +82,15 @@ import MailFilled from '@vicons/material/MailFilled'
 import MenuOutlined from '@vicons/material/MenuOutlined'
 import SettingsFilled from '@vicons/material/SettingsFilled'
 
-import { setMode, state } from '@/static/state'
+import { setMode, prevMode, state } from '@/static/state'
 
 function toggleSettings () {
   state.modals.settingsModal = !state.modals.settingsModal
-  setMode('modal')
+  if (state.modals.settingsModal) {
+    setMode('modal', 'settingsModal')
+  } else {
+    prevMode('settingsModal')
+  }
 }
 
 function openPlayerModal (pane = null) {
@@ -94,27 +98,27 @@ function openPlayerModal (pane = null) {
     state.gamepadTab = pane
   }
   state.modals.playerModal = true
-  setMode('modal')
+  setMode('modal', 'playerModal')
 }
 
 function openCraftingModal () {
   state.modals.craftingModal = true
-  setMode('modal')
+  setMode('modal', 'craftingModal')
 }
 
 function openChatModal () {
   state.modals.chatModal = true
-  setMode('modal')
+  setMode('modal', 'chatModal')
 }
 
 function openAuctionModal () {
   state.modals.auctionModal = true
-  setMode('modal')
+  setMode('modal', 'auctionModal')
 }
 
 function openMailModal () {
   state.modals.mailModal = true
-  setMode('modal')
+  setMode('modal', 'mailModal')
 }
 
 function totalNumUnseenMessages () {

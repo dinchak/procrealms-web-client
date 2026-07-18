@@ -197,7 +197,7 @@ function getTradeButtonClass () {
 }
 
 function openTradeModal () {
-  setMode('modal')
+  setMode('modal', 'tradeModal')
   state.modals.tradeModal = true
 }
 

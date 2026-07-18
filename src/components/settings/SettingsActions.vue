@@ -22,26 +22,26 @@ const { exportOptions, importOptions } = useLocalStorageHandler()
 const fileInput = ref(null)
 
 function openTriggersModal () {
-  setMode('modal')
+  setMode('modal', 'triggersModal')
   state.modals.triggersModal = true
 }
 
 function openInputMappingModal () {
   state.modals.settingsModal = false
-  prevMode()
-  setMode('modal')
+  prevMode('settingsModal')
+  setMode('modal', 'inputMappingModal')
   state.modals.inputMappingModal = true
 }
 
 function openHelpModal () {
   state.modals.settingsModal = false
-  prevMode()
-  setMode('modal')
+  prevMode('settingsModal')
+  setMode('modal', 'helpModal')
   state.modals.helpModal = true
 }
 
 function openLogoutModal () {
-  setMode('modal')
+  setMode('modal', 'logoutModal')
   state.modals.logoutModal = true
 }
 

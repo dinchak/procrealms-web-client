@@ -37,7 +37,7 @@ function closeModal () {
     return
   }
   state.modals.logoutModal = false
-  prevMode()
+  prevMode('logoutModal')
 }
 
 function logout () {

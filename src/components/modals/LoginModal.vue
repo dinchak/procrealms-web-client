@@ -133,7 +133,7 @@ function onCloseModal () {
     return
   }
   state.modals.loginModal = false
-  prevMode()
+  prevMode('loginModal')
 }
 
 function handleValidation (e) {

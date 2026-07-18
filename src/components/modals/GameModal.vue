@@ -29,7 +29,7 @@
           <div v-for="(line, i) in getRecentOutput()" class="line" v-html-safe="line" :key="`line-${i}`"></div>
         </div>
 
-        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :active-modes="['modal', 'modal-input']" :style="{ marginBottom: '10px' }"></KeyboardInput>
+        <KeyboardInput v-if="miniOutputEnabled" :focus-mode="'modal-input'" :mode-owner="`${modalKey}:input`" :active-modes="['modal', 'modal-input']" :style="{ marginBottom: '10px' }"></KeyboardInput>
 
         <slot :mini-output-enabled="miniOutputEnabled"></slot>
 
@@ -87,10 +87,18 @@ const miniOutputEnabled = ref(false)
 let selectedElement = null
 let watchers = []
 let modalHandlersBound = false
+let modalClosed = false
 
 const showModal = computed({
   get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
+  set: value => {
+    if (value) {
+      emit('update:modelValue', true)
+      return
+    }
+
+    onCloseModal()
+  }
 })
 
 function selectModalAction (degree) {
@@ -119,6 +127,7 @@ function onOpenModal () {
   if (modalHandlersBound) {
     return
   }
+  modalClosed = false
   modalHandlersBound = true
 
   state.inputEmitter.on('closeModal', onCloseModal)
@@ -151,17 +160,18 @@ function onOpenModal () {
 }
 
 function onCloseModal () {
-  if (!showModal.value) {
+  if (modalClosed) {
     return
   }
+  modalClosed = true
 
-  showModal.value = false
+  emit('update:modelValue', false)
 
   if (state.mode == 'modal-input') {
-    prevMode()
+    prevMode(`${props.modalKey}:input`)
   }
 
-  prevMode()
+  prevMode(props.modalKey)
 
   state.inputEmitter.off('closeModal', onCloseModal)
   state.inputEmitter.off('selectModalAction', selectModalAction)
@@ -232,6 +242,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  // A parent can remove this component immediately after changing v-model.
+  // Restore its mode here too, because after-leave is not guaranteed to run.
+  onCloseModal()
+
   state.inputEmitter.off('closeModal', onCloseModal)
   state.inputEmitter.off('selectModalAction', selectModalAction)
   state.inputEmitter.off('performModalAction', performModalAction)

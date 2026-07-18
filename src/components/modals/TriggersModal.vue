@@ -357,7 +357,7 @@ function onCloseModal () {
     return
   }
   state.modals.triggersModal = false
-  prevMode()
+  prevMode('triggersModal')
 }
 
 function onStorage (event) {

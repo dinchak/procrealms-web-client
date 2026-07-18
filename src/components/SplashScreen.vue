@@ -112,12 +112,12 @@ function doDeleteToken (name) {
 }
 
 function openLoginModal () {
-  setMode('modal')
+  setMode('modal', 'loginModal')
   state.modals.loginModal = true
 }
 
 function openNewPlayerModal () {
-  setMode('modal')
+  setMode('modal', 'newPlayerModal')
   state.modals.newPlayerModal = true
 }
 

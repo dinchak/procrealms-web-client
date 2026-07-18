@@ -253,7 +253,7 @@ const webSocketHandlers = {
     state.gamepadHelpTab = entry
     if (!state.modals.helpModal) {
       state.modals.helpModal = !state.modals.helpModal
-      setMode('modal')
+      setMode('modal', 'helpModal')
     }
   },
 

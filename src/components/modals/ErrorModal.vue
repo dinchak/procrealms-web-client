@@ -17,6 +17,6 @@ import { NModal } from 'naive-ui'
 function onModalClosed () {
   state.errorMessage = ''
   state.modals.errorModal = false
-  prevMode()
+  prevMode('errorModal')
 }
 </script>

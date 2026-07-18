@@ -105,72 +105,72 @@ const { runCommand } = useWebSocket()
 let moveTimeout = null
 
 function openPlayerModal () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
 }
 
 function openScore () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
   state.gamepadTab = 'score'
 }
 
 function openSkills () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
   state.gamepadTab = 'skills'
 }
 
 function openInventory () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
   state.gamepadTab = 'inventory'
 }
 
 function openEquipment () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
   state.gamepadTab = 'equipment'
 }
 
 function openQuests () {
-  setMode('modal')
+  setMode('modal', 'playerModal')
   state.modals.playerModal = true
   state.gamepadTab = 'quests'
 }
 
 function openHelpModal () {
-  setMode('modal')
+  setMode('modal', 'helpModal')
   state.modals.helpModal = true
 }
 
 function openTradeModal () {
-  setMode('modal')
+  setMode('modal', 'tradeModal')
   state.modals.tradeModal = true
 }
 
 function openCraftingModal () {
-  setMode('modal')
+  setMode('modal', 'craftingModal')
   state.modals.craftingModal = true
 }
 
 function openChatModal () {
-  setMode('modal')
+  setMode('modal', 'chatModal')
   state.modals.chatModal = true
 }
 
 function openAuctionModal () {
-  setMode('modal')
+  setMode('modal', 'auctionModal')
   state.modals.auctionModal = true
 }
 
 function openMailModal () {
-  setMode('modal')
+  setMode('modal', 'mailModal')
   state.modals.mailModal = true
 }
 
 function showDebug () {
-  setMode('modal')
+  setMode('modal', 'debugModal')
   state.modals.debugModal = true
 }
 

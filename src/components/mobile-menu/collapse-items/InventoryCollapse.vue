@@ -184,11 +184,11 @@ function clickHandler (iid) {
 }
 
 function onFocus () {
-  setMode('input')
+  setMode('input', 'inventoryCollapse')
 }
 
 function onBlur () {
-  prevMode()
+  prevMode('inventoryCollapse')
 }
 
 function getMoney () {

@@ -153,7 +153,7 @@ export function useHudPopup (rootElement, getPopupKeys = null) {
       return
     }
 
-    setMode('modal')
+    setMode('modal', 'hudPopup')
     modalModePushed.value = true
   }
 
@@ -163,7 +163,7 @@ export function useHudPopup (rootElement, getPopupKeys = null) {
     }
 
     modalModePushed.value = false
-    prevMode()
+    prevMode('hudPopup')
   }
 
   function closePinned () {

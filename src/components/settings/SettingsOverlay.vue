@@ -34,7 +34,7 @@ function onCloseModal () {
     return
   }
   state.modals.settingsModal = false
-  prevMode()
+  prevMode('settingsModal')
 }
 
 onMounted(() => {

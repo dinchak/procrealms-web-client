@@ -185,11 +185,11 @@ async function onOpenModal () {
 }
 
 function onCloseModal () {
-  if (!state.modals.loginModal) {
+  if (!state.modals.newPlayerModal) {
     return
   }
-  state.modals.loginModal = false
-  prevMode()
+  state.modals.newPlayerModal = false
+  prevMode('newPlayerModal')
 }
 
 function handleValidation (e) {

@@ -37,6 +37,7 @@ export const state = reactive({
 
   validModes: ['login', 'hotkey', 'input', 'modal', 'modal-input', 'radial'],
   mode: 'login',
+  modeOwner: 'root',
 
   errorMessage: '',
 
@@ -184,7 +185,8 @@ export const state = reactive({
 
 export function resetState () {
   state.mode = 'hotkey'
-  state.prevModes = ['login']
+  state.modeOwner = 'root'
+  state.prevModes = [{ mode: 'login', owner: 'root' }]
   state.pendingRequests = {}
   state.cache = resetCache()
   state.diagnostics = resetDiagnostics()
@@ -457,8 +459,9 @@ export function authenticationSuccess ({ name, token }) {
   state.name = name
   state.token = token
   state.disconnected = false
-  state.prevModes = ['login']
   state.mode = 'hotkey'
+  state.modeOwner = 'root'
+  state.prevModes = [{ mode: 'login', owner: 'root' }]
   addToken(name, token)
   state.modals.loginModal = false
   state.modals.newPlayerModal = false
@@ -524,26 +527,48 @@ function trimBufferIfNeeded (bufferName) {
 
 export function resetMode () {
   state.mode = 'login'
+  state.modeOwner = 'root'
   state.prevModes = []
 }
 
-export function setMode (newMode) {
-  state.prevModes.push(state.mode)
+export function setMode (newMode, owner = newMode) {
+  if (state.mode == newMode && state.modeOwner == owner) {
+    return
+  }
+
+  state.prevModes.push({ mode: state.mode, owner: state.modeOwner })
   state.mode = newMode
-  // console.trace(`setMode(${newMode}) - prevModes: ${state.prevModes.join(', ')}`)
+  state.modeOwner = owner
 }
 
-export function prevMode () {
-  if (state.prevModes.length) {
-    state.mode = state.prevModes.pop()
-    // console.trace(`prevMode() - new mode: ${state.mode}, prevModes: ${state.prevModes.join(', ')}`)
+export function prevMode (owner) {
+  if (!owner || state.modeOwner == owner) {
+    const previous = state.prevModes.pop()
+    if (!previous) {
+      return false
+    }
+
+    state.mode = previous.mode
+    state.modeOwner = previous.owner
+    return true
   }
+
+  // The owner closed while another component owns the active mode. Remove its
+  // saved frame without changing the current mode, so a later close cannot
+  // restore a no-longer-visible UI state.
+  const frameIndex = state.prevModes.map(frame => frame.owner).lastIndexOf(owner)
+  if (frameIndex == -1) {
+    return false
+  }
+
+  state.prevModes.splice(frameIndex, 1)
+  return true
 }
 
 export function showError (msg) {
   state.errorMessage = msg
   state.modals.errorModal = true
-  setMode('error-modal')
+  setMode('error-modal', 'errorModal')
 }
 
 export function showHUD () {

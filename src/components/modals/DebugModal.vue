@@ -69,7 +69,7 @@ function onCloseModal () {
     return
   }
   state.modals.debugModal = false
-  prevMode()
+  prevMode('debugModal')
 }
 
 onMounted(() => {

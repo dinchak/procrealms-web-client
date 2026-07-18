@@ -27,6 +27,10 @@ const props = defineProps({
     type: String,
     default: 'input'
   },
+  modeOwner: {
+    type: String,
+    default: 'main-input'
+  },
   activeModes: {
     type: Array,
     default: () => []
@@ -41,7 +45,7 @@ const props = defineProps({
   }
 })
 
-const { focusMode, activeModes } = toRefs(props)
+const { focusMode, modeOwner, activeModes } = toRefs(props)
 
 const { runCommand } = useWebSocket()
 
@@ -63,7 +67,7 @@ function blurTextInput () {
 
 function onFocus () {
   inputWasFocused = true
-  setMode(focusMode.value)
+  setMode(focusMode.value, modeOwner.value)
 }
 
 function onBlur () {
@@ -83,11 +87,11 @@ function onBlur () {
     return
   }
 
-  if (state.mode != focusMode.value) {
-    state.prevModes = state.prevModes.filter(m => m != focusMode.value)
+  if (state.mode != focusMode.value || state.modeOwner != modeOwner.value) {
+    prevMode(modeOwner.value)
     return
   }
-  prevMode()
+  prevMode(modeOwner.value)
 }
 
 function prevCommand () {
