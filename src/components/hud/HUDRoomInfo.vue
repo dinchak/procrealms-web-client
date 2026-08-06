@@ -25,6 +25,9 @@
         @keydown.enter.prevent="toggleItemPopup(item, $event)"
         @keydown.space.prevent="toggleItemPopup(item, $event)"
       ></div>
+      <div v-if="getHiddenRoomItemCount()" class="item-more">
+        {{ getHiddenRoomItemCount() }} more items. Type <span class="cyan">look items</span> to list them.
+      </div>
     </div>
 
     <Teleport to="body">
@@ -80,6 +83,10 @@ function getRoomEntities () {
 
 function getRoomItems () {
   return state.gameState.room.items
+}
+
+function getHiddenRoomItemCount () {
+  return Math.max(0, (state.gameState.room.itemCount || 0) - getRoomItems().length)
 }
 
 function getItemClass (item) {
@@ -189,6 +196,11 @@ function getRoomTitle () {
   &.pinned {
     background: rgba(41, 185, 55, 0.2);
   }
+}
+
+.item-more {
+  color: rgb(178, 184, 194);
+  margin-top: 2px;
 }
 
 .item-detail-panel {

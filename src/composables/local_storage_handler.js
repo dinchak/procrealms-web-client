@@ -54,7 +54,7 @@ export function useLocalStorageHandler () {
 
       document.getElementById('app').style.fontSize = state.options.fontSize
     } catch (err) {
-      console.log(err.stack)
+      console.error(err)
       localStorage.setItem('options', '')
     }
   }

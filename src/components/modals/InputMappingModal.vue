@@ -292,9 +292,6 @@ function setButtonReleased () {
 }
 
 function onKeyCode (keyCode) {
-  // console.log(state.metaKeyState)
-  // console.log(`onKeyCode keyCode=${keyCode}`)
-
   if (mapNextInput.value && selectedMapping.value.type != 'degree') {
     newBinding.value = {
       keyCode: keyCode,
@@ -320,8 +317,6 @@ function onKeyCode (keyCode) {
 }
 
 function onGamepadButtonPressed (button) {
-  // console.log(`onGamepadButtonPressed button=${button}`)
-
   if (mapNextInput.value && selectedMapping.value.type != 'degree') {
     newBinding.value = {
       gamepadButton: button,
@@ -335,8 +330,6 @@ function onGamepadButtonPressed (button) {
 }
 
 function onGamepadButtonReleased (button) {
-  // console.log(`onGamepadButtonReleased button=${button}`)
-
   if (mapNextInput.value && selectedMapping.value.type != 'degree') {
     newBinding.value = {
       gamepadButtonReleased: button,
