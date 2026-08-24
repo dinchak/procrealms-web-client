@@ -543,6 +543,7 @@ watch(state.gameState.equipment, () => {
       max-width: 500px;
     }
   }
+
 }
 </style>
 

@@ -28,7 +28,10 @@
                 :key="anim.key"
                 :style="{ left: `${10 + i * 50}px` }"
                 :class="getAnimationClass(anim)"
-              >{{ anim.amount }}</div>
+              >
+                <span>{{ anim.amount }}</span>
+                <span v-if="anim.afflictionStackCount" class="stack-count">×{{ anim.afflictionStackCount }}</span>
+              </div>
             </TransitionGroup>
 
             <TransitionGroup
@@ -258,6 +261,14 @@ onBeforeUnmount(() => {
         z-index: 12;
         pointer-events: none;
         -webkit-font-smoothing: antialiased;
+
+        .stack-count {
+          color: #ffaaaa;
+          display: block;
+          font-size: 0.75rem;
+          line-height: 0.8rem;
+          text-align: center;
+        }
 
         &.crit {
           line-height: 1.2rem;

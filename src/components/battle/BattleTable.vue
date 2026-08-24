@@ -66,7 +66,10 @@
               :key="anim.key"
               :style="{ marginLeft: `${10 + i * 50}px` }"
               :class="getAnimationClass(anim)"
-            >{{ anim.amount }}</div>
+            >
+              <span>{{ anim.amount }}</span>
+              <span v-if="anim.afflictionStackCount" class="stack-count">×{{ anim.afflictionStackCount }}</span>
+            </div>
           </TransitionGroup>
 
           <TransitionGroup
@@ -86,7 +89,7 @@
 
         <div>
           <EffectsBar
-            v-if="participant.effects.length > 0 || participant.combo > 0 || participant.rage > 0"
+            v-if="hasEffects(participant) || participant.combo > 0 || participant.rage > 0"
             :entity="participant"
             :effects="participant.effects"
           />
@@ -220,6 +223,10 @@ function getParticipantName (participant) {
   return ansiToHtml(participant.tag + ANSI.white + ' L' + ANSI.boldWhite + participant.level + ' ' + participant.colorName)
 }
 
+function hasEffects (participant) {
+  return Object.keys(participant.effects || {}).length > 0
+}
+
 function getHp (participant) {
   if (participant.side == 'good') {
     let entity = getPartyEntity(participant)
@@ -302,8 +309,8 @@ function getPartyEntity (participant) {
 
 function getParticipantClass (participant) {
   let classes = ['participant']
-  const { participants } = state.gameState.battle
-  let me = participants[state.gameState.player.eid]
+  const battleParticipants = state.gameState.battle.participants
+  let me = battleParticipants[state.gameState.player.eid]
   if (me.targetEid === participant.eid) {
     classes.push('my-target')
   }
@@ -561,6 +568,14 @@ onBeforeUnmount(() => {
   z-index: 12;
   pointer-events: none;
   -webkit-font-smoothing: antialiased;
+
+  .stack-count {
+    color: #ffaaaa;
+    display: block;
+    font-size: 0.7rem;
+    line-height: 0.75rem;
+    text-align: center;
+  }
 
   &.crit {
     color: #ffd966;

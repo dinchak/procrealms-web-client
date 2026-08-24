@@ -21,11 +21,16 @@
         <div class="effect-bonuses">
           <div
               class="effect-bonus"
-              v-for="{ name, amount } in effectBonuses(effect)"
-              :key="name"
+              v-for="(bonus, index) in effectBonuses(effect)"
+              :key="bonus.name || bonus.value || index"
           >
-            <div class="effect-bonus-value bold-white" v-html-safe="getEffectValue(amount)"></div>
-            <div :class="getEffectBonusLabelClass(name)">{{ getEffectBonusLabel(name) }}</div>
+            <template v-if="bonus.value">
+              <div class="effect-bonus-label" v-html-safe="bonus.value"></div>
+            </template>
+            <template v-else>
+              <div class="effect-bonus-value bold-white" v-html-safe="getEffectValue(bonus.amount)"></div>
+              <div :class="getEffectBonusLabelClass(bonus.name)">{{ getEffectBonusLabel(bonus.name) }}</div>
+            </template>
           </div>
         </div>
       </div>
@@ -41,7 +46,7 @@ import { ITEM_EFFECTS } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, progressStatus, effectBonuses, renderNumber } = useHelpers()
+const { ansiToHtml, progressStatus, effectBonuses, getEffectLabel, renderNumber } = useHelpers()
 
 const props = defineProps(['effects', 'isPlayer'])
 
@@ -50,7 +55,7 @@ function getEffects () {
 }
 
 function getEffectName (effect) {
-  return ansiToHtml(effect.longFlag || effect.name)
+  return ansiToHtml(getEffectLabel(effect))
 }
 
 function getEffectValue (value) {
@@ -66,6 +71,7 @@ function getEffectBonusLabel (bonus) {
   if (itemEffect) {
     return itemEffect.label
   }
+  return bonus
 }
 
 function getEffectBonusLabelClass (bonus) {

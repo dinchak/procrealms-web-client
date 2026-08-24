@@ -949,6 +949,13 @@ export function useHelpers () {
   function effectBonuses (effect) {
     let bonuses = []
 
+    const stackCount = getEffectStackCount(effect)
+    if (stackCount > 0) {
+      bonuses.push({
+        value: `<span class="bold-white">${stackCount}</span> ${stackCount == 1 ? 'stack' : 'stacks'}`
+      })
+    }
+
     if (effect.charges) {
       bonuses.push({
         value: `<span class="bold-white">${effect.charges}</span> charges remaining`
@@ -968,7 +975,67 @@ export function useHelpers () {
         value: `Deals <span class="bold-red">${damLow.toFixed(0)}</span>-<span class="bold-red">${damHigh.toFixed(0)}</span> ${damageType} damage every <span class="bold-yellow">${effect.triggerTime}</span>s` })
     }
 
-    return bonuses.concat(effect.bonuses)
+    for (const owner of getAfflictionOwners(effect)) {
+      bonuses.push({
+        value: `<span class="bold-white">${owner.sourceName}</span>: ${owner.count} ${owner.count == 1 ? 'stack' : 'stacks'}`
+      })
+    }
+
+    return bonuses.concat(effect.bonuses || [])
+  }
+
+  function getEffectStackCount (effect) {
+    if (typeof effect?.numStacks === 'number') {
+      return effect.numStacks
+    }
+
+    if (Array.isArray(effect?.afflictionStacks)) {
+      return effect.afflictionStacks.length
+    }
+
+    return 0
+  }
+
+  function getAfflictionOwners (effect) {
+    if (Array.isArray(effect?.afflictionOwners) && effect.afflictionOwners.length > 0) {
+      return effect.afflictionOwners
+    }
+
+    let owners = []
+    for (const stack of effect?.afflictionStacks || []) {
+      const sourceEid = stack.sourceEid || ''
+      let owner = owners.find(entry => entry.sourceEid == sourceEid)
+      if (!owner) {
+        owner = {
+          sourceEid,
+          sourceName: stack.sourceName || 'Unknown',
+          count: 0
+        }
+        owners.push(owner)
+      }
+      owner.count++
+    }
+
+    return owners
+  }
+
+  function getEffectLabel (effect, short = false) {
+    const label = short
+      ? effect.shortFlag
+      : effect.longFlag || effect.name
+    const stackCount = getEffectStackCount(effect)
+
+    if (!stackCount) {
+      return label || ''
+    }
+
+    return `${label || ''}${ANSI.reset} ${ANSI.boldWhite}×${stackCount}${ANSI.reset}`
+  }
+
+  function getEffectOwnerText (effect) {
+    return getAfflictionOwners(effect)
+      .map(owner => `${owner.sourceName} ×${owner.count}`)
+      .join(', ')
   }
 
   function isOverflowX (element) {
@@ -1011,8 +1078,8 @@ export function useHelpers () {
       flags.push(ANSI.boldRed + entity.rage + ANSI.reset)
     }
 
-    flags = flags.concat(Object.entries(effects)
-      .map(p => p[1].shortFlag))
+    flags = flags.concat(Object.entries(effects || {})
+      .map(p => getEffectLabel(p[1], true)))
 
     flags = flags.map(s => ansiToHtml(s))
       .filter(s => s.trim().length)
@@ -1058,8 +1125,13 @@ export function useHelpers () {
       names.push(`${entity.rage} Rage`)
     }
 
-    names = names.concat(Object.entries(effects)
-      .map(p => p[1].longFlag || p[1].name))
+    names = names.concat(Object.entries(effects || {})
+      .map(p => {
+        const effect = p[1]
+        const ownerText = getEffectOwnerText(effect)
+        const label = getEffectLabel(effect)
+        return ownerText ? `${label} — ${ownerText}` : label
+      }))
 
     names = names.map(s => ansiToHtml(s))
       .filter(s => s.trim().length)
@@ -1157,6 +1229,7 @@ export function useHelpers () {
     selectMovementDirection, moveInSelectedDirection,
     calcMapSize, strToLines, progressStatus, effectBonuses,
     isOverflowX, isOverflowY, getEffectFlags, getEffectNames,
+    getEffectStackCount, getAfflictionOwners, getEffectLabel, getEffectOwnerText,
     range, renderMessage, runItemAction,
     getHpColorByPercent, getEnergyColorByPercent, getStaminaColorByPercent,
     getTellMessageFrom, getRelativeTime

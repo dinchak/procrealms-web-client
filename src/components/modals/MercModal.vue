@@ -10,10 +10,11 @@
     <div class="effects">
       <n-tooltip trigger="hover" v-for="(effect, index) in effects" v-bind:key='index'>
         <template #trigger>
-          <span v-html-safe="ansiToHtml(effect.shortFlag) + ' '"></span>
+          <span v-html-safe="ansiToHtml(getEffectLabel(effect, true)) + ' '"></span>
         </template>
-        <span v-html-safe="ansiToHtml(effect.longFlag)" class="longflag"></span>
+        <span v-html-safe="ansiToHtml(getEffectLabel(effect))" class="longflag"></span>
         <span v-if="effect.desc">:&nbsp;{{effect.desc}}</span>
+        <span v-if="getEffectOwnerText(effect)"><br>Inflicted by: {{ getEffectOwnerText(effect) }}</span>
       </n-tooltip>
     </div>
     <MiniStats :entity="mercVitals" :effects="effects"></MiniStats>
@@ -58,7 +59,7 @@ import SkillsCollapse from '@/components/mobile-menu/collapse-items/SkillsCollap
 import { state } from '@/static/state'
 import { useHelpers } from '@/composables/helpers'
 
-const { ansiToHtml, getMerc } = useHelpers()
+const { ansiToHtml, getEffectLabel, getEffectOwnerText, getMerc } = useHelpers()
 
 const mercVitals = ref({})
 const mercEntity = ref({})

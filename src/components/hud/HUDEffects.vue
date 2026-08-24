@@ -60,7 +60,7 @@ const props = defineProps({
   }
 })
 
-const { ansiToHtml, progressStatus } = useHelpers()
+const { ansiToHtml, getEffectLabel, progressStatus } = useHelpers()
 
 const effectsElement = ref(null)
 const {
@@ -88,9 +88,7 @@ function getEffectName (effect) {
     return ansiToHtml(ANSI.reset + 'Effect')
   }
 
-  return effect.longFlag
-    ? ansiToHtml(ANSI.reset + effect.longFlag)
-    : ansiToHtml(ANSI.reset + effect.name)
+  return ansiToHtml(ANSI.reset + getEffectLabel(effect))
 }
 
 function getEffectNameClass (effect, index) {

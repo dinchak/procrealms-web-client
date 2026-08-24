@@ -155,8 +155,15 @@ const webSocketHandlers = {
     processTriggersBatch(lines)
   },
 
-  'entity.attack': ({ target, amount, crit }) => {
-    let animation = { key: Math.random(), type: 'damage', eid: target, amount, crit }
+  'entity.attack': ({ target, amount, crit, afflictionStackCount }) => {
+    let animation = {
+      key: Math.random(),
+      type: 'damage',
+      eid: target,
+      amount,
+      crit,
+      afflictionStackCount: afflictionStackCount || 0
+    }
 
     setTimeout(() => {
       state.animations.push(animation)
