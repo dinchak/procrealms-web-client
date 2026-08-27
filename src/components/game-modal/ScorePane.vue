@@ -314,7 +314,9 @@
           <div>Attacks/Round</div>
         </div>
         <div class="combat-stat">
-          <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white"></span></div>
+          <div class="bold-red">
+            {{ renderNumber(player().criticalChance) }}<span v-if="player().criticalMultiplierAgainst > player().criticalMultiplier" class="red"> [+{{ renderNumber(player().criticalMultiplierAgainst - player().criticalMultiplier) }}x]</span>
+          </div>
           <div>Critical Hit</div>
         </div>
         <div class="combat-stat">
@@ -322,7 +324,7 @@
           <div>Critical vs <span class="bold-white">L{{ player().level }}</span></div>
         </div>
         <div class="combat-stat">
-          <div class="red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
+          <div class="red">{{ renderNumber(player().criticalMultiplierAgainst) }}<span class="white">x</span></div>
           <div>Multiplier</div>
         </div>
       </NGi>

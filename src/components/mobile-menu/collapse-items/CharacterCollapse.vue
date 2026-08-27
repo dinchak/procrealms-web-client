@@ -167,7 +167,9 @@
       </div>
 
       <div class="row">
-        <div class="bold-red">{{ renderNumber(player().criticalChance) }}<span class="white"></span></div>
+        <div class="bold-red">
+          {{ renderNumber(player().criticalChance) }}<span v-if="player().criticalMultiplierAgainst > player().criticalMultiplier" class="red"> [+{{ renderNumber(player().criticalMultiplierAgainst - player().criticalMultiplier) }}x]</span>
+        </div>
         <div>Critical</div>
         <div class="yellow">{{ player().minRange }}<span class="white">-</span>{{ player().maxRange }}</div>
         <div>Attack Range</div>
@@ -181,7 +183,7 @@
       </div>
 
       <div class="row">
-        <div class="red">{{ renderNumber(player().criticalMultiplier) }}<span class="white">x</span></div>
+        <div class="red">{{ renderNumber(player().criticalMultiplierAgainst) }}<span class="white">x</span></div>
         <div>Multiplier</div>
         <div class="bold-white">{{ renderNumber(player().armorAbsorption) }}<span class="white">%</span></div>
         <div>Absorb vs L<span class="bold-white">{{ player().level }}</span></div>
