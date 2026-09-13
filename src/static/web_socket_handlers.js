@@ -1,4 +1,5 @@
-import jiff from 'jiff'
+// @ts-check
+import { applyStateUpdate } from '@/static/state_sync'
 
 import { addLine, incrementPerformanceDiagnostic, state, setMode } from '@/static/state'
 import { processTriggersBatch } from '@/static/triggers'
@@ -53,6 +54,12 @@ function trimMessagesIfNeeded () {
 export function onWebSocketEvent (cmd, msg, reqId) {
   incrementPerformanceDiagnostic('websocketEvents')
 
+  // State updates belong to the connection, never to a command response promise.
+  if (cmd === 'state.patch') {
+    webSocketHandlers[cmd](msg)
+    return
+  }
+
   if (reqId && reqId.startsWith('inventory-output-')) {
     if (!state.inventoryOutput[reqId]) {
       state.inventoryOutput[reqId] = ''
@@ -74,18 +81,48 @@ export function onWebSocketEvent (cmd, msg, reqId) {
   webSocketHandlers[cmd](msg)
 }
 
+function requestStateResync () {
+  if (state.stateResyncPending) {
+    return
+  }
+  state.stateResyncPending = true
+
+  const retry = () => {
+    if (!state.stateResyncPending) {
+      return
+    }
+    if (state.websocketConnection?.readyState === 1) {
+      state.websocketConnection.send(JSON.stringify({ cmd: 'state', msg: {} }))
+    }
+    // Requests arriving during an area handoff may be dropped; retry until a full state arrives.
+    state.stateResyncTimeout = setTimeout(retry, 2000)
+  }
+  retry()
+}
+
 const webSocketHandlers = {
-  'state.patch': ({ patch }) => {
+  'state.patch': message => {
+    const { patch, full } = message
     incrementPerformanceDiagnostic('websocketPatchOperations', patch.length)
 
-    try {
-      // uncomment to help debug desyncs
-      // for (let operation of patch) {
-      //   console.log(operation)
-      //   state.gameState = jiff.patch([operation], state.gameState)
-      // }
+    if (state.stateResyncPending && !full) {
+      return
+    }
 
-      state.gameState = jiff.patch(patch, state.gameState)
+    try {
+      const next = applyStateUpdate(state.gameState, state.gameStateVersion, message)
+      if (!next) {
+        return
+      }
+      state.gameState = next.gameState
+      state.gameStateVersion = next.version
+      if (full) {
+        clearTimeout(state.stateResyncTimeout)
+        state.stateResyncTimeout = null
+        state.stateResyncPending = false
+        state.cache.itemCache = {}
+        state.cache.entityCache = {}
+      }
 
       // invalidate caches for any items/entities that were removed/changed
       for (let line of patch) {
@@ -102,8 +139,8 @@ const webSocketHandlers = {
       }
 
     } catch (err) {
-      addLine(`>>> <span class="bold-red">Client has desynced</span>. Use <span class="bold-white">config syncrate</span> to set a higher sync rate.\n${err.message}`, 'output')
-      console.log(err.stack)
+      console.warn('Refreshing game state after a failed update:', err)
+      requestStateResync()
     }
   },
 

@@ -1,3 +1,4 @@
+// @ts-check
 import { reactive, ref } from 'vue'
 import { EventEmitter } from 'events'
 
@@ -29,6 +30,9 @@ export const state = reactive({
   pendingRequests: {},
 
   gameState: resetGameState(),
+  gameStateVersion: null,
+  stateResyncPending: false,
+  stateResyncTimeout: null,
   inputMappings: [],
   inputEmitter: new EventEmitter(),
   options: resetOptions(),
@@ -184,6 +188,10 @@ export const state = reactive({
 })
 
 export function resetState () {
+  clearTimeout(state.stateResyncTimeout)
+  state.stateResyncTimeout = null
+  state.stateResyncPending = false
+  state.gameStateVersion = null
   state.mode = 'hotkey'
   state.modeOwner = 'root'
   state.prevModes = [{ mode: 'login', owner: 'root' }]
