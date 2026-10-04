@@ -318,9 +318,10 @@ export function useWebSocket () {
     incrementDiagnostic('cache', 'fetchEntityCacheMisses')
 
     const reqId = `entity-${eid}`
+    let cmd = null
     let msg = null
     try {
-      ({ msg } = await sendWithResponse('entity', { eid }, reqId))
+      ({ cmd, msg } = await sendWithResponse('entity', { eid }, reqId))
     } catch (err) {
       handleFetchError('fetchEntityTimeouts', err, `entity:${eid}`)
       if (!isCurrentFetch(cache, socket)) {
@@ -330,6 +331,17 @@ export function useWebSocket () {
     }
 
     if (!isCurrentFetch(cache, socket)) {
+      return null
+    }
+
+    if (cmd !== `entity` || !msg || typeof msg !== `object`) {
+      return null
+    }
+    if (msg.removed) {
+      delete cache.entityCache[eid]
+      return null
+    }
+    if (msg.eid !== eid) {
       return null
     }
 
@@ -441,9 +453,10 @@ export function useWebSocket () {
     incrementDiagnostic('cache', 'fetchItemCacheMisses')
 
     const reqId = `item-${iid}`
+    let cmd = null
     let msg = null
     try {
-      ({ msg } = await sendWithResponse('item', { iid }, reqId))
+      ({ cmd, msg } = await sendWithResponse('item', { iid }, reqId))
     } catch (err) {
       handleFetchError('fetchItemTimeouts', err, `item:${iid}`)
       if (!isCurrentFetch(cache, socket)) {
@@ -456,12 +469,18 @@ export function useWebSocket () {
       return {}
     }
 
-    if (msg.removed) {
-      delete state.cache.itemCache[iid]
-    } else {
-      state.cache.itemCache[iid] = { item: msg, date: Date.now() }
-      pruneCacheByDate(state.cache.itemCache, CACHE_MAX_ITEM_ENTRIES, 'itemCacheEvictions')
+    if (cmd !== `item` || !msg || typeof msg !== `object`) {
+      return {}
     }
+    if (msg.removed) {
+      delete cache.itemCache[iid]
+      return {}
+    }
+    if (msg.iid !== iid) {
+      return {}
+    }
+    state.cache.itemCache[iid] = { item: msg, date: Date.now() }
+    pruneCacheByDate(state.cache.itemCache, CACHE_MAX_ITEM_ENTRIES, 'itemCacheEvictions')
     return msg
   }
 

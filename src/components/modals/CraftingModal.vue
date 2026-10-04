@@ -85,14 +85,14 @@
               @update:page="updatePage()"
             >
             </NPagination>
-            <NInput
+            <NInputNumber
               class="page-size"
               placeholder="Page Limit"
-              :value="state.recipeSearch.limit + ''"
-              type="number"
-              min="0"
-              max="1000"
-              @update:value="runCommand(buildRecipeCommand(), 'the_void')"
+              :value="state.recipeSearch.limit"
+              :min="1"
+              :max="1000"
+              :precision="0"
+              @update:value="updateLimit"
             />
           </div>
         </NGi>
@@ -143,9 +143,10 @@
   </GameModal>
 </template>
 <script setup>
+// @ts-check
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { state } from '@/static/state'
-import { NGrid, NGi, NInput, NSelect, NPagination, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
+import { NGrid, NGi, NInput, NInputNumber, NSelect, NPagination, NButton, NRadioGroup, NRadioButton } from 'naive-ui'
 
 import GameModal from '@/components/modals/GameModal.vue'
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -282,6 +283,15 @@ function onWidthChange () {
 }
 
 function updatePage () {
+  runCommand(buildRecipeCommand(), 'the_void')
+}
+
+function updateLimit (limit) {
+  if (!Number.isSafeInteger(limit) || limit < 1) {
+    return
+  }
+  state.recipeSearch.limit = Math.min(limit, 1000)
+  state.recipeSearch.page = 1
   runCommand(buildRecipeCommand(), 'the_void')
 }
 

@@ -92,6 +92,30 @@ function mercenaryOrders () {
   return { ...view, props, requests, timers, flushTimer }
 }
 
+test(`changing recipe page size updates the search, resets the page, and enforces valid limits`, () => {
+  const commands = []
+  const state = reactive({ recipeSearch: { page: 5, limit: 30, mode: `all` }, recipeResults: { count: 100, recipes: [] } })
+  const view = mountComponent(`../../src/components/modals/CraftingModal.vue`, {
+    state, useHelpers: () => ({}), useWebSocket: () => ({ runCommand: command => commands.push(command) })
+  })
+  try {
+    view.setup.updateLimit(20)
+    assert.equal(state.recipeSearch.limit, 20)
+    assert.equal(state.recipeSearch.page, 1)
+    assert.match(commands.at(-1), /limit=20 page=1$/)
+    for (const value of [null, 0, -1, 1.5, Infinity]) {
+      const previousCommands = commands.length
+      view.setup.updateLimit(value)
+      assert.equal(state.recipeSearch.limit, 20)
+      assert.equal(commands.length, previousCommands)
+    }
+    view.setup.updateLimit(10000)
+    assert.equal(state.recipeSearch.limit, 1000)
+  } finally {
+    view.app.unmount()
+  }
+})
+
 test(`mercenary orders discard old inventory responses as soon as the selected owner changes`, async () => {
   const view = mercenaryOrders()
   try {

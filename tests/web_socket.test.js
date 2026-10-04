@@ -192,3 +192,38 @@ test(`auction timeouts settle safely and allow a later retry`, async () => {
   view.state.pendingRequests[request.reqId].resolve(`auction`, { id: 1, item: { iid: `sword` } })
   assert.equal((await retry).id, 1)
 })
+
+test(`removed entities and items clear cached details and allow immediate retry`, async () => {
+  for (const [method, cmd, id, cacheKey, empty, payload] of [
+    [`fetchEntity`, `entity`, `hero`, `entityCache`, null, { eid: `hero`, name: `Hero` }],
+    [`fetchItem`, `item`, `sword`, `itemCache`, {}, { iid: `sword`, name: `Sword` }]
+  ]) {
+    const view = createSocket()
+    view.state.cache[cacheKey][id] = { [cmd]: payload, date: Date.now() }
+    const pending = view.client[method](id, true)
+    const request = view.sockets[0].sent.at(-1)
+    view.state.pendingRequests[request.reqId].resolve(cmd, { [cmd === `entity` ? `eid` : `iid`]: id, removed: true })
+    assert.deepEqual(await pending, empty)
+    assert.equal(view.state.cache[cacheKey][id], undefined)
+    const retry = view.client[method](id)
+    const next = view.sockets[0].sent.at(-1)
+    assert.notEqual(next.reqId, undefined)
+    assert.equal(view.sockets[0].sent.length, 2)
+    view.state.pendingRequests[next.reqId].resolve(cmd, payload)
+    assert.deepEqual(await retry, payload)
+  }
+})
+
+test(`unexpected or malformed detail responses are not cached`, async () => {
+  for (const [method, cmd, id, empty] of [[`fetchEntity`, `entity`, `hero`, null], [`fetchItem`, `item`, `sword`, {}]]) {
+    for (const [replyCmd, msg] of [[`out`, `Could not retrieve details`], [cmd, null], [cmd, { error: `Not found` }]]) {
+      const view = createSocket()
+      const pending = view.client[method](id)
+      const request = view.sockets[0].sent.at(-1)
+      view.state.pendingRequests[request.reqId].resolve(replyCmd, msg)
+      assert.deepEqual(await pending, empty)
+      assert.deepEqual(view.state.cache.itemCache, {})
+      assert.deepEqual(view.state.cache.entityCache, {})
+    }
+  }
+})
