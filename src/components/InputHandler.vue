@@ -3,6 +3,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { onMounted, onBeforeUnmount, watch } from 'vue'
 import { state } from '@/static/state'
 
@@ -11,6 +12,8 @@ const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 let gamepadStateLoopPaused = true
 let windowHasFocus = true
 let unwatchInputMappings = null
+let unwatchGamepadEnabled = null
+let gamepadFrame = null
 
 const mappingIndex = {
   keyCode: new Map(),
@@ -139,11 +142,22 @@ function resumeGamepadStateLoop () {
   }
 }
 
+function pauseGamepadStateLoop () {
+  gamepadStateLoopPaused = true
+  if (gamepadFrame !== null) {
+    cancelAnimationFrame(gamepadFrame)
+    gamepadFrame = null
+  }
+}
+
 function setWindowFocusState (hasFocus) {
   windowHasFocus = hasFocus
 
   if (!windowHasFocus) {
-    gamepadStateLoopPaused = true
+    pauseGamepadStateLoop()
+    for (const key of Object.keys(state.metaKeyState)) {
+      state.metaKeyState[key] = false
+    }
     return false
   }
 
@@ -210,8 +224,9 @@ function onGamePadConnected (ev) {
 
 function onGamePadDisconnected (ev) {
   delete state.gamepads[ev.gamepad.index]
+  delete state.gamepadPrevStates[ev.gamepad.index]
   if (Object.values(state.gamepads).length == 0) {
-    gamepadStateLoopPaused = true
+    pauseGamepadStateLoop()
   }
 }
 
@@ -254,10 +269,15 @@ function gamepadStateLoop () {
     return
   }
 
-  const gamepads = navigator.getGamepads()
+  const gamepads = navigator.getGamepads?.() || []
 
   for (let index in state.gamepads) {
     let gamepad = gamepads[index]
+    if (!gamepad) {
+      delete state.gamepads[index]
+      delete state.gamepadPrevStates[index]
+      continue
+    }
     let prevState = state.gamepadPrevStates[gamepad.index]
     if (!prevState) {
       prevState = {
@@ -325,7 +345,16 @@ function gamepadStateLoop () {
     }
   }
 
-  requestAnimationFrame(gamepadStateLoop)
+  if (Object.keys(state.gamepads).length === 0) {
+    pauseGamepadStateLoop()
+    return
+  }
+  if (gamepadFrame === null) {
+    gamepadFrame = requestAnimationFrame(() => {
+      gamepadFrame = null
+      gamepadStateLoop()
+    })
+  }
 }
 
 function removeEventListeners () {
@@ -357,6 +386,13 @@ onMounted(() => {
 
   buildMappingIndex()
   unwatchInputMappings = watch(() => state.inputMappings, buildMappingIndex, { deep: true })
+  unwatchGamepadEnabled = watch(() => state.options.gamepadEnabled, enabled => {
+    if (!enabled) {
+      pauseGamepadStateLoop()
+    } else if (windowHasFocus) {
+      resumeGamepadStateLoop()
+    }
+  })
 
   syncWindowFocusState()
 
@@ -368,7 +404,7 @@ onMounted(() => {
   window.addEventListener('blur', onBlur)
   document.addEventListener('visibilitychange', onVisibilityChange)
 
-  const gamepads = navigator.getGamepads()
+  const gamepads = navigator.getGamepads?.() || []
   for (let gamepad of gamepads.filter(gp => gp)) {
     state.gamepads[gamepad.index] = gamepad.id.replace(/ \(STANDARD GAMEPAD .*\)/, '')
   }
@@ -380,7 +416,10 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   removeEventListeners()
-  gamepadStateLoopPaused = true
+  pauseGamepadStateLoop()
+  if (unwatchGamepadEnabled) {
+    unwatchGamepadEnabled()
+  }
 
   if (unwatchInputMappings) {
     unwatchInputMappings()

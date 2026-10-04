@@ -21,6 +21,8 @@
           size="large"
           tabindex="0"
           class="selectable"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
           @click="doTokenAuth(token.name, token.token)"
         >
           Login as {{ token.name }}
@@ -37,6 +39,7 @@
         size="large"
         tabindex="0"
         class="selectable"
+        :disabled="isSubmitting"
         @click="openLoginModal"
       >
         Login
@@ -47,6 +50,7 @@
         size="large"
         tabindex="0"
         class="selectable"
+        :disabled="isSubmitting"
         @click="openNewPlayerModal"
       >
         New Player
@@ -56,6 +60,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { ref, watch, onMounted, onBeforeUnmount } from "vue"
 import { NButton, NIcon } from 'naive-ui'
 
@@ -66,6 +71,7 @@ import { state, setMode, authenticationSuccess } from '@/static/state'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { getAuthenticationError, requestAuthentication } from '@/composables/authentication_helpers'
 
 const { sendWithResponse } = useWebSocket()
 const { selectNearestElement, performSelectedElementAction } = useHelpers()
@@ -73,28 +79,27 @@ const { getTokens, deleteToken } = useLocalStorageHandler()
 
 let tokens = ref([])
 let error = ref('')
+const isSubmitting = ref(false)
 
-function doTokenAuth (name, token) {
+async function doTokenAuth (name, token) {
+  if (isSubmitting.value) {
+    return
+  }
   error.value = ''
-  sendWithResponse('token', {
-    name,
-    token,
-    width: state.options.terminalWidth,
-    height: state.options.terminalHeight,
-    ttype: 'play.proceduralrealms.com'
-  }).then(({ cmd, msg }) => {
-    if (cmd == 'login.validationFailed') {
-      error.value = 'Token validation failed'
-    } else if (cmd == 'login.fail') {
-      error.value = 'Login failed'
-    } else if (cmd == 'token.fail') {
-      error.value = 'Token login failed'
-    } else if (cmd == 'token.success') {
-      authenticationSuccess(msg)
-    } else {
-      error.value = 'Unexpected response from server'
-    }
-  })
+  isSubmitting.value = true
+  try {
+    const result = await requestAuthentication(sendWithResponse, 'token', {
+      name, token,
+      width: state.options.terminalWidth,
+      height: state.options.terminalHeight,
+      ttype: 'play.proceduralrealms.com'
+    })
+    authenticationSuccess(result)
+  } catch (err) {
+    error.value = getAuthenticationError(err)
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 function onConnected () {
@@ -112,11 +117,17 @@ function doDeleteToken (name) {
 }
 
 function openLoginModal () {
+  if (isSubmitting.value) {
+    return
+  }
   setMode('modal', 'loginModal')
   state.modals.loginModal = true
 }
 
 function openNewPlayerModal () {
+  if (isSubmitting.value) {
+    return
+  }
   setMode('modal', 'newPlayerModal')
   state.modals.newPlayerModal = true
 }

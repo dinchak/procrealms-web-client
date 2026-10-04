@@ -269,7 +269,11 @@ function searchHelp () {
 }
 
 function renderFragment (fragment) {
-  return `...${fragment.replace(new RegExp(`${searchFilter.value}`, 'gi'), `<span class="bold-yellow">${searchFilter.value}</span>`)}...`
+  const search = searchFilter.value.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`)
+  if (!search) {
+    return `...${fragment}...`
+  }
+  return `...${fragment.replace(new RegExp(search, `gi`), match => `<span class="bold-yellow">${match}</span>`)}...`
 }
 
 function getRequirements (skillData) {

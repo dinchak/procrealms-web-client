@@ -9,12 +9,13 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs } from 'vue'
+// @ts-check
+import { toRefs } from 'vue'
 import { NCard } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
-import { state, getOrderCmd } from '@/static/state'
+import { state } from '@/static/state'
 import { ANSI } from '@/static/constants'
 
 import { useHelpers } from '@/composables/helpers'
@@ -25,7 +26,8 @@ const { runCommand } = useWebSocket()
 
 const props = defineProps({
   item: Object,
-  mode: String
+  mode: String,
+  ownerEid: { type: String, default: '' }
 })
 
 const { item, mode } = toRefs(props)
@@ -60,14 +62,15 @@ function getItemActions () {
   }
 
   if (mode.value == 'equipment') {
+    const orderCmd = props.ownerEid ? `order eid:${props.ownerEid} ` : ''
     return [{
       label: 'Remove',
-      onClick: () => runCommand(`${getOrderCmd()}remove iid:${item.value.iid}`),
+      onClick: () => runCommand(`${orderCmd}remove iid:${item.value.iid}`),
       class: 'bold-red',
       disabled: false
     }]
   } else if (mode.value == 'inventory') {
-    return getActions(item.value)
+    return getActions(item.value, props.ownerEid ? `order eid:${props.ownerEid} ` : '')
   }
 }
 </script>

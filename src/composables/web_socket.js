@@ -1,8 +1,11 @@
+// @ts-check
 import { nanoid } from 'nanoid'
 
 import { addLine, state, updateCounter } from '@/static/state'
 import { onWebSocketEvent } from '@/static/web_socket_handlers'
 import {
+  CACHE_DELETE_TIME,
+  CACHE_MAX_AUCTION_ENTRIES,
   CACHE_MAX_COMMAND_ENTRIES,
   CACHE_MAX_ENTITY_ENTRIES,
   CACHE_MAX_ITEM_ENTRIES
@@ -11,6 +14,18 @@ import {
 const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 const DEV_WS_DELAY_MIN_MS = Number(import.meta.env.VITE_DEV_WS_DELAY_MIN_MS ?? 10)
 const DEV_WS_DELAY_MAX_MS = Number(import.meta.env.VITE_DEV_WS_DELAY_MAX_MS ?? 30)
+
+function connectionError () {
+  const error = new Error(`WebSocket connection is closed`)
+  error.name = `ConnectionError`
+  return error
+}
+
+export function cancelPendingRequests () {
+  for (const request of Object.values(state.pendingRequests)) {
+    request.reject(connectionError())
+  }
+}
 
 export function useWebSocket () {
   function getDevelopmentMessageDelayMs () {
@@ -39,6 +54,9 @@ export function useWebSocket () {
   }
 
   function handleFetchError (metricKey, err, context = '') {
+    if (err instanceof Error && err.name === `ConnectionError`) {
+      return
+    }
     if (isTimeoutError(err)) {
       incrementDiagnostic('cache', metricKey)
       if (IS_DEVELOPMENT) {
@@ -102,14 +120,28 @@ export function useWebSocket () {
     let incomingMessageQueue = Promise.resolve()
 
     try {
-      state.websocketConnection = new window.WebSocket(url)
+      closeConnection()
+      const socket = new window.WebSocket(url)
+      state.websocketConnection = socket
 
-      state.websocketConnection.onopen = onConnect
-      state.websocketConnection.onclose = onClose
-      state.websocketConnection.onmessage = ({ data }) => {
+      socket.onopen = onConnect
+      socket.onclose = event => {
+        if (state.websocketConnection !== socket) {
+          return
+        }
+        cancelPendingRequests()
+        onClose(event)
+      }
+      socket.onmessage = ({ data }) => {
         incomingMessageQueue = incomingMessageQueue
           .then(async () => {
+            if (state.websocketConnection !== socket || socket.readyState !== 1) {
+              return
+            }
             await delay(getDevelopmentMessageDelayMs())
+            if (state.websocketConnection !== socket || socket.readyState !== 1) {
+              return
+            }
             _onMessage(data)
           })
           .catch(err => {
@@ -145,6 +177,19 @@ export function useWebSocket () {
     }
   }
 
+  function closeConnection () {
+    const socket = state.websocketConnection
+    state.websocketConnection = null
+    state.connected = false
+    cancelPendingRequests()
+    if (socket) {
+      socket.onopen = null
+      socket.onclose = null
+      socket.onmessage = null
+      socket.close()
+    }
+  }
+
   function send (cmd, msg) {
     let out = { cmd, msg }
 
@@ -156,11 +201,18 @@ export function useWebSocket () {
   }
 
   function sendWithResponse (cmd, msg, reqId = false) {
+    if (cmd === `cmd` && reqId && reqId !== `the_void`) {
+      reqId = `${reqId}:${nanoid()}`
+    }
     if (reqId && state.pendingRequests[reqId] && reqId != 'the_void') {
       return state.pendingRequests[reqId].promise
     }
 
     reqId = reqId || nanoid()
+
+    if (!state.websocketConnection || state.websocketConnection.readyState !== 1) {
+      return Promise.reject(connectionError())
+    }
 
     if (IS_DEVELOPMENT) {
       console.log(`%c>%c ${cmd} %c${msg ? JSON.stringify(msg) : ''} reqId=${reqId}`, 'background-color: #662222; color: #fff', 'color: #ff3333', 'color: #ffcccc')
@@ -174,10 +226,18 @@ export function useWebSocket () {
           reject(new Error(`Request for ${cmd} timed out after 5 seconds (reqId=${reqId})`))
         }, 5000)
 
+        const finish = () => {
+          clearTimeout(timeout)
+          delete state.pendingRequests[reqId]
+        }
         state.pendingRequests[reqId] = {
           resolve: (responseCmd, responseMsg) => {
-            clearTimeout(timeout)
+            finish()
             resolve({ cmd: responseCmd, msg: responseMsg })
+          },
+          reject: error => {
+            finish()
+            reject(error)
           }
         }
       })
@@ -185,7 +245,14 @@ export function useWebSocket () {
       state.pendingRequests[reqId].promise = responsePromise
     }
 
-    state.websocketConnection.send(JSON.stringify({ cmd, msg, reqId }))
+    try {
+      state.websocketConnection.send(JSON.stringify({ cmd, msg, reqId }))
+    } catch (err) {
+      if (reqId === 'the_void') {
+        throw err
+      }
+      state.pendingRequests[reqId].reject(connectionError())
+    }
 
     return responsePromise
   }
@@ -276,7 +343,7 @@ export function useWebSocket () {
 
     if (!fetchEids.length) {
       return orderedEids
-        .map(eid => state.cache.entityCache[eid] ? state.cache.entityCache[eid].entity : false)
+        .map(eid => (state.cache.entityCache[eid] ? state.cache.entityCache[eid].entity : false))
         .filter(entity => entity)
     }
 
@@ -382,7 +449,7 @@ export function useWebSocket () {
 
     if (!fetchIids.length) {
       return orderedIids
-        .map(iid => state.cache.itemCache[iid] ? state.cache.itemCache[iid].item : false)
+        .map(iid => (state.cache.itemCache[iid] ? state.cache.itemCache[iid].item : false))
         .filter(item => item)
     }
 
@@ -442,12 +509,18 @@ export function useWebSocket () {
   }
 
   async function fetchAuction (id)  {
-    if (state.cache.auctionCache[id]) {
+    const cached = state.cache.auctionCache[id]
+    if (cached && Date.now() - cached.date < CACHE_DELETE_TIME) {
       return state.cache.auctionCache[id].auction
     }
 
-    let { msg } = await sendWithResponse('auction', { id })
-    state.cache.auctionCache[id] = { auction: msg, date: Date.now() }
+    delete state.cache.auctionCache[id]
+
+    let { msg } = await sendWithResponse('auction', { id }, `auction-${id}`)
+    if (msg) {
+      state.cache.auctionCache[id] = { auction: msg, date: Date.now() }
+      pruneCacheByDate(state.cache.auctionCache, CACHE_MAX_AUCTION_ENTRIES, `auctionCacheEvictions`)
+    }
     return msg
   }
 
@@ -464,7 +537,7 @@ export function useWebSocket () {
   }
 
   return {
-    initConnection,
+    initConnection, closeConnection,
     send, sendWithResponse, runCommand,
     move, enter,
     fetchEntity, fetchEntities, refreshEntity,

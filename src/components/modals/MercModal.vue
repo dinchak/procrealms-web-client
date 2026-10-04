@@ -35,6 +35,8 @@
           :isPlayer="false"
       ></InventoryCollapse>
       <EquipmentCollapse
+          :equipment="mercEquipment"
+          :owner-eid="mercEntity.eid"
       ></EquipmentCollapse>
       <SkillsCollapse
           :character="mercEntity"
@@ -46,6 +48,7 @@
 </template>
 
 <script setup>
+// @ts-check
 
 import { watch, ref, onMounted } from 'vue'
 import { NCard, NTooltip, NCollapse, NProgress } from 'naive-ui'
@@ -72,9 +75,9 @@ watch(() => state.gameState.party, function () {
   findAndSetMerc()
 })
 
-watch(state.gameState.charmies, function () {
+watch(() => state.gameState.charmies, function () {
   findAndSetMerc()
-})
+}, { deep: true })
 
 onMounted(() => {
   findAndSetMerc()

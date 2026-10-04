@@ -3,6 +3,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { onBeforeUnmount, onMounted, watch } from 'vue'
 import { state } from '@/static/state.js'
 
@@ -28,13 +29,13 @@ const sounds = {
 }
 
 const soundPlayback = name => {
-  if (!(name in sounds)) {
+  if (!Object.hasOwn(sounds, name)) {
     return
   }
   if (!sounds[name].enabled()) {
     return
   }
-  sounds[name].audio.play()
+  sounds[name].audio.play().catch(() => {})
 }
 
 const processSoundQueue = () => {
@@ -46,12 +47,17 @@ const processSoundQueue = () => {
 }
 
 onMounted(() => {
-  watchers.push(watch(() => state.soundQueue, () => processSoundQueue()))
+  watchers.push(watch(() => state.soundQueue, () => processSoundQueue(), { immediate: true }))
 })
 
 onBeforeUnmount(() => {
   for (const watcher of watchers) {
     watcher()
+  }
+
+  for (const sound of Object.values(sounds)) {
+    sound.audio.pause()
+    sound.audio.currentTime = 0
   }
 })
 </script>

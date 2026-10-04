@@ -8,8 +8,8 @@
       </NGi>
 
       <NGi class="cell summary">
-        <div class="money" v-html-safe="copperToMoneyString(state.gameState.player.money)"></div>
-        <div class="money-brief" v-html-safe="copperToMoneyString(state.gameState.player.money, true)"></div>
+        <div class="money" v-html-safe="copperToMoneyString(inventoryStats.money)"></div>
+        <div class="money-brief" v-html-safe="copperToMoneyString(inventoryStats.money, true)"></div>
         <div class="limit">
           <div class="value bold-cyan">
             <span class="bold-white">{{ getNumItems() }}</span> <span class="black">/</span> {{ getMaxNumItems() }}
@@ -49,7 +49,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch, defineProps, toRefs } from 'vue'
+// @ts-check
+import { computed, ref, onMounted, onBeforeUnmount, watch, toRefs } from 'vue'
 import { NGrid, NGi, NInput, NPopselect } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -59,7 +60,7 @@ import { incrementUiDiagnostic, state, updateCounter } from '@/static/state'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
-import { getActiveInventorySource, getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
+import { getActiveInventorySource, getActiveInventoryStats, getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { ansiToHtml, copperToMoneyString, getActions } = useHelpers()
 const { fetchItem, fetchItems } = useWebSocket()
@@ -72,6 +73,7 @@ const selectedIid = ref({})
 const selectedItem = ref({})
 const search = ref('')
 const columns = ref(1)
+const inventoryStats = computed(() => getActiveInventoryStats(state))
 let inventoryRefreshToken = 0
 let selectedFetchToken = 0
 let inventoryRefreshTimeout = null
@@ -124,6 +126,7 @@ function getItemNameClass (item) {
 
 async function selectItem (item) {
   if (selectedIid.value == item.iid) {
+    selectedFetchToken++
     selectedIid.value = {}
     selectedItem.value = {}
     return
@@ -140,20 +143,20 @@ async function selectItem (item) {
 }
 
 function getNumItems () {
-  return state.gameState.player.numItems || 0
+  return inventoryStats.value.numItems || 0
 }
 
 function getMaxNumItems () {
-  return state.gameState.player.maxNumItems || 0
+  return inventoryStats.value.maxNumItems || 0
 }
 
 function getWeight () {
-  const initialValue = state.gameState.player.weight || 0
+  const initialValue = inventoryStats.value.weight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
 function getMaxWeight () {
-  const initialValue = state.gameState.player.maxWeight || 0
+  const initialValue = inventoryStats.value.maxWeight || 0
   return Number.isInteger(initialValue) ? initialValue : initialValue.toFixed(2)
 }
 
@@ -184,6 +187,7 @@ async function refreshInventoryItems () {
 }
 
 function scheduleInventoryRefresh (delay = 0) {
+  inventoryRefreshToken++
   if (inventoryRefreshTimeout) {
     clearTimeout(inventoryRefreshTimeout)
   }
@@ -192,27 +196,6 @@ function scheduleInventoryRefresh (delay = 0) {
     inventoryRefreshTimeout = null
     refreshInventoryItems()
   }, delay)
-}
-
-let charmieInventoryWatcher = null
-function unwatchCharmieInventory () {
-  if (charmieInventoryWatcher) {
-    charmieInventoryWatcher()
-  }
-}
-
-function watchCharmieInventory () {
-  if (!state.playerModalAs || !state.gameState.charmies[state.playerModalAs]) {
-    return
-  }
-
-  charmieInventoryWatcher = watch(() => {
-    const charmie = state.gameState.charmies[state.playerModalAs]
-    const charmieItems = charmie ? charmie.items : []
-    return getInventorySignature(charmieItems)
-  }, async () => {
-    scheduleInventoryRefresh(16)
-  })
 }
 
 function itemClass (itemIid) {
@@ -229,7 +212,7 @@ function onWidthChange () {
   }
 }
 
-async function onSortChange () {
+function onSortChange () {
   items.value = sortItems(items.value)
 }
 
@@ -248,26 +231,23 @@ function getColumnItems (colIndex) {
 }
 
 let watchers = []
-onMounted(async () => {
+onMounted(() => {
   onWidthChange()
   window.addEventListener('resize', onWidthChange)
 
-  await refreshInventoryItems()
-
   watchers.push(
-    watch(() => getInventorySignature(state.gameState.inventory || []), async () => {
-      if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
-        return
-      }
+    watch(() => getInventorySignature(getActiveInventorySource(state)), () => {
       scheduleInventoryRefresh(16)
     })
   )
 
   watchers.push(
-    watch(() => state.playerModalAs, async () => {
+    watch(() => state.playerModalAs, () => {
+      selectedFetchToken++
+      selectedIid.value = {}
+      selectedItem.value = {}
+      items.value = []
       scheduleInventoryRefresh(16)
-      unwatchCharmieInventory()
-      watchCharmieInventory()
     })
   )
 
@@ -276,15 +256,18 @@ onMounted(async () => {
       scheduleInventoryRefresh(16)
     })
   )
+
+  refreshInventoryItems()
 })
 
 onBeforeUnmount(() => {
+  inventoryRefreshToken++
+  selectedFetchToken++
   if (inventoryRefreshTimeout) {
     clearTimeout(inventoryRefreshTimeout)
     inventoryRefreshTimeout = null
   }
   watchers.forEach(w => w())
-  unwatchCharmieInventory()
   window.removeEventListener('resize', onWidthChange)
 })
 </script>

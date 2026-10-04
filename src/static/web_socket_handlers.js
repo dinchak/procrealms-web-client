@@ -1,5 +1,6 @@
 // @ts-check
 import { applyStateUpdate } from '@/static/state_sync'
+import { invalidateStateCaches } from '@/static/cache_invalidation'
 
 import { addLine, incrementPerformanceDiagnostic, state, setMode } from '@/static/state'
 import { processTriggersBatch } from '@/static/triggers'
@@ -61,10 +62,11 @@ export function onWebSocketEvent (cmd, msg, reqId) {
   }
 
   if (reqId && reqId.startsWith('inventory-output-')) {
-    if (!state.inventoryOutput[reqId]) {
-      state.inventoryOutput[reqId] = ''
+    const outputId = reqId.split(`:`)[0]
+    if (!state.inventoryOutput[outputId]) {
+      state.inventoryOutput[outputId] = ''
     }
-    state.inventoryOutput[reqId] += msg
+    state.inventoryOutput[outputId] += msg
   }
 
   if (state.pendingRequests[reqId] && reqId != 'the_void') {
@@ -74,11 +76,30 @@ export function onWebSocketEvent (cmd, msg, reqId) {
     return
   }
 
-  if (!webSocketHandlers[cmd]) {
+  if (!Object.hasOwn(webSocketHandlers, cmd)) {
     return
   }
 
   webSocketHandlers[cmd](msg)
+}
+
+function enqueueAnimation (animation) {
+  const socket = state.websocketConnection
+  const wait = state.nextAnimationDelay
+  state.nextAnimationDelay += 200
+  setTimeout(() => {
+    if (state.websocketConnection !== socket || socket?.readyState !== 1) {
+      return
+    }
+    state.nextAnimationDelay = Math.max(0, state.nextAnimationDelay - 200)
+    state.animations.push(animation)
+    setTimeout(() => {
+      if (state.websocketConnection !== socket) {
+        return
+      }
+      state.animations = state.animations.filter(entry => entry.key !== animation.key)
+    }, 2000)
+  }, wait)
 }
 
 function requestStateResync () {
@@ -110,6 +131,7 @@ const webSocketHandlers = {
     }
 
     try {
+      const previous = state.gameState
       const next = applyStateUpdate(state.gameState, state.gameStateVersion, message)
       if (!next) {
         return
@@ -124,18 +146,8 @@ const webSocketHandlers = {
         state.cache.entityCache = {}
       }
 
-      // invalidate caches for any items/entities that were removed/changed
-      for (let line of patch) {
-        const { value } = line
-
-        if (value && typeof value == 'object') {
-          if (value.iid) {
-            delete state.cache.itemCache[value.iid]
-          }
-          if (value.eid) {
-            delete state.cache.entityCache[value.eid]
-          }
-        }
+      if (!full) {
+        invalidateStateCaches(state.cache, previous, next.gameState, patch)
       }
 
     } catch (err) {
@@ -202,29 +214,13 @@ const webSocketHandlers = {
       afflictionStackCount: afflictionStackCount || 0
     }
 
-    setTimeout(() => {
-      state.animations.push(animation)
-      state.nextAnimationDelay += 200
-    }, state.nextAnimationDelay)
-
-    setTimeout(() => {
-      state.animations = state.animations.filter(a => a.key != animation.key)
-      state.nextAnimationDelay -= 200
-    }, 2000)
+    enqueueAnimation(animation)
   },
 
   'effect.cure': ({ target, amount }) => {
     let animation = { key: Math.random(), type: 'healing', eid: target, amount }
 
-    setTimeout(() => {
-      state.animations.push(animation)
-      state.nextAnimationDelay += 200
-    }, state.nextAnimationDelay)
-
-    setTimeout(() => {
-      state.animations = state.animations.filter(a => a.key != animation.key)
-      state.nextAnimationDelay -= 200
-    }, 2000)
+    enqueueAnimation(animation)
   },
 
   'channel.msg': ({ id, from, to, channel, timestamp, message }) => {
@@ -232,7 +228,7 @@ const webSocketHandlers = {
       from = 'You'
     }
 
-    if (from == state.gameState.player.name) {
+    if (to == state.gameState.player.name) {
       to = 'You'
     }
 

@@ -28,7 +28,7 @@
         ></InventoryRow>
 
         <div class="inline-details" v-if="selectedIid == item.iid">
-          <ItemDetails :item="selectedItem" :actions="getActions(selectedItem)" :item-output-id="item.iid"></ItemDetails>
+          <ItemDetails :item="selectedItem" :actions="getActions(selectedItem, getInventoryOrderCmd())" :item-output-id="item.iid"></ItemDetails>
         </div>
       </div>
     </div>
@@ -36,7 +36,8 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, defineProps, onBeforeUnmount } from 'vue'
+// @ts-check
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { NCollapseItem, NInput, NPopselect } from 'naive-ui'
 
 import InventoryRow from '@/components/mobile-menu/collapse-items/InventoryRow.vue'
@@ -46,7 +47,7 @@ import { incrementUiDiagnostic, setMode, prevMode, updateCounter } from '@/stati
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
-import { mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
+import { getInventorySignature, normalizeInventorySource, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '@/composables/inventory_helpers'
 
 const { fetchItem, fetchItems } = useWebSocket()
 const { copperToMoneyString, getActions } = useHelpers()
@@ -96,7 +97,7 @@ let selectedFetchToken = 0
 onMounted(() => {
   scheduleItemsRefresh(0)
 
-  watchers.push(watch(() => (props.inventory || []).map(i => `${i.iid}|${i.name}|${i.amount || 1}`), () => {
+  watchers.push(watch(() => getInventorySignature(props.inventory), () => {
     scheduleItemsRefresh(0)
   }))
 
@@ -114,6 +115,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  refreshRequestToken++
+  selectedFetchToken++
   if (refreshTimeout) {
     clearTimeout(refreshTimeout)
     refreshTimeout = null
@@ -125,11 +128,15 @@ function getSelected (iid) {
   return selectedIid.value === iid
 }
 
+function getInventoryOrderCmd () {
+  return props.isPlayer ? '' : `order eid:${props.character.eid} `
+}
+
 async function setItems (inventory) {
   const token = ++refreshRequestToken
   incrementUiDiagnostic('inventoryCollapseRefreshes')
 
-  const inventoryItems = inventory || []
+  const inventoryItems = normalizeInventorySource(inventory)
   const fetchedItems = await fetchItems(inventoryItems.map(i => i.iid))
 
   if (token !== refreshRequestToken) {
@@ -142,6 +149,7 @@ async function setItems (inventory) {
 }
 
 function scheduleItemsRefresh (delay = 0) {
+  refreshRequestToken++
   if (refreshTimeout) {
     clearTimeout(refreshTimeout)
   }
@@ -157,9 +165,9 @@ function applyFilterSort () {
 
   filteredItems.value = items.value
     .filter(item => {
-      return (item.name.toLowerCase().includes(input) ||
-        item.colorName.toLowerCase().includes(input) ||
-        item.type.toLowerCase().includes(input)) ||
+      return ((item.name || '').toLowerCase().includes(input) ||
+        (item.colorName || '').toLowerCase().includes(input) ||
+        (item.type || '').toLowerCase().includes(input)) ||
         (item.subtype ? item.subtype.toLowerCase().includes(input) : false)
     })
 
@@ -168,6 +176,7 @@ function applyFilterSort () {
 
 function clickHandler (iid) {
   if (selectedIid.value && selectedIid.value == iid) {
+    selectedFetchToken++
     selectedIid.value = ''
     selectedItem.value = {}
     return

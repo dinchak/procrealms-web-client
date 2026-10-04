@@ -199,6 +199,7 @@
   </div>
 </template>
 <script setup>
+// @ts-check
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { state } from '@/static/state'
 import { NGrid, NGi, NInput, NSelect, NInputNumber, NIcon, NButton, NCheckbox, NPagination, NPopselect } from 'naive-ui'
@@ -257,6 +258,8 @@ const myAuctionsOnly = ref(false)
 const page = ref(1)
 
 let searchUpdater = null
+let auctionFetchToken = 0
+let disposed = false
 
 async function doBid (auction) {
   let cmd = `auction bid ${auction.id} ${bidAmount.value}`
@@ -288,6 +291,10 @@ async function doCancelAuction (auction) {
 }
 
 function updateAuctionList () {
+  if (disposed) {
+    return
+  }
+
   let cmd = `auction list ${page.value}`
   runCommand(cmd, 'the_void')
 }
@@ -350,12 +357,18 @@ function updateAuctionSearch () {
 }
 
 async function selectAuction (auction) {
+  const token = ++auctionFetchToken
+  state.auction.item = {}
   if (state.auction.selectedAuctionId == auction.id) {
     state.auction.selectedAuctionId = null
   } else {
     state.auction.selectedAuctionId = auction.id
-    let fetchedAuction = await fetchAuction(auction.id)
-    state.auction.item = fetchedAuction.item || {}
+    const fetchedAuction = await fetchAuction(auction.id)
+    if (token !== auctionFetchToken || disposed) {
+      return
+    }
+
+    state.auction.item = fetchedAuction?.item || {}
   }
 }
 
@@ -419,6 +432,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  disposed = true
+  auctionFetchToken++
+  clearTimeout(searchUpdater)
+  searchUpdater = null
   state.inventoryOutput = {}
   window.removeEventListener('resize', onWidthChange)
 })

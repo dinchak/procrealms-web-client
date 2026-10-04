@@ -39,6 +39,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { ref, nextTick, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { NModal, NIcon } from 'naive-ui'
 import { state, prevMode } from '@/static/state'
@@ -140,15 +141,15 @@ function onOpenModal () {
   }
 
   watchers.push(
-    watch(state.output, () => onOutputChanged())
+    watch(() => state.output, () => onOutputChanged(), { deep: true })
   )
 
   watchers.push(
-    watch(state.gameState.charmies, () => {
+    watch(() => state.gameState.charmies, () => {
       if (!state.gameState.charmies[state.playerModalAs]) {
         state.playerModalAs = ''
       }
-    })
+    }, { deep: true })
   )
 
   // setFontSize(state.options.fontSize)

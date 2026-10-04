@@ -440,7 +440,8 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref, defineProps, toRefs } from 'vue'
+// @ts-check
+import { onBeforeUnmount, watch, ref, toRefs } from 'vue'
 import { state } from '@/static/state'
 import { NGrid, NGi, NProgress, NButton, NIcon } from 'naive-ui'
 
@@ -456,6 +457,7 @@ const { runCommand, fetchItem } = useWebSocket()
 const { renderNumber } = useHelpers()
 
 const weapon = ref({})
+let weaponFetchToken = 0
 
 const props = defineProps(['miniOutputEnabled'])
 const { miniOutputEnabled } = toRefs(props)
@@ -477,7 +479,8 @@ function player () {
 }
 
 function getExpPercentage () {
-  return player().xp / player().xpForNextLevel * 100
+  const levelXp = player().xpForNextLevel - player().xpForCurrentLevel
+  return levelXp > 0 ? (player().xp - player().xpForCurrentLevel) / levelXp * 100 : 100
 }
 
 function getHpPercentage () {
@@ -485,13 +488,19 @@ function getHpPercentage () {
 }
 
 async function setWeapon () {
-  let iid = state.gameState.equipment.weapon
+  const token = ++weaponFetchToken
+  const charmie = state.gameState.charmies[state.playerModalAs]
+  let iid = charmie ? charmie.equipment?.weapon : state.gameState.equipment.weapon
+  weapon.value = false
   if (!iid) {
     weapon.value = false
     return
   }
 
   let item = await fetchItem(iid)
+  if (token !== weaponFetchToken) {
+    return
+  }
   if (!item) {
     weapon.value = false
     return
@@ -527,13 +536,16 @@ function getScrollContainerClass () {
   }
 }
 
-onMounted(() => {
-  setWeapon()
+onBeforeUnmount(() => {
+  weaponFetchToken++
 })
 
-watch(state.gameState.equipment, () => {
+watch(() => {
+  const charmie = state.gameState.charmies[state.playerModalAs]
+  return charmie ? charmie.equipment?.weapon : state.gameState.equipment.weapon
+}, () => {
   setWeapon()
-})
+}, { immediate: true })
 </script>
 
 <style lang="less">

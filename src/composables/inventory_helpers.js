@@ -1,14 +1,29 @@
+// @ts-check
+export function normalizeInventorySource (items = []) {
+  return (items || [])
+    .map(item => (typeof item === `string` ? { iid: item } : item))
+    .filter(item => item && item.iid !== undefined && item.iid !== null && item.iid !== ``)
+}
+
 export function getActiveInventorySource (state) {
   if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
-    return state.gameState.charmies[state.playerModalAs].items || []
+    return normalizeInventorySource(state.gameState.charmies[state.playerModalAs].items)
   }
 
-  return state.gameState.inventory || []
+  return normalizeInventorySource(state.gameState.inventory)
+}
+
+export function getActiveInventoryStats (state) {
+  if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
+    return state.gameState.charmies[state.playerModalAs].stats || {}
+  }
+
+  return state.gameState.player || {}
 }
 
 export function getInventorySignature (items = []) {
-  return (items || [])
-    .map(item => `${item.iid}|${item.amount || 1}`)
+  return normalizeInventorySource(items)
+    .map(item => `${item.iid}|${item.name || ''}|${item.amount || 1}`)
     .join('~')
 }
 
@@ -66,8 +81,7 @@ export function mergeInventorySourceWithFetchedItems (sourceItems = [], fetchedI
     .filter(item => item && item.iid !== undefined && item.iid !== null)
     .map(item => [item.iid, item]))
 
-  return (sourceItems || [])
-    .filter(item => item && item.iid !== undefined && item.iid !== null)
+  return normalizeInventorySource(sourceItems)
     .map(sourceItem => {
       const fetchedItem = fetchedByIid.get(sourceItem.iid) || {}
       const mergedItem = {

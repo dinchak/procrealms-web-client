@@ -1,3 +1,4 @@
+// @ts-check
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
@@ -61,21 +62,25 @@ export function useHelpers () {
     return valueString.trim()
   }
 
-  async function runItemAction (command, item) {
-    let commandStr = `${getOrderCmd()}${command} iid:${item.iid}`
+  async function runItemAction (command, item, orderCmd = getOrderCmd()) {
+    let commandStr = `${orderCmd}${command} iid:${item.iid}`
     let outputId = `inventory-output-${item.iid}`
     await runCommand(commandStr, outputId)
     // state.inventoryOutput[item.iid] = result.msg
     await refreshItem(item.iid)
   }
 
-  function getActions (item) {
+  function getActions (item, orderCmd = getOrderCmd()) {
     let actions = []
+
+    function runAction (command) {
+      return runItemAction(command, item, orderCmd)
+    }
 
     if (state.gameState.room.flags.includes('store')) {
       actions.push({
         label: 'Sell',
-        onClick: () => runItemAction('sell', item),
+        onClick: () => runAction('sell'),
         class: 'bold-yellow',
         disabled: false
       })
@@ -83,7 +88,7 @@ export function useHelpers () {
       if (item.amount > 1) {
         actions.push({
           label: 'Sell All',
-          onClick: () => runItemAction('sell all', item),
+          onClick: () => runAction('sell all'),
           class: 'bold-yellow',
           disabled: false
         })
@@ -94,21 +99,21 @@ export function useHelpers () {
       if (item.subtype == 'food') {
         actions.push({
           label: 'Eat',
-          onClick: () => runItemAction('eat', item),
+          onClick: () => runAction('eat'),
           class: 'bold-green',
           disabled: false
         })
       } else if (item.subtype == 'potion') {
         actions.push({
           label: 'Drink',
-          onClick: () => runItemAction('drink', item),
+          onClick: () => runAction('drink'),
           class: 'bold-green',
           disabled: false
         })
       } else {
         actions.push({
           label: 'Consume',
-          onClick: () => runItemAction('consume', item),
+          onClick: () => runAction('consume'),
           class: 'bold-green',
           disabled: false
         })
@@ -118,7 +123,7 @@ export function useHelpers () {
     if (item.type == 'weapon') {
       actions.push({
         label: 'Wield',
-        onClick: () => runItemAction('wield', item),
+        onClick: () => runAction('wield'),
         class: 'bold-white',
         disabled: false
       })
@@ -127,7 +132,7 @@ export function useHelpers () {
     if (item.type == 'armor') {
       actions.push({
         label: 'Wear',
-        onClick: () => runItemAction('wear', item),
+        onClick: () => runAction('wear'),
         class: 'bold-white',
         disabled: false
       })
@@ -136,7 +141,7 @@ export function useHelpers () {
     if (item.type == 'weapon' || item.type == 'armor') {
       actions.push({
         label: 'Compare',
-        onClick: () => runItemAction('compare', item),
+        onClick: () => runAction('compare'),
         class: 'bold-cyan',
         disabled: false
       })
@@ -146,14 +151,14 @@ export function useHelpers () {
       if (hasSkillsRequired(item)) {
         actions.push({
           label: 'Salvage',
-          onClick: () => runItemAction('salvage', item),
+          onClick: () => runAction('salvage'),
           class: 'bold-magenta',
           disabled: false
         })
         if (item.type == 'tool') {
           actions.push({
             label: 'Repair',
-            onClick: () => runItemAction('repair', item),
+            onClick: () => runAction('repair'),
             class: 'yellow',
             disabled: false
           })
@@ -165,7 +170,7 @@ export function useHelpers () {
       if (item.subtype == 'hide') {
         actions.push({
           label: 'Tan',
-          onClick: () => runItemAction('tan', item),
+          onClick: () => runAction('tan'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -174,7 +179,7 @@ export function useHelpers () {
       if (item.subtype == 'seed') {
         actions.push({
           label: 'Plant',
-          onClick: () => runItemAction('plant', item),
+          onClick: () => runAction('plant'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -183,7 +188,7 @@ export function useHelpers () {
       if (item.subtype == 'bandage') {
         actions.push({
           label: 'Wrap',
-          onClick: () => runItemAction('wrap', item),
+          onClick: () => runAction('wrap'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -192,7 +197,7 @@ export function useHelpers () {
       if (item.subtype == 'fish') {
         actions.push({
           label: 'Filet',
-          onClick: () => runItemAction('filet', item),
+          onClick: () => runAction('filet'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -202,7 +207,7 @@ export function useHelpers () {
     if (item.type == 'book' || item.type == 'scroll') {
       actions.push({
         label: 'Read',
-        onClick: () => runItemAction('read', item),
+        onClick: () => runAction('read'),
         class: 'bold-magenta',
         disabled: false
       })
@@ -214,7 +219,7 @@ export function useHelpers () {
     ) {
       actions.push({
         label: 'Hold',
-        onClick: () => runItemAction('hold', item),
+        onClick: () => runAction('hold'),
         class: 'bold-magenta',
         disabled: false
       })
@@ -224,7 +229,7 @@ export function useHelpers () {
       if (item.subtype == 'penned animal') {
         actions.push({
           label: 'Unpen',
-          onClick: () => runItemAction('unpen', item),
+          onClick: () => runAction('unpen'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -233,7 +238,7 @@ export function useHelpers () {
       if (item.subtype == 'deployable') {
         actions.push({
           label: 'Unpack',
-          onClick: () => runItemAction('unpack', item),
+          onClick: () => runAction('unpack'),
           class: 'bold-magenta',
           disabled: false
         })
@@ -243,14 +248,14 @@ export function useHelpers () {
     if (item.keeping) {
       actions.push({
         label: 'Unkeep',
-        onClick: () => runItemAction('unkeep', item),
+        onClick: () => runAction('unkeep'),
         class: 'bold-blue',
         disabled: false
       })
     } else {
       actions.push({
         label: 'Keep',
-        onClick: () => runItemAction('keep', item),
+        onClick: () => runAction('keep'),
         class: 'bold-blue',
         disabled: false
       })
@@ -258,7 +263,7 @@ export function useHelpers () {
 
     actions.push({
       label: 'Drop',
-      onClick: () => runItemAction('drop', item),
+      onClick: () => runAction('drop'),
       class: 'bold-red',
       disabled: false
     })
@@ -266,7 +271,7 @@ export function useHelpers () {
     if (item.amount > 1) {
       actions.push({
         label: 'Drop All',
-        onClick: () => runItemAction('drop all', item),
+        onClick: () => runAction('drop all'),
         class: 'bold-red',
         disabled: false
       })

@@ -7,7 +7,8 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, ref, onMounted, onBeforeUnmount } from 'vue'
+// @ts-check
+import { watch, toRefs, ref, onMounted, onBeforeUnmount } from 'vue'
 
 import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
@@ -59,6 +60,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  fetchToken++
   watchers.forEach(w => w())
 })
 

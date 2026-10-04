@@ -2,14 +2,14 @@
 import { reactive, ref } from 'vue'
 import { EventEmitter } from 'events'
 
-import { loadSettingsByNameAndType } from '@/static/triggers'
+import { loadSettingsByNameAndType, resetTriggerBatch } from '@/static/triggers'
 
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 import { playRandomTrack } from '@/static/sound'
 
 import { useHelpers } from '@/composables/helpers'
-import { useWebSocket } from '@/composables/web_socket'
+import { cancelPendingRequests, useWebSocket } from '@/composables/web_socket'
 
 const IS_DEVELOPMENT = import.meta.env.MODE == 'development'
 
@@ -86,8 +86,8 @@ export const state = reactive({
 
   soundQueue: null,
 
-  triggers: ref(new Map()),
-  variables: ref(new Map()),
+  triggers: new Map(),
+  variables: new Map(),
 
   name: '',
   token: '',
@@ -188,6 +188,19 @@ export const state = reactive({
 })
 
 export function resetState () {
+  cancelPendingRequests()
+  resetTriggerBatch()
+  outputGeneration++
+  clearTimeout(addLinesTimeout)
+  addLinesTimeout = null
+  preloadBuffers = {}
+  clearTimeout(replaceIdsTimeout)
+  replaceIdsTimeout = null
+  const pendingLines = replaceIdsQueue
+  replaceIdsQueue = []
+  for (const entry of pendingLines) {
+    entry.resolve(entry.command)
+  }
   clearTimeout(state.stateResyncTimeout)
   state.stateResyncTimeout = null
   state.stateResyncPending = false
@@ -206,6 +219,11 @@ export function resetState () {
   state.trade = []
   state.newbie = []
   state.animations = []
+  state.nextAnimationDelay = 0
+  clearTimeout(state.moveTimeout)
+  state.moveTimeout = null
+  state.playerModalAs = ''
+  state.mercEid = -1
   state.shop = {
     items: [],
     shopkeeper: '',
@@ -494,6 +512,7 @@ function addSuggestedCommand (command) {
 }
 
 let preloadBuffers = {}
+let outputGeneration = 0
 let addLinesTimeout = null
 const BUFFER_LIMITS = {
   output: {
@@ -600,6 +619,7 @@ export function getPartyStatsHeight () {
 }
 
 export async function addLine (line, bufferName) {
+  const generation = outputGeneration
   if (!state[bufferName]) {
     throw new Error(`Unknown buffer ${bufferName}`)
   }
@@ -617,6 +637,9 @@ export async function addLine (line, bufferName) {
   }
 
   line = await enqueueReplaceIds(line)
+  if (generation !== outputGeneration) {
+    return
+  }
 
   if (bufferName == 'output') {
     Object.freeze(line)
@@ -678,8 +701,8 @@ async function flushReplaceIdsQueue () {
     state.diagnostics.performance.replaceIdsQueueMaxBatchSize = batch.length
   }
 
-  const eidRegex = /eid:(\w+)/g
-  const iidRegex = /iid:(\w+)/g
+  const eidRegex = /eid:([\w-]+)/g
+  const iidRegex = /iid:([\w-]+)/g
   const uniqueEids = new Set()
   const uniqueIids = new Set()
 
@@ -714,7 +737,7 @@ async function flushReplaceIdsQueue () {
       let replaced = entry.command
 
       if (uniqueEids.size) {
-        replaced = replaced.replace(/eid:(\w+)/g, (match, eid) => {
+        replaced = replaced.replace(/eid:([\w-]+)/g, (match, eid) => {
           const ent = byEid[eid]
           if (!ent) {
             return match
@@ -728,7 +751,7 @@ async function flushReplaceIdsQueue () {
       }
 
       if (uniqueIids.size) {
-        replaced = replaced.replace(/iid:(\w+)/g, (match, iid) => {
+        replaced = replaced.replace(/iid:([\w-]+)/g, (match, iid) => {
           const item = byIid[iid]
           return item ? item.name : match
         })

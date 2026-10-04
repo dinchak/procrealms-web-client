@@ -20,6 +20,7 @@
     <ItemModal
       v-if="getEquipment()[selectedSlot]"
       :item="item"
+      :owner-eid="props.ownerEid"
       mode="equipment"
       @closeItemModal="closeItemModal"
     ></ItemModal>
@@ -27,6 +28,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { watch, ref, onMounted, onBeforeUnmount } from 'vue'
 import { NCollapseItem } from 'naive-ui'
 
@@ -40,6 +42,8 @@ import { useWebSocket } from '@/composables/web_socket'
 
 const { fetchItem } = useWebSocket()
 
+const props = defineProps({ equipment: Object, ownerEid: { type: String, default: '' } })
+
 const selectedIid = ref('')
 const selectedSlot = ref('')
 const equipmentRows = ref([])
@@ -48,6 +52,9 @@ const item = ref({})
 let selectedFetchToken = 0
 
 function refreshRows () {
+  if (getEquipment()[selectedSlot.value] !== selectedIid.value) {
+    closeItemModal('equipment')
+  }
   equipmentRows.value = getEquipmentRows(EQUIPMENT_LABELS)
   petEquipmentRows.value = getEquipmentRows(PET_EQUIPMENT_LABELS)
 }
@@ -57,7 +64,7 @@ onMounted(() => {
   refreshRows()
 
   watchers.push(watch(
-    () => [...Object.values(getEquipment())].join('|'),
+    () => JSON.stringify([props.ownerEid, getEquipment()]),
     () => {
       refreshRows()
     }
@@ -65,11 +72,12 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  selectedFetchToken++
   watchers.forEach(w => w())
 })
 
 function getEquipment () {
-  return state.gameState.equipment
+  return props.equipment || state.gameState.equipment
 }
 
 function getEquipmentRows (labels) {
@@ -84,6 +92,7 @@ async function clickHandler (iid, slot) {
   }
 
   if (selectedIid.value && selectedIid.value == iid) {
+    selectedFetchToken++
     selectedIid.value = ''
     selectedSlot.value = ''
     item.value = {}
@@ -103,6 +112,7 @@ async function clickHandler (iid, slot) {
 
 function closeItemModal (value) {
   if (value === 'equipment') {
+    selectedFetchToken++
     selectedIid.value = ''
     selectedSlot.value = ''
     item.value = {}

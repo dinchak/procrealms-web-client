@@ -142,6 +142,7 @@ import {
   NTree
 } from 'naive-ui'
 
+// @ts-check
 import { state, prevMode } from '@/static/state'
 import { onMounted, onBeforeUnmount, ref } from "vue"
 import { getNextKey, loadSettingsByNameAndType, storeSettingsOfType } from "@/static/triggers"
@@ -156,12 +157,12 @@ const variableTreeData = ref([])
 const selectedVariableKeys = ref([])
 
 function updateCheckedTriggerKeys (keys) {
-  Array.from(state.triggers.value.values()).forEach(t => {
+  Array.from(state.triggers.values()).forEach(t => {
     t.active = false
   })
 
   for (let key of keys) {
-    state.triggers.value.get(key).active = true
+    state.triggers.get(key).active = true
   }
 
   checkedTriggerKeys.value = keys
@@ -172,7 +173,11 @@ function updateCheckedTriggerKeys (keys) {
 function updateSelectedTriggerKeys (keys) {
   if (keys.length === 1) {
     let key = keys[0]
-    let trigger = state.triggers.value.get(key)
+    let trigger = state.triggers.get(key)
+    if (!trigger) {
+      selectedTriggerKeys.value = []
+      return
+    }
 
     selectedTriggerKeys.value = [key]
 
@@ -188,7 +193,11 @@ function updateSelectedTriggerKeys (keys) {
 function updateSelectedVariableKeys (keys) {
   if (keys.length === 1) {
     let key = keys[0]
-    let variable = state.variables.value.get(key)
+    let variable = state.variables.get(key)
+    if (!variable) {
+      selectedVariableKeys.value = []
+      return
+    }
 
     selectedVariableKeys.value = [key]
 
@@ -214,7 +223,7 @@ function changeVariableShared (shared) {
 }
 
 function newTrigger () {
-  let key = getNextKey(state.triggers.value) + ''
+  let key = getNextKey(state.triggers) + ''
 
   triggerModel.value = {
     key,
@@ -225,7 +234,7 @@ function newTrigger () {
     shared: false
   }
 
-  state.triggers.value.set(key, {
+  state.triggers.set(key, {
     name: 'NewTrigger',
     patterns: [''],
     commands: null,
@@ -238,7 +247,7 @@ function newTrigger () {
 }
 
 function newVariable () {
-  let key = getNextKey(state.variables.value) + ''
+  let key = getNextKey(state.variables) + ''
 
   variableModel.value = {
     key,
@@ -247,7 +256,7 @@ function newVariable () {
     shared: false
   }
 
-  state.variables.value.set(key, {
+  state.variables.set(key, {
     name: 'NewVariable',
     values: null,
     shared: false
@@ -263,7 +272,7 @@ function saveTrigger (ev) {
   }
 
   if (triggerModel.value.name && onlyAlphaNumericMax50(triggerModel.value.name)) {
-    let trigger = state.triggers.value.get(triggerModel.value.key)
+    let trigger = state.triggers.get(triggerModel.value.key)
     trigger.name = triggerModel.value.name
     trigger.patterns[0] = triggerModel.value.pattern
     trigger.commands = triggerModel.value.commands
@@ -280,7 +289,7 @@ function saveVariable (ev) {
   }
 
   if (variableModel.value.name && onlyAlphaNumericMax50(variableModel.value.name)) {
-    let variable = state.variables.value.get(variableModel.value.key)
+    let variable = state.variables.get(variableModel.value.key)
     variable.name = variableModel.value.name
     variable.values = variableModel.value.values
     variable.shared = variableModel.value.shared
@@ -299,7 +308,7 @@ function deleteTrigger (key) {
     shared: false
   }
 
-  state.triggers.value.delete(key)
+  state.triggers.delete(key)
   updateTriggerTree()
   storeSettingsOfType(state.triggers, 'triggers')
 }
@@ -312,13 +321,13 @@ function deleteVariable (key) {
     shared: false
   }
 
-  state.variables.value.delete(key)
+  state.variables.delete(key)
   updateVariableTree()
   storeSettingsOfType(state.variables, 'variables')
 }
 
 function updateTriggerTree () {
-  let triggers = state.triggers.value || new Map()
+  let triggers = state.triggers || new Map()
 
   triggerTreeData.value = []
   checkedTriggerKeys.value = []
@@ -338,7 +347,7 @@ function updateTriggerTree () {
 }
 
 function updateVariableTree () {
-  let variables = state.variables.value || new Map()
+  let variables = state.variables || new Map()
 
   variableTreeData.value = []
 
@@ -364,7 +373,7 @@ function onStorage (event) {
   if (event.key === 'triggers') {
     loadSettingsByNameAndType(state.triggers, state.name, 'triggers')
     updateTriggerTree()
-    if (state.triggers.value.get([triggerModel.value.key])) {
+    if (state.triggers.get(triggerModel.value.key)) {
       updateSelectedTriggerKeys([triggerModel.value.key])
     } else {
       triggerModel.value = {
@@ -381,7 +390,7 @@ function onStorage (event) {
   if (event.key === 'variables') {
     loadSettingsByNameAndType(state.variables, state.name, 'variables')
     updateVariableTree()
-    if (state.variables.value.get([variableModel.value.key])) {
+    if (state.variables.get(variableModel.value.key)) {
       updateSelectedVariableKeys([variableModel.value.key])
     } else {
       variableModel.value = {

@@ -8,7 +8,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, defineProps, toRefs } from 'vue'
+// @ts-check
+import { ref, onMounted, onBeforeUnmount, toRefs } from 'vue'
 import { useWebSocket } from '@/composables/web_socket'
 import { state, setMode, prevMode } from '@/static/state'
 
@@ -21,6 +22,11 @@ let historyIndex = -1
 let commandHistory = []
 let inputWasFocused = false
 let restoreInputOnWindowFocus = false
+let blurTimeout = null
+let scrollTimeout = null
+let focusFrame = null
+let disposed = false
+const COMMAND_HISTORY_LIMIT = 200
 
 const props = defineProps({
   focusMode: {
@@ -51,7 +57,7 @@ const { runCommand } = useWebSocket()
 
 function focusTextInput () {
   if (activeModes.value.includes(state.mode)) {
-    input.value.focus()
+    input.value?.focus()
   }
 }
 
@@ -61,7 +67,7 @@ function blurTextInput () {
   }
 
   if (activeModes.value.includes(state.mode)) {
-    input.value.blur()
+    input.value?.blur()
   }
 }
 
@@ -71,10 +77,15 @@ function onFocus () {
 }
 
 function onBlur () {
+  if (disposed) {
+    return
+  }
   // A tab/app switch blurs the element. Remember that this input owned focus
   // so it can be restored when the player returns, but do not steal focus
   // after an ordinary click elsewhere in the UI.
-  setTimeout(() => {
+  clearTimeout(blurTimeout)
+  blurTimeout = setTimeout(() => {
+    blurTimeout = null
     if (!document.hidden && document.activeElement !== input.value) {
       inputWasFocused = false
     }
@@ -82,7 +93,7 @@ function onBlur () {
 
   if (state.options.textInputAlwaysFocused) {
     if (!document.hidden && activeModes.value.includes(state.mode)) {
-      input.value.focus()
+      input.value?.focus()
     }
     return
   }
@@ -138,7 +149,8 @@ function sendCommand () {
     return
   }
 
-  let command = input.value.value
+  const typedCommand = input.value?.value || ''
+  let command = typedCommand
 
   if (!command) {
     blurTextInput()
@@ -146,17 +158,20 @@ function sendCommand () {
   }
 
   if (focusMode.value == 'modal-input') {
-    if (state.playerModalAs) {
+    if (state.playerModalAs && state.gameState.charmies[state.playerModalAs]) {
       command = `order eid:${state.playerModalAs} ${command}`
     }
   }
 
-  commandHistory.unshift(command)
   if (props.commandPrefix) {
     command = props.commandPrefix + command
   }
 
   runCommand(command)
+  commandHistory.unshift(typedCommand)
+  if (commandHistory.length > COMMAND_HISTORY_LIMIT) {
+    commandHistory.length = COMMAND_HISTORY_LIMIT
+  }
 
   if (state.options.keepSentCommands) {
     commandBuffer = ''
@@ -172,10 +187,14 @@ function sendCommand () {
     blurTextInput()
   }
 
-  setTimeout(() => {
+  clearTimeout(scrollTimeout)
+  scrollTimeout = setTimeout(() => {
+    scrollTimeout = null
     // TODO replace with scroll down event
     let output = document.getElementById('output')
-    output.scrollTop = output.scrollHeight
+    if (output) {
+      output.scrollTop = output.scrollHeight
+    }
   })
 }
 
@@ -188,12 +207,16 @@ function onWindowBlur () {
 }
 
 function onWindowFocus () {
-  requestAnimationFrame(() => {
+  if (focusFrame !== null) {
+    cancelAnimationFrame(focusFrame)
+  }
+  focusFrame = requestAnimationFrame(() => {
+    focusFrame = null
     const shouldRestore = restoreInputOnWindowFocus || state.options.textInputAlwaysFocused
     restoreInputOnWindowFocus = false
 
     if (!document.hidden && shouldRestore && activeModes.value.includes(state.mode)) {
-      input.value.focus()
+      input.value?.focus()
     }
   })
 }
@@ -215,7 +238,13 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  onBlur()
+  disposed = true
+  clearTimeout(blurTimeout)
+  clearTimeout(scrollTimeout)
+  if (focusFrame !== null) {
+    cancelAnimationFrame(focusFrame)
+  }
+  prevMode(modeOwner.value)
   state.inputEmitter.off('focusTextInput', focusTextInput)
   state.inputEmitter.off('blurTextInput', blurTextInput)
   state.inputEmitter.off('sendCommand', sendCommand)

@@ -1,13 +1,15 @@
+// @ts-check
 import { state } from '@/static/state'
 import { useWebSocket } from '@/composables/web_socket'
 
 const { runCommand } = useWebSocket()
 
-const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{1,50}) = (.+)$'
+const assignmentPattern = '^([a-zA-Z][a-zA-Z0-9]{0,50}) = (.+)$'
 const listValuePattern = '^{(.*)}$'
 const triggerBatch = {
   queue: [],
   scheduled: false,
+  timeout: null,
 }
 const TRIGGER_BATCH_MS_BUDGET = 8
 
@@ -20,22 +22,28 @@ export function loadSettingsByNameAndType (settings, name, settingsType) {
   let clashingKeys = privateKeys.filter(key => sharedKeys.includes(key))
   clashingKeys.forEach(key => {
     let triggerToGiveNewKey = privateSettings.get(key)
-    let newKey = Math.max(getNextKey(privateSettings), getNextKey(sharedSettings))
+    let newKey = String(Math.max(getNextKey(privateSettings), getNextKey(sharedSettings)))
+    privateSettings.delete(key)
     privateSettings.set(newKey, triggerToGiveNewKey)
   })
 
-  if (clashingKeys.length) {
-    storeSettingsOfType(settings.value, settingsType)
+  settings.clear()
+  for (const [key, value] of new Map([...privateSettings, ...sharedSettings])) {
+    settings.set(key, value)
   }
 
-  settings.value = new Map([...privateSettings, ...sharedSettings])
+  if (clashingKeys.length) {
+    storeSettingsOfType(settings, settingsType)
+  }
 }
 
 function loadSettingsByStorageKey (key) {
   try {
-    return new Map(JSON.parse(localStorage.getItem(key)))
+    const entries = JSON.parse(localStorage.getItem(key)) || []
+    return new Map(entries.map(([id, value]) => [String(id), value]))
   } catch {
     localStorage.setItem(key, '[]')
+    return new Map()
   }
 }
 
@@ -45,7 +53,7 @@ export function getNextKey (settings) {
 }
 
 export function storeSettingsOfType (settings, settingsType) {
-  let settingsEntries = Array.from(settings.value.entries())
+  let settingsEntries = Array.from(settings.entries())
   let privateSettings = settingsEntries.filter(entry => !entry[1].shared)
   let sharedSettings = settingsEntries.filter(entry => entry[1].shared)
   localStorage.setItem(settingsType + '-' + state.name.toLowerCase(), JSON.stringify(privateSettings))
@@ -53,16 +61,23 @@ export function storeSettingsOfType (settings, settingsType) {
 }
 
 export function processTriggers (line) {
-  let triggers = state.triggers.value ? [...state.triggers.value.values()] : []
+  let triggers = [...state.triggers.values()]
   if (line) {
     triggers
-      .filter(trigger => trigger.active && trigger.patterns[0] && trigger.commands)
-      .forEach(trigger => processTrigger(trigger, stripHtml(line)))
+      .filter(trigger => trigger && trigger.active && trigger.patterns?.[0] && typeof trigger.commands === 'string')
+      .forEach(trigger => {
+        try {
+          processTrigger(trigger, stripHtml(line))
+        } catch (err) {
+          console.warn(`Failed to run trigger ${trigger.name}:`, err)
+        }
+      })
   }
 }
 
 function flushTriggerBatch () {
   triggerBatch.scheduled = false
+  triggerBatch.timeout = null
   const start = performance.now()
 
   while (triggerBatch.queue.length) {
@@ -76,7 +91,7 @@ function flushTriggerBatch () {
 
   if (triggerBatch.queue.length) {
     triggerBatch.scheduled = true
-    setTimeout(flushTriggerBatch, 0)
+    triggerBatch.timeout = setTimeout(flushTriggerBatch, 0)
   }
 }
 
@@ -89,8 +104,15 @@ export function processTriggersBatch (lines = []) {
 
   if (!triggerBatch.scheduled) {
     triggerBatch.scheduled = true
-    setTimeout(flushTriggerBatch, 0)
+    triggerBatch.timeout = setTimeout(flushTriggerBatch, 0)
   }
+}
+
+export function resetTriggerBatch () {
+  clearTimeout(triggerBatch.timeout)
+  triggerBatch.timeout = null
+  triggerBatch.queue = []
+  triggerBatch.scheduled = false
 }
 
 function processTrigger (trigger, line) {
@@ -100,7 +122,7 @@ function processTrigger (trigger, line) {
       .split('\n')
       .filter(command => command)
       .map(command => substitutePatternMatches(matches, command))
-      .forEach(commandWithMatches => processCommand(commandWithMatches, matches, trigger.shared))
+      .forEach(commandWithMatches => processCommand(commandWithMatches, trigger.shared))
   }
 }
 
@@ -116,22 +138,22 @@ function processCommand (commandWithMatches, isTriggerShared) {
 function assignValueToVariable (assignmentParts, isTriggerShared) {
 
   let valueParts = assignmentParts[2].match(listValuePattern)
-  let values = valueParts ? valueParts[1].split(',') : assignmentParts[2]
+  let values = valueParts ? valueParts[1].split(',').join('\n') : assignmentParts[2]
 
-  let existingVariableKey = [...state.variables.value.entries()]
+  let existingVariableKey = [...state.variables.entries()]
     .filter(variableEntry => variableEntry[1].name === assignmentParts[1])
     .map(variableEntry => variableEntry[0])
     .find(() => true)
 
   if (existingVariableKey) {
-    state.variables.value.get(existingVariableKey).values = values
+    state.variables.get(existingVariableKey).values = values
   } else {
-    let key = getNextKey(state.variables.value) + ''
-    state.variables.value.set(key, { name: assignmentParts[1], values, shared: isTriggerShared })
+    let key = getNextKey(state.variables) + ''
+    state.variables.set(key, { name: assignmentParts[1], values, shared: isTriggerShared })
   }
 
   storeSettingsOfType(state.variables, 'variables')
-  window.onstorage({ key: 'variables' })
+  window.dispatchEvent(new StorageEvent('storage', { key: 'variables' }))
 }
 
 function executeCommand (commandWithMatches) {
@@ -140,21 +162,28 @@ function executeCommand (commandWithMatches) {
 }
 
 function substitutePatternMatches (matches, command) {
-  return matches.reduce((accu, match, index) => accu.replaceAll('$' + index, match), command)
+  return command.replace(/\$(\d+)/g, (placeholder, index) => matches[Number(index)] ?? placeholder)
 }
 
 function substituteVariables (command) {
-  return [...state.variables.value.values()]
+  return [...state.variables.values()]
+    .sort((a, b) => b.name.length - a.name.length)
     .reduce((accu, variable) => {
       return substituteValuesByIndex(variable, accu)
-        .replaceAll('$' + variable.name, variable.values.split('\n')[0])
+        .replaceAll('$' + variable.name, () => getVariableValues(variable)[0])
     }, command)
 }
 
 function substituteValuesByIndex (variable, command) {
-  return variable.values
-    .split('\n')
-    .reduce((accu, value, index) => accu.replaceAll(`$${variable.name}[${index}]`, value), command)
+  return getVariableValues(variable)
+    .reduce((accu, value, index) => accu.replaceAll(`$${variable.name}[${index}]`, () => value), command)
+}
+
+function getVariableValues (variable) {
+  if (Array.isArray(variable.values)) {
+    return variable.values.map(value => String(value))
+  }
+  return String(variable.values ?? '').split('\n')
 }
 
 function stripHtml (line) {

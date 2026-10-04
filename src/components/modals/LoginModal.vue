@@ -6,6 +6,9 @@
     preset="dialog"
     title="Login"
     class="login-modal"
+    :closable="!isSubmitting"
+    :mask-closable="!isSubmitting"
+    :close-on-esc="!isSubmitting"
     @after-enter="onOpenModal"
     @after-leave="onCloseModal"
   >
@@ -17,17 +20,18 @@
     <NForm ref="formRef" :model="model" :rules="rules" size="large">
 
       <NFormItem path="name" label="Character Name">
-        <NInput ref="nameInput" class="selectable" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" @click="nameInput.select()"/>
+        <NInput ref="nameInput" class="selectable" :disabled="isSubmitting" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="What is your name?" @click="nameInput.select()"/>
       </NFormItem>
 
       <NFormItem path="password" label="Password">
-        <NInput ref="passwordInput" class="selectable" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?" @click="passwordInput.select()"/>
+        <NInput ref="passwordInput" class="selectable" :disabled="isSubmitting" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="What is your password?" @click="passwordInput.select()"/>
       </NFormItem>
 
+      <div v-if="error" class="bold-red" role="alert">{{ error }}</div>
     </NForm>
 
     <template #action>
-      <NButton class="selectable" type="success" ghost @click="handleValidation">Login</NButton>
+      <NButton class="selectable" type="success" :loading="isSubmitting" :disabled="isSubmitting" ghost @click="handleValidation">Login</NButton>
     </template>
 
   </NModal>
@@ -35,6 +39,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton } from 'naive-ui'
@@ -42,6 +47,7 @@ import { state, prevMode, authenticationSuccess } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { getAuthenticationError, requestAuthentication } from '@/composables/authentication_helpers'
 
 const { sendWithResponse } = useWebSocket()
 const { selectNearestElement, performSelectedElementAction } = useHelpers()
@@ -49,6 +55,8 @@ const { selectNearestElement, performSelectedElementAction } = useHelpers()
 const formRef = ref(null)
 const nameInput = ref(null)
 const passwordInput = ref(null)
+const isSubmitting = ref(false)
+const error = ref('')
 
 const model = ref({
   name: null,
@@ -77,33 +85,8 @@ const rules = {
   password: [
     {
       required: true,
-      trigger: ['password-input', 'blur'],
+      trigger: ['input', 'blur'],
       message: "Password is required"
-    },
-    {
-      message: 'Invalid name or password',
-      asyncValidator: () => {
-        return new Promise((resolve, reject) => {
-          sendWithResponse('login', {
-            name: model.value.name,
-            password: model.value.password,
-            width: state.options.terminalWidth,
-            height: state.options.terminalHeight,
-            ttype: 'play.proceduralrealms.com'
-          }).then(({ cmd, msg }) => {
-            if (cmd == 'login.validationFailed') {
-              reject(new Error('Invalid character name'))
-            } else if (cmd == 'login.fail') {
-              reject(new Error('Failed to create character'))
-            } else if (cmd == 'token.success') {
-              authenticationSuccess(msg)
-              resolve()
-            }
-          }).catch(e => {
-            reject(e)
-          })
-        })
-      }
     }
   ],
 }
@@ -125,10 +108,13 @@ function performModalAction () {
 
 async function onOpenModal () {
   await nextTick()
-  nameInput.value.select()
+  nameInput.value?.select()
 }
 
 function onCloseModal () {
+  if (isSubmitting.value) {
+    return
+  }
   if (!state.modals.loginModal) {
     return
   }
@@ -136,9 +122,30 @@ function onCloseModal () {
   prevMode('loginModal')
 }
 
-function handleValidation (e) {
-  e.preventDefault()
-  formRef.value?.validate()
+async function handleValidation (e) {
+  e?.preventDefault()
+  if (isSubmitting.value || !formRef.value) {
+    return
+  }
+  isSubmitting.value = true
+  error.value = ''
+  try {
+    await formRef.value.validate()
+    const result = await requestAuthentication(sendWithResponse, 'login', {
+      name: model.value.name,
+      password: model.value.password,
+      width: state.options.terminalWidth,
+      height: state.options.terminalHeight,
+      ttype: 'play.proceduralrealms.com'
+    })
+    authenticationSuccess(result)
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = getAuthenticationError(err)
+    }
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 onMounted(() => {

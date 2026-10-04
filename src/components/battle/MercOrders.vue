@@ -17,12 +17,14 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, watch, defineProps, toRefs, onBeforeUnmount } from 'vue'
+// @ts-check
+import { reactive, onMounted, watch, toRefs, onBeforeUnmount } from 'vue'
 import { NDropdown, NButton, NIcon } from 'naive-ui'
 
 // import { useHelpers } from '@/composables/helpers'
 import { useWebSocket } from '@/composables/web_socket'
 import { incrementUiDiagnostic, state } from '@/static/state'
+import { getInventorySignature, normalizeInventorySource } from '@/composables/inventory_helpers'
 
 import AddCommentOutlined from '@vicons/material/AddCommentOutlined'
 
@@ -40,8 +42,6 @@ let optionsRefreshToken = 0
 let optionsRefreshTimeout = null
 let watchers = []
 
-const combatPotions = ["healing potion", "energy potion", "stamina potion"]
-
 /*
     TODO
 - Have a way to select a target on which the action / skill is performed
@@ -54,9 +54,10 @@ onMounted(() => {
   watchers.push(watch(
     () => {
       const mercEid = merc.value?.stats?.eid || ''
-      const mercItems = (merc.value?.items || []).join('|')
+      const mercItems = getInventorySignature(merc.value?.items)
+      const mercSkills = JSON.stringify(merc.value?.skills || {})
       const partyEids = Object.keys(state.gameState.party || {}).join('|')
-      return `${mercEid}::${mercItems}::${partyEids}`
+      return `${mercEid}::${mercItems}::${mercSkills}::${partyEids}`
     },
     () => {
       scheduleSetOptions(0)
@@ -65,6 +66,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  optionsRefreshToken++
   if (optionsRefreshTimeout) {
     clearTimeout(optionsRefreshTimeout)
     optionsRefreshTimeout = null
@@ -83,6 +85,8 @@ function onButtonClick (ev) {
 }
 
 function scheduleSetOptions (delay = 0) {
+  optionsRefreshToken++
+  options.length = 0
   if (optionsRefreshTimeout) {
     clearTimeout(optionsRefreshTimeout)
   }
@@ -103,12 +107,14 @@ async function setOptions () {
   }
   const nextOptions = []
 
-  if (!merc.value) {
+  const selectedMerc = merc.value
+  if (!selectedMerc?.stats?.eid) {
     options.length = 0
     return
   }
 
-  const mercSkills = Object.values(merc.value.skills)
+  const mercEid = selectedMerc.stats.eid
+  const mercSkills = Object.values(selectedMerc.skills || {})
     .filter(skill => !skill.type.includes('passive'))
 
   // The regex fresh hell below is to capitalize first letter for each word in the skill list
@@ -116,29 +122,30 @@ async function setOptions () {
   // elements in the dropdown. Will have to revisit this
   mercSkills.map(skill => nextOptions.push({
     label: skill.name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()),
-    key: `eid:${merc.value.stats.eid.toString()} ${skill.spell ? 'cast ' : ''}${skill.name}`
+    key: `eid:${mercEid} ${skill.spell ? 'cast ' : ''}${skill.name}`
   }))
 
-  const items = await fetchItems(merc.value.items)
+  const items = await fetchItems(normalizeInventorySource(selectedMerc.items).map(item => item.iid))
   if (token !== optionsRefreshToken) {
     incrementUiDiagnostic('mercOrdersStaleDrops')
     return
   }
 
   items.map(item => {
-    const itemName = item.name.substring(item.name.indexOf(" ") + 1).toLowerCase()
-    if (combatPotions.includes(itemName)) {
+    const potionMatch = item?.name?.match(/\b(healing|energy|stamina) potion$/i)
+    if (potionMatch) {
 
       if (!nextOptions.includes(divider)) {
         nextOptions.push(divider)
       }
 
-      const itemType = itemName.substring(0, itemName.indexOf(" "))
+      const potionType = potionMatch[1].toLowerCase()
+      const itemType = potionType
         .replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
 
       nextOptions.push({
         label: `Drink ${itemType}`,
-        key: `eid:${merc.value.stats.eid.toString()} drink ${itemName.substring(0, itemName.indexOf(" "))}`
+        key: `eid:${mercEid} drink ${potionType}`
       })
     }
   })

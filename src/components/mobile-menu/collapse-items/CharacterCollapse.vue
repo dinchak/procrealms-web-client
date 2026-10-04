@@ -299,12 +299,12 @@
 </template>
 
 <script setup>
+// @ts-check
 import { NCollapseItem, NIcon } from 'naive-ui'
-import { defineProps, ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 import AddBoxOutlined from '@vicons/material/AddBoxOutlined'
 
-import { state } from '@/static/state'
 import { DAMAGE_TYPE_COLORS } from '@/static/constants'
 
 import { useWebSocket } from '@/composables/web_socket'
@@ -327,13 +327,18 @@ function addStatPoint (stat) {
 }
 
 async function setWeapon () {
-  let iid = props.equipment.weapon
+  const token = ++weaponFetchToken
+  let iid = props.equipment?.weapon
+  weapon.value = false
   if (!iid) {
     weapon.value = false
     return
   }
 
   let item = await fetchItem(iid)
+  if (token !== weaponFetchToken) {
+    return
+  }
   if (!item) {
     weapon.value = false
     return
@@ -363,15 +368,17 @@ function getDamageType () {
 }
 
 let watchers = []
+let weaponFetchToken = 0
 onMounted(() => {
   watchers.push(
-    watch(() => state.gameState.equipment, () => {
+    watch(() => props.equipment?.weapon, () => {
       setWeapon()
-    })
+    }, { immediate: true })
   )
 })
 
 onBeforeUnmount(() => {
+  weaponFetchToken++
   for (let watcher of watchers) {
     watcher()
   }

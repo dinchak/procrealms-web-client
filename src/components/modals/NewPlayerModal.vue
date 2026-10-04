@@ -6,6 +6,9 @@
     preset="dialog"
     title="New Player"
     class="new-player-modal"
+    :closable="!isSubmitting"
+    :mask-closable="!isSubmitting"
+    :close-on-esc="!isSubmitting"
     @after-enter="onOpenModal"
     @after-leave="onCloseModal"
   >
@@ -17,26 +20,27 @@
     <NForm ref="formRef" :model="model" :rules="rules" size="large">
 
       <NFormItem path="name" label="Character Name">
-        <NInput ref="nameInput" class="selectable" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name" @click="nameInput.select()"/>
-        <NButton class="selectable" size="medium" type="warning" ghost @click="generateName">Random</NButton>
+        <NInput ref="nameInput" class="selectable" :disabled="isSubmitting" v-model:value="model.name" @keydown.enter="handleValidation" placeholder="Choose a name" @click="nameInput.select()"/>
+        <NButton class="selectable" size="medium" type="warning" :disabled="isSubmitting" ghost @click="generateName">Random</NButton>
       </NFormItem>
 
       <NFormItem path="password" label="Password">
-        <NInput ref="passwordInput" class="selectable" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password" @click="passwordInput.select()"/>
+        <NInput ref="passwordInput" class="selectable" :disabled="isSubmitting" v-model:value="model.password" type="password" @keydown.enter="handleValidation" placeholder="Choose a password" @click="passwordInput.select()"/>
       </NFormItem>
 
       <NFormItem path="repeatPassword" label="Repeat Password">
-        <NInput ref="repeatPasswordInput" class="selectable" v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password" @click="repeatPasswordInput.select()"/>
+        <NInput ref="repeatPasswordInput" class="selectable" :disabled="isSubmitting" v-model:value="model.repeatPassword" type="password" @keydown.enter="handleValidation" placeholder="Repeat your password" @click="repeatPasswordInput.select()"/>
       </NFormItem>
 
       <NFormItem path="tutorial" label="Start the tutorial?">
-        <NSwitch class="selectable" v-model:value="model.tutorial" />
+        <NSwitch class="selectable" :disabled="isSubmitting" v-model:value="model.tutorial" />
       </NFormItem>
 
+      <div v-if="error" class="bold-red" role="alert">{{ error }}</div>
     </NForm>
 
     <template #action>
-      <NButton class="selectable" type="success" ghost @click="handleValidation">Play!</NButton>
+      <NButton class="selectable" type="success" :loading="isSubmitting" :disabled="isSubmitting" ghost @click="handleValidation">Play!</NButton>
     </template>
 
   </NModal>
@@ -44,6 +48,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 import { NModal, NForm, NFormItem, NInput, NButton, NSwitch } from 'naive-ui'
@@ -51,6 +56,7 @@ import { state, prevMode, authenticationSuccess } from '@/static/state'
 
 import { useWebSocket } from '@/composables/web_socket'
 import { useHelpers } from '@/composables/helpers'
+import { getAuthenticationError, requestAuthentication } from '@/composables/authentication_helpers'
 
 const { sendWithResponse } = useWebSocket()
 const { selectNearestElement, performSelectedElementAction } = useHelpers()
@@ -60,6 +66,8 @@ const formRef = ref(null)
 const nameInput = ref(null)
 const passwordInput = ref(null)
 const repeatPasswordInput = ref(null)
+const isSubmitting = ref(false)
+const error = ref('')
 
 const model = ref({
   name: '',
@@ -86,21 +94,19 @@ const rules = {
       }
     },
     {
-      message: 'Name is already taken, please choose another',
       trigger: ['blur'],
-      asyncValidator: () => {
-        return new Promise((resolve, reject) => {
-          sendWithResponse('nameExists', { name: model.value.name })
-            .then(({ cmd }) => {
-              if (cmd == 'login.nameExists') {
-                reject(new Error('Name is already taken, please choose another'))
-              } else if (cmd == 'login.validationFailed') {
-                reject(new Error('Invalid name'))
-              } else if (cmd == 'login.nameAvailable') {
-                resolve()
-              }
-            })
-        })
+      async asyncValidator (rule, value) {
+        const { cmd } = await sendWithResponse('nameExists', { name: value })
+        if (cmd === 'login.nameAvailable') {
+          return
+        }
+        if (cmd === 'login.nameExists') {
+          throw new Error('Name is already taken, please choose another')
+        }
+        if (cmd === 'login.validationFailed') {
+          throw new Error('Invalid name')
+        }
+        throw new Error('Unexpected response from server')
       }
     }
   ],
@@ -129,37 +135,6 @@ const rules = {
           return new Error('Password is not same as repeat password')
         }
       }
-    },
-
-    {
-      message: 'Invalid character name',
-      asyncValidator: () => {
-        return new Promise((resolve, reject) => {
-          if (!model.value.password) {
-            reject(new Error('Password is required'))
-            return
-          }
-
-          sendWithResponse('create', {
-            name: model.value.name,
-            password: model.value.password,
-            width: state.options.terminalWidth,
-            height: state.options.terminalHeight,
-            tutorial: model.value?.tutorial ? 'Y' : 'N',
-            ttype: 'play.proceduralrealms.com'
-          })
-            .then(({ cmd, msg }) => {
-              if (cmd == 'login.validationFailed') {
-                reject(new Error('Invalid character name'))
-              } else if (cmd == 'login.fail') {
-                reject(new Error('Failed to create character'))
-              } else if (cmd == 'token.success') {
-                authenticationSuccess(msg)
-                resolve()
-              }
-            })
-        })
-      }
     }
   ]
 }
@@ -181,10 +156,13 @@ function performModalAction () {
 
 async function onOpenModal () {
   await nextTick()
-  nameInput.value.select()
+  nameInput.value?.select()
 }
 
 function onCloseModal () {
+  if (isSubmitting.value) {
+    return
+  }
   if (!state.modals.newPlayerModal) {
     return
   }
@@ -192,9 +170,31 @@ function onCloseModal () {
   prevMode('newPlayerModal')
 }
 
-function handleValidation (e) {
-  e.preventDefault()
-  formRef.value?.validate()
+async function handleValidation (e) {
+  e?.preventDefault()
+  if (isSubmitting.value || !formRef.value) {
+    return
+  }
+  isSubmitting.value = true
+  error.value = ''
+  try {
+    await formRef.value.validate()
+    const result = await requestAuthentication(sendWithResponse, 'create', {
+      name: model.value.name,
+      password: model.value.password,
+      width: state.options.terminalWidth,
+      height: state.options.terminalHeight,
+      tutorial: model.value.tutorial ? 'Y' : 'N',
+      ttype: 'play.proceduralrealms.com'
+    })
+    authenticationSuccess(result)
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = getAuthenticationError(err)
+    }
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 let chain = null

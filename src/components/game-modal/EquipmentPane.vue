@@ -56,7 +56,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, defineProps, toRefs, watch } from 'vue'
+// @ts-check
+import { ref, onMounted, onBeforeUnmount, toRefs, watch } from 'vue'
 import { NGrid, NGi } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -125,6 +126,7 @@ async function refreshEquipmentItems () {
 }
 
 function scheduleEquipmentRefresh (delay = 16) {
+  equipmentRefreshToken++
   if (equipmentRefreshTimeout) {
     clearTimeout(equipmentRefreshTimeout)
   }
@@ -196,6 +198,7 @@ async function selectIid (iid) {
   }
 
   if (selectedIid.value == iid) {
+    selectedFetchToken++
     selectedIid.value = 0
     return
   }
@@ -247,6 +250,9 @@ onMounted(() => {
     watch(
       () => state.playerModalAs,
       () => {
+        selectedFetchToken++
+        selectedIid.value = 0
+        selectedItem.value = {}
         scheduleEquipmentRefresh(16)
       }
     )
@@ -263,6 +269,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  equipmentRefreshToken++
+  selectedFetchToken++
   if (equipmentRefreshTimeout) {
     clearTimeout(equipmentRefreshTimeout)
     equipmentRefreshTimeout = null

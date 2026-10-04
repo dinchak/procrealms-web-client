@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { defineAsyncComponent, onMounted, onBeforeUnmount, watch } from 'vue'
 import { NEl } from 'naive-ui'
 
@@ -89,6 +90,7 @@ import QuickSlots from '@/components/hud/QuickSlots.vue'
 
 import { state, setMode } from '@/static/state'
 import { USER_GESTURE_EVENTS } from '@/static/constants'
+import { disposeAudioContext } from '@/static/sound'
 
 import { useHelpers } from '@/composables/helpers'
 import { useLocalStorageHandler } from '@/composables/local_storage_handler'
@@ -370,9 +372,7 @@ onBeforeUnmount(() => {
     window.removeEventListener(eventName, startAudioContext)
   }
 
-  if (state.music.audioContext) {
-    state.music.audioContext.close()
-  }
+  disposeAudioContext()
 
   window.removeEventListener('resize', triggerResize)
   window.removeEventListener('focus', onWindowFocusBlur)

@@ -38,6 +38,7 @@
   </div>
 </template>
 <script setup>
+// @ts-check
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { NSlider, NIcon, NIconWrapper } from 'naive-ui'
 
@@ -69,8 +70,7 @@ async function play () {
 }
 
 function pause () {
-  state.music.audioContext.suspend()
-  state.music.playing = false
+  stopPlaying(true)
 }
 
 async function skip () {

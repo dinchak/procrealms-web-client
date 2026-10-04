@@ -1,16 +1,17 @@
 <template>
   <div :class="getInventoryRowClass()">
-    <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false" :disabled="!item.description">
+    <NPopover trigger="hover" placement="top-start" :keep-alive-on-hover="false" :disabled="!displayItem.description">
       <template #trigger >
         <div v-html-safe="ansiToHtml(getItemName())" class="item-name"></div>
       </template>
-      <div v-html-safe="`${ansiToHtml(item.description)}`" class="tooltip"></div>
+      <div v-html-safe="`${ansiToHtml(displayItem.description || '')}`" class="tooltip"></div>
     </NPopover>
   </div>
 </template>
 
 <script setup>
-import { defineProps, toRefs, ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+// @ts-check
+import { toRefs, ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { NPopover } from 'naive-ui'
 
 import { useHelpers } from '@/composables/helpers'
@@ -85,11 +86,14 @@ onMounted(() => {
     if (newVal && Object.keys(newVal).length) {
       fetchToken += 1
       fetchedItem.value = {}
+    } else {
+      refreshFetchedItem(iid.value)
     }
   }))
 })
 
 onBeforeUnmount(() => {
+  fetchToken++
   watchers.forEach(w => w())
 })
 </script>

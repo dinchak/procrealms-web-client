@@ -1,7 +1,9 @@
+// @ts-check
 import { state } from '@/static/state'
 import { MUSIC_TRACKS } from '@/static/constants'
 
-let trackLoading = false
+const pendingTracks = new Map()
+let playbackToken = 0
 let randomPlaylist = []
 let nextPlaylistIndex = 0
 
@@ -82,94 +84,137 @@ export async function playRandomTrack () {
 }
 
 export function stopPlaying (pause) {
+  playbackToken++
   const { musicSource, audioContext } = state.music
 
-  audioContext?.suspend()
-
-  if (!pause && musicSource) {
-    musicSource.stop()
-    musicSource.disconnect()
-    state.music.musicSource = null
+  state.music.playing = false
+  if (audioContext && audioContext.state !== `closed`) {
+    audioContext.suspend().catch(() => {})
   }
 
-  state.music.playing = false
+  if (!pause && musicSource) {
+    state.music.musicSource = null
+    musicSource.stop()
+    musicSource.disconnect()
+  }
+}
+
+/** Release audio resources when leaving the game so the next session can initialize them. */
+export function disposeAudioContext () {
+  stopPlaying()
+  for (const pending of pendingTracks.values()) {
+    pending.request.abort()
+  }
+  pendingTracks.clear()
+  const { audioContext, gainNode, audioAnalyzer } = state.music
+  gainNode?.disconnect()
+  audioAnalyzer?.disconnect()
+  if (audioContext && audioContext.state !== `closed`) {
+    audioContext.close().catch(() => {})
+  }
+
+  state.music.audioContext = null
+  state.music.gainNode = null
+  state.music.audioAnalyzer = null
 }
 
 export async function startPlaying (track) {
+  const token = ++playbackToken
   const { audioContext, gainNode } = state.music
 
-  if (trackLoading) {
+  if (!track || !audioContext || audioContext.state === `closed`) {
     return
   }
 
-  if (!track.buffer) {
-    await loadTrack(track)
-  }
-
-  if (state.music.currentTrack !== track || !state.music.musicSource) {
-    if (state.music.musicSource) {
-      state.music.musicSource.stop()
-      state.music.musicSource.disconnect()
+  try {
+    if (!track.buffer) {
+      await loadTrack(track, audioContext)
     }
 
-    let musicSource = audioContext.createBufferSource()
-    musicSource.buffer = track.buffer
-    musicSource.connect(gainNode)
-
-    state.music.musicSource = musicSource
-    musicSource.start()
-
-    musicSource.addEventListener('ended', async ev => {
-      if (track.name !== state.music.currentTrack?.name) {
-        return
-      }
-
-      if (state.music.musicSource !== ev.target) {
-        return
-      }
-
-      state.music.musicSource = null
-      await playRandomTrack()
-    })
-
-    state.music.currentTrack = track
-  }
-
-  if (audioContext.state === 'suspended') {
-    await audioContext.resume()
-  }
-
-  state.music.playing = true
-}
-
-function loadTrack (track) {
-  return new Promise(resolve => {
-    trackLoading = true
-    if (track.buffer) {
-      trackLoading = false
-      resolve()
+    if (token !== playbackToken || audioContext !== state.music.audioContext || audioContext.state === `closed`) {
       return
     }
 
-    let request = new XMLHttpRequest()
+    if (state.music.currentTrack !== track || !state.music.musicSource) {
+      const previousSource = state.music.musicSource
+      state.music.musicSource = null
+      if (previousSource) {
+        previousSource.stop()
+        previousSource.disconnect()
+      }
+
+      const musicSource = audioContext.createBufferSource()
+      musicSource.buffer = track.buffer
+      musicSource.connect(gainNode)
+
+      state.music.musicSource = musicSource
+      state.music.currentTrack = track
+
+      musicSource.addEventListener(`ended`, async () => {
+        musicSource.disconnect()
+        if (state.music.musicSource !== musicSource) {
+          return
+        }
+
+        state.music.musicSource = null
+        if (state.music.playing) {
+          await playRandomTrack()
+        }
+      }, { once: true })
+
+      musicSource.start()
+    }
+
+    if (audioContext.state === `suspended`) {
+      await audioContext.resume()
+    }
+
+    if (token === playbackToken) {
+      state.music.playing = true
+    }
+  } catch {
+    if (token === playbackToken) {
+      state.music.playing = false
+    }
+  }
+}
+
+function loadTrack (track, audioContext) {
+  if (pendingTracks.has(track)) {
+    return pendingTracks.get(track).promise
+  }
+
+  const request = new XMLHttpRequest()
+  const pending = new Promise((resolve, reject) => {
     request.open('GET', track.url, true)
     request.responseType = 'arraybuffer'
+    request.timeout = 30000
+    request.onerror = request.onabort = request.ontimeout = () => reject(new Error(`Unable to load music`))
 
-    request.onload = () => {
-      if (!request.response) {
-        trackLoading = false
+    request.onload = async () => {
+      if (!request.response || request.status >= 400) {
+        reject(new Error(`Unable to load music`))
         return
       }
 
-      state.music.audioContext.decodeAudioData(request.response, buffer => {
-        track.buffer = buffer
-        trackLoading = false
+      try {
+        track.buffer = await audioContext.decodeAudioData(request.response)
         resolve()
-      })
+      } catch (error) {
+        reject(error)
+      }
     }
 
     request.send()
   })
+
+  const cleanup = pending.finally(() => {
+    if (pendingTracks.get(track)?.promise === cleanup) {
+      pendingTracks.delete(track)
+    }
+  })
+  pendingTracks.set(track, { promise: cleanup, request })
+  return cleanup
 }
 
 export const playMessageSound = ({ channel, /* id, from, to, timestamp, message */ }) => {

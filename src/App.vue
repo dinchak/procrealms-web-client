@@ -10,6 +10,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { onMounted, onBeforeUnmount } from 'vue'
 
 import { NConfigProvider, darkTheme } from 'naive-ui'
@@ -33,13 +34,15 @@ const themeOverrides = {
   }
 }
 
-const { initConnection } = useWebSocket()
+const { initConnection, closeConnection } = useWebSocket()
 const { loadOptions, loadInputMappings } = useLocalStorageHandler()
 
 let cacheClearInterval = null
+let reconnectTimeout = null
+let disposed = false
 
 function doConnect () {
-  if (state.connected) {
+  if (disposed || state.connected || [0, 1].includes(state.websocketConnection?.readyState)) {
     return
   }
 
@@ -55,7 +58,11 @@ function onClose () {
   resetMode()
   state.disconnected = true
   state.connected = false
-  setTimeout(() => doConnect(), 1000)
+  clearTimeout(reconnectTimeout)
+  reconnectTimeout = setTimeout(() => {
+    reconnectTimeout = null
+    doConnect()
+  }, 1000)
   stopPlaying()
 }
 
@@ -83,10 +90,14 @@ onMounted(() => {
   cacheClearInterval = setInterval(() => {
     clearCache(state.cache.itemCache)
     clearCache(state.cache.entityCache)
+    clearCache(state.cache.auctionCache)
   }, CACHE_DELETE_INTERVAL)
 })
 
 onBeforeUnmount(() => {
+  disposed = true
+  clearTimeout(reconnectTimeout)
+  closeConnection()
   clearInterval(cacheClearInterval)
 })
 
