@@ -31,9 +31,9 @@
 
           </div>
           <div class="shop-inventory">
-            <div v-for="{ name, iid } in state.shop.items" :key="iid" class="item-row">
+            <div v-for="{ fullName, name, iid } in shopItems" :key="iid" class="item-row">
               <div :class="itemClass('shop', iid)">
-                <div class="name selectable" v-html-safe="ansiToHtml(name)" :class="getItemNameClass('shop', iid)" @click="selectItem('shop', iid)"></div>
+                <div class="name selectable" v-html-safe="ansiToHtml(fullName || name)" :class="getItemNameClass('shop', iid)" @click="selectItem('shop', iid)"></div>
                   <ItemDetails :item="selectedItem" :actions="getBuyActions(iid)" :item-output-id="iid" v-if="isSelected('shop', iid)"></ItemDetails>
               </div>
             </div>
@@ -204,6 +204,7 @@ async function refreshShopItems () {
 }
 
 function scheduleShopRefresh (delay = 16) {
+  shopRefreshToken++
   if (shopRefreshTimeout) {
     clearTimeout(shopRefreshTimeout)
   }
@@ -235,6 +236,7 @@ async function refreshPlayerItems () {
 }
 
 function schedulePlayerRefresh (delay = 16) {
+  playerRefreshToken++
   if (playerRefreshTimeout) {
     clearTimeout(playerRefreshTimeout)
   }
@@ -298,7 +300,7 @@ async function runTradeItemAction (source, command, iid) {
     return false
   }
 
-  await runItemAction(command, item)
+  await runItemAction(command, item, ``)
   return true
 }
 
@@ -308,7 +310,7 @@ function getPlayerActions (iid) {
     return []
   }
 
-  return getActions(item)
+  return getActions(item, ``)
     .filter(action => !['Sell', 'Sell All'].includes(action.label))
     .map(action => ({
       ...action,
@@ -380,6 +382,7 @@ function onModalOpened () {
 
   watchers.push(watch(() => state.shop.shopkeeper, async newShopkeeperId => {
     if (!newShopkeeperId) {
+      shopkeeperFetchToken++
       shopkeeper.value = { name: 'Loading...' }
       return
     }

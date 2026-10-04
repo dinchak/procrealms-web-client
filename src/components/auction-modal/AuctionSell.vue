@@ -43,7 +43,7 @@
                 style="width: 80px;"
               ></NInput>
 
-              <NButton ghost @click="doSell(item)" type="success">
+              <NButton ghost @click="doSell(item)" type="success" :loading="sellingIid === item.iid" :disabled="!!sellingIid">
                 <span class="bold-green">Auction Item</span>
               </NButton>
             </div>
@@ -74,7 +74,7 @@ const { fetchItem, fetchItems, refreshItem, runCommand } = useWebSocket()
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
 
 const items = ref([])
-const selectedIid = ref({})
+const selectedIid = ref('')
 const selectedItem = ref({})
 const search = ref('')
 const columns = ref(1)
@@ -82,6 +82,8 @@ const minimumBid = ref('')
 const buyPrice = ref('')
 const sellAmount = ref('')
 const minBinRef = ref(null)
+const sellingIid = ref('')
+let active = true
 let inventoryRefreshToken = 0
 let inventoryRefreshTimeout = null
 let selectedFetchToken = 0
@@ -144,32 +146,53 @@ function setDefaultPrices (item) {
 }
 
 async function selectItem (item) {
+  if (!active || !isInventoryItem(item.iid)) {
+    return
+  }
+
   if (selectedIid.value == item.iid) {
-    selectedFetchToken++
-    selectedIid.value = {}
-    selectedItem.value = {}
-    minimumBid.value = ''
-    buyPrice.value = ''
-    sellAmount.value = ''
+    clearSelection()
     return
   }
 
   selectedIid.value = item.iid
+  selectedItem.value = {}
+  setDefaultPrices(item)
+  sellAmount.value = item.amount && item.amount > 0 ? String(item.amount) : ''
   const token = ++selectedFetchToken
 
-  const detail = await fetchItem(item.iid)
-  if (token !== selectedFetchToken) {
+  let detail
+  try {
+    detail = await fetchItem(item.iid)
+  } catch (error) {
+    if (active && token === selectedFetchToken) {
+      showError(error.message || 'Unable to load item details.')
+    }
+    return
+  }
+  if (!active || token !== selectedFetchToken) {
     return
   }
   selectedItem.value = detail || {}
 
-  setDefaultPrices(item)
-  sellAmount.value = item.amount && item.amount > 0 ? String(item.amount) : ''
   nextTick().then(() => {
-    if (minBinRef.value && Array.isArray(minBinRef.value)) {
-      minBinRef.value[0].focus()
+    if (active && token === selectedFetchToken && Array.isArray(minBinRef.value)) {
+      minBinRef.value[0]?.focus()
     }
   })
+}
+
+function clearSelection () {
+  selectedFetchToken++
+  selectedIid.value = ''
+  selectedItem.value = {}
+  minimumBid.value = ''
+  buyPrice.value = ''
+  sellAmount.value = ''
+}
+
+function isInventoryItem (iid) {
+  return normalizeInventorySource(state.gameState.inventory).some(item => item.iid === iid)
 }
 
 async function mapInventory () {
@@ -192,6 +215,14 @@ async function refreshInventoryItems () {
 }
 
 function scheduleInventoryRefresh (delay = 0) {
+  if (!active) {
+    return
+  }
+
+  if (selectedIid.value && !isInventoryItem(selectedIid.value)) {
+    clearSelection()
+  }
+
   inventoryRefreshToken++
   if (inventoryRefreshTimeout) {
     clearTimeout(inventoryRefreshTimeout)
@@ -236,6 +267,16 @@ function getColumnItems (colIndex) {
 }
 
 async function doSell (item) {
+  if (!active || sellingIid.value || selectedIid.value !== item.iid) {
+    return
+  }
+
+  if (!isInventoryItem(item.iid)) {
+    clearSelection()
+    showError('That item is no longer in your inventory.')
+    return
+  }
+
   if (!minimumBid.value) {
     showError('You must set a minimum bid to auction an item.')
     return
@@ -247,13 +288,13 @@ async function doSell (item) {
     if (sellAmount.value === '' || sellAmount.value == null) {
       amt = maxAmt
     } else {
-      amt = parseInt(sellAmount.value)
-      if (isNaN(amt)) {
+      amt = Number(sellAmount.value)
+      if (!Number.isSafeInteger(amt) || amt < 1) {
         showError('Invalid amount to sell.')
         return
       }
     }
-    amt = Math.max(1, Math.min(amt, maxAmt))
+    amt = Math.min(amt, maxAmt)
   } else {
     amt = 1
   }
@@ -263,15 +304,29 @@ async function doSell (item) {
     cmd += ` price="${buyPrice.value}"`
   }
 
-  await runCommand(cmd, 'the_void')
-  await refreshItem(item.iid)
-  scheduleInventoryRefresh(16)
+  const token = selectedFetchToken
+  sellingIid.value = item.iid
+  try {
+    await runCommand(cmd, 'the_void')
+    if (!active) {
+      return
+    }
+    await refreshItem(item.iid)
+    if (!active) {
+      return
+    }
+    scheduleInventoryRefresh(16)
 
-  selectedIid.value = {}
-  selectedItem.value = {}
-  minimumBid.value = ''
-  buyPrice.value = ''
-  sellAmount.value = ''
+    if (token === selectedFetchToken && selectedIid.value === item.iid) {
+      clearSelection()
+    }
+  } catch (error) {
+    if (active) {
+      showError(error.message || 'Unable to auction the item.')
+    }
+  } finally {
+    sellingIid.value = ''
+  }
 }
 
 let watchers = []
@@ -295,6 +350,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  active = false
   inventoryRefreshToken++
   selectedFetchToken++
   if (inventoryRefreshTimeout) {

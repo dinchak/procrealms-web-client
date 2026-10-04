@@ -124,7 +124,7 @@
           </div>
         </div>
         <div class="right">
-          <div class="number">{{ Math.abs(participant.position - meParticipant.position) || ''}}</div>
+          <div class="number">{{ getDistance(participant) }}</div>
         </div>
         <div class="right">
           <div class="number">{{ participant.movement || ''}}</div>
@@ -170,6 +170,7 @@ const {
 const { runCommand } = useWebSocket()
 
 const flashing = reactive({})
+const flashTimeouts = new Map()
 const watchers = []
 
 const meParticipant = computed(() => state.gameState.battle.participants[state.gameState.player.eid])
@@ -228,8 +229,8 @@ function hasEffects (participant) {
 }
 
 function getHp (participant) {
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity) {
     return entity.hp
   }
   return participant.hpPercent + '%'
@@ -241,8 +242,8 @@ function getHpClass (participant) {
 
 function getHpColor (participant) {
   let percent = 0
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity?.maxHp > 0) {
     percent = entity.hp / entity.maxHp
   } else {
     percent = participant.hpPercent / 100
@@ -255,8 +256,8 @@ function getEnergyClass (participant) {
 }
 
 function getEnergy (participant) {
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity) {
     return entity.energy
   }
   return participant.energyPercent + '%'
@@ -264,8 +265,8 @@ function getEnergy (participant) {
 
 function getEnergyColor (participant) {
   let percent = 0
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity?.maxEnergy > 0) {
     percent = entity.energy / entity.maxEnergy
   } else {
     percent = participant.energyPercent / 100
@@ -278,8 +279,8 @@ function getStaminaClass (participant) {
 }
 
 function getStamina (participant) {
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity) {
     return entity.stamina
   }
   return participant.staminaPercent + '%'
@@ -287,8 +288,8 @@ function getStamina (participant) {
 
 function getStaminaColor (participant) {
   let percent = 0
-  if (participant.side == 'good') {
-    let entity = getPartyEntity(participant)
+  const entity = getPartyEntity(participant)
+  if (participant.side == 'good' && entity?.maxStamina > 0) {
     percent = entity.stamina / entity.maxStamina
   } else {
     percent = participant.staminaPercent / 100
@@ -304,14 +305,19 @@ function getNextAction (participant) {
 }
 
 function getPartyEntity (participant) {
-  return state.gameState.party[participant.eid]
+  return state.gameState.party?.[participant.eid]
+}
+
+function getDistance (participant) {
+  const me = meParticipant.value
+  return me ? Math.abs(participant.position - me.position) || `` : ``
 }
 
 function getParticipantClass (participant) {
   let classes = ['participant']
   const battleParticipants = state.gameState.battle.participants
   let me = battleParticipants[state.gameState.player.eid]
-  if (me.targetEid === participant.eid) {
+  if (me?.targetEid === participant.eid) {
     classes.push('my-target')
   }
   if (isAlive(participant)) {
@@ -377,27 +383,33 @@ onMounted(() => {
           continue
         }
 
-        if (a.type === 'damage') {
-          flashing[a.eid] = 'damage'
-          setTimeout(() => {
-            if (flashing[a.eid] === 'damage') {
-              delete flashing[a.eid]
-            }
-          }, 2000)
-        } else if (a.type === 'healing') {
-          flashing[a.eid] = 'healing'
-          setTimeout(() => {
-            if (flashing[a.eid] === 'healing') {
-              delete flashing[a.eid]
-            }
-          }, 2000)
+        if (!['damage', 'healing'].includes(a.type)) {
+          continue
         }
+
+        const previous = flashTimeouts.get(a.eid)
+        if (previous !== undefined) {
+          clearTimeout(previous)
+        }
+        flashing[a.eid] = a.type
+        const timeout = setTimeout(() => {
+          if (flashTimeouts.get(a.eid) !== timeout) {
+            return
+          }
+          flashTimeouts.delete(a.eid)
+          delete flashing[a.eid]
+        }, 2000)
+        flashTimeouts.set(a.eid, timeout)
       }
     }
   ))
 })
 
 onBeforeUnmount(() => {
+  for (const timeout of flashTimeouts.values()) {
+    clearTimeout(timeout)
+  }
+  flashTimeouts.clear()
   for (const unwatch of watchers) {
     unwatch()
   }

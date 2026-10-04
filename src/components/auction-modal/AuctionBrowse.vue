@@ -191,7 +191,7 @@
         <NPagination
           simple
           v-model:page="page"
-          :page-count="state.auction.numPages"
+          :page-count="Math.max(1, state.auction.numPages || 0)"
           @update:page="updateAuctionList()"
         ></NPagination>
         <div class="auction-total">{{ state.auction.totalNumAuctions }} Auctions match your search</div>
@@ -200,8 +200,8 @@
 </template>
 <script setup>
 // @ts-check
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { state } from '@/static/state'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { state, showError } from '@/static/state'
 import { NGrid, NGi, NInput, NSelect, NInputNumber, NIcon, NButton, NCheckbox, NPagination, NPopselect } from 'naive-ui'
 
 import ItemDetails from '@/components/game-modal/ItemDetails.vue'
@@ -249,13 +249,25 @@ const sortDirOptions = [
   },
 ]
 
-const sort = ref('name')
-const sortDir = ref('asc')
+const sort = computed({
+  get: () => {
+    const value = state.auction.sort === 'endTime' ? 'ends' : state.auction.sort
+    return sortOptions.some(option => option.value === value) ? value : 'name'
+  },
+  set: value => { state.auction.sort = value }
+})
+const sortDir = computed({
+  get: () => state.auction.sortDir || 'asc',
+  set: value => { state.auction.sortDir = value }
+})
 
 const columns = ref(1)
 const bidAmount = ref('')
 const myAuctionsOnly = ref(false)
-const page = ref(1)
+const page = computed({
+  get: () => state.auction.page > 0 ? state.auction.page : 1,
+  set: value => { state.auction.page = value }
+})
 
 let searchUpdater = null
 let auctionFetchToken = 0
@@ -300,6 +312,12 @@ function updateAuctionList () {
 }
 
 function updateAuctionSearch () {
+  if (disposed) {
+    return
+  }
+
+  page.value = 1
+  clearSelection()
   const { search } = state.auction
   let cmd = `auction search`
 
@@ -349,6 +367,7 @@ function updateAuctionSearch () {
   }
 
   searchUpdater = setTimeout(() => {
+    page.value = 1
     updateAuctionList()
     searchUpdater = null
   }, 300)
@@ -357,13 +376,26 @@ function updateAuctionSearch () {
 }
 
 async function selectAuction (auction) {
+  if (disposed || !state.auction.auctions?.some(item => item.id === auction.id)) {
+    return
+  }
+
+  bidAmount.value = ''
   const token = ++auctionFetchToken
   state.auction.item = {}
   if (state.auction.selectedAuctionId == auction.id) {
     state.auction.selectedAuctionId = null
   } else {
     state.auction.selectedAuctionId = auction.id
-    const fetchedAuction = await fetchAuction(auction.id)
+    let fetchedAuction
+    try {
+      fetchedAuction = await fetchAuction(auction.id)
+    } catch (error) {
+      if (token === auctionFetchToken && !disposed) {
+        showError(error.message || 'Unable to load auction details.')
+      }
+      return
+    }
     if (token !== auctionFetchToken || disposed) {
       return
     }
@@ -371,6 +403,27 @@ async function selectAuction (auction) {
     state.auction.item = fetchedAuction?.item || {}
   }
 }
+
+function clearSelection () {
+  auctionFetchToken++
+  state.auction.selectedAuctionId = null
+  state.auction.item = {}
+  bidAmount.value = ''
+}
+
+watch(() => state.auction.auctions?.map(auction => auction.id).join('|') || '', () => {
+  if (state.auction.selectedAuctionId && !state.auction.auctions?.some(auction => auction.id === state.auction.selectedAuctionId)) {
+    clearSelection()
+  }
+})
+
+watch(() => [state.auction.page, state.auction.numPages], () => {
+  const lastPage = Math.max(1, state.auction.numPages || 0)
+  if (page.value > lastPage) {
+    page.value = lastPage
+    updateAuctionList()
+  }
+})
 
 function getItemTypes () {
   let types = ITEM_TYPES.map(t => ({ label: t, value: t }))

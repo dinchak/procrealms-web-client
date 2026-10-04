@@ -9,7 +9,12 @@ function auction () {
   const requests = []
   const commands = []
   const timers = new Map()
-  const state = { auction: { selectedAuctionId: null, item: {}, search: {} }, gameState: { player: {} } }
+  const state = reactive({
+    auction: {
+      auctions: [{ id: `first` }, { id: `second` }], page: 1, numPages: 1,
+      selectedAuctionId: null, item: {}, search: {}
+    }, gameState: { player: {} }
+  })
   const view = mountComponent(`../../src/components/auction-modal/AuctionBrowse.vue`, {
     state, ITEM_SUBTYPES: {}, useHelpers: () => ({}),
     useWebSocket: () => ({
@@ -41,8 +46,8 @@ test(`collapsing or closing auctions invalidates pending details and cancels del
   for (const close of [false, true]) {
     const view = auction()
     const pending = view.setup.selectAuction({ id: `first` })
-    view.setup.updateAuctionSearch()
     if (close) {
+      view.setup.updateAuctionSearch()
       view.app.unmount()
       assert.equal(view.timers.size, 0)
       const before = view.commands.length
@@ -50,6 +55,7 @@ test(`collapsing or closing auctions invalidates pending details and cancels del
       assert.equal(view.commands.length, before)
     } else {
       await view.setup.selectAuction({ id: `first` })
+      view.setup.updateAuctionSearch()
     }
     view.requests[0].resolve({ item: { iid: `late` } })
     await pending
