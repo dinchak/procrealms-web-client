@@ -28,6 +28,10 @@ export function cancelPendingRequests () {
 }
 
 export function useWebSocket () {
+  function isCurrentFetch (cache, socket) {
+    return state.cache === cache && state.websocketConnection === socket && socket?.readyState === 1
+  }
+
   function getDevelopmentMessageDelayMs () {
     if (!IS_DEVELOPMENT) {
       return 0
@@ -301,6 +305,8 @@ export function useWebSocket () {
   }
 
   async function fetchEntity (eid, skipCache) {
+    const cache = state.cache
+    const socket = state.websocketConnection
     incrementDiagnostic('cache', 'fetchEntityCalls')
 
     if (state.cache.entityCache[eid] && !skipCache) {
@@ -317,7 +323,14 @@ export function useWebSocket () {
       ({ msg } = await sendWithResponse('entity', { eid }, reqId))
     } catch (err) {
       handleFetchError('fetchEntityTimeouts', err, `entity:${eid}`)
+      if (!isCurrentFetch(cache, socket)) {
+        return null
+      }
       return state.cache.entityCache[eid] ? state.cache.entityCache[eid].entity : null
+    }
+
+    if (!isCurrentFetch(cache, socket)) {
+      return null
     }
 
     state.cache.entityCache[eid] = { entity: msg, date: Date.now() }
@@ -326,6 +339,8 @@ export function useWebSocket () {
   }
 
   async function fetchEntities (eids) {
+    const cache = state.cache
+    const socket = state.websocketConnection
     incrementDiagnostic('cache', 'fetchEntitiesCalls')
 
     const orderedEids = (eids || []).filter(eid => eid !== undefined && eid !== null)
@@ -348,10 +363,13 @@ export function useWebSocket () {
     }
 
     const batchKey = getBatchKey('entities', fetchEids)
-    if (!state.cache.inflightEntityRequests[batchKey]) {
+    if (!cache.inflightEntityRequests[batchKey]) {
       incrementDiagnostic('cache', 'fetchEntitiesBatchRequests')
-      state.cache.inflightEntityRequests[batchKey] = sendWithResponse('entities', { eids: fetchEids })
+      cache.inflightEntityRequests[batchKey] = sendWithResponse('entities', { eids: fetchEids })
         .then(({ msg }) => {
+          if (!isCurrentFetch(cache, socket)) {
+            return
+          }
           const entities = Array.isArray(msg) ? msg : []
           const now = Date.now()
 
@@ -371,7 +389,7 @@ export function useWebSocket () {
           pruneCacheByDate(state.cache.entityCache, CACHE_MAX_ENTITY_ENTRIES, 'entityCacheEvictions')
         })
         .finally(() => {
-          delete state.cache.inflightEntityRequests[batchKey]
+          delete cache.inflightEntityRequests[batchKey]
         })
     } else {
       incrementDiagnostic('cache', 'fetchEntitiesBatchDeduped')
@@ -379,9 +397,12 @@ export function useWebSocket () {
 
     const fetchStart = Date.now()
     try {
-      await state.cache.inflightEntityRequests[batchKey]
+      await cache.inflightEntityRequests[batchKey]
     } catch (err) {
       handleFetchError('fetchEntitiesTimeouts', err, `entities:${fetchEids.length}`)
+      if (!isCurrentFetch(cache, socket)) {
+        return []
+      }
       return orderedEids
         .map(eid => {
           return state.cache.entityCache[eid] ?
@@ -389,6 +410,10 @@ export function useWebSocket () {
             false
         })
         .filter(entity => entity)
+    }
+
+    if (!isCurrentFetch(cache, socket)) {
+      return []
     }
 
     incrementDiagnostic('cache', 'fetchEntitiesTotalMs', Date.now() - fetchStart)
@@ -403,6 +428,8 @@ export function useWebSocket () {
   }
 
   async function fetchItem (iid, skipCache = false)  {
+    const cache = state.cache
+    const socket = state.websocketConnection
     incrementDiagnostic('cache', 'fetchItemCalls')
 
     if (state.cache.itemCache[iid] && !skipCache) {
@@ -419,7 +446,14 @@ export function useWebSocket () {
       ({ msg } = await sendWithResponse('item', { iid }, reqId))
     } catch (err) {
       handleFetchError('fetchItemTimeouts', err, `item:${iid}`)
+      if (!isCurrentFetch(cache, socket)) {
+        return {}
+      }
       return state.cache.itemCache[iid] ? state.cache.itemCache[iid].item : {}
+    }
+
+    if (!isCurrentFetch(cache, socket)) {
+      return {}
     }
 
     if (msg.removed) {
@@ -432,6 +466,8 @@ export function useWebSocket () {
   }
 
   async function fetchItems (iids) {
+    const cache = state.cache
+    const socket = state.websocketConnection
     incrementDiagnostic('cache', 'fetchItemsCalls')
 
     const orderedIids = (iids || []).filter(iid => iid !== undefined && iid !== null)
@@ -454,10 +490,13 @@ export function useWebSocket () {
     }
 
     const batchKey = getBatchKey('items', fetchIids)
-    if (!state.cache.inflightItemRequests[batchKey]) {
+    if (!cache.inflightItemRequests[batchKey]) {
       incrementDiagnostic('cache', 'fetchItemsBatchRequests')
-      state.cache.inflightItemRequests[batchKey] = sendWithResponse('items', { iids: fetchIids })
+      cache.inflightItemRequests[batchKey] = sendWithResponse('items', { iids: fetchIids })
         .then(({ msg }) => {
+          if (!isCurrentFetch(cache, socket)) {
+            return
+          }
           const fetchedItems = Array.isArray(msg) ? msg : []
           const now = Date.now()
 
@@ -477,7 +516,7 @@ export function useWebSocket () {
           pruneCacheByDate(state.cache.itemCache, CACHE_MAX_ITEM_ENTRIES, 'itemCacheEvictions')
         })
         .finally(() => {
-          delete state.cache.inflightItemRequests[batchKey]
+          delete cache.inflightItemRequests[batchKey]
         })
     } else {
       incrementDiagnostic('cache', 'fetchItemsBatchDeduped')
@@ -485,9 +524,12 @@ export function useWebSocket () {
 
     const fetchStart = Date.now()
     try {
-      await state.cache.inflightItemRequests[batchKey]
+      await cache.inflightItemRequests[batchKey]
     } catch (err) {
       handleFetchError('fetchItemsTimeouts', err, `items:${fetchIids.length}`)
+      if (!isCurrentFetch(cache, socket)) {
+        return []
+      }
       return orderedIids
         .map(iid => {
           return state.cache.itemCache[iid] ?
@@ -495,6 +537,10 @@ export function useWebSocket () {
             false
         })
         .filter(item => item)
+    }
+
+    if (!isCurrentFetch(cache, socket)) {
+      return []
     }
 
     incrementDiagnostic('cache', 'fetchItemsTotalMs', Date.now() - fetchStart)
@@ -509,6 +555,8 @@ export function useWebSocket () {
   }
 
   async function fetchAuction (id)  {
+    const cache = state.cache
+    const socket = state.websocketConnection
     const cached = state.cache.auctionCache[id]
     if (cached && Date.now() - cached.date < CACHE_DELETE_TIME) {
       return state.cache.auctionCache[id].auction
@@ -516,11 +564,23 @@ export function useWebSocket () {
 
     delete state.cache.auctionCache[id]
 
-    let { msg } = await sendWithResponse('auction', { id }, `auction-${id}`)
-    if (msg) {
-      state.cache.auctionCache[id] = { auction: msg, date: Date.now() }
-      pruneCacheByDate(state.cache.auctionCache, CACHE_MAX_AUCTION_ENTRIES, `auctionCacheEvictions`)
+    let response
+    try {
+      response = await sendWithResponse('auction', { id }, `auction-${id}`)
+    } catch (err) {
+      handleFetchError(`fetchAuctionTimeouts`, err, `auction:${id}`)
+      return null
     }
+    if (!isCurrentFetch(cache, socket)) {
+      return null
+    }
+
+    const { cmd, msg } = response
+    if (cmd !== `auction` || !msg || typeof msg !== `object` || msg.id !== id || !msg.item) {
+      return null
+    }
+    state.cache.auctionCache[id] = { auction: msg, date: Date.now() }
+    pruneCacheByDate(state.cache.auctionCache, CACHE_MAX_AUCTION_ENTRIES, `auctionCacheEvictions`)
     return msg
   }
 

@@ -60,6 +60,19 @@ test(`collapsing or closing auctions invalidates pending details and cancels del
   }
 })
 
+test(`auction searches use numeric defaults for cleared bounds and allow one exact level`, () => {
+  const view = auction()
+  try {
+    for (const [minLevel, maxLevel, range] of [[null, 20, `1-20`], [20, null, `20-100`], [10, 10, `10-10`]]) {
+      view.state.auction.search = { minLevel, maxLevel }
+      view.setup.updateAuctionSearch()
+      assert.equal(view.commands.at(-1), `auction search ${range}`)
+    }
+  } finally {
+    view.app.unmount()
+  }
+})
+
 function mercenaryOrders () {
   const timers = new Map()
   const requests = []

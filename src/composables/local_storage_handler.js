@@ -1,3 +1,4 @@
+// @ts-check
 import { DEFAULT_TERMINAL_SIZE } from '@/static/constants'
 import { incrementPerformanceDiagnostic, state } from '@/static/state'
 import { resetInputMappings } from '@/static/input_mappings'
@@ -70,7 +71,10 @@ export function useLocalStorageHandler () {
         state.inputMappings = resetInputMappings()
         return
       }
-      state.inputMappings = JSON.parse(json)
+      const mappings = JSON.parse(json)
+      state.inputMappings = Array.isArray(mappings)
+        ? mappings.filter(mapping => mapping && typeof mapping === `object` && Array.isArray(mapping.bindings))
+        : resetInputMappings()
     } catch {
       state.inputMappings = resetInputMappings()
     }
@@ -82,7 +86,11 @@ export function useLocalStorageHandler () {
       if (!json) {
         return []
       }
-      return JSON.parse(json)
+      const tokens = JSON.parse(json)
+      if (!Array.isArray(tokens)) {
+        return []
+      }
+      return tokens.filter(token => token && typeof token.name === `string` && token.name.trim() && typeof token.token === `string` && token.token.trim())
     } catch {
       return []
     }

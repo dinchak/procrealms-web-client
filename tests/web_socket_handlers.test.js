@@ -87,3 +87,17 @@ test(`inherited object properties are not treated as protocol handlers`, () => {
   const view = createHandlers()
   assert.doesNotThrow(() => view.api.onWebSocketEvent(`__defineGetter__`, {}))
 })
+
+test(`unique item command responses keep the shared item output destination`, () => {
+  const view = createHandlers()
+  const responses = []
+  for (const request of [`first`, `second`]) {
+    view.state.pendingRequests[`inventory-output-sword:${request}`] = {
+      resolve: (cmd, msg) => responses.push(msg)
+    }
+  }
+  view.api.onWebSocketEvent(`out`, `worn`, `inventory-output-sword:first`)
+  view.api.onWebSocketEvent(`out`, `dropped`, `inventory-output-sword:second`)
+  assert.deepEqual(view.state.inventoryOutput, { [`inventory-output-sword`]: `worndropped` })
+  assert.deepEqual(responses, [`worn`, `dropped`])
+})

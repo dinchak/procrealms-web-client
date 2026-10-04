@@ -16,12 +16,13 @@ function createSocket () {
   }
   const state = {
     websocketConnection: null, pendingRequests: {},
-    cache: { commandCache: {}, itemCache: {}, entityCache: {}, inflightItemRequests: {}, inflightEntityRequests: {} }
+    cache: freshCache()
   }
   const api = loadRuntimeModule(`../../src/composables/web_socket.js`, {
     state, updateCounter: { value: 0 }, addLine () {}, nanoid: () => `req-${sequence++}`,
     window: { WebSocket: Socket }, testEnvironment: { MODE: `production` },
     CACHE_MAX_COMMAND_ENTRIES: 100, CACHE_MAX_ENTITY_ENTRIES: 100, CACHE_MAX_ITEM_ENTRIES: 100,
+    CACHE_MAX_AUCTION_ENTRIES: 3, CACHE_DELETE_TIME: 1200000,
     onWebSocketEvent: (...args) => events.push(args),
     setTimeout: callback => { const id = sequence++; timers.set(id, callback); return id },
     clearTimeout: id => timers.delete(id)
@@ -29,6 +30,10 @@ function createSocket () {
   const client = api.useWebSocket()
   client.initConnection({ onConnect () {}, onClose () {}, url: `ws://test` })
   return { state, client, api, sockets, events, timers }
+}
+
+function freshCache () {
+  return { commandCache: {}, itemCache: {}, entityCache: {}, auctionCache: {}, inflightItemRequests: {}, inflightEntityRequests: {} }
 }
 
 test(`requests sharing an ID send once and settle without retaining timeouts`, async () => {
@@ -83,4 +88,107 @@ test(`queued messages from an old connection cannot update the new session`, asy
   view.sockets[1].onmessage({ data: JSON.stringify({ cmd: `out`, msg: `current` }) })
   await nextTurn()
   assert.deepEqual(view.events, [[`out`, `current`]])
+})
+
+test(`resolved detail requests cannot repopulate a replacement session's cache`, async () => {
+  for (const [method, cmd, id, payload, empty] of [
+    [`fetchItem`, `item`, `sword`, { iid: `sword` }, {}],
+    [`fetchEntity`, `entity`, `hero`, { eid: `hero` }, null],
+    [`fetchAuction`, `auction`, 1, { id: 1, item: { iid: `sword` } }, null]
+  ]) {
+    const view = createSocket()
+    const pending = view.client[method](id)
+    const request = view.sockets[0].sent.at(-1)
+    view.state.pendingRequests[request.reqId].resolve(cmd, payload)
+    view.client.initConnection({ onConnect () {}, onClose () {}, url: `ws://replacement` })
+    view.state.cache = freshCache()
+    assert.deepEqual(await pending, empty)
+    assert.deepEqual(view.state.cache, freshCache())
+  }
+})
+
+test(`old batch completion cannot overwrite cache or erase the new session's inflight request`, async () => {
+  for (const [method, cmd, id, payload, inflight] of [
+    [`fetchItems`, `items`, `sword`, [{ iid: `sword` }], `inflightItemRequests`],
+    [`fetchEntities`, `entities`, `hero`, [{ eid: `hero` }], `inflightEntityRequests`]
+  ]) {
+    const view = createSocket()
+    const old = view.client[method]([id])
+    const oldRequest = view.sockets[0].sent.at(-1)
+    view.state.pendingRequests[oldRequest.reqId].resolve(cmd, payload)
+    view.client.initConnection({ onConnect () {}, onClose () {}, url: `ws://replacement` })
+    view.state.cache = freshCache()
+    const current = view.client[method]([id])
+    const currentRequest = view.sockets[1].sent.at(-1)
+    const inflightRequest = Object.values(view.state.cache[inflight])[0]
+    assert.deepEqual(await old, [])
+    assert.equal(Object.values(view.state.cache[inflight])[0], inflightRequest)
+    view.state.pendingRequests[currentRequest.reqId].resolve(cmd, payload)
+    assert.deepEqual(await current, payload)
+  }
+})
+
+test(`an auction error response cannot be cached as auction details`, async () => {
+  const view = createSocket()
+  const pending = view.client.fetchAuction(1)
+  const request = view.sockets[0].sent.at(-1)
+  view.state.pendingRequests[request.reqId].resolve(`out`, `Invalid auction ID.`)
+  assert.equal(await pending, null)
+  assert.deepEqual(view.state.cache.auctionCache, {})
+})
+
+test(`a resolved request is ignored if its socket closes before the fetch continuation`, async () => {
+  const view = createSocket()
+  const pending = view.client.fetchItem(`sword`)
+  const request = view.sockets[0].sent.at(-1)
+  view.state.pendingRequests[request.reqId].resolve(`item`, { iid: `sword` })
+  view.sockets[0].readyState = 3
+  view.sockets[0].onclose({})
+  assert.deepEqual(await pending, {})
+  assert.deepEqual(view.state.cache.itemCache, {})
+})
+
+test(`overlapping item commands send separately and resolve their own responses`, async () => {
+  const view = createSocket()
+  const first = view.client.runCommand(`wear iid:sword`, `inventory-output-sword`)
+  const second = view.client.runCommand(`drop iid:sword`, `inventory-output-sword`)
+  assert.equal(view.sockets[0].sent.length, 2)
+  const [one, two] = view.sockets[0].sent
+  assert.notEqual(one.reqId, two.reqId)
+  view.state.pendingRequests[two.reqId].resolve(`out`, `dropped`)
+  view.state.pendingRequests[one.reqId].resolve(`out`, `worn`)
+  assert.equal((await first).msg, `worn`)
+  assert.equal((await second).msg, `dropped`)
+  assert.equal(view.timers.size, 0)
+})
+
+test(`auction cache is bounded and expired details are refreshed`, async () => {
+  const view = createSocket()
+  for (let id = 1; id <= 5; id++) {
+    const pending = view.client.fetchAuction(id)
+    const request = view.sockets[0].sent.at(-1)
+    view.state.pendingRequests[request.reqId].resolve(`auction`, { id, item: { iid: `item-${id}` } })
+    await pending
+  }
+  assert.deepEqual(Object.keys(view.state.cache.auctionCache), [`3`, `4`, `5`])
+  view.state.cache.auctionCache[5].date = Date.now() - 1200001
+  const pending = view.client.fetchAuction(5)
+  assert.equal(view.sockets[0].sent.length, 6)
+  const request = view.sockets[0].sent.at(-1)
+  view.state.pendingRequests[request.reqId].resolve(`auction`, { id: 5, item: { iid: `updated` } })
+  assert.equal((await pending).item.iid, `updated`)
+})
+
+test(`auction timeouts settle safely and allow a later retry`, async () => {
+  const view = createSocket()
+  const pending = view.client.fetchAuction(1)
+  for (const callback of [...view.timers.values()]) {
+    callback()
+  }
+  assert.equal(await pending, null)
+  assert.deepEqual(view.state.pendingRequests, {})
+  const retry = view.client.fetchAuction(1)
+  const request = view.sockets[0].sent.at(-1)
+  view.state.pendingRequests[request.reqId].resolve(`auction`, { id: 1, item: { iid: `sword` } })
+  assert.equal((await retry).id, 1)
 })

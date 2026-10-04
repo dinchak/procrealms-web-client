@@ -334,14 +334,14 @@ function updateAuctionSearch () {
     cmd += ` "${search.name}"`
   }
 
-  let minLevel = parseInt(search.minLevel, 10) || 0
+  let minLevel = parseInt(search.minLevel, 10) || 1
   let maxLevel = parseInt(search.maxLevel, 10) || 100
   if (
     typeof minLevel === 'number' &&
     typeof maxLevel === 'number' &&
-    minLevel < maxLevel
+    minLevel <= maxLevel
   ) {
-    cmd += ` ${search.minLevel}-${search.maxLevel}`
+    cmd += ` ${minLevel}-${maxLevel}`
   }
 
   if (searchUpdater) {
