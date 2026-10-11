@@ -1,3 +1,4 @@
+// @ts-check
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { prevMode, setMode, state } from '@/static/state'
 
@@ -186,6 +187,17 @@ export function useHudPopup (rootElement, getPopupKeys = null) {
     closePinned()
   }
 
+  function toggleFocusedPopup () {
+    if (hasBlockingModalOpen()) {
+      return
+    }
+
+    const target = document.activeElement?.closest?.(`.hud-popup-trigger`)
+    if ([...elementsByKey.values()].includes(target)) {
+      target.click()
+    }
+  }
+
   // Returns true if the popup was shown, false if blocked by a pinned popup.
   function showPopup (key, event) {
     if (hasPinnedPopup()) {
@@ -241,12 +253,14 @@ export function useHudPopup (rootElement, getPopupKeys = null) {
     window.addEventListener('resize', updatePopupPosition)
     window.addEventListener('scroll', updatePopupPosition, true)
     state.inputEmitter.on('closeModal', onCloseModal)
+    state.inputEmitter.on(`toggleHudPopup`, toggleFocusedPopup)
   })
 
   onBeforeUnmount(() => {
     window.removeEventListener('resize', updatePopupPosition)
     window.removeEventListener('scroll', updatePopupPosition, true)
     state.inputEmitter.off('closeModal', onCloseModal)
+    state.inputEmitter.off(`toggleHudPopup`, toggleFocusedPopup)
     restoreModalMode()
   })
 

@@ -28,7 +28,7 @@
 
                 <div class="search-help">
                   <NInputGroup>
-                    <NInput placeholder="Search Help" v-model:value="searchFilter" @keydown.enter="searchHelp"></NInput>
+                    <NInput class="help-search-input" placeholder="Search Help" v-model:value="searchFilter"></NInput>
                     <NButton @click="searchHelp">Search</NButton>
                   </NInputGroup>
                 </div>
@@ -233,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from 'vue'
+import { ref, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import { NTabs, NTabPane, NInput, NButton, NInputGroup } from 'naive-ui'
 import stripAnsi from 'strip-ansi'
 
@@ -382,10 +382,12 @@ function getScrollContainerClass (miniOutputEnabled) {
 }
 
 function onModalClosed () {
+  state.inputEmitter.off(`searchHelp`, searchHelp)
   state.gamepadHelpTab = currentPane.value
 }
 
 function onModalOpened () {
+  state.inputEmitter.on(`searchHelp`, searchHelp)
   currentPane.value = state.gamepadHelpTab || "topics"
 }
 
@@ -442,6 +444,10 @@ onMounted(() => {
         })
       })
     }))
+})
+
+onBeforeUnmount(() => {
+  state.inputEmitter.off(`searchHelp`, searchHelp)
 })
 
 </script>

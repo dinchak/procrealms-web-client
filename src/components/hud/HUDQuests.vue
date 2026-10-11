@@ -15,8 +15,6 @@
           @mouseenter="showQuestDetail(quest, $event)"
           @mouseleave="hideQuestDetail(quest)"
           @click.stop="toggleQuestDetail(quest, $event)"
-          @keydown.enter.prevent="toggleQuestDetail(quest, $event)"
-          @keydown.space.prevent="toggleQuestDetail(quest, $event)"
         ></div>
 
         <NProgress
@@ -93,6 +91,7 @@ function getQuestNameClass (quest) {
   return {
     name: true,
     selectable: true,
+    'hud-popup-trigger': true,
     'popup-open': getActiveQuestKey() === getQuestKey(quest),
     pinned: pinnedQuestKey.value === getQuestKey(quest)
   }

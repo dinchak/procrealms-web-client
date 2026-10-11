@@ -30,6 +30,7 @@
 </template>
 
 <script setup>
+// @ts-check
 import { state } from '@/static/state'
 
 import { useHelpers } from '@/composables/helpers'
@@ -38,25 +39,27 @@ import { useWebSocket } from '@/composables/web_socket'
 const { range, ansiToHtml } = useHelpers()
 const { runCommand } = useWebSocket()
 
-function getPositionLabel(position) {
+function getPositionLabel (position) {
   if (state.options.battleRelativePositions) {
     let me = state.gameState.battle.participants[state.gameState.player.eid]
-    return position - me.position
+    if (me) {
+      return position - me.position
+    }
   }
 
   return position
 }
-function getTag(participant) {
+function getTag (participant) {
   let me = state.gameState.battle.participants[state.gameState.player.eid]
-  if (me.eid === participant.eid) {
+  if (me?.eid === participant.eid) {
     return "You"
   }
   return participant.tag
 }
 
-function isMyTarget(participant) {
+function isMyTarget (participant) {
   let me = state.gameState.battle.participants[state.gameState.player.eid]
-  return me.targetEid === participant.eid
+  return me?.targetEid === participant.eid
 }
 
 function getParticipants (position) {

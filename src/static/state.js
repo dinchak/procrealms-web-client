@@ -82,6 +82,7 @@ export const state = reactive({
   unseenMessageCount: {},
 
   animations: [],
+  animationTimeouts: new Set(),
   nextAnimationDelay: 0,
 
   soundQueue: null,
@@ -219,6 +220,10 @@ export function resetState () {
   state.trade = []
   state.newbie = []
   state.animations = []
+  for (const timeout of state.animationTimeouts) {
+    clearTimeout(timeout)
+  }
+  state.animationTimeouts.clear()
   state.nextAnimationDelay = 0
   clearTimeout(state.moveTimeout)
   state.moveTimeout = null

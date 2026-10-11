@@ -22,8 +22,6 @@
         @mouseenter="showItemPopup(item, $event)"
         @mouseleave="hideItemPopup(item)"
         @click.stop="toggleItemPopup(item, $event)"
-        @keydown.enter.prevent="toggleItemPopup(item, $event)"
-        @keydown.space.prevent="toggleItemPopup(item, $event)"
       ></div>
       <div v-if="getHiddenRoomItemCount()" class="item-more">
         {{ getHiddenRoomItemCount() }} more items. Type <span class="cyan">look items</span> to list them.
@@ -93,6 +91,7 @@ function getItemClass (item) {
   return {
     item: true,
     selectable: true,
+    'hud-popup-trigger': true,
     'popup-open': getActivePopupIid() === item.iid,
     pinned: pinnedIid.value === item.iid
   }

@@ -186,6 +186,15 @@ export function useWebSocket () {
     state.websocketConnection = null
     state.connected = false
     cancelPendingRequests()
+    clearTimeout(state.stateResyncTimeout)
+    state.stateResyncTimeout = null
+    state.stateResyncPending = false
+    for (const timeout of state.animationTimeouts || []) {
+      clearTimeout(timeout)
+    }
+    state.animationTimeouts?.clear()
+    state.animations = []
+    state.nextAnimationDelay = 0
     if (socket) {
       socket.onopen = null
       socket.onclose = null
@@ -195,6 +204,9 @@ export function useWebSocket () {
   }
 
   function send (cmd, msg) {
+    if (!state.websocketConnection || state.websocketConnection.readyState !== 1) {
+      return
+    }
     let out = { cmd, msg }
 
     if (IS_DEVELOPMENT) {

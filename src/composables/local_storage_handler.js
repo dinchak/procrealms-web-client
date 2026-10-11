@@ -72,9 +72,18 @@ export function useLocalStorageHandler () {
         return
       }
       const mappings = JSON.parse(json)
-      state.inputMappings = Array.isArray(mappings)
+      const savedMappings = Array.isArray(mappings)
         ? mappings.filter(mapping => mapping && typeof mapping === `object` && Array.isArray(mapping.bindings))
         : resetInputMappings()
+      if (!savedMappings.length) {
+        state.inputMappings = savedMappings
+        return
+      }
+      const savedEvents = new Set(savedMappings.map(mapping => mapping.event))
+      state.inputMappings = [
+        ...savedMappings,
+        ...resetInputMappings().filter(mapping => !savedEvents.has(mapping.event))
+      ]
     } catch {
       state.inputMappings = resetInputMappings()
     }

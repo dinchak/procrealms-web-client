@@ -55,6 +55,9 @@
             </div>
 
           </div>
+          <div class="trade-actions">
+            <NButton ghost type="error" class="selectable" @click="sellAll">Sell All</NButton>
+          </div>
           <div class="player-inventory">
             <div v-for="item in playerItems" :key="item.iid" class="item-row">
               <div :class="itemClass('player', item.iid)">
@@ -71,8 +74,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { NPopselect } from 'naive-ui'
+import { onBeforeUnmount, ref, watch } from 'vue'
+import { NButton, NPopselect } from 'naive-ui'
 import { incrementUiDiagnostic, state, updateCounter } from '@/static/state'
 
 import GameModal from '@/components/modals/GameModal.vue'
@@ -362,6 +365,18 @@ function getSellActions (iid) {
   return actions
 }
 
+async function sellAll () {
+  await runCommand(`sell all`, `the_void`)
+  updateItemList()
+}
+
+function onTradeSellAll () {
+  if (!state.modals.tradeModal || state.modeOwner !== `tradeModal`) {
+    return
+  }
+  sellAll()
+}
+
 function updateItemList () {
   let cmd = `list`
   if (onlyUsableItems.value) {
@@ -371,6 +386,7 @@ function updateItemList () {
 }
 
 function onModalOpened () {
+  state.inputEmitter.on(`tradeSellAll`, onTradeSellAll)
   state.shop.shopkeeper = ''
   state.shop.items = []
 
@@ -380,7 +396,7 @@ function onModalOpened () {
     scheduleShopRefresh(16)
   }, { immediate: true }))
 
-  watchers.push(watch(() => state.shop.shopkeeper, async newShopkeeperId => {
+  watchers.push(watch(() => state.shop.shopkeeper, newShopkeeperId => {
     if (!newShopkeeperId) {
       shopkeeperFetchToken++
       shopkeeper.value = { name: 'Loading...' }
@@ -400,6 +416,7 @@ function onModalOpened () {
 }
 
 function onModalClosed () {
+  state.inputEmitter.off(`tradeSellAll`, onTradeSellAll)
   watchers.forEach(unwatch => unwatch())
   watchers = []
 
@@ -479,12 +496,20 @@ function sortShopkeeperItems (items) {
   return sortItemsByKey(items, shopkeeperSortValue.value)
 }
 
+onBeforeUnmount(() => {
+  state.inputEmitter.off(`tradeSellAll`, onTradeSellAll)
+})
+
 </script>
 
 <style lang="less" scoped>
 .trade-container {
   max-width: 850px;
   margin: 0 auto;
+
+  .trade-actions {
+    margin-bottom: 10px;
+  }
 
   .trade-columns {
     display: flex;

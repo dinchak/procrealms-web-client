@@ -59,6 +59,25 @@ test(`disconnect rejects pending requests immediately and removes timers`, async
   assert.deepEqual(view.state.pendingRequests, {})
 })
 
+test(`explicit close cancels animation playback and state retries without requiring an onclose callback`, () => {
+  const view = createSocket()
+  view.state.animationTimeouts = new Set([90, 91])
+  view.timers.set(90, () => {})
+  view.timers.set(91, () => {})
+  view.timers.set(92, () => {})
+  view.state.stateResyncTimeout = 92
+  view.state.stateResyncPending = true
+  view.state.animations = [{ key: 1 }]
+  view.state.nextAnimationDelay = 10000
+  view.client.closeConnection()
+  assert.equal(view.timers.size, 0)
+  assert.equal(view.state.animationTimeouts.size, 0)
+  assert.equal(view.state.stateResyncPending, false)
+  assert.equal(view.state.nextAnimationDelay, 0)
+  assert.deepEqual(view.state.animations, [])
+  assert.doesNotThrow(() => view.client.send(`cmd`, `look`))
+})
+
 test(`send failures reject the response promise without leaking a request`, async () => {
   const view = createSocket()
   view.sockets[0].send = () => { throw new Error(`socket failed`) }

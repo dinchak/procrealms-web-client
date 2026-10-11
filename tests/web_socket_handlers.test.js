@@ -19,7 +19,7 @@ function createHandlers () {
     state, applyStateUpdate, invalidateStateCaches,
     incrementPerformanceDiagnostic () {}, addLine () {}, setMode () {}, processTriggersBatch () {},
     playMessageSound () {}, playTrackByName () {},
-    useHelpers: () => ({ ansiToHtml: value => value, getTellMessageFrom: message => (message.from === `You` ? message.to : message.from) }),
+    useHelpers: () => ({ ansiToHtml: value => value, strToLines: value => [value], getTellMessageFrom: message => (message.from === `You` ? message.to : message.from) }),
     setTimeout: (callback, delay) => { const id = sequence++; timers.set(id, { callback, at: now + delay }); return id },
     clearTimeout: id => timers.delete(id)
   }, [`onWebSocketEvent`])
@@ -100,4 +100,64 @@ test(`unique item command responses keep the shared item output destination`, ()
   view.api.onWebSocketEvent(`out`, `dropped`, `inventory-output-sword:second`)
   assert.deepEqual(view.state.inventoryOutput, { [`inventory-output-sword`]: `worndropped` })
   assert.deepEqual(responses, [`worn`, `dropped`])
+})
+
+test(`combat bursts keep animation callbacks bounded and release every completed timer`, () => {
+  const view = createHandlers()
+  for (let i = 0; i < 10000; i++) {
+    view.api.onWebSocketEvent(`entity.attack`, { target: `hero`, amount: 1 })
+  }
+  assert.equal(view.timers.size, 50)
+  assert.equal(view.state.animationTimeouts.size, 50)
+  assert.equal(view.state.nextAnimationDelay, 10000)
+  view.advance(15000)
+  assert.equal(view.timers.size, 0)
+  assert.equal(view.state.animationTimeouts.size, 0)
+  assert.equal(view.state.nextAnimationDelay, 0)
+  assert.deepEqual(view.state.animations, [])
+})
+
+test(`item output evicts old destinations, keeps recently updated items, and bounds retained text`, () => {
+  const view = createHandlers()
+  for (let i = 0; i < 100; i++) {
+    view.api.onWebSocketEvent(`out`, `initial`, `inventory-output-${i}:request`)
+  }
+  view.api.onWebSocketEvent(`out`, `latest`, `inventory-output-0:request`)
+  view.api.onWebSocketEvent(`out`, `new`, `inventory-output-100:request`)
+  assert.equal(Object.keys(view.state.inventoryOutput).length, 100)
+  assert.equal(view.state.inventoryOutput[`inventory-output-0`], `initiallatest`)
+  assert.equal(view.state.inventoryOutput[`inventory-output-1`], undefined)
+  view.api.onWebSocketEvent(`out`, `x`.repeat(65536) + `tail`, `inventory-output-0:request`)
+  assert.equal(view.state.inventoryOutput[`inventory-output-0`].length, 32768)
+  assert.ok(view.state.inventoryOutput[`inventory-output-0`].endsWith(`tail`))
+  view.api.onWebSocketEvent(`item`, { iid: `0` }, `inventory-output-0:request`)
+  assert.ok(view.state.inventoryOutput[`inventory-output-0`].endsWith(`tail`))
+})
+
+test(`resync retries stop when the socket closes and can restart on a new connection`, () => {
+  const view = createHandlers()
+  const messages = []
+  view.state.websocketConnection.send = message => messages.push(JSON.parse(message))
+  const badPatch = { patch: [], baseVersion: 99, version: 100 }
+  view.api.onWebSocketEvent(`state.patch`, badPatch)
+  assert.equal(messages.length, 1)
+  assert.equal(view.timers.size, 1)
+  view.state.websocketConnection.readyState = 3
+  view.advance(2000)
+  assert.equal(view.timers.size, 0)
+  assert.equal(view.state.stateResyncPending, false)
+  view.state.websocketConnection = { readyState: 1, send: message => messages.push(JSON.parse(message)) }
+  view.api.onWebSocketEvent(`state.patch`, badPatch)
+  assert.equal(messages.length, 2)
+  view.api.onWebSocketEvent(`state.patch`, { full: true, version: 101, patch: [{ op: `replace`, path: ``, value: {} }] })
+  assert.equal(view.timers.size, 0)
+  assert.equal(view.state.stateResyncPending, false)
+})
+
+test(`a failed resync send releases pending state so a future update can retry`, () => {
+  const view = createHandlers()
+  view.state.websocketConnection.send = () => { throw new Error(`closed during send`) }
+  view.api.onWebSocketEvent(`state.patch`, { patch: [], baseVersion: 99, version: 100 })
+  assert.equal(view.state.stateResyncPending, false)
+  assert.equal(view.timers.size, 0)
 })

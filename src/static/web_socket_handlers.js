@@ -12,6 +12,7 @@ const MESSAGE_BUFFER_LIMITS = {
   max: 800,
   trimTo: 600,
 }
+const ITEM_OUTPUT_LIMITS = { maxEntries: 100, maxCharacters: 32768 }
 
 function getMessageChannelKey ({ from, to, channel }) {
   if (channel == 'tell') {
@@ -61,12 +62,16 @@ export function onWebSocketEvent (cmd, msg, reqId) {
     return
   }
 
-  if (reqId && reqId.startsWith('inventory-output-')) {
+  if (cmd === `out` && typeof msg === `string` && reqId && reqId.startsWith('inventory-output-')) {
     const outputId = reqId.split(`:`)[0]
-    if (!state.inventoryOutput[outputId]) {
-      state.inventoryOutput[outputId] = ''
+    const output = (state.inventoryOutput[outputId] || ``) + msg
+    // Reinsert to evict the least recently updated item output first.
+    delete state.inventoryOutput[outputId]
+    state.inventoryOutput[outputId] = output.slice(-ITEM_OUTPUT_LIMITS.maxCharacters)
+    const keys = Object.keys(state.inventoryOutput)
+    for (const key of keys.slice(0, Math.max(0, keys.length - ITEM_OUTPUT_LIMITS.maxEntries))) {
+      delete state.inventoryOutput[key]
     }
-    state.inventoryOutput[outputId] += msg
   }
 
   if (state.pendingRequests[reqId] && reqId != 'the_void') {
@@ -85,21 +90,34 @@ export function onWebSocketEvent (cmd, msg, reqId) {
 
 function enqueueAnimation (animation) {
   const socket = state.websocketConnection
+  // Keep bursts within ten seconds of playback instead of retaining an unlimited backlog.
+  if (socket?.readyState !== 1 || state.nextAnimationDelay >= 10000) {
+    return
+  }
   const wait = state.nextAnimationDelay
   state.nextAnimationDelay += 200
-  setTimeout(() => {
+  scheduleAnimationTimeout(() => {
     if (state.websocketConnection !== socket || socket?.readyState !== 1) {
       return
     }
     state.nextAnimationDelay = Math.max(0, state.nextAnimationDelay - 200)
     state.animations.push(animation)
-    setTimeout(() => {
+    scheduleAnimationTimeout(() => {
       if (state.websocketConnection !== socket) {
         return
       }
       state.animations = state.animations.filter(entry => entry.key !== animation.key)
     }, 2000)
   }, wait)
+}
+
+function scheduleAnimationTimeout (callback, delay) {
+  const timeouts = state.animationTimeouts || (state.animationTimeouts = new Set())
+  const timeout = setTimeout(() => {
+    timeouts.delete(timeout)
+    callback()
+  }, delay)
+  timeouts.add(timeout)
 }
 
 function requestStateResync () {
@@ -112,8 +130,17 @@ function requestStateResync () {
     if (!state.stateResyncPending) {
       return
     }
-    if (state.websocketConnection?.readyState === 1) {
+    if (state.websocketConnection?.readyState !== 1) {
+      state.stateResyncPending = false
+      state.stateResyncTimeout = null
+      return
+    }
+    try {
       state.websocketConnection.send(JSON.stringify({ cmd: 'state', msg: {} }))
+    } catch {
+      state.stateResyncPending = false
+      state.stateResyncTimeout = null
+      return
     }
     // Requests arriving during an area handoff may be dropped; retry until a full state arrives.
     state.stateResyncTimeout = setTimeout(retry, 2000)
@@ -124,7 +151,7 @@ function requestStateResync () {
 const webSocketHandlers = {
   'state.patch': message => {
     const { patch, full } = message
-    incrementPerformanceDiagnostic('websocketPatchOperations', patch.length)
+    incrementPerformanceDiagnostic('websocketPatchOperations', Array.isArray(patch) ? patch.length : 0)
 
     if (state.stateResyncPending && !full) {
       return

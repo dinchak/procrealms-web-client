@@ -265,7 +265,7 @@ const columns = ref(1)
 const bidAmount = ref('')
 const myAuctionsOnly = ref(false)
 const page = computed({
-  get: () => state.auction.page > 0 ? state.auction.page : 1,
+  get: () => (state.auction.page > 0 ? state.auction.page : 1),
   set: value => { state.auction.page = value }
 })
 

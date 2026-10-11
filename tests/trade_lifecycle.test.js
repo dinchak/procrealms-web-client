@@ -1,5 +1,6 @@
 // @ts-check
 import assert from 'node:assert/strict'
+import { EventEmitter } from 'node:events'
 import { test } from 'node:test'
 import { nextTick, reactive, ref } from 'vue'
 import { getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey } from '../src/composables/inventory_helpers.js'
@@ -17,11 +18,11 @@ function trade (renderTemplate = false) {
   const state = reactive({
     shop: { items: [], shopkeeper: ``, prices: [] }, modals: { tradeModal: true },
     gameState: { inventory: [], player: { money: 100 }, charmies: { merc: { items: [] } } },
-    inventorySortValue: `name`, playerModalAs: `merc`
+    inventorySortValue: `name`, playerModalAs: `merc`, inputEmitter: new EventEmitter()
   })
   const view = mountComponent(`../../src/components/modals/TradeModal.vue`, {
     state, updateCounter: ref(0), incrementUiDiagnostic () {},
-    GameModal: Slot, NPopselect: Slot, ItemDetails: Slot,
+    GameModal: Slot, NButton: Slot, NPopselect: Slot, ItemDetails: Slot,
     getInventorySignature, mergeInventorySourceWithFetchedItems, sortItemsByKey,
     useHelpers: () => ({
       ansiToHtml: text => text, copperToMoneyString: String,
@@ -29,7 +30,7 @@ function trade (renderTemplate = false) {
       getActions: (item, context) => { actionContexts.push(context); return [{ label: `Examine` }] }
     }),
     useWebSocket: () => ({
-      runCommand () {}, fetchItem: async iid => ({ iid }),
+      runCommand () {}, fetchItem: iid => Promise.resolve({ iid }),
       fetchItems: ids => new Promise(resolve => requests.push({ ids, resolve })),
       fetchEntity: eid => new Promise(resolve => entities.push({ eid, resolve }))
     }),

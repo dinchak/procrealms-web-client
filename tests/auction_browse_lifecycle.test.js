@@ -5,7 +5,9 @@ import { nextTick, reactive } from 'vue'
 import { mountComponent } from './support/components.js'
 
 function browse () {
-  const commands = [], details = [], errors = []
+  const commands = []
+  const details = []
+  const errors = []
   const timers = new Map()
   let sequence = 0
   const state = reactive({
@@ -21,7 +23,7 @@ function browse () {
     ITEM_TYPES: [`armor`, `weapon`], ITEM_SUBTYPES: {}, ARMOR_SLOTS: [],
     useHelpers: () => ({ ansiToHtml: String, copperToMoneyString: String, getRelativeTime: String }),
     useWebSocket: () => ({
-      runCommand: async command => { commands.push(command) },
+      runCommand: command => { commands.push(command); return Promise.resolve() },
       fetchAuction: id => new Promise((resolve, reject) => details.push({ id, resolve, reject }))
     }),
     window: { innerWidth: 1000, addEventListener () {}, removeEventListener () {} },

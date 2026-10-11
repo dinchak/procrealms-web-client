@@ -26,7 +26,7 @@
       <div class="inventory-output" v-html-safe="ansiToHtml(state.inventoryOutput['inventory-output-' + itemOutputId])"></div>
     </div>
 
-    <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)"></div>
+    <div class="desc" v-if="item.description" v-html-safe="ansiToHtml(item.description)" @click="onDescriptionClick"></div>
 
     <div class="tags">
       <div class="tag black">[<span class="bold-cyan">{{ ucfirst(item.type) }}</span>]</div>
@@ -123,6 +123,19 @@ const props = defineProps({
 })
 
 const { item, actions, itemOutputId } = toRefs(props)
+
+function onDescriptionClick (event) {
+  let element = event.target
+  while (element instanceof HTMLElement && element !== event.currentTarget) {
+    if (element.style.textDecorationLine.includes(`underline`)) {
+      event.stopPropagation()
+      runCommand(element.innerText)
+      return
+    }
+
+    element = element.parentElement
+  }
+}
 
 function canLookInContainer () {
   return item.value.subtype == 'container'
@@ -447,6 +460,10 @@ function renderSkillsRequired () {
   .desc {
     padding: 0 10px 10px 10px;
     white-space: pre-line;
+
+    :deep([style*="underline"]) {
+      cursor: pointer;
+    }
   }
 
   .base-stats {

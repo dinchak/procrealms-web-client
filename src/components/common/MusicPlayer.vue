@@ -52,6 +52,7 @@ import { stopPlaying, playRandomTrack, startPlaying } from '@/static/sound'
 
 let analyzerData = null
 let stopAnalysis = false
+let analysisFrame = null
 
 let redCounter = Date.now() + 1000
 let greenCounter = Date.now() + 2000
@@ -85,7 +86,9 @@ function getTrackName () {
 }
 
 function updateVolume () {
-  state.music.gainNode.gain.value = state.options.volume / 100.0
+  if (state.music.gainNode) {
+    state.music.gainNode.gain.value = state.options.volume / 100.0
+  }
 }
 
 function drawAnalyzer () {
@@ -94,17 +97,26 @@ function drawAnalyzer () {
   }
 
   const { audioAnalyzer } = state.music
+  analysisFrame = requestAnimationFrame(drawAnalyzer)
+  const canvas = analyzer.value
+  if (!audioAnalyzer || !canvas) {
+    return
+  }
+  if (!analyzerData || analyzerData.length !== audioAnalyzer.frequencyBinCount) {
+    analyzerData = new Uint8Array(audioAnalyzer.frequencyBinCount)
+  }
 
   redCounter++
   greenCounter++
   blueCounter++
   gradientCounter++
 
-  requestAnimationFrame(drawAnalyzer)
   audioAnalyzer.getByteFrequencyData(analyzerData)
-  const canvas = analyzer.value
 
   let ctx = canvas.getContext('2d')
+  if (!ctx) {
+    return
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   for (let i = 0; i < analyzerData.length; i++) {
     ctx.fillRect(i * 6, canvas.height - analyzerData[i] / 16, 4, analyzerData[i])
@@ -138,13 +150,16 @@ function updateTextShadow () {
 
 onMounted(() => {
   stopAnalysis = false
-  analyzerData = new Uint8Array(state.music.audioAnalyzer.frequencyBinCount)
   drawAnalyzer()
   updateTextShadow()
 })
 
 onBeforeUnmount(() => {
   stopAnalysis = true
+  if (analysisFrame !== null) {
+    cancelAnimationFrame(analysisFrame)
+    analysisFrame = null
+  }
 })
 
 </script>

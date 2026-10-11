@@ -44,7 +44,8 @@
   </GameModal>
 </template>
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+// @ts-check
+import { ref, nextTick, watch, onBeforeUnmount } from 'vue'
 import { NBadge } from 'naive-ui'
 import { state } from '@/static/state'
 import { CHANNELS } from '@/static/constants'
@@ -149,6 +150,9 @@ function markMessagesSeen () {
 function scrollToBottom () {
   nextTick(() => {
     let container = document.querySelector('.chat-output .messages')
+    if (!container) {
+      return
+    }
     container.scrollTop = container.scrollHeight
   })
 }
@@ -199,8 +203,11 @@ function onModalClosed () {
   state.inputEmitter.off('prevChannel', selectPrevChannel)
   state.inputEmitter.off('nextChannel', selectNextChannel)
   watchers.forEach(w => w())
+  watchers = []
   state.modals.chatModal = false
 }
+
+onBeforeUnmount(onModalClosed)
 </script>
 <style lang="less" scoped>
 .chat-container {

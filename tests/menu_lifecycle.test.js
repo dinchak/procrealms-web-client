@@ -102,7 +102,8 @@ test(`changing recipe page size updates the search, resets the page, and enforce
   const commands = []
   const state = reactive({ recipeSearch: { page: 5, limit: 30, mode: `all` }, recipeResults: { count: 100, recipes: [] } })
   const view = mountComponent(`../../src/components/modals/CraftingModal.vue`, {
-    state, useHelpers: () => ({}), useWebSocket: () => ({ runCommand: command => commands.push(command) })
+    state, useHelpers: () => ({}), useWebSocket: () => ({ runCommand: command => commands.push(command) }),
+    window: { removeEventListener () {} }
   })
   try {
     view.setup.updateLimit(20)

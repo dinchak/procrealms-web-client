@@ -359,7 +359,7 @@ function resetSearch () {
 }
 
 onMounted(() => {
-   watchers.push(watch(() => state.recipeResults.count, () => {
+  watchers.push(watch(() => state.recipeResults.count, () => {
     if (state.recipeSearch.page > numPages()) {
       state.recipeSearch.page = numPages()
       runCommand(buildRecipeCommand(), 'the_void')
@@ -368,6 +368,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  onModalClosed()
   watchers.forEach(w => w())
 })
 </script>

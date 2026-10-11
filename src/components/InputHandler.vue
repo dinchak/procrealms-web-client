@@ -107,6 +107,22 @@ function isMapAllowedByBattleState (map) {
   )
 }
 
+function isMapAllowedByContext (map) {
+  if (map.modeOwner && map.modeOwner !== state.modeOwner) {
+    return false
+  }
+
+  const focusedElement = document.activeElement
+  if (map.targetSelector && !focusedElement?.closest?.(map.targetSelector)) {
+    return false
+  }
+  if (map.ignoreEditable && focusedElement?.closest?.(`input, textarea, select, [contenteditable]:not([contenteditable="false"])`)) {
+    return false
+  }
+
+  return true
+}
+
 function handleMetaKey (ev, keyState) {
   if (ev.key == 'Control') {
     state.metaKeyState.ctrl = keyState
@@ -188,7 +204,12 @@ function onKeyDown (ev) {
 
   state.inputEmitter.emit('keyCode', ev.code)
 
-  let mappings = validMappings({ keyCode: ev.code, metaKeyState: state.metaKeyState })
+  if (ev.isComposing || ev.metaKey) {
+    return false
+  }
+
+  const mappings = validMappings({ keyCode: ev.code, metaKeyState: state.metaKeyState })
+    .filter(mapping => !ev.repeat || mapping.repeat !== false)
   if (mappings.length == 0) {
     return false
   }
@@ -254,9 +275,14 @@ function validMappings ({ keyCode, metaKeyState, gamepadButton, gamepadButtonRel
     return []
   }
 
-  const matched = [...new Set(candidates)].filter(isMapAllowedByBattleState)
-  incrementInputDiagnostic('inputLookupMatched', matched.length)
-  return matched
+  const matched = [...new Set(candidates)]
+    .filter(isMapAllowedByBattleState)
+    .filter(isMapAllowedByContext)
+  // A focused control's action takes precedence over general shortcuts.
+  const targeted = matched.filter(mapping => mapping.targetSelector)
+  const mappings = targeted.length ? targeted : matched
+  incrementInputDiagnostic('inputLookupMatched', mappings.length)
+  return mappings
 }
 
 function gamepadStateLoop () {

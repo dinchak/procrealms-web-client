@@ -15,7 +15,10 @@ function auction () {
   const first = { iid: `first`, name: `First`, amount: 3, value: 100 }
   const second = { iid: `second`, name: `Second`, amount: 2, value: 200 }
   const state = reactive({ gameState: { inventory: [first, second] }, inventorySortValue: `name` })
-  const details = [], commands = [], refreshes = [], errors = []
+  const details = []
+  const commands = []
+  const refreshes = []
+  const errors = []
   const timers = new Map()
   let sequence = 0
   const view = mountComponent(`../../src/components/auction-modal/AuctionSell.vue`, {
@@ -24,7 +27,7 @@ function auction () {
     window: { innerWidth: 1000, addEventListener () {}, removeEventListener () {} },
     useHelpers: () => ({ ansiToHtml: String, copperToMoneyString: String }),
     useWebSocket: () => ({
-      fetchItems: async () => [],
+      fetchItems: () => Promise.resolve([]),
       fetchItem: iid => { const request = { iid, ...deferred() }; details.push(request); return request.promise },
       runCommand: cmd => { const request = { cmd, ...deferred() }; commands.push(request); return request.promise },
       refreshItem: iid => { const request = { iid, ...deferred() }; refreshes.push(request); return request.promise }

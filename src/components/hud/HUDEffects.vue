@@ -15,8 +15,6 @@
           @mouseenter="showEffectDetail(effect, index, $event)"
           @mouseleave="hideEffectDetail(effect, index)"
           @click.stop="toggleEffectDetail(effect, index, $event)"
-          @keydown.enter.prevent="toggleEffectDetail(effect, index, $event)"
-          @keydown.space.prevent="toggleEffectDetail(effect, index, $event)"
         ></div>
 
         <NProgress
@@ -95,6 +93,7 @@ function getEffectNameClass (effect, index) {
   return {
     'effect-name': true,
     selectable: true,
+    'hud-popup-trigger': true,
     'popup-open': getActiveEffectKey() === getEffectKey(effect, index),
     pinned: pinnedEffectKey.value === getEffectKey(effect, index)
   }

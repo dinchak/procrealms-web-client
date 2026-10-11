@@ -1,5 +1,44 @@
+// @ts-check
 export function resetInputMappings () {
   return [
+    {
+      label: `Trade: Sell All`,
+      event: `tradeSellAll`,
+      modeOwner: `tradeModal`,
+      ignoreEditable: true,
+      repeat: false,
+      bindings: [{
+        keyCode: `KeyS`,
+        modes: [`modal`],
+      }],
+    },
+
+    {
+      label: `Search Help`,
+      event: `searchHelp`,
+      modeOwner: `helpModal`,
+      targetSelector: `.help-search-input input`,
+      repeat: false,
+      bindings: [{
+        keyCode: `Enter`,
+        modes: [`modal`],
+      }],
+    },
+
+    {
+      label: `Toggle Focused HUD Detail`,
+      event: `toggleHudPopup`,
+      targetSelector: `.hud-popup-trigger`,
+      repeat: false,
+      bindings: [{
+        keyCode: `Enter`,
+        modes: [`hotkey`, `modal`],
+      }, {
+        keyCode: `Space`,
+        modes: [`hotkey`, `modal`],
+      }],
+    },
+
     {
       label: 'Move Forward',
       event: 'moveForward',
